@@ -10,9 +10,9 @@ const indicators = [
   },
   {
     num: '02',
-    title: 'Interest Rates & Fed',
-    subtitle: 'FOMC, 기준금리 & Fed Policy',
-    desc: '연방준비제도의 통화정책 결정이 시장 전반에 미치는 영향을 분석합니다. FedWatch를 통해 시장이 금리 경로를 어떻게 선반영하는지 살펴봅니다.',
+    title: 'Fed & Monetary Policy',
+    subtitle: 'FOMC & 통화정책',
+    desc: 'FOMC의 정책 결정을 중심으로 중앙은행이 금리와 유동성 조절을 통해 통화정책을 운용하는 방식과 그 영향이 시장에 어떻게 영향을 미치는지 구조적으로 살펴봅니다.',
     path: '/rates',
   },
   {
