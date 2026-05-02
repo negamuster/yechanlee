@@ -20,7 +20,7 @@ export default function Rates() {
         <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
           Fed & Monetary Policy
         </h1>
-        <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px' }}>
+        <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
           FOMC는 연간 8회의 회의를 통해 정책금리를 결정하며, 경기 둔화·부양과 인플레이션 억제 등 경제 상황에 따라 통화정책 방향을 조정합니다. 중앙은행은 공개시장조작(Open Market Operations)과 재할인율 정책(Discount Rate Policy) 등을 통해 유동성을 조절하며, 이를 통해 시장 전반에 영향을 미칩니다.
         </p>
       </section>

@@ -133,7 +133,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px' }}>
+            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all'}}>
               {item.desc}
             </p>
           </div>
