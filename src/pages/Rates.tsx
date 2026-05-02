@@ -39,9 +39,6 @@ export default function Rates() {
 
       {/* ── HEADER ── */}
       <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
-        <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '24px' }}>
-          02
-        </p>
         <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
           Fed & Monetary Policy
         </h1>

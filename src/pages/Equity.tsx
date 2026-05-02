@@ -53,9 +53,6 @@ export default function Equity() {
 
       {/* ── HEADER ── */}
       <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
-        <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '24px' }}>
-          01 
-        </p>
         <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
           Equity Markets
         </h1>

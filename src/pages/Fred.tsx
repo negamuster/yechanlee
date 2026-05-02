@@ -9,7 +9,6 @@ export default function Fred() {
         <span style={{ fontSize: '13px', color: '#aaa' }}>04 — FRED Indicators</span>
       </nav>
       <section style={{ maxWidth: '720px', margin: '0 auto', padding: '80px 48px 160px' }}>
-        <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '24px' }}>04</p>
         <h1 style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '48px', lineHeight: '1.1' }}>FRED Indicators</h1>
         <p style={{ fontSize: '15px', lineHeight: '1.9', color: '#333', marginBottom: '24px' }}>
           내용을 여기에 추가하세요.
