@@ -96,7 +96,7 @@ export default function Home() {
             color: '#000000',
             whiteSpace: 'nowrap',
           }}>
-            So You See Clearly
+            So You See Clarity
           </h1>
           <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px' }}>
             시장의 흐름을 더 명확하게 이해할 수 있도록
