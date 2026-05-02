@@ -20,12 +20,6 @@ const indices = [
     url: 'https://finance.yahoo.com/quote/%5EFTSE/',
   },
   {
-    name: 'KOSPI',
-    region: 'South Korea',
-    desc: '한국거래소 유가증권시장에 상장된 모든 보통주를 대상으로 산출되는 지수로, 한국 주식시장을 대표합니다. 미국의 S&P 500과 유사한 역할을 하며, 국내 경제뿐 아니라 수출 중심 산업 구조를 반영합니다. 글로벌 경기 변화에 민감하게 반응하는 특징을 가집니다.',
-    url: 'https://finance.yahoo.com/quote/%5EKS11/',
-  },
-  {
     name: 'Nikkei 225',
     region: 'Japan',
     desc: '도쿄증권거래소에 상장된 225개 대표 기업으로 구성된 일본의 주요 주가지수로, 가격가중 방식으로 산출됩니다. 다양한 산업을 포함하고 있지만 수출 기업 비중이 높아 엔화 환율과 역의 상관관계를 보이는 경우가 많으며, 일본은행(BOJ)의 통화정책 변화에 민감하게 반응하여 일본 경제와 글로벌 제조업 흐름을 파악하는 데 중요한 지표입니다.',
@@ -36,6 +30,12 @@ const indices = [
     region: 'Hong Kong',
     desc: '홍콩증권거래소에 상장된 주요 대형 기업들로 구성된 시가총액 가중 지수로, 유동주식 비율이 반영됩니다. 홍콩 시장 전체 시가총액의 상당 부분을 차지하는 기업들로 구성되어 있으며, 시장 전반의 움직임을 대표합니다. 특히 중국 본토 기업 비중이 높아 중국 경제와 정책 변화의 영향을 크게 받습니다.',
     url: 'https://finance.yahoo.com/quote/%5EHSI/',
+  },
+    {
+    name: 'KOSPI',
+    region: 'South Korea',
+    desc: '한국거래소 유가증권시장에 상장된 모든 보통주를 대상으로 산출되는 지수로, 한국 주식시장을 대표합니다. 미국의 S&P 500과 유사한 역할을 하며, 국내 경제뿐 아니라 수출 중심 산업 구조를 반영합니다. 글로벌 경기 변화에 민감하게 반응하는 특징을 가집니다.',
+    url: 'https://finance.yahoo.com/quote/%5EKS11/',
   },
 ]
 
@@ -57,7 +57,7 @@ export default function Equity() {
           Equity Markets
         </h1>
         <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-          S&P 500, Nasdaq 100, FTSE 100, KOSPI, Nikkei 225, Hang Seng 등을 통해 주요 국가별 시장 흐름을 비교하며 글로벌 주식시장의 방향성을 파악합니다. 이러한 지수들은 시가총액과 유동성 등을 기준으로 구성 종목이 정기적으로 조정되며, 종목별 비중은 시장 가격 변화에 따라 지속적으로 변화합니다.
+          S&P 500, Nasdaq 100, FTSE 100, Nikkei 225, Hang Seng, KOSPI 등을 통해 주요 국가별 시장 흐름을 비교하며 글로벌 주식시장의 방향성을 파악합니다. 이러한 지수들은 시가총액과 유동성 등을 기준으로 구성 종목이 정기적으로 조정되며, 종목별 비중은 시장 가격 변화에 따라 지속적으로 변화합니다.
         </p>
       </section>
 
