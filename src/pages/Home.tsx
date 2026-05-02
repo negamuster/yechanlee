@@ -3,37 +3,32 @@ import { useNavigate } from 'react-router-dom'
 const indicators = [
   {
     num: '01',
-    title: 'Equity Markets',
-    subtitle: 'Global Stock Markets',
+    title: 'Stock Market',
     desc: '글로벌 주식시장의 지수를 통해 시장의 전반적인 흐름과 구조를 한눈에 파악합니다.',
     path: '/equity',
   },
   {
     num: '02',
+    title: 'Rates & Bond Market',
+    desc: '국채 금리와 채권 시장을 통해 금리 환경과 시장의 전반적인 흐름을 파악합니다.',
+    path: '/treasury',
+  },
+  {
+    num: '03',
     title: 'Fed & Monetary Policy',
-    subtitle: 'FOMC & 통화정책',
     desc: 'FOMC의 정책 결정을 중심으로 중앙은행이 금리와 유동성 조절을 통해 통화정책을 운용하는 방식과 그 영향이 시장에 어떻게 영향을 미치는지 구조적으로 살펴봅니다.',
     path: '/rates',
   },
   {
-    num: '03',
-    title: 'US Treasury & Yield Curve',
-    subtitle: '국채 수익률 곡선 & 채권시장',
-    desc: '단기-장기 국채 금리의 관계를 나타내는 수익률 곡선은 경기침체를 예고하는 가장 신뢰도 높은 선행지표 중 하나입니다. 역전과 정상화의 의미를 짚어봅니다.',
-    path: '/treasury',
-  },
-  {
     num: '04',
-    title: 'FRED Indicators',
-    subtitle: '미국 연방준비은행 경제 데이터',
-    desc: 'FRED(Federal Reserve Economic Data)에서 제공하는 핵심 경제지표들을 소개합니다. 실업률, 인플레이션, 소비지출 등 경제의 체온을 측정하는 데이터를 다룹니다.',
+    title: 'Economic Indicators',
+    desc: '주요 경제 지표를 통해 경기 흐름과 경제 전반의 상태를 파악합니다.',
     path: '/fred',
   },
   {
     num: '05',
-    title: 'FX, Commodities & Business Cycle',
-    subtitle: '환율, 원자재 & 경기사이클',
-    desc: '달러 인덱스(DXY), 금·은·유가 등 원자재, 그리고 PMI·LEI 같은 경기선행지표를 통해 글로벌 매크로 흐름의 큰 그림을 그려봅니다.',
+    title: 'Global Macro',
+    desc: '환율과 원자재 시장을 통해 글로벌 자금 흐름과 거시 경제 환경을 파악하고, 주요 국가의 정책과 경제 변수 간 상호작용이 시장에 미치는 영향을 살펴봅니다.',
     path: '/macro',
   },
 ]
@@ -127,9 +122,6 @@ export default function Home() {
               <div>
                 <p style={{ fontSize: '24px', fontWeight: '400', color: '#000000', marginBottom: '6px' }}>
                   {item.title}
-                </p>
-                <p style={{ fontSize: '13px', color: '#000000', letterSpacing: '0.02em' }}>
-                  {item.subtitle}
                 </p>
               </div>
             </div>
