@@ -34,7 +34,6 @@ export default function Rates() {
       {/* ── NAV ── */}
       <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
         <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-        <span style={{ fontSize: '14px', color: '#aaa' }}>02 — Fed & Monetary Policy</span>
       </nav>
 
       {/* ── HEADER ── */}

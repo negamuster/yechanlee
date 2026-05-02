@@ -11,19 +11,19 @@ const indicators = [
     num: '02',
     title: 'Rates & Bond Market',
     desc: '국채 금리와 채권 시장을 통해 금리 환경과 시장의 전반적인 흐름을 파악합니다.',
-    path: '/treasury',
+    path: '/rates',
   },
   {
     num: '03',
     title: 'Fed & Monetary Policy',
     desc: 'FOMC의 정책 결정을 중심으로 중앙은행이 금리와 유동성 조절을 통해 통화정책을 운용하는 방식과 그 영향이 시장에 어떻게 영향을 미치는지 구조적으로 살펴봅니다.',
-    path: '/rates',
+    path: '/fed',
   },
   {
     num: '04',
     title: 'Economic Indicators',
     desc: '주요 경제 지표를 통해 경기 흐름과 경제 전반의 상태를 파악합니다.',
-    path: '/fred',
+    path: '/indicators',
   },
   {
     num: '05',
@@ -125,7 +125,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all'}}>
+            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all' }}>
               {item.desc}
             </p>
           </div>

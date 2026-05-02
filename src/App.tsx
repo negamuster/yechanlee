@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import Home from './pages/Home'
-import Equity from './pages/Equity'
-import Rates from './pages/Rates'
-import Treasury from './pages/Treasury'
-import Fred from './pages/Fred'
-import Macro from './pages/Macro'
+import Home from './pages/00_Home'
+import StockMarket from './pages/01_StockMarket'
+import BondMarket from './pages/02_BondMarket'
+import Fed from './pages/03_Fed'
+import EconomicIndicators from './pages/04_EconomicIndicators'
+import GlobalMacro from './pages/05_GlobalMacro'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -21,11 +21,11 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/equity" element={<Equity />} />
-        <Route path="/rates" element={<Rates />} />
-        <Route path="/treasury" element={<Treasury />} />
-        <Route path="/fred" element={<Fred />} />
-        <Route path="/macro" element={<Macro />} />
+        <Route path="/equity" element={<StockMarket />} />
+        <Route path="/rates" element={<BondMarket />} />
+        <Route path="/fed" element={<Fed />} />
+        <Route path="/indicators" element={<EconomicIndicators />} />
+        <Route path="/macro" element={<GlobalMacro />} />
       </Routes>
     </BrowserRouter>
   )

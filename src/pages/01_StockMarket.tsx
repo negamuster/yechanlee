@@ -48,13 +48,12 @@ export default function Equity() {
       {/* ── NAV ── */}
       <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
         <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-        <span style={{ fontSize: '14px', color: '#aaa' }}>01 — Equity Markets</span>
       </nav>
 
       {/* ── HEADER ── */}
       <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
         <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
-          Equity Markets
+          Stock Market
         </h1>
         <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
           S&P 500, Nasdaq 100, FTSE 100, Nikkei 225, Hang Seng, KOSPI 등을 통해 주요 국가별 시장 흐름을 비교하며 글로벌 주식시장의 방향성을 파악합니다. 이러한 지수들은 시가총액과 유동성 등을 기준으로 구성 종목이 정기적으로 조정되며, 종목별 비중은 시장 가격 변화에 따라 지속적으로 변화합니다.
