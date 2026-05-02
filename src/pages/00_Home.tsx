@@ -75,7 +75,7 @@ export default function Home() {
 
         {/* ── NAV ── */}
         <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-          <span style={{ fontSize: '18px', fontWeight: '600', letterSpacing: '-0.01em' }}>Anthracite</span>
+          <span style={{ fontSize: '24px', fontWeight: '600', letterSpacing: '-0.01em' }}>Anthracite</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px' }}>
             <span>Contact</span>
             <a href="mailto:yechan030102@gmail.com" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
@@ -99,7 +99,7 @@ export default function Home() {
           position: 'relative',
         }}>
           <h1 className="slide-up-1" style={{
-            fontSize: 'clamp(32px, 5vw, 60px)',
+            fontSize: 'clamp(40px, 6vw, 72px)',
             lineHeight: '1.05',
             letterSpacing: '-0.02em',
             fontWeight: '400',
@@ -129,7 +129,7 @@ export default function Home() {
             }}
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
           >
-            <span style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
+            <span style={{ fontSize: '16px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12l7 7 7-7"/>
             </svg>
@@ -164,8 +164,8 @@ export default function Home() {
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', marginBottom: '14px' }}>
-                <span style={{ fontSize: '13px', color: '#000000', minWidth: '24px' }}>{item.num}</span>
-                <p style={{ fontSize: '24px', fontWeight: '400', color: '#000000' }}>{item.title}</p>
+                <span style={{ fontSize: '16px', color: '#000000', minWidth: '24px' }}>{item.num}</span>
+                <p style={{ fontSize: '30px', fontWeight: '400', color: '#000000' }}>{item.title}</p>
               </div>
               <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all' }}>
                 {item.desc}
