@@ -68,7 +68,7 @@ export default function Equity() {
       <section style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
         <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
 
-          {indices.map((item, i) => (
+          {indices.map((item) => (
             <div
               key={item.name}
               style={{
@@ -83,7 +83,7 @@ export default function Equity() {
               {/* 왼쪽: 지수 이름 */}
               <div>
                 <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
-                  {String(i + 1).padStart(2, '0')} · {item.region}
+                  {item.region}
                 </p>
                 <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
                   {item.name}
