@@ -57,7 +57,7 @@ export default function GlobalMacro() {
             Global Macro
           </h1>
           <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-            글로벌 매크로는 환율, 원자재, 시장 심리 등 국경을 초월한 거시 변수들의 상호작용을 분석하는 관점입니다. 개별 자산이나 국가 경제에 국한되지 않고, 글로벌 자금 흐름과 리스크 온·오프 환경의 변화를 파악함으로써 시장 전반의 방향성을 보다 입체적으로 이해할 수 있습니다.
+            글로벌 매크로는 환율, 원자재, 시장 심리 등 국경을 넘는 주요 거시 변수들의 흐름과 상호작용을 통해 시장을 이해하는 관점입니다. 개별 자산이나 국가에만 집중하는 것이 아니라, 글로벌 자금의 이동과 리스크 환경의 변화를 함께 살펴보며 시장 전반의 방향성을 이해하는 데 도움을 줍니다.
           </p>
         </section>
 
