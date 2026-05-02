@@ -25,7 +25,7 @@ const sections = [
   },
 ]
 
-export default function Rates() {
+export default function Fed() {
   const navigate = useNavigate()
 
   return (
@@ -67,7 +67,7 @@ export default function Rates() {
                 <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
                   {item.subtitle}
                 </p>
-                <h2 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
+                <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
                   {item.title}
                 </h2>
               </div>
