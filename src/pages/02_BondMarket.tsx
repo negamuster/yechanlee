@@ -4,42 +4,38 @@ const sections = [
   {
     title: 'Key Rates',
     subtitle: '주요 금리',
-    desc: '채권 시장의 핵심은 다양한 만기의 국채 금리입니다. 단기금리는 중앙은행의 정책금리에 민감하게 반응하며, 장기금리는 인플레이션 기대와 경제 성장 전망을 반영합니다. 특히 2년물과 10년물 국채 금리는 시장에서 가장 주목받는 지표로, 두 금리의 차이(스프레드)는 경기 국면을 판단하는 데 중요한 신호를 제공합니다.',
+    desc: '채권 시장의 핵심은 다양한 만기의 국채 금리입니다. 단기 금리는 중앙은행의 정책금리에 민감하게 반응하는 반면, 장기 금리는 인플레이션 기대와 경제 성장 전망을 반영합니다. 특히 2년물과 10년물 국채 금리는 시장에서 가장 널리 사용되는 기준 지표로, 두 금리의 차이(스프레드)는 경기 국면을 판단하는 데 중요한 신호로 활용됩니다. 데이터를 볼 때는 단기 금리(정책 기대)와 장기 금리(성장·인플레이션 기대)가 각각 어떻게 움직이는지를 함께 확인하는 것이 중요하며, 두 금리가 같은 방향으로 움직이는지, 혹은 반대로 벌어지거나 좁혀지는지에 주목하면 시장이 현재 경기 국면을 어떻게 바라보는지를 파악할 수 있습니다.',
     link: {
       url: 'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202504',
       label: 'US Treasury에서 보기 ↗',
     },
-    linkDesc: null,
   },
   {
     title: 'Yield Curve',
     subtitle: '수익률 곡선',
-    desc: '수익률 곡선(Yield Curve)은 만기가 다른 국채들의 금리를 연결한 곡선으로, 경기 방향성을 예측하는 가장 신뢰도 높은 선행지표 중 하나입니다. 정상적인 상황에서는 장기금리가 단기금리보다 높아 우상향 곡선을 그리지만, 단기금리가 장기금리를 초과하는 역전(Inversion) 상태는 역사적으로 경기침체를 예고하는 신호로 해석됩니다.',
+    desc: '수익률 곡선(Yield Curve)은 만기가 다른 국채 금리를 연결한 곡선으로, 시장이 예상하는 금리 구조와 경기 방향을 보여주는 대표적인 선행지표입니다. 일반적으로는 장기 금리가 단기 금리보다 높은 우상향 형태를 보이지만, 단기 금리가 장기 금리를 초과하는 역전(Inversion) 상태는 경기 둔화 또는 침체 가능성을 시사하는 신호로 해석됩니다. 수익률 곡선을 볼 때는 단순한 금리 수준보다 곡선의 기울기 변화에 집중하는 것이 중요합니다. 곡선이 가팔라지면(Steepening) 경기 회복 기대가 반영된 것으로, 평탄화(Flattening)되면 성장 둔화 우려가 커지는 것으로, 역전(Inversion)되면 침체 가능성을 시장이 선반영하고 있는 것으로 해석할 수 있습니다.',
     link: {
-      url: 'https://fred.stlouisfed.org/series/T10Y2Y',
-      label: 'FRED — 2s10s Spread에서 보기 ↗',
+      url: 'https://www.ustreasuryyieldcurve.com/',
+      label: 'US Treasury Yield Curve에서 보기 ↗',
     },
-    linkDesc: null,
   },
   {
     title: 'Credit Spreads',
     subtitle: '신용 스프레드',
-    desc: '신용 스프레드는 회사채 금리와 국채 금리의 차이로, 시장의 신용 리스크와 투자 심리를 반영합니다. 스프레드가 확대되면 기업의 자금 조달 비용이 높아지고 시장의 위험 회피 성향이 강해졌음을 의미하며, 스프레드가 축소되면 경기 회복 기대와 위험 선호 심리가 반영된 것으로 해석됩니다.',
+    desc: '신용 스프레드는 회사채 금리와 국채 금리의 차이로, 시장이 인식하는 신용 위험과 투자 심리를 반영합니다. 일반적으로 경기 상황이 안정적일 때는 스프레드가 축소되며, 불확실성이 커질수록 투자자들이 안전자산을 선호하면서 스프레드가 확대됩니다. 이는 기업의 자금 조달 비용과 금융 시장의 리스크 수준을 동시에 보여주는 지표입니다. 스프레드가 빠르게 확대되고 있다면 시장이 위험을 회피하고 있다는 신호로, 반대로 점진적으로 축소되고 있다면 투자자들이 위험을 감수하며 수익을 추구하는 환경으로 전환되고 있음을 의미합니다.',
     link: {
       url: 'https://fred.stlouisfed.org/series/BAMLH0A0HYM2',
       label: 'FRED — High Yield Spread에서 보기 ↗',
     },
-    linkDesc: null,
   },
   {
-    title: 'Real Yields',
+    title: 'Real Interest Rate',
     subtitle: '실질 금리',
-    desc: '실질 금리는 명목 금리에서 기대 인플레이션을 차감한 값으로, 자산 가격과 경제 활동에 미치는 실질적인 금융 환경을 나타냅니다. 실질 금리가 상승하면 자금 조달 비용이 실질적으로 높아져 성장주와 위험자산에 부담이 되며, 하락하면 반대로 유동성 환경이 완화되는 신호로 해석됩니다.',
+    desc: '실질 금리는 명목 금리에서 기대 인플레이션을 차감한 값으로, 자산의 실제 구매력 기준 수익률을 나타냅니다. 이는 단순한 금리 수준보다 더 중요한 지표로, 투자 환경과 자산 가격에 직접적인 영향을 미칩니다. 일반적으로 실질 금리가 상승하면 자금 조달 부담이 커지면서 주식 등 위험자산에 부담이 되고, 하락하면 유동성이 확대되며 자산 가격에 긍정적으로 작용합니다. 실질 금리의 절대 수준보다 방향성에 주목하는 것이 중요하며, 실질 금리가 오르는 구간에서는 긴축 환경, 내려가는 구간에서는 완화 환경으로 판단해 자산 배분의 기준으로 활용할 수 있습니다.',
     link: {
       url: 'https://fred.stlouisfed.org/series/DFII10',
       label: 'FRED — 10Y TIPS에서 보기 ↗',
     },
-    linkDesc: null,
   },
 ]
 
@@ -80,7 +76,6 @@ export default function BondMarket() {
                 alignItems: 'start',
               }}
             >
-              {/* 왼쪽: 제목 */}
               <div>
                 <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
                   {item.subtitle}
@@ -90,37 +85,34 @@ export default function BondMarket() {
                 </h2>
               </div>
 
-              {/* 오른쪽: 설명 + 링크 */}
               <div>
                 <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
                   {item.desc}
                 </p>
-                {item.link && (
-                  <a
-                    href={item.link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}
+                <a
+                  href={item.link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontSize: '14px',
+                      color: '#000',
+                      borderBottom: '1px solid #000',
+                      paddingBottom: '2px',
+                      cursor: 'pointer',
+                      transition: 'opacity 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                   >
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        fontSize: '14px',
-                        color: '#000',
-                        borderBottom: '1px solid #000',
-                        paddingBottom: '2px',
-                        cursor: 'pointer',
-                        transition: 'opacity 0.15s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-                      onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                    >
-                      {item.link.label}
-                    </div>
-                  </a>
-                )}
+                    {item.link.label}
+                  </div>
+                </a>
               </div>
             </div>
           ))}
