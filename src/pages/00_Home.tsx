@@ -96,10 +96,10 @@ export default function Home() {
             color: '#000000',
             whiteSpace: 'nowrap',
           }}>
-            Make Economics & Finance Easy
+            So You See Clearly
           </h1>
           <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px' }}>
-            거시경제와 시장의 흐름을 누구나 접근하기 쉽게.
+            시장의 흐름을 더 명확하게 이해할 수 있도록
           </p>
 
           {/* ── 스크롤 유도 화살표 ── */}
