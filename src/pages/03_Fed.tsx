@@ -29,93 +29,81 @@ export default function Fed() {
   const navigate = useNavigate()
 
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000000' }}>
+    <>
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .page-title { opacity: 0; animation: slideUp 0.7s ease forwards 0.1s; }
+        .page-desc  { opacity: 0; animation: slideUp 0.7s ease forwards 0.3s; }
+        .page-section { opacity: 0; animation: slideUp 0.7s ease forwards 0.5s; }
+      `}</style>
 
-      {/* ── NAV ── */}
-      <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-        <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-      </nav>
+      <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000000' }}>
 
-      {/* ── HEADER ── */}
-      <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
-        <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
-          Fed & Monetary Policy
-        </h1>
-        <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-          FOMC는 연간 8회의 회의를 통해 정책금리를 결정하며, 경기 둔화·부양과 인플레이션 억제 등 경제 상황에 따라 통화정책 방향을 조정합니다. 중앙은행은 공개시장조작(Open Market Operations)과 재할인율 정책(Discount Rate Policy) 등을 통해 유동성을 조절하며, 이를 통해 시장 전반에 영향을 미칩니다.
-        </p>
-      </section>
+        <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
+          <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
+        </nav>
 
-      {/* ── SECTIONS ── */}
-      <section style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
-        <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+        <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
+          <h1 className="page-title" style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
+            Fed & Monetary Policy
+          </h1>
+          <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+            FOMC는 연간 8회의 회의를 통해 정책금리를 결정하며, 경기 둔화·부양과 인플레이션 억제 등 경제 상황에 따라 통화정책 방향을 조정합니다. 중앙은행은 공개시장조작(Open Market Operations)과 재할인율 정책(Discount Rate Policy) 등을 통해 유동성을 조절하며, 이를 통해 시장 전반에 영향을 미칩니다.
+          </p>
+        </section>
 
-          {sections.map((item) => (
-            <div
-              key={item.title}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1.6fr',
-                gap: '48px',
-                padding: '56px 0',
-                borderBottom: '1px solid #e8e8e8',
-                alignItems: 'start',
-              }}
-            >
-              {/* 왼쪽: 제목 */}
-              <div>
-                <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
-                  {item.subtitle}
-                </p>
-                <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
-                  {item.title}
-                </h2>
+        <section className="page-section" style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
+          <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+            {sections.map((item) => (
+              <div
+                key={item.title}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1.6fr',
+                  gap: '48px',
+                  padding: '56px 0',
+                  borderBottom: '1px solid #e8e8e8',
+                  alignItems: 'start',
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
+                    {item.subtitle}
+                  </p>
+                  <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
+                    {item.title}
+                  </h2>
+                </div>
+                <div>
+                  <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: item.link ? '24px' : '0', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                    {item.desc}
+                  </p>
+                  {item.link && (
+                    <>
+                      <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                        {item.linkDesc}
+                      </p>
+                      <a href={item.link.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                        <div
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#000', borderBottom: '1px solid #000', paddingBottom: '2px', cursor: 'pointer', transition: 'opacity 0.15s' }}
+                          onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                        >
+                          {item.link.label}
+                        </div>
+                      </a>
+                    </>
+                  )}
+                </div>
               </div>
+            ))}
+          </div>
+        </section>
 
-              {/* 오른쪽: 설명 + 링크 */}
-              <div>
-                <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: item.link ? '24px' : '0', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                  {item.desc}
-                </p>
-
-                {item.link && (
-                  <>
-                    <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                      {item.linkDesc}
-                    </p>
-                    <a
-                      href={item.link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <div
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          fontSize: '14px',
-                          color: '#000',
-                          borderBottom: '1px solid #000',
-                          paddingBottom: '2px',
-                          cursor: 'pointer',
-                          transition: 'opacity 0.15s',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                      >
-                        {item.link.label}
-                      </div>
-                    </a>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-
-        </div>
-      </section>
-
-    </div>
+      </div>
+    </>
   )
 }

@@ -31,7 +31,7 @@ const indices = [
     desc: '홍콩증권거래소에 상장된 주요 대형 기업들로 구성된 시가총액 가중 지수로, 유동주식 비율이 반영됩니다. 홍콩 시장 전체 시가총액의 상당 부분을 차지하는 기업들로 구성되어 있으며, 시장 전반의 움직임을 대표합니다. 특히 중국 본토 기업 비중이 높아 중국 경제와 정책 변화의 영향을 크게 받습니다.',
     url: 'https://finance.yahoo.com/quote/%5EHSI/',
   },
-    {
+  {
     name: 'KOSPI',
     region: 'South Korea',
     desc: '한국거래소 유가증권시장에 상장된 모든 보통주를 대상으로 산출되는 지수로, 한국 주식시장을 대표합니다. 미국의 S&P 500과 유사한 역할을 하며, 국내 경제뿐 아니라 수출 중심 산업 구조를 반영합니다. 글로벌 경기 변화에 민감하게 반응하는 특징을 가집니다.',
@@ -43,85 +43,74 @@ export default function Equity() {
   const navigate = useNavigate()
 
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000000' }}>
+    <>
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .page-title { opacity: 0; animation: slideUp 0.7s ease forwards 0.1s; }
+        .page-desc  { opacity: 0; animation: slideUp 0.7s ease forwards 0.3s; }
+        .page-section { opacity: 0; animation: slideUp 0.7s ease forwards 0.5s; }
+      `}</style>
 
-      {/* ── NAV ── */}
-      <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-        <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-      </nav>
+      <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000000' }}>
 
-      {/* ── HEADER ── */}
-      <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
-        <h1 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
-          Stock Market
-        </h1>
-        <p style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-          주식시장은 기업의 소유권을 나타내는 주식이 투자자 간에 거래되는 시장으로, 기업의 자금 조달과 투자자의 자본 참여가 이루어지는 핵심 금융 시장입니다. 주식 가격은 기업의 실적뿐 아니라 금리, 경제 성장, 정책 변화 등 다양한 요인을 반영하며, 경제 전반의 흐름과 기대를 보여주는 중요한 지표로 작용합니다. S&P 500, Nasdaq 100, FTSE 100, Nikkei 225, Hang Seng, KOSPI 등을 통해 주요 국가별 시장 흐름을 비교하며 글로벌 주식시장의 방향성을 파악합니다. 이러한 지수들은 시가총액과 유동성 등을 기준으로 구성 종목이 정기적으로 조정되며, 종목별 비중은 시장 가격 변화에 따라 지속적으로 변화합니다.
-        </p>
-      </section>
+        <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
+          <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
+        </nav>
 
-      {/* ── INDICES ── */}
-      <section style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
-        <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+        <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
+          <h1 className="page-title" style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '28px', lineHeight: '1.1' }}>
+            Stock Market
+          </h1>
+          <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+            주식시장은 기업의 소유권을 나타내는 주식이 투자자 간에 거래되는 시장으로, 기업의 자금 조달과 투자자의 자본 참여가 이루어지는 핵심 금융 시장입니다. 주식 가격은 기업의 실적뿐 아니라 금리, 경제 성장, 정책 변화 등 다양한 요인을 반영하며, 경제 전반의 흐름과 기대를 보여주는 중요한 지표로 작용합니다. S&P 500, Nasdaq 100, FTSE 100, Nikkei 225, Hang Seng, KOSPI 등을 통해 주요 국가별 시장 흐름을 비교하며 글로벌 주식시장의 방향성을 파악합니다. 이러한 지수들은 시가총액과 유동성 등을 기준으로 구성 종목이 정기적으로 조정되며, 종목별 비중은 시장 가격 변화에 따라 지속적으로 변화합니다.
+          </p>
+        </section>
 
-          {indices.map((item) => (
-            <div
-              key={item.name}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1.6fr',
-                gap: '48px',
-                padding: '56px 0',
-                borderBottom: '1px solid #e8e8e8',
-                alignItems: 'start',
-              }}
-            >
-              {/* 왼쪽: 지수 이름 */}
-              <div>
-                <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
-                  {item.region}
-                </p>
-                <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
-                  {item.name}
-                </h2>
+        <section className="page-section" style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
+          <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+            {indices.map((item) => (
+              <div
+                key={item.name}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1.6fr',
+                  gap: '48px',
+                  padding: '56px 0',
+                  borderBottom: '1px solid #e8e8e8',
+                  alignItems: 'start',
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
+                    {item.region}
+                  </p>
+                  <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
+                    {item.name}
+                  </h2>
+                </div>
+                <div>
+                  <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                    {item.desc}
+                  </p>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                    <div
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#000', borderBottom: '1px solid #000', paddingBottom: '2px', cursor: 'pointer', transition: 'opacity 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                      onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                    >
+                      Yahoo Finance에서 보기 ↗
+                    </div>
+                  </a>
+                </div>
               </div>
+            ))}
+          </div>
+        </section>
 
-              {/* 오른쪽: 설명 + 링크 */}
-              <div>
-                <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                  {item.desc}
-                </p>
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '14px',
-                      color: '#000',
-                      borderBottom: '1px solid #000',
-                      paddingBottom: '2px',
-                      cursor: 'pointer',
-                      transition: 'opacity 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                  >
-                    Yahoo Finance에서 보기 ↗
-                  </div>
-                </a>
-              </div>
-            </div>
-          ))}
-
-        </div>
-      </section>
-
-    </div>
+      </div>
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 const indicators = [
   {
@@ -35,6 +36,15 @@ const indicators = [
 
 export default function Home() {
   const navigate = useNavigate()
+  const [showArrow, setShowArrow] = useState(true)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowArrow(window.scrollY < 80)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <>
@@ -45,7 +55,7 @@ export default function Home() {
         }
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(8px); }
+          50%       { transform: translateY(10px); }
         }
         .slide-up-1 {
           opacity: 0;
@@ -57,6 +67,7 @@ export default function Home() {
         }
         .scroll-arrow {
           animation: bounce 2s ease-in-out infinite;
+          transition: opacity 0.4s ease;
         }
       `}</style>
 
@@ -96,10 +107,10 @@ export default function Home() {
             color: '#000000',
             whiteSpace: 'nowrap',
           }}>
-            So You See Clarity
+            Make Economics & Finance Easy
           </h1>
           <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px' }}>
-            시장의 흐름을 더 명확하게 이해할 수 있도록
+            거시경제와 시장의 흐름을 누구나 접근하기 쉽게.
           </p>
 
           {/* ── 스크롤 유도 화살표 ── */}
@@ -111,13 +122,15 @@ export default function Home() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
+              gap: '8px',
               cursor: 'pointer',
+              opacity: showArrow ? 1 : 0,
+              pointerEvents: showArrow ? 'auto' : 'none',
             }}
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
           >
-            <span style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <span style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12l7 7 7-7"/>
             </svg>
           </div>
@@ -151,12 +164,8 @@ export default function Home() {
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', marginBottom: '14px' }}>
-                <span style={{ fontSize: '13px', color: '#000000', minWidth: '24px' }}>
-                  {item.num}
-                </span>
-                <p style={{ fontSize: '24px', fontWeight: '400', color: '#000000' }}>
-                  {item.title}
-                </p>
+                <span style={{ fontSize: '13px', color: '#000000', minWidth: '24px' }}>{item.num}</span>
+                <p style={{ fontSize: '24px', fontWeight: '400', color: '#000000' }}>{item.title}</p>
               </div>
               <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all' }}>
                 {item.desc}
@@ -166,7 +175,7 @@ export default function Home() {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#000000' }}>
+        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', fontSize: '12px', color: '#000000' }}>
           <span>Anthracite © 2026</span>
         </footer>
 
