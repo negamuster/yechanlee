@@ -4,8 +4,8 @@ const indicators = [
   {
     num: '01',
     title: 'Equity Markets',
-    subtitle: 'S&P 500, Nasdaq & 글로벌 주식시장',
-    desc: 'S&P 500, Nasdaq을 중심으로 주요 지수의 흐름을 읽는 법을 다룹니다. 섹터 로테이션과 시장 심리 지표를 통해 현재 시장이 어느 국면에 있는지 파악합니다.',
+    subtitle: 'Global Stock Markets',
+    desc: '글로벌 주식시장의 지수를 통해 시장의 전반적인 흐름과 구조를 한눈에 파악합니다.',
     path: '/equity',
   },
   {
