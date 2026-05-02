@@ -76,7 +76,7 @@ export default function Home() {
         {/* ── NAV ── */}
         <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
           <span style={{ fontSize: '24px', fontWeight: '600', letterSpacing: '-0.01em' }}>Anthracite</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '16px' }}>
             <span>Contact</span>
             <a href="mailto:yechan030102@gmail.com" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
               yechan030102@gmail.com
