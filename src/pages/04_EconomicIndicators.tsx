@@ -23,7 +23,7 @@ const sections = [
   {
     title: 'Labor Market',
     subtitle: '고용',
-    desc: '고용 시장은 경제의 건강 상태를 보여주는 핵심 지표 중 하나입니다. 실업률(Unemployment Rate)은 경제활동인구 중 일자리를 찾고 있는 비율을 나타내며, 비농업 고용지수(NFP, Nonfarm Payrolls)는 농업을 제외한 전 산업에서 한 달간 새로 창출된 일자리 수를 보여줍니다. 고용 데이터는 후행지표적 성격을 가지지만, NFP는 매월 첫째 주 금요일에 발표되며 시장에서 가장 주목하는 경제지표 중 하나입니다. 숫자 자체보다 시장 예상치 대비 결과와 전월 수치의 수정 여부를 함께 확인하는 것이 중요합니다.',
+    desc: '고용 시장은 경제의 건강 상태를 보여주는 핵심 지표 중 하나입니다. 실업률(Unemployment Rate)은 경제활동인구 중 일자리를 찾고 있는 비율을 나타내며, 비농업 고용지수(NFP)는 농업을 제외한 전 산업에서 한 달간 새로 창출된 일자리 수를 보여줍니다. 고용 데이터는 후행지표적 성격을 가지지만, NFP는 매월 첫째 주 금요일에 발표되며 시장에서 가장 주목하는 경제지표 중 하나입니다. 숫자 자체보다 시장 예상치 대비 결과와 전월 수치의 수정 여부를 함께 확인하는 것이 중요합니다.',
     links: [
       { url: 'https://fred.stlouisfed.org/series/UNRATE', label: 'FRED — 실업률에서 보기 ↗' },
       { url: 'https://www.investing.com/economic-calendar/nonfarm-payrolls-227', label: 'Investing.com — NFP에서 보기 ↗' },
@@ -32,7 +32,7 @@ const sections = [
   {
     title: 'Leading Indicators',
     subtitle: '선행지표',
-    desc: '선행지표는 경기 방향의 변화를 실제 데이터보다 앞서 신호하는 지표들로, 향후 경기 흐름을 예측하는 데 활용됩니다. ISM 제조업 지수는 구매관리자들의 설문을 바탕으로 산출되며, 50 이상이면 제조업 확장, 50 미만이면 수축을 의미합니다. 경기선행지수(LEI, Leading Economic Index)는 10개의 선행지표를 종합한 복합지수로, 수개월 후의 경기 방향성을 가늠하는 데 사용됩니다. 선행지표를 볼 때는 단일 수치보다 연속적인 방향 변화에 주목하며, 여러 선행지표가 동시에 같은 방향을 가리킬 때 신뢰도가 높아집니다.',
+    desc: '선행지표는 경기 방향의 변화를 실제 데이터보다 앞서 신호하는 지표들로, 향후 경기 흐름을 예측하는 데 활용됩니다. ISM 제조업 지수는 구매관리자들의 설문을 바탕으로 산출되며, 50 이상이면 제조업 확장, 50 미만이면 수축을 의미합니다. 경기선행지수(LEI)는 10개의 선행지표를 종합한 복합지수로, 수개월 후의 경기 방향성을 가늠하는 데 사용됩니다. 선행지표를 볼 때는 단일 수치보다 연속적인 방향 변화에 주목하며, 여러 선행지표가 동시에 같은 방향을 가리킬 때 신뢰도가 높아집니다.',
     links: [
       { url: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/', label: 'ISM — Manufacturing Index에서 보기 ↗' },
       { url: 'https://fred.stlouisfed.org/graph/?g=4Bz8', label: 'FRED — Leading Economic Index에서 보기 ↗' },
