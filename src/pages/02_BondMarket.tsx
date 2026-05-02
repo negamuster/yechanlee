@@ -6,8 +6,8 @@ const sections = [
     subtitle: '주요 금리',
     desc: '채권 시장의 핵심은 다양한 만기의 국채 금리입니다. 단기 금리는 중앙은행의 정책금리에 민감하게 반응하는 반면, 장기 금리는 인플레이션 기대와 경제 성장 전망을 반영합니다. 특히 2년물과 10년물 국채 금리는 시장에서 가장 널리 사용되는 기준 지표로, 두 금리의 차이(스프레드)는 경기 국면을 판단하는 데 중요한 신호로 활용됩니다. 데이터를 볼 때는 단기 금리(정책 기대)와 장기 금리(성장·인플레이션 기대)가 각각 어떻게 움직이는지를 함께 확인하는 것이 중요하며, 두 금리가 같은 방향으로 움직이는지, 혹은 반대로 벌어지거나 좁혀지는지에 주목하면 시장이 현재 경기 국면을 어떻게 바라보는지를 파악할 수 있습니다.',
     link: {
-      url: 'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202504',
-      label: 'US Treasury에서 보기 ↗',
+      url: 'https://fred.stlouisfed.org/series/DGS10',
+      label: 'FRED — 10Y Treasury Yield에서 보기 ↗',
     },
   },
   {
