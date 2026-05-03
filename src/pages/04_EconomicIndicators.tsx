@@ -4,7 +4,7 @@ const sections = [
   {
     title: 'Economic Growth',
     subtitle: '경제 성장',
-    desc: 'GDP(국내총생산)는 일정 기간 동안 한 국가에서 생산된 모든 재화와 서비스의 시장 가치를 합산한 지표로, 경제 규모와 성장 속도를 측정하는 가장 대표적인 척도입니다. GDP 성장률은 경기 확장과 수축을 판단하는 기준이 되며, 두 분기 연속 마이너스 성장은 기술적 경기침체로 정의됩니다. 데이터를 볼 때는 절대 수치보다 전분기 대비 성장률의 방향과 속도에 주목하는 것이 중요하며, 시장 예상치 대비 상회 혹은 하회 여부가 자산 가격에 즉각적인 영향을 미칩니다.',
+    desc: 'GDP(국내총생산)는 일정 기간 동안 한 국가에서 생산된 모든 재화와 서비스의 시장 가치를 합산한 지표로, 경제 규모와 성장 속도를 측정하는 가장 대표적인 척도입니다. GDP 성장률은 경기 확장과 수축을 판단하는 기준이 되며, 두 분기 연속 마이너스 성장은 기술적 경기침체(Recession)로 정의됩니다. 데이터를 볼 때는 절대 수치보다 전분기 대비 성장률의 방향과 속도에 주목하는 것이 중요하며, 시장 예상치 대비 상회 혹은 하회 여부가 자산 가격에 즉각적인 영향을 미칩니다.',
     links: [
       { url: 'https://www.bea.gov/data/gdp/gross-domestic-product', label: 'BEA — GDP에서 보기 ↗' },
       { url: 'https://fred.stlouisfed.org/series/GDP', label: 'FRED — GDP에서 보기 ↗' },
@@ -23,7 +23,7 @@ const sections = [
   {
     title: 'Labor Market',
     subtitle: '고용',
-    desc: '고용 시장은 경제의 건강 상태를 보여주는 핵심 지표 중 하나입니다. 실업률(Unemployment Rate)은 경제활동인구 중 일자리를 찾고 있는 비율을 나타내며, 비농업 고용지수(NFP)는 농업을 제외한 전 산업에서 한 달간 새로 창출된 일자리 수를 보여줍니다. 고용 데이터는 후행지표적 성격을 가지지만, NFP는 매월 첫째 주 금요일에 발표되며 시장에서 가장 주목하는 경제지표 중 하나입니다. 숫자 자체보다 시장 예상치 대비 결과와 전월 수치의 수정 여부를 함께 확인하는 것이 중요합니다.',
+    desc: '고용 시장은 경제의 건강 상태를 보여주는 핵심 지표 중 하나입니다. 실업률(Unemployment Rate)은 경제활동인구 중 일자리를 찾고 있는 비율을 나타내며, 비농업 고용지수(NFP, Nonfarm Payrolls)는 농업을 제외한 전 산업에서 한 달간 새로 창출된 일자리 수를 보여줍니다. 또한 매주 발표되는 신규 실업수당 청구건수(Initial Jobless Claims)는 고용 시장의 변화를 가장 빠르게 반영하는 고빈도 지표로, 주간 단위로 고용 흐름을 점검하는 데 유용합니다. 숫자 자체보다 시장 예상치 대비 결과와 전월 수치의 수정 여부를 함께 확인하는 것이 중요합니다.',
     links: [
       { url: 'https://fred.stlouisfed.org/series/UNRATE', label: 'FRED — 실업률에서 보기 ↗' },
       { url: 'https://www.investing.com/economic-calendar/nonfarm-payrolls-227', label: 'Investing.com — NFP에서 보기 ↗' },
@@ -32,10 +32,18 @@ const sections = [
   {
     title: 'Leading Indicators',
     subtitle: '선행지표',
-    desc: '선행지표는 경기 방향의 변화를 실제 데이터보다 앞서 신호하는 지표들로, 향후 경기 흐름을 예측하는 데 활용됩니다. ISM 제조업 지수는 구매관리자들의 설문을 바탕으로 산출되며, 50 이상이면 제조업 확장, 50 미만이면 수축을 의미합니다. 경기선행지수(LEI)는 10개의 선행지표를 종합한 복합지수로, 수개월 후의 경기 방향성을 가늠하는 데 사용됩니다. 선행지표를 볼 때는 단일 수치보다 연속적인 방향 변화에 주목하며, 여러 선행지표가 동시에 같은 방향을 가리킬 때 신뢰도가 높아집니다.',
+    desc: '선행지표는 경기 방향의 변화를 실제 데이터보다 앞서 신호하는 지표들로, 향후 경기 흐름을 예측하는 데 활용됩니다. ISM 제조업 지수는 구매관리자들의 설문을 바탕으로 산출되며, 50 이상이면 제조업 확장, 50 미만이면 수축을 의미합니다. 단, 50 미만이라도 수치가 개선되는 방향이라면 바닥을 다지고 있다는 긍정적 신호로 해석할 수 있습니다. 경기선행지수(LEI)는 10개의 선행지표를 종합한 복합지수로, 수개월 후의 경기 방향성을 가늠하는 데 사용됩니다. 선행지표를 볼 때는 단일 수치보다 연속적인 방향 변화에 주목하며, 여러 선행지표가 동시에 같은 방향을 가리킬 때 신뢰도가 높아집니다.',
     links: [
       { url: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/', label: 'ISM — Manufacturing Index에서 보기 ↗' },
       { url: 'https://fred.stlouisfed.org/graph/?g=4Bz8', label: 'FRED — Leading Economic Index에서 보기 ↗' },
+    ],
+  },
+  {
+    title: 'Consumer Spending',
+    subtitle: '소비지출',
+    desc: '미국 경제에서 소비는 GDP의 약 70%를 차지하는 핵심 성장 동력입니다. 소매판매(Retail Sales)는 소비자들의 실제 지출 규모를 월간 단위로 보여주는 지표로, 경기 강도를 직접적으로 반영합니다. 소매판매가 예상을 상회하면 소비 심리가 강하고 경기가 견조하다는 신호로, 하회하면 소비 둔화 우려가 커지는 신호로 해석됩니다. 전체 소매판매와 함께 자동차를 제외한 근원 소매판매를 함께 보면 일시적 변동 요인을 걸러내고 소비 트렌드를 더 명확하게 파악할 수 있습니다.',
+    links: [
+      { url: 'https://fred.stlouisfed.org/series/RSXFS', label: 'FRED — Retail Sales에서 보기 ↗' },
     ],
   },
 ]
@@ -58,7 +66,7 @@ export default function EconomicIndicators() {
       <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000000' }}>
 
         <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-          <span onClick={() => navigate('/')} style={{ fontSize: '20px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
+          <span onClick={() => navigate('/')} style={{ fontSize: '22px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
         </nav>
 
         <section style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 64px' }}>
@@ -66,36 +74,20 @@ export default function EconomicIndicators() {
             Economic Indicators
           </h1>
           <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-            경제지표는 경제의 현재 상태와 앞으로의 방향성을 수치로 보여주는 데이터입니다. 경제 성장, 물가, 고용, 선행지표를 함께 살펴보면 현재 경기가 어느 국면에 있는지, 그리고 중앙은행과 시장이 어떤 방향으로 움직일지를 보다 입체적으로 파악할 수 있습니다.
+            경제지표는 경제의 현재 상태와 앞으로의 방향성을 수치로 보여주는 데이터입니다. 경제 성장, 물가, 고용, 선행지표, 소비지출을 함께 살펴보면 현재 경기가 어느 국면에 있는지, 그리고 중앙은행과 시장이 어떤 방향으로 움직일지를 보다 입체적으로 진단할 수 있습니다.
           </p>
         </section>
 
         <section className="page-section" style={{ maxWidth: '860px', margin: '0 auto', padding: '0 48px 160px' }}>
           <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
             {sections.map((item) => (
-              <div
-                key={item.title}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1.6fr',
-                  gap: '48px',
-                  padding: '56px 0',
-                  borderBottom: '1px solid #e8e8e8',
-                  alignItems: 'start',
-                }}
-              >
+              <div key={item.title} style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '48px', padding: '56px 0', borderBottom: '1px solid #e8e8e8', alignItems: 'start' }}>
                 <div>
-                  <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
-                    {item.subtitle}
-                  </p>
-                  <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>
-                    {item.title}
-                  </h2>
+                  <p style={{ fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>{item.subtitle}</p>
+                  <h2 style={{ fontSize: '36px', fontWeight: '400', letterSpacing: '-0.01em', lineHeight: '1.1', color: '#000' }}>{item.title}</h2>
                 </div>
                 <div>
-                  <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                    {item.desc}
-                  </p>
+                  <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#444', marginBottom: '28px', textAlign: 'justify', wordBreak: 'keep-all' }}>{item.desc}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {item.links.map((link) => (
                       <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
@@ -114,6 +106,10 @@ export default function EconomicIndicators() {
             ))}
           </div>
         </section>
+
+        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', fontSize: '12px', color: '#aaa' }}>
+          <span>Anthracite © 2026</span>
+        </footer>
 
       </div>
     </>
