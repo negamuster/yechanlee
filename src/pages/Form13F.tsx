@@ -26,6 +26,9 @@ interface FilingData {
   error: string | null
 }
 
+// 프록시를 통해 SEC API 호출
+const proxy = (url: string) => `/api/sec-proxy?url=${encodeURIComponent(url)}`
+
 function formatValue(v: number): string {
   if (v >= 1_000_000_000) return '$' + (v / 1_000_000_000).toFixed(2) + 'B'
   if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(1) + 'M'
@@ -57,9 +60,7 @@ function ChangeTag({ curr, prev }: { curr: number; prev?: number }) {
 
 async function fetchLatest13F(cik: string): Promise<FilingData> {
   try {
-    const subRes = await fetch(`https://data.sec.gov/submissions/CIK${cik}.json`, {
-      headers: { 'User-Agent': 'Anthracite contact@anthracite.com' }
-    })
+    const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${cik}.json`))
     if (!subRes.ok) throw new Error('submissions fetch failed')
     const subData = await subRes.json()
 
@@ -85,20 +86,16 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const cikInt = parseInt(cik)
     const baseUrl = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
-    // index page
-    const idxPageRes = await fetch(`${baseUrl}/${primaryDocs[idx]}`, {
-      headers: { 'User-Agent': 'Anthracite contact@anthracite.com' }
-    })
+    const idxPageRes = await fetch(proxy(`${baseUrl}/${primaryDocs[idx]}`))
     const idxPageText = await idxPageRes.text()
 
-    // infotable xml url 탐색
     const xmlMatch = idxPageText.match(/href="([^"]*infotable[^"]*\.xml)"/i)
       || idxPageText.match(/href="([^"]*\.xml)"/i)
     let xmlUrl = xmlMatch
       ? (xmlMatch[1].startsWith('http') ? xmlMatch[1] : `https://www.sec.gov${xmlMatch[1]}`)
       : `${baseUrl}/${primaryDocs[idx]}`
 
-    const xmlRes = await fetch(xmlUrl, { headers: { 'User-Agent': 'Anthracite contact@anthracite.com' } })
+    const xmlRes = await fetch(proxy(xmlUrl))
     if (!xmlRes.ok) throw new Error('xml fetch failed')
     const xmlText = await xmlRes.text()
 
@@ -120,20 +117,19 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
       }
     })
 
-    // 이전 분기
     const prevMap = new Map<string, number>()
     if (idxPrev !== undefined) {
       try {
         const prevAccNum = accNums[idxPrev].replace(/-/g, '')
         const prevBase = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${prevAccNum}`
-        const prevIdxRes = await fetch(`${prevBase}/${primaryDocs[idxPrev]}`, { headers: { 'User-Agent': 'Anthracite contact@anthracite.com' } })
+        const prevIdxRes = await fetch(proxy(`${prevBase}/${primaryDocs[idxPrev]}`))
         const prevIdxText = await prevIdxRes.text()
         const prevXmlMatch = prevIdxText.match(/href="([^"]*infotable[^"]*\.xml)"/i)
           || prevIdxText.match(/href="([^"]*\.xml)"/i)
         const prevXmlUrl = prevXmlMatch
           ? (prevXmlMatch[1].startsWith('http') ? prevXmlMatch[1] : `https://www.sec.gov${prevXmlMatch[1]}`)
           : `${prevBase}/${primaryDocs[idxPrev]}`
-        const prevXmlRes = await fetch(prevXmlUrl, { headers: { 'User-Agent': 'Anthracite contact@anthracite.com' } })
+        const prevXmlRes = await fetch(proxy(prevXmlUrl))
         const prevXmlText = await prevXmlRes.text()
         const prevDoc = parser.parseFromString(prevXmlText, 'application/xml')
         prevDoc.querySelectorAll('infoTable').forEach(entry => {
@@ -196,7 +192,6 @@ export default function Form13F() {
 
         <div style={{ maxWidth: '1060px', margin: '0 auto', padding: '80px 48px 120px' }}>
 
-          {/* HEADER */}
           <h1 className="page-title" style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '20px', lineHeight: '1.1' }}>
             Form 13F
           </h1>
@@ -204,7 +199,6 @@ export default function Form13F() {
             미국에서 일정 규모 이상의 자산(AUM)을 운용하는 기관투자자는 분기마다 보유 주식을 미국 증권거래위원회(SEC)에 공개해야 하며, 이를 Form 13F라고 합니다. 이를 통해 주요 기관투자자들의 최신 포트폴리오와 보유 종목 변화를 확인할 수 있으며, 투자 비중과 신규 매수·매도 내역을 통해 기관 자금의 흐름과 시장에 대한 시각을 살펴볼 수 있습니다.
           </p>
 
-          {/* 주의사항 */}
           <div className="page-desc" style={{ padding: '20px 24px', border: '1px solid #e8e8e8', borderRadius: '4px', marginBottom: '64px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '4px' }}>주의사항</p>
             {[
@@ -216,10 +210,8 @@ export default function Form13F() {
             ))}
           </div>
 
-          {/* MAIN GRID */}
           <div className="page-section" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '48px', alignItems: 'start' }}>
 
-            {/* 왼쪽: 매니저 목록 */}
             <div style={{ borderRight: '1px solid #e8e8e8', paddingRight: '40px' }}>
               <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '20px' }}>Investors</p>
               {MANAGERS.map((m, i) => (
@@ -241,15 +233,12 @@ export default function Form13F() {
               ))}
             </div>
 
-            {/* 오른쪽: 데이터 */}
             <div>
               <div style={{ marginBottom: '28px' }}>
                 <h2 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '6px' }}>{manager.name}</h2>
                 <p style={{ fontSize: '14px', color: '#aaa' }}>{manager.firm}</p>
                 {current?.period && (
-                  <p style={{ fontSize: '13px', color: '#aaa', marginTop: '6px' }}>
-                    최신 공시 기준: {current.period}
-                  </p>
+                  <p style={{ fontSize: '13px', color: '#aaa', marginTop: '6px' }}>최신 공시 기준: {current.period}</p>
                 )}
               </div>
 
@@ -259,15 +248,8 @@ export default function Form13F() {
                 </div>
               ) : current.error ? (
                 <div style={{ padding: '32px', border: '1px solid #e8e8e8', borderRadius: '4px' }}>
-                  <p style={{ fontSize: '14px', color: '#aaa', marginBottom: '16px' }}>
-                    데이터를 불러오지 못했습니다. CORS 정책으로 인해 브라우저에서 SEC API에 직접 접근이 제한될 수 있습니다.
-                  </p>
-                  <a
-                    href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}
-                  >
+                  <p style={{ fontSize: '14px', color: '#aaa', marginBottom: '16px' }}>데이터를 불러오지 못했습니다.</p>
+                  <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                     <div className="edgar-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#000', borderBottom: '1px solid #000', paddingBottom: '2px', cursor: 'pointer' }}>
                       SEC EDGAR에서 직접 보기 ↗
                     </div>
@@ -314,12 +296,7 @@ export default function Form13F() {
                   </table>
 
                   <div style={{ marginTop: '32px' }}>
-                    <a
-                      href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}
-                    >
+                    <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                       <div className="edgar-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#000', borderBottom: '1px solid #000', paddingBottom: '2px', cursor: 'pointer' }}>
                         SEC EDGAR 원본 공시 보기 ↗
                       </div>
