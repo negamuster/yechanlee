@@ -215,6 +215,7 @@ export default function Simulator() {
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
                     <input className="sim-input" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} />
+                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
                   </div>
                 </div>
               </div>
