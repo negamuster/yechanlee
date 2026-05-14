@@ -139,7 +139,7 @@ export default function Home() {
                   자산 시뮬레이터
                 </p>
                 <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                  나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측합니다.
+                  나는 몇 살에 재정적으로 자유로워질 수 있을까? 내 숫자를 입력하고 직접 확인해보세요.
                 </p>
               </div>
             </div>

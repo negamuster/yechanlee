@@ -158,7 +158,7 @@ export default function Simulator() {
             Simulator
           </h1>
           <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', marginBottom: '64px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-            나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측합니다.
+            나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측해 볼 수 있습니다. 복리의 힘이 시간과 함께 어떻게 작동하는지 직접 확인해보세요.
           </p>
 
           <div className="page-section">
@@ -312,9 +312,9 @@ export default function Simulator() {
                       {minAsset < 0 && (
                         <line x1={PL} y1={yOf(0)} x2={W - PR} y2={yOf(0)} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="4 2" />
                       )}
-                      <polyline points={polyline} fill="none" stroke="#000" strokeWidth="1.5" strokeLinejoin="miter" />
+                      <polyline points={polyline} fill="none" stroke="#000" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
                       {dots.map(d => (
-                        <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="3.5" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="2.5" fill="#000" />
                       ))}
                       {xTicks.map(a => (
                         <text key={a} x={xOf(a)} y={PT + gH + 18} textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">{a}세</text>
