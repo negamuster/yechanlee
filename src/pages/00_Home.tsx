@@ -146,6 +146,20 @@ export default function Home() {
 
           </div>
         </section>
+        {/* ── FORM 13F ── */}
+<div
+  onClick={() => navigate('/form13f')}
+  style={{ paddingTop: '48px', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
+  onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+>
+  <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+    Form 13F
+  </p>
+  <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
+    워렌 버핏, 마이클 버리, 캐시 우드 등 주요 기관투자자들의 최신 보유 주식을 SEC 공시 데이터를 기반으로 확인합니다.
+  </p>
+</div>
 
         {/* ── FOOTER ── */}
         <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', fontSize: '12px', color: '#aaa' }}>

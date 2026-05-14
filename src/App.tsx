@@ -7,6 +7,8 @@ import Fed from './pages/03_Fed'
 import EconomicIndicators from './pages/04_EconomicIndicators'
 import GlobalMacro from './pages/05_GlobalMacro'
 import Simulator from './pages/Simulator'
+import Form13F from './pages/Form13F'
+
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -28,6 +30,7 @@ function App() {
         <Route path="/indicators" element={<EconomicIndicators />} />
         <Route path="/macro" element={<GlobalMacro />} />
         <Route path="/simulator" element={<Simulator />} />
+        <Route path="/form13f" element={<Form13F />} />
       </Routes>
     </BrowserRouter>
   )

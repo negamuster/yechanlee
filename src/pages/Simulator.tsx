@@ -235,7 +235,7 @@ export default function Simulator() {
                 <div>
                   <p style={labelStyle}>연 소비 증가율 (%)</p>
                   <input className="sim-input" style={inputStyle} type="number" placeholder="예: 2" value={expenseGrowth} onChange={e => setExpenseGrowth(e.target.value)} onWheel={handleWheel} />
-                  <p style={hintStyle}>물가상승률 기준 약 2%</p>
+                  <p style={hintStyle}>인플레이션 기준 약 2%</p>
                 </div>
               </div>
             </div>
