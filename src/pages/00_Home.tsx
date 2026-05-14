@@ -97,7 +97,7 @@ export default function Home() {
         </section>
 
         {/* ── MAIN GRID: Indicators + Simulator ── */}
-        <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 160px' }}>
+        <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 0' }}>
           <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
 
             {/* 왼쪽: Indicators */}
@@ -124,11 +124,13 @@ export default function Home() {
               ))}
             </div>
 
-            {/* 오른쪽: Simulator */}
+            {/* 오른쪽: Simulator + Form 13F */}
             <div>
               <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px' }}>
-                Simulator
+                Tools
               </p>
+
+              {/* Simulator */}
               <div
                 onClick={() => navigate('/simulator')}
                 style={{ padding: '32px 0', borderBottom: '1px solid #e8e8e8', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
@@ -142,27 +144,28 @@ export default function Home() {
                   나는 몇 살에 재정적으로 자유로워질 수 있을까? 내 숫자를 입력하고 직접 확인해보세요.
                 </p>
               </div>
-            </div>
 
+              {/* Form 13F */}
+              <div
+                onClick={() => navigate('/form13f')}
+                style={{ padding: '32px 0', borderBottom: '1px solid #e8e8e8', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                <p style={{ fontSize: '22px', fontWeight: '400', color: '#000000', marginBottom: '10px' }}>
+                  Form 13F
+                </p>
+                <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                  워런 버핏, 마이클 버리, 캐시 우드 등 주요 기관투자자들의 포트폴리오를 SEC Form 13F 공시를 통해 확인합니다.
+                </p>
+              </div>
+
+            </div>
           </div>
         </section>
-        {/* ── FORM 13F ── */}
-<div
-  onClick={() => navigate('/form13f')}
-  style={{ paddingTop: '48px', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
-  onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
->
-  <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
-    Form 13F
-  </p>
-  <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
-    워렌 버핏, 마이클 버리, 캐시 우드 등 주요 기관투자자들의 최신 보유 주식을 SEC 공시 데이터를 기반으로 확인합니다.
-  </p>
-</div>
 
         {/* ── FOOTER ── */}
-        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', fontSize: '12px', color: '#aaa' }}>
+        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', marginTop: '120px', fontSize: '12px', color: '#aaa' }}>
           <span>Anthracite © 2026</span>
         </footer>
 
