@@ -57,6 +57,8 @@ interface YearData {
   asset: number
 }
 
+const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
+
 export default function Simulator() {
   const navigate = useNavigate()
 
@@ -170,11 +172,11 @@ export default function Simulator() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
                 <div>
                   <p style={labelStyle}>현재 나이</p>
-                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 25" value={currentAge} onChange={e => setCurrentAge(e.target.value)} />
+                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 25" value={currentAge} onChange={e => setCurrentAge(e.target.value)} onWheel={handleWheel} />
                 </div>
                 <div>
                   <p style={labelStyle}>은퇴 나이</p>
-                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 60" value={retireAge} onChange={e => setRetireAge(e.target.value)} />
+                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 60" value={retireAge} onChange={e => setRetireAge(e.target.value)} onWheel={handleWheel} />
                   <p style={hintStyle}>수입이 없어지는 나이</p>
                 </div>
               </div>
@@ -192,7 +194,7 @@ export default function Simulator() {
                   </div>
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 3.5" value={savingsRate} onChange={e => setSavingsRate(e.target.value)} />
+                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 3.5" value={savingsRate} onChange={e => setSavingsRate(e.target.value)} onWheel={handleWheel} />
                     <p style={hintStyle}>예금, 적금 이율</p>
                   </div>
                 </div>
@@ -203,7 +205,7 @@ export default function Simulator() {
                   </div>
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 8" value={stocksRate} onChange={e => setStocksRate(e.target.value)} />
+                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 8" value={stocksRate} onChange={e => setStocksRate(e.target.value)} onWheel={handleWheel} />
                     <p style={hintStyle}>S&P 500 → 약 7~10%</p>
                   </div>
                 </div>
@@ -211,11 +213,11 @@ export default function Simulator() {
                   <div>
                     <p style={labelStyle}>3. 기타 자산 · 암호화폐 등 (원)</p>
                     <input className="sim-input" style={inputStyle} type="text" placeholder="예: 5,000,000" value={other} onChange={e => setOther(formatInput(e.target.value))} />
+                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
                   </div>
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} />
-                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
+                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} onWheel={handleWheel} />
                   </div>
                 </div>
               </div>
@@ -232,7 +234,7 @@ export default function Simulator() {
                 </div>
                 <div>
                   <p style={labelStyle}>연 소비 증가율 (%)</p>
-                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 2" value={expenseGrowth} onChange={e => setExpenseGrowth(e.target.value)} />
+                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 2" value={expenseGrowth} onChange={e => setExpenseGrowth(e.target.value)} onWheel={handleWheel} />
                   <p style={hintStyle}>물가상승률 기준 약 2%</p>
                 </div>
               </div>
@@ -249,7 +251,7 @@ export default function Simulator() {
                 </div>
                 <div>
                   <p style={labelStyle}>연 수입 증가율 (%)</p>
-                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 3" value={incomeGrowth} onChange={e => setIncomeGrowth(e.target.value)} />
+                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 3" value={incomeGrowth} onChange={e => setIncomeGrowth(e.target.value)} onWheel={handleWheel} />
                   <p style={hintStyle}>연봉 인상률 기준</p>
                 </div>
               </div>
@@ -341,7 +343,7 @@ export default function Simulator() {
                         <tr key={i} className="table-row" style={{ borderBottom: '1px solid #f4f4f4' }}>
                           <td style={{ padding: '12px 0', color: '#000' }}>{row.age}세</td>
                           <td style={{ padding: '12px 0', textAlign: 'right', color: row.asset < 0 ? '#ff3b30' : '#000', fontVariantNumeric: 'tabular-nums' }}>
-                            {row.asset < 0 ? '-' : row.asset.toLocaleString() + '원'}
+                            {row.asset < 0 ? '-' : Math.floor(row.asset).toLocaleString() + '원'}
                           </td>
                         </tr>
                       ))}
