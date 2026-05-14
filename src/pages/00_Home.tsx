@@ -32,6 +32,12 @@ const indicators = [
     desc: '환율, 원자재, 시장 심리 등 글로벌 자금의 흐름과 리스크 환경의 변화를 함께 살펴보며 시장 전반의 방향성을 이해합니다.',
     path: '/macro',
   },
+  {
+   num: '06',
+   title: 'Simulator',
+   desc: '나이, 소득, 소비, 자산, 수익률을 입력하면 100세까지의 자산 추이를 예측합니다.',
+   path: '/simulator',
+  },
 ]
 
 export default function Home() {
