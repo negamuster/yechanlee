@@ -213,11 +213,11 @@ export default function Simulator() {
                   <div>
                     <p style={labelStyle}>3. 기타 자산 · 암호화폐 등 (원)</p>
                     <input className="sim-input" style={inputStyle} type="text" placeholder="예: 5,000,000" value={other} onChange={e => setOther(formatInput(e.target.value))} />
-                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
                   </div>
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
                     <input className="sim-input" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} onWheel={handleWheel} />
+                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
                   </div>
                 </div>
               </div>
