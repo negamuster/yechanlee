@@ -39,9 +39,7 @@ export default function Home() {
   const [showArrow, setShowArrow] = useState(true)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowArrow(window.scrollY < 80)
-    }
+    const handleScroll = () => setShowArrow(window.scrollY < 80)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -98,44 +96,54 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── INDICATORS ── */}
-        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '0 48px 0' }}>
-          <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
-            Indicators
-          </p>
-          {indicators.map((item) => (
-            <div
-              key={item.num}
-              onClick={() => navigate(item.path)}
-              style={{ padding: '40px 0', borderBottom: '1px solid #e8e8e8', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', marginBottom: '14px' }}>
-                <span style={{ fontSize: '16px', color: '#000000', minWidth: '24px' }}>{item.num}</span>
-                <p style={{ fontSize: '28px', fontWeight: '400', color: '#000000' }}>{item.title}</p>
-              </div>
-              <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', paddingLeft: '44px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                {item.desc}
-              </p>
-            </div>
-          ))}
-        </section>
+        {/* ── MAIN GRID: Indicators + Simulator ── */}
+        <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 160px' }}>
+          <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
 
-        {/* ── SIMULATOR ── */}
-        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '0 48px 160px' }}>
-          <div
-            onClick={() => navigate('/simulator')}
-            style={{ paddingTop: '64px', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
-            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-          >
-            <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
-              Simulator
-            </p>
-            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
-              나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측합니다.
-            </p>
+            {/* 왼쪽: Indicators */}
+            <div>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px' }}>
+                Indicators
+              </p>
+              {indicators.map((item) => (
+                <div
+                  key={item.num}
+                  onClick={() => navigate(item.path)}
+                  style={{ padding: '32px 0', borderBottom: '1px solid #e8e8e8', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '14px', color: '#000000', minWidth: '24px' }}>{item.num}</span>
+                    <p style={{ fontSize: '22px', fontWeight: '400', color: '#000000' }}>{item.title}</p>
+                  </div>
+                  <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', paddingLeft: '40px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* 오른쪽: Simulator */}
+            <div>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px' }}>
+                Simulator
+              </p>
+              <div
+                onClick={() => navigate('/simulator')}
+                style={{ padding: '32px 0', borderBottom: '1px solid #e8e8e8', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                <p style={{ fontSize: '22px', fontWeight: '400', color: '#000000', marginBottom: '10px' }}>
+                  자산 시뮬레이터
+                </p>
+                <p style={{ fontSize: '14px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
+                  나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측합니다.
+                </p>
+              </div>
+            </div>
+
           </div>
         </section>
 

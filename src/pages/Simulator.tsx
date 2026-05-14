@@ -22,7 +22,7 @@ const inputStyle: React.CSSProperties = {
   border: 'none',
   borderBottom: '1px solid #e8e8e8',
   padding: '10px 0',
-  fontSize: '15px',
+  fontSize: '16px',
   fontFamily: '"Times New Roman", Times, serif',
   outline: 'none',
   background: 'transparent',
@@ -30,16 +30,24 @@ const inputStyle: React.CSSProperties = {
   transition: 'border-color 0.2s',
 }
 
-const labelStyle: React.CSSProperties = {
-  fontSize: '11px',
-  letterSpacing: '0.12em',
+const sectionTitleStyle: React.CSSProperties = {
+  fontSize: '14px',
+  letterSpacing: '0.15em',
   textTransform: 'uppercase' as const,
-  color: '#aaa',
+  color: '#000',
+  marginBottom: '8px',
+  fontWeight: '500',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: '13px',
+  letterSpacing: '0.08em',
+  color: '#000',
   marginBottom: '8px',
 }
 
 const hintStyle: React.CSSProperties = {
-  fontSize: '11px',
+  fontSize: '12px',
   color: '#ccc',
   marginTop: '5px',
 }
@@ -52,58 +60,41 @@ interface YearData {
 export default function Simulator() {
   const navigate = useNavigate()
 
-  // 나이
   const [currentAge, setCurrentAge] = useState('')
   const [retireAge, setRetireAge] = useState('')
-
-  // 금융 자산
   const [savings, setSavings] = useState('')
   const [savingsRate, setSavingsRate] = useState('')
   const [stocks, setStocks] = useState('')
   const [stocksRate, setStocksRate] = useState('')
   const [other, setOther] = useState('')
   const [otherRate, setOtherRate] = useState('')
-
-  // 연 소비
   const [expense, setExpense] = useState('')
   const [expenseGrowth, setExpenseGrowth] = useState('')
-
-  // 연 수입
   const [income, setIncome] = useState('')
   const [incomeGrowth, setIncomeGrowth] = useState('')
-
-  // 부채
   const [mortgage, setMortgage] = useState('')
   const [otherDebt, setOtherDebt] = useState('')
 
   const hasInput = currentAge && (savings || stocks || other) && expense && income
 
-  // 계산
   const data: YearData[] = useMemo(() => {
     if (!hasInput) return []
-
     const startAge = parseInt(currentAge)
     const retireAgeNum = retireAge ? parseInt(retireAge) : 100
-
     const totalAsset = parseInput(savings) + parseInput(stocks) + parseInput(other)
     const totalDebt = parseInput(mortgage) + parseInput(otherDebt)
     let netAsset = totalAsset - totalDebt
-
-    // 가중평균 수익률 계산
-    const totalForRate = parseInput(savings) + parseInput(stocks) + parseInput(other) || 1
-    const weightedRate =
-      (parseInput(savings) * (parseFloat(savingsRate) || 0) +
-        parseInput(stocks) * (parseFloat(stocksRate) || 0) +
-        parseInput(other) * (parseFloat(otherRate) || 0)) /
-      totalForRate / 100
-
+    const totalForRate = totalAsset || 1
+    const weightedRate = (
+      parseInput(savings) * (parseFloat(savingsRate) || 0) +
+      parseInput(stocks) * (parseFloat(stocksRate) || 0) +
+      parseInput(other) * (parseFloat(otherRate) || 0)
+    ) / totalForRate / 100
     let currentExpense = parseInput(expense)
     let currentIncome = parseInput(income)
     const expGrowthRate = (parseFloat(expenseGrowth) || 0) / 100
     const incGrowthRate = (parseFloat(incomeGrowth) || 0) / 100
-
     const result: YearData[] = []
-
     for (let age = startAge; age <= 100; age++) {
       result.push({ age, asset: netAsset })
       const effectiveIncome = age >= retireAgeNum ? 0 : currentIncome
@@ -111,26 +102,21 @@ export default function Simulator() {
       currentExpense = currentExpense * (1 + expGrowthRate)
       currentIncome = currentIncome * (1 + incGrowthRate)
     }
-
     return result
   }, [currentAge, retireAge, savings, savingsRate, stocks, stocksRate, other, otherRate, expense, expenseGrowth, income, incomeGrowth, mortgage, otherDebt, hasInput])
 
   const netIncrease = parseInput(income) - parseInput(expense)
 
-  // 그래프
   const W = 620, H = 280, PL = 64, PR = 20, PT = 20, PB = 44
   const gW = W - PL - PR
   const gH = H - PT - PB
   const startAge = parseInt(currentAge) || 20
   const totalYears = 100 - startAge || 1
-
   const maxAsset = data.length ? Math.max(...data.map(d => d.asset), 0) : 0
   const minAsset = data.length ? Math.min(...data.map(d => d.asset), 0) : 0
   const range = maxAsset - minAsset || 1
-
   const xOf = (a: number) => PL + ((a - startAge) / totalYears) * gW
   const yOf = (v: number) => PT + gH - ((v - minAsset) / range) * gH
-
   const xTicks: number[] = []
   for (let a = startAge; a <= 100; a++) {
     if ((a - startAge) % 10 === 0 || a === 100) xTicks.push(a)
@@ -140,7 +126,6 @@ export default function Simulator() {
     if ((a - startAge) % 5 === 0) xGrids.push(a)
   }
   const yTicks = [0, 1, 2, 3, 4].map(i => minAsset + (range * i) / 4)
-
   const polyline = data.map(d => `${xOf(d.age)},${yOf(d.asset)}`).join(' ')
   const dots = data.filter((_, i) => i % 5 === 0)
 
@@ -180,25 +165,26 @@ export default function Simulator() {
 
             {/* ── 나이 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000', marginBottom: '28px', fontWeight: '500' }}>나이</p>
+              <p style={sectionTitleStyle}>나이</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
                 <div>
                   <p style={labelStyle}>현재 나이</p>
-                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 30" value={currentAge} onChange={e => setCurrentAge(e.target.value)} />
+                  <input className="sim-input" style={inputStyle} type="number" placeholder="예: 25" value={currentAge} onChange={e => setCurrentAge(e.target.value)} />
                 </div>
                 <div>
-                  <p style={labelStyle}>은퇴 나이 (수입이 없어지는 나이)</p>
+                  <p style={labelStyle}>은퇴 나이</p>
                   <input className="sim-input" style={inputStyle} type="number" placeholder="예: 60" value={retireAge} onChange={e => setRetireAge(e.target.value)} />
+                  <p style={hintStyle}>수입이 없어지는 나이</p>
                 </div>
               </div>
             </div>
 
             {/* ── 금융 자산 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000', marginBottom: '8px', fontWeight: '500' }}>금융 자산 (Financial Assets)</p>
+              <p style={sectionTitleStyle}>금융 자산 (Financial Assets)</p>
               <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>부채를 제외한 순자산 기준 · 퇴직연금 포함</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-                {/* 은행 저축/예금 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                   <div>
                     <p style={labelStyle}>1. 은행 저축 · 예금 (원)</p>
@@ -210,7 +196,6 @@ export default function Simulator() {
                     <p style={hintStyle}>예금, 적금 이율</p>
                   </div>
                 </div>
-                {/* 증권사 주식 */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                   <div>
                     <p style={labelStyle}>2. 증권사 주식 · 펀드 (원)</p>
@@ -222,7 +207,6 @@ export default function Simulator() {
                     <p style={hintStyle}>S&P 500 → 약 7~10%</p>
                   </div>
                 </div>
-                {/* 기타 */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                   <div>
                     <p style={labelStyle}>3. 기타 자산 · 암호화폐 등 (원)</p>
@@ -230,7 +214,7 @@ export default function Simulator() {
                   </div>
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 15" value={otherRate} onChange={e => setOtherRate(e.target.value)} />
+                    <input className="sim-input" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -238,7 +222,8 @@ export default function Simulator() {
 
             {/* ── 연 소비 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000', marginBottom: '28px', fontWeight: '500' }}>연 소비</p>
+              <p style={sectionTitleStyle}>연 소비</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                 <div>
                   <p style={labelStyle}>연간 평균 소비 (원)</p>
@@ -254,7 +239,8 @@ export default function Simulator() {
 
             {/* ── 연 수입 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000', marginBottom: '28px', fontWeight: '500' }}>연 수입</p>
+              <p style={sectionTitleStyle}>연 수입</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                 <div>
                   <p style={labelStyle}>연 수입 (원)</p>
@@ -270,7 +256,7 @@ export default function Simulator() {
 
             {/* ── 부채 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '64px' }}>
-              <p style={{ fontSize: '13px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000', marginBottom: '8px', fontWeight: '500' }}>내 부채</p>
+              <p style={sectionTitleStyle}>내 부채</p>
               <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>총 자산에서 차감하여 순자산을 계산합니다</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
                 <div>
@@ -328,7 +314,7 @@ export default function Simulator() {
                       )}
                       <polyline points={polyline} fill="none" stroke="#000" strokeWidth="1.5" strokeLinejoin="miter" />
                       {dots.map(d => (
-                        <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="3" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="3.5" fill="#fff" stroke="#000" strokeWidth="1.5" />
                       ))}
                       {xTicks.map(a => (
                         <text key={a} x={xOf(a)} y={PT + gH + 18} textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">{a}세</text>
