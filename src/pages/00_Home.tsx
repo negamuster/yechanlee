@@ -32,12 +32,6 @@ const indicators = [
     desc: '환율, 원자재, 시장 심리 등 글로벌 자금의 흐름과 리스크 환경의 변화를 함께 살펴보며 시장 전반의 방향성을 이해합니다.',
     path: '/macro',
   },
-  {
-   num: '06',
-   title: 'Simulator',
-   desc: '나이, 소득, 소비, 자산, 수익률을 입력하면 100세까지의 자산 추이를 예측합니다.',
-   path: '/simulator',
-  },
 ]
 
 export default function Home() {
@@ -105,7 +99,7 @@ export default function Home() {
         </section>
 
         {/* ── INDICATORS ── */}
-        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '0 48px 160px' }}>
+        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '0 48px 0' }}>
           <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
             Indicators
           </p>
@@ -126,6 +120,23 @@ export default function Home() {
               </p>
             </div>
           ))}
+        </section>
+
+        {/* ── SIMULATOR ── */}
+        <section style={{ maxWidth: '720px', margin: '0 auto', padding: '0 48px 160px' }}>
+          <div
+            onClick={() => navigate('/simulator')}
+            style={{ paddingTop: '64px', cursor: 'pointer', transition: 'opacity 0.15s ease' }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.4')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          >
+            <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px', borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
+              Simulator
+            </p>
+            <p style={{ fontSize: '15px', lineHeight: '1.75', color: '#000000', textAlign: 'justify', wordBreak: 'keep-all' }}>
+              나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측합니다.
+            </p>
+          </div>
         </section>
 
         {/* ── FOOTER ── */}
