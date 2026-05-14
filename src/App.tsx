@@ -6,6 +6,7 @@ import BondMarket from './pages/02_BondMarket'
 import Fed from './pages/03_Fed'
 import EconomicIndicators from './pages/04_EconomicIndicators'
 import GlobalMacro from './pages/05_GlobalMacro'
+import Simulator from './pages/Simulator'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -26,6 +27,7 @@ function App() {
         <Route path="/fed" element={<Fed />} />
         <Route path="/indicators" element={<EconomicIndicators />} />
         <Route path="/macro" element={<GlobalMacro />} />
+        <Route path="/simulator" element={<Simulator />} />
       </Routes>
     </BrowserRouter>
   )
