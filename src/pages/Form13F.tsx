@@ -44,29 +44,28 @@ function formatShares(n: number): string {
   return Math.round(n).toLocaleString()
 }
 
-function ChangeTag({ curr, prev }: { curr: number; prev?: number }) {
-  if (prev === undefined || prev === 0) return (
-    <span style={{ fontSize: '11px', color: '#aaa', padding: '2px 8px', border: '1px solid #e8e8e8', borderRadius: '2px' }}>NEW</span>
-  )
-  const pct = ((curr - prev) / prev) * 100
-  const up = pct > 0
-  const color = up ? '#16a34a' : '#ff3b30'
-  const bg = up ? 'rgba(22,163,74,0.06)' : 'rgba(255,59,48,0.06)'
-  const border = up ? 'rgba(22,163,74,0.2)' : 'rgba(255,59,48,0.2)'
-  return (
-    <span style={{ fontSize: '11px', color, padding: '2px 8px', border: `1px solid ${border}`, borderRadius: '2px', background: bg }}>
-      {up ? '+' : ''}{Math.round(pct)}%
-    </span>
-  )
+function LastTransactionTag({ curr, prev }: { curr: number; prev?: number }) {
+  if (prev === undefined || prev === 0) {
+    return <span style={{ fontSize: '12px', color: '#16a34a' }}>New holding</span>
+  }
+  if (curr === 0) {
+    return <span style={{ fontSize: '12px', color: '#ff3b30' }}>Sold out</span>
+  }
+  const pct = Math.round(((curr - prev) / prev) * 100)
+  if (pct > 0) return <span style={{ fontSize: '12px', color: '#16a34a' }}>Increased shares by {pct}%</span>
+  if (pct < 0) return <span style={{ fontSize: '12px', color: '#ff3b30' }}>Reduced shares by {Math.abs(pct)}%</span>
+  return <span style={{ fontSize: '12px', color: '#aaa' }}>Unchanged</span>
 }
 
 function DonutChart({ holdings }: { holdings: Holding[] }) {
   const top10 = holdings.slice(0, 10)
-  const total = top10.reduce((s, h) => s + h.value, 0)
-  const R = 80, r = 48, cx = 100, cy = 100
+  const total = holdings.reduce((s, h) => s + h.value, 0)
+  const top10Total = top10.reduce((s, h) => s + h.value, 0)
+  const R = 80, r = 52, cx = 100, cy = 100
   let angle = -Math.PI / 2
+
   const slices = top10.map((h, i) => {
-    const pct = h.value / total
+    const pct = h.value / top10Total
     const startAngle = angle
     angle += pct * 2 * Math.PI
     const endAngle = angle
@@ -80,21 +79,29 @@ function DonutChart({ holdings }: { holdings: Holding[] }) {
     const iy2 = cy + r * Math.sin(startAngle)
     const large = pct > 0.5 ? 1 : 0
     const d = `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`
-    return { d, color: COLORS[i % COLORS.length], name: h.name, pct: Math.round(pct * 1000) / 10 }
+    return { d, color: COLORS[i % COLORS.length], name: h.name, pct: Math.round(h.value / total * 1000) / 10 }
   })
 
   return (
-    <div style={{ display: 'flex', gap: '32px', alignItems: 'center', marginBottom: '40px' }}>
-      <svg viewBox="0 0 200 200" style={{ width: '160px', flexShrink: 0 }}>
-        {slices.map((s, i) => (
-          <path key={i} d={s.d} fill={s.color} stroke="#fff" strokeWidth="1" />
-        ))}
-      </svg>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div style={{ display: 'flex', gap: '40px', alignItems: 'center', marginBottom: '40px' }}>
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <svg viewBox="0 0 200 200" style={{ width: '180px' }}>
+          {slices.map((s, i) => (
+            <path key={i} d={s.d} fill={s.color} stroke="#fff" strokeWidth="2" />
+          ))}
+          <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000" fontFamily='"Times New Roman", serif' fontWeight="500">
+            {formatValue(total)}
+          </text>
+          <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">
+            Total value
+          </text>
+        </svg>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
         {slices.map((s, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: s.color, flexShrink: 0 }} />
-            <span style={{ fontSize: '12px', color: '#555', flex: 1 }}>{s.name}</span>
+            <span style={{ fontSize: '13px', color: '#333', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
             <span style={{ fontSize: '12px', color: '#aaa', fontVariantNumeric: 'tabular-nums' }}>{s.pct}%</span>
           </div>
         ))}
@@ -127,43 +134,92 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
   return map
 }
 
-async function getXmlUrl(cikInt: number, accNum: string, primaryDoc: string): Promise<string> {
+// filing index JSON에서 XML 파일 찾기
+async function getXmlUrl(cikInt: number, accNum: string): Promise<string> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
-  // 1. filing-index 페이지 파싱
+  // index.json으로 실제 파일 목록 확인
   try {
-    const res = await fetch(proxy(`${base}/${primaryDoc}`))
+    const res = await fetch(proxy(`${base}/${accNum}-index.json`))
+    if (res.ok) {
+      const data = await res.json()
+      const files: any[] = data.directory?.item || []
+      const xml = files.find((f: any) =>
+        f.name && f.name.toLowerCase().includes('.xml') &&
+        (f.name.toLowerCase().includes('info') || f.name.toLowerCase().includes('13f') || f.name.toLowerCase().includes('primary'))
+      ) || files.find((f: any) => f.name && f.name.toLowerCase().endsWith('.xml'))
+      if (xml) return `${base}/${xml.name}`
+    }
+  } catch {}
+
+  // filing index htm 파싱
+  try {
+    const res = await fetch(proxy(`${base}/${accNum}-index.htm`))
     const text = await res.text()
     const m = text.match(/href="([^"]*infotable[^"]*\.xml)"/i)
-      || text.match(/href="([^"]*form13f[^"]*\.xml)"/i)
+      || text.match(/href="([^"]*13f[^"]*\.xml)"/i)
       || text.match(/href="([^"]*\.xml)"/i)
     if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
   } catch {}
 
-  // 2. -index.htm 시도
+  // primary doc 파싱
   try {
-    const res = await fetch(proxy(`${base}/${accNum}-index.htm`))
-    const text = await res.text()
-    const m = text.match(/href="([^"]*\.xml)"/i)
-    if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+    const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${String(cikInt).padStart(10, '0')}.json`))
+    // already have this data from caller, skip
   } catch {}
 
-  // 3. index.json 시도
-
-
-  // 4. 공통 파일명 시도
-  const names = ['form13fInfoTable.xml', 'infotable.xml', 'primary_doc.xml']
-  for (const n of names) {
+  // 일반적인 파일명들 시도
+  const candidates = [
+    'form13fInfoTable.xml',
+    'infotable.xml',
+    'Information Table.xml',
+    'informationtable.xml',
+  ]
+  for (const name of candidates) {
     try {
-      const res = await fetch(proxy(`${base}/${n}`))
+      const url = `${base}/${name}`
+      const res = await fetch(proxy(url))
       if (res.ok) {
         const t = await res.text()
-        if (t.includes('infoTable') || t.includes('InfoTable')) return `${base}/${n}`
+        if (t.includes('infoTable') || t.includes('InfoTable') || t.includes('nameOfIssuer')) {
+          return url
+        }
       }
     } catch {}
   }
 
   return `${base}/form13fInfoTable.xml`
+}
+
+async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
+  const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
+
+  // primary doc에서 XML 링크 찾기
+  try {
+    const res = await fetch(proxy(`${base}/${primaryDoc}`))
+    const text = await res.text()
+    const m = text.match(/href="([^"]*infotable[^"]*\.xml)"/i)
+      || text.match(/href="([^"]*13f[^"]*\.xml)"/i)
+      || text.match(/href="([^"]*\.xml)"/i)
+    if (m) {
+      const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+      const xmlRes = await fetch(proxy(xmlUrl))
+      if (xmlRes.ok) {
+        const xmlText = await xmlRes.text()
+        const map = parseInfoTable(xmlText)
+        if (map.size > 0) return map
+      }
+    }
+  } catch {}
+
+  // getXmlUrl fallback
+  const xmlUrl = await getXmlUrl(cikInt, accNum)
+  const xmlRes = await fetch(proxy(xmlUrl))
+  if (!xmlRes.ok) throw new Error(`xml fetch failed: ${xmlUrl}`)
+  const xmlText = await xmlRes.text()
+  const map = parseInfoTable(xmlText)
+  if (map.size === 0) throw new Error('no holdings parsed')
+  return map
 }
 
 async function fetchLatest13F(cik: string): Promise<FilingData> {
@@ -191,29 +247,24 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const accNum = accNums[idx].replace(/-/g, '')
     const cikInt = parseInt(cik)
 
-    const xmlUrl = await getXmlUrl(cikInt, accNum, primaryDocs[idx])
-    const xmlRes = await fetch(proxy(xmlUrl))
-    if (!xmlRes.ok) throw new Error(`xml fetch failed: ${xmlUrl}`)
-    const xmlText = await xmlRes.text()
-
-    const holdingMap = parseInfoTable(xmlText)
-    if (holdingMap.size === 0) throw new Error('no holdings parsed')
+    const holdingMap = await fetchFiling(cikInt, accNum, primaryDocs[idx])
 
     const prevMap = new Map<string, number>()
     if (idxPrev !== undefined) {
       try {
         const prevAccNum = accNums[idxPrev].replace(/-/g, '')
-        const prevXmlUrl = await getXmlUrl(cikInt, prevAccNum, primaryDocs[idxPrev])
-        const prevXmlRes = await fetch(proxy(prevXmlUrl))
-        const prevXmlText = await prevXmlRes.text()
-        const pm = parseInfoTable(prevXmlText)
+        const pm = await fetchFiling(cikInt, prevAccNum, primaryDocs[idxPrev])
         pm.forEach((h, name) => prevMap.set(name, h.shares))
       } catch {}
     }
 
     const totalValue = Array.from(holdingMap.values()).reduce((s, h) => s + h.value, 0)
     const holdings: Holding[] = Array.from(holdingMap.values())
-      .map(h => ({ ...h, prevShares: prevMap.get(h.name), pct: Math.round(h.value / totalValue * 1000) / 10 }))
+      .map(h => ({
+        ...h,
+        prevShares: prevMap.get(h.name),
+        pct: Math.round(h.value / totalValue * 1000) / 10
+      }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 30)
 
@@ -274,7 +325,6 @@ export default function Form13F() {
           </div>
 
           <div className="page-section" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '48px', alignItems: 'start' }}>
-            {/* 왼쪽 */}
             <div style={{ borderRight: '1px solid #e8e8e8', paddingRight: '40px' }}>
               <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '20px' }}>Investors</p>
               {MANAGERS.map((m, i) => (
@@ -286,7 +336,6 @@ export default function Form13F() {
               ))}
             </div>
 
-            {/* 오른쪽 */}
             <div>
               <div style={{ marginBottom: '28px' }}>
                 <h2 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '6px' }}>{manager.name}</h2>
@@ -312,18 +361,6 @@ export default function Form13F() {
                 <p style={{ fontSize: '14px', color: '#aaa' }}>보유 종목 데이터가 없습니다.</p>
               ) : (
                 <>
-                  {/* 요약 카드 */}
-                  <div style={{ display: 'flex', gap: '32px', marginBottom: '40px', padding: '20px 24px', border: '1px solid #e8e8e8', borderRadius: '4px' }}>
-                    <div>
-                      <p style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '6px' }}>보유 종목 수</p>
-                      <p style={{ fontSize: '24px', fontWeight: '400' }}>{current.holdings.length}<span style={{ fontSize: '13px', color: '#aaa', marginLeft: '4px' }}>개 (Top 30)</span></p>
-                    </div>
-                    <div style={{ borderLeft: '1px solid #e8e8e8', paddingLeft: '32px' }}>
-                      <p style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '6px' }}>총 포트폴리오 가치</p>
-                      <p style={{ fontSize: '24px', fontWeight: '400' }}>{formatValue(current.holdings.reduce((s, h) => s + h.value, 0))}</p>
-                    </div>
-                  </div>
-
                   {/* 도넛 차트 */}
                   <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Top 10 Holdings</p>
                   <DonutChart holdings={current.holdings} />
@@ -332,7 +369,7 @@ export default function Form13F() {
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid #e8e8e8' }}>
-                        {['#', '종목명', '비중', '보유 주수', '시장가치', '전분기 대비'].map((h, i) => (
+                        {['#', 'Stock', '% of Portfolio', '보유 주수', '시장가치', 'Last Transaction'].map((h, i) => (
                           <th key={i} style={{ textAlign: i <= 1 ? 'left' : 'right', padding: '10px 0', fontWeight: '400', color: '#aaa', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', ...(i === 0 ? { width: '32px' } : {}) }}>{h}</th>
                         ))}
                       </tr>
@@ -340,12 +377,14 @@ export default function Form13F() {
                     <tbody>
                       {current.holdings.map((h, i) => (
                         <tr key={i} className="table-row" style={{ borderBottom: '1px solid #f4f4f4' }}>
-                          <td style={{ padding: '12px 0', color: '#bbb', fontSize: '12px' }}>{i + 1}</td>
-                          <td style={{ padding: '12px 0', color: '#000' }}>{h.name}</td>
-                          <td style={{ padding: '12px 0', textAlign: 'right', color: '#555' }}>{h.pct}%</td>
-                          <td style={{ padding: '12px 0', textAlign: 'right', color: '#555', fontVariantNumeric: 'tabular-nums' }}>{formatShares(h.shares)}</td>
-                          <td style={{ padding: '12px 0', textAlign: 'right', color: '#000', fontVariantNumeric: 'tabular-nums' }}>{formatValue(h.value)}</td>
-                          <td style={{ padding: '12px 0', textAlign: 'right' }}><ChangeTag curr={h.shares} prev={h.prevShares} /></td>
+                          <td style={{ padding: '14px 0', color: '#bbb', fontSize: '12px' }}>{i + 1}</td>
+                          <td style={{ padding: '14px 0', color: '#000', fontWeight: '400' }}>{h.name}</td>
+                          <td style={{ padding: '14px 0', textAlign: 'right', color: '#555' }}>{h.pct}%</td>
+                          <td style={{ padding: '14px 0', textAlign: 'right', color: '#555', fontVariantNumeric: 'tabular-nums' }}>{formatShares(h.shares)}</td>
+                          <td style={{ padding: '14px 0', textAlign: 'right', color: '#000', fontVariantNumeric: 'tabular-nums' }}>{formatValue(h.value)}</td>
+                          <td style={{ padding: '14px 0', textAlign: 'right' }}>
+                            <LastTransactionTag curr={h.shares} prev={h.prevShares} />
+                          </td>
                         </tr>
                       ))}
                     </tbody>
