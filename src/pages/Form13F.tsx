@@ -26,7 +26,6 @@ interface FilingData {
   error: string | null
 }
 
-// 프록시를 통해 SEC API 호출
 const proxy = (url: string) => `/api/sec-proxy?url=${encodeURIComponent(url)}`
 
 function formatValue(v: number): string {
@@ -58,6 +57,83 @@ function ChangeTag({ curr, prev }: { curr: number; prev?: number }) {
   )
 }
 
+// XML 텍스트에서 infoTable 파싱
+function parseInfoTable(xmlText: string): Map<string, Holding> {
+  const map = new Map<string, Holding>()
+  // namespace 제거 후 파싱
+  const cleaned = xmlText.replace(/<[a-zA-Z]+:/g, '<').replace(/<\/[a-zA-Z]+:/g, '</')
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(cleaned, 'application/xml')
+
+  let entries = doc.querySelectorAll('infoTable')
+  if (entries.length === 0) {
+    // 대소문자 다른 경우
+    entries = doc.querySelectorAll('InfoTable, INFOTABLE')
+  }
+
+  entries.forEach(entry => {
+    const name = (
+      entry.querySelector('nameOfIssuer')?.textContent ||
+      entry.querySelector('NAMEOFISSUER')?.textContent ||
+      ''
+    ).trim()
+
+    const sharesEl =
+      entry.querySelector('sshPrnamt') ||
+      entry.querySelector('SSHPRNAMT') ||
+      entry.querySelector('shrQty') ||
+      entry.querySelector('SHRQTY')
+    const shares = parseInt(sharesEl?.textContent || '0') || 0
+
+    const valueEl =
+      entry.querySelector('value') ||
+      entry.querySelector('VALUE')
+    const value = (parseInt(valueEl?.textContent || '0') || 0) * 1000
+
+    if (!name) return
+
+    if (map.has(name)) {
+      const e = map.get(name)!
+      map.set(name, { name, shares: e.shares + shares, value: e.value + value })
+    } else {
+      map.set(name, { name, shares, value })
+    }
+  })
+
+  return map
+}
+
+// 제출 목록에서 13F XML URL 찾기
+async function findXmlUrl(cikInt: number, accNum: string, primaryDoc: string): Promise<string> {
+  const baseUrl = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
+
+  // 1. filing-index 페이지에서 XML 찾기
+  try {
+    const idxRes = await fetch(proxy(`${baseUrl}/${primaryDoc}`))
+    const idxText = await idxRes.text()
+
+    // infotable xml
+    const m1 = idxText.match(/href="([^"]*infotable[^"]*\.xml)"/i)
+    if (m1) return m1[1].startsWith('http') ? m1[1] : `https://www.sec.gov${m1[1]}`
+
+    // 아무 xml
+    const m2 = idxText.match(/href="([^"]*\.xml)"/i)
+    if (m2) return m2[1].startsWith('http') ? m2[1] : `https://www.sec.gov${m2[1]}`
+  } catch {}
+
+  // 2. -index.htm 시도
+  try {
+    const indexHtm = `${baseUrl}/${accNum}-index.htm`
+    const idxRes = await fetch(proxy(indexHtm))
+    const idxText = await idxRes.text()
+    const m = idxText.match(/href="([^"]*\.xml)"/i)
+    if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+  } catch {}
+
+  // 3. form13fInfoTable.xml 직접 시도
+  return `${baseUrl}/form13fInfoTable.xml`
+}
+
 async function fetchLatest13F(cik: string): Promise<FilingData> {
   try {
     const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${cik}.json`))
@@ -65,7 +141,7 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const subData = await subRes.json()
 
     const filings = subData.filings?.recent
-    if (!filings) throw new Error('no filings')
+    if (!filings) throw new Error('no filings data')
 
     const forms: string[] = filings.form || []
     const dates: string[] = filings.reportDate || filings.filingDate || []
@@ -77,66 +153,33 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
       return acc
     }, [])
 
-    if (indices13f.length === 0) throw new Error('no 13F-HR found')
+    if (indices13f.length === 0) throw new Error('no 13F-HR filings found')
 
     const idx = indices13f[0]
-    const idxPrev = indices13f[1]
+    const idxPrev = indices13f.length > 1 ? indices13f[1] : undefined
     const period = dates[idx] || ''
     const accNum = accNums[idx].replace(/-/g, '')
     const cikInt = parseInt(cik)
-    const baseUrl = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
-    const idxPageRes = await fetch(proxy(`${baseUrl}/${primaryDocs[idx]}`))
-    const idxPageText = await idxPageRes.text()
-
-    const xmlMatch = idxPageText.match(/href="([^"]*infotable[^"]*\.xml)"/i)
-      || idxPageText.match(/href="([^"]*\.xml)"/i)
-    let xmlUrl = xmlMatch
-      ? (xmlMatch[1].startsWith('http') ? xmlMatch[1] : `https://www.sec.gov${xmlMatch[1]}`)
-      : `${baseUrl}/${primaryDocs[idx]}`
-
+    // 최신 XML
+    const xmlUrl = await findXmlUrl(cikInt, accNum, primaryDocs[idx])
     const xmlRes = await fetch(proxy(xmlUrl))
-    if (!xmlRes.ok) throw new Error('xml fetch failed')
+    if (!xmlRes.ok) throw new Error(`xml fetch failed: ${xmlUrl}`)
     const xmlText = await xmlRes.text()
 
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(xmlText, 'application/xml')
-    const entries = doc.querySelectorAll('infoTable')
-    if (entries.length === 0) throw new Error('no infoTable entries')
+    const holdingMap = parseInfoTable(xmlText)
+    if (holdingMap.size === 0) throw new Error('no holdings parsed from XML')
 
-    const holdingMap = new Map<string, Holding>()
-    entries.forEach(entry => {
-      const name = entry.querySelector('nameOfIssuer')?.textContent?.trim() || ''
-      const shares = parseInt(entry.querySelector('sshPrnamt, shrQty')?.textContent || '0')
-      const value = parseInt(entry.querySelector('value')?.textContent || '0') * 1000
-      if (holdingMap.has(name)) {
-        const e = holdingMap.get(name)!
-        holdingMap.set(name, { name, shares: e.shares + shares, value: e.value + value })
-      } else {
-        holdingMap.set(name, { name, shares, value })
-      }
-    })
-
+    // 이전 분기
     const prevMap = new Map<string, number>()
     if (idxPrev !== undefined) {
       try {
         const prevAccNum = accNums[idxPrev].replace(/-/g, '')
-        const prevBase = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${prevAccNum}`
-        const prevIdxRes = await fetch(proxy(`${prevBase}/${primaryDocs[idxPrev]}`))
-        const prevIdxText = await prevIdxRes.text()
-        const prevXmlMatch = prevIdxText.match(/href="([^"]*infotable[^"]*\.xml)"/i)
-          || prevIdxText.match(/href="([^"]*\.xml)"/i)
-        const prevXmlUrl = prevXmlMatch
-          ? (prevXmlMatch[1].startsWith('http') ? prevXmlMatch[1] : `https://www.sec.gov${prevXmlMatch[1]}`)
-          : `${prevBase}/${primaryDocs[idxPrev]}`
+        const prevXmlUrl = await findXmlUrl(cikInt, prevAccNum, primaryDocs[idxPrev])
         const prevXmlRes = await fetch(proxy(prevXmlUrl))
         const prevXmlText = await prevXmlRes.text()
-        const prevDoc = parser.parseFromString(prevXmlText, 'application/xml')
-        prevDoc.querySelectorAll('infoTable').forEach(entry => {
-          const name = entry.querySelector('nameOfIssuer')?.textContent?.trim() || ''
-          const shares = parseInt(entry.querySelector('sshPrnamt, shrQty')?.textContent || '0')
-          prevMap.set(name, (prevMap.get(name) || 0) + shares)
-        })
+        const pm = parseInfoTable(prevXmlText)
+        pm.forEach((h, name) => prevMap.set(name, h.shares))
       } catch {}
     }
 
@@ -249,6 +292,7 @@ export default function Form13F() {
               ) : current.error ? (
                 <div style={{ padding: '32px', border: '1px solid #e8e8e8', borderRadius: '4px' }}>
                   <p style={{ fontSize: '14px', color: '#aaa', marginBottom: '16px' }}>데이터를 불러오지 못했습니다.</p>
+                  <p style={{ fontSize: '12px', color: '#ccc', marginBottom: '16px' }}>{current.error}</p>
                   <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                     <div className="edgar-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#000', borderBottom: '1px solid #000', paddingBottom: '2px', cursor: 'pointer' }}>
                       SEC EDGAR에서 직접 보기 ↗
