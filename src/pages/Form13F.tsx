@@ -162,12 +162,6 @@ async function getXmlUrl(cikInt: number, accNum: string): Promise<string> {
     if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
   } catch {}
 
-  // primary doc 파싱
-  try {
-    const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${String(cikInt).padStart(10, '0')}.json`))
-    // already have this data from caller, skip
-  } catch {}
-
   // 일반적인 파일명들 시도
   const candidates = [
     'form13fInfoTable.xml',
