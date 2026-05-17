@@ -160,15 +160,20 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
 async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
-  // 1. index.htm에서 파일 목록 파싱 — 테이블 행에서 .xml 찾기
+  const resolveUrl = (href: string): string => {
+    if (href.startsWith('http')) return href
+    if (href.startsWith('/')) return `https://www.sec.gov${href}`
+    return `${base}/${href}` // 상대경로 처리
+  }
+
+  // 1. index.htm에서 XML 링크 파싱
   try {
     const idxRes = await fetch(proxy(`${base}/${accNum}-index.htm`))
     if (idxRes.ok) {
       const idxText = await idxRes.text()
-      // 모든 .xml href 수집
       const allXmlLinks = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
-        .map(m => m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`)
-        .filter(url => !url.includes('primary_doc')) // primary_doc.xml 제외
+        .map(m => resolveUrl(m[1]))
+        .filter(url => !url.includes('primary_doc'))
 
       for (const xmlUrl of allXmlLinks) {
         try {
@@ -188,7 +193,7 @@ async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): 
     if (res.ok) {
       const text = await res.text()
       const allXmlLinks = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
-        .map(m => m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`)
+        .map(m => resolveUrl(m[1]))
         .filter(url => !url.includes('primary_doc'))
       for (const xmlUrl of allXmlLinks) {
         try {
@@ -362,8 +367,8 @@ export default function Form13F() {
                         <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>#</th>
                         <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Stock</th>
                         <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>% of Portfolio</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>보유 주수</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>시장가치</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Shares</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Market Value</th>
                         <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Last Transaction</th>
                       </tr>
                     </thead>
