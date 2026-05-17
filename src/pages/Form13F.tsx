@@ -141,6 +141,11 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
     const name = (entry.querySelector('nameOfIssuer, NAMEOFISSUER')?.textContent || '').trim()
     const shares = parseInt(entry.querySelector('sshPrnamt, SSHPRNAMT, shrQty, SHRQTY')?.textContent || '0') || 0
     const value = (parseInt(entry.querySelector('value, VALUE')?.textContent || '0') || 0) * 1000
+
+    // 옵션(Put/Call) 제외 — 순수 주식(SH)만 포함
+    const putCall = entry.querySelector('putCall, PUTCALL')?.textContent?.trim() || ''
+    if (putCall === 'Put' || putCall === 'Call') return
+
     if (!name) return
     if (map.has(name)) {
       const e = map.get(name)!
@@ -155,27 +160,17 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
 async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
-  // 1. index.htm에서 INFORMATION TABLE 타입 XML 우선 탐색
+  // 1. index.htm에서 파일 목록 파싱 — 테이블 행에서 .xml 찾기
   try {
     const idxRes = await fetch(proxy(`${base}/${accNum}-index.htm`))
     if (idxRes.ok) {
       const idxText = await idxRes.text()
-      // "INFORMATION TABLE" 행에서 .xml 링크 찾기
-      const infoTableMatch = idxText.match(/INFORMATION TABLE[^<]*<[^>]*>[^<]*<[^>]*href="([^"]*\.xml)"/i)
-        || idxText.match(/href="([^"]*\.xml)"[^>]*>[^<]*<\/[^>]*>[^<]*INFORMATION TABLE/i)
-      if (infoTableMatch) {
-        const xmlUrl = infoTableMatch[1].startsWith('http') ? infoTableMatch[1] : `https://www.sec.gov${infoTableMatch[1]}`
-        const xmlRes = await fetch(proxy(xmlUrl))
-        if (xmlRes.ok) {
-          const map = parseInfoTable(await xmlRes.text())
-          if (map.size > 0) return map
-        }
-      }
-      // INFORMATION TABLE 못 찾으면 모든 .xml 링크 시도
-      const allXml = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
-      for (const m of allXml) {
-        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
-        if (xmlUrl.includes('primary_doc')) continue // primary_doc.xml은 메타데이터라 스킵
+      // 모든 .xml href 수집
+      const allXmlLinks = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
+        .map(m => m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`)
+        .filter(url => !url.includes('primary_doc')) // primary_doc.xml 제외
+
+      for (const xmlUrl of allXmlLinks) {
         try {
           const xmlRes = await fetch(proxy(xmlUrl))
           if (xmlRes.ok) {
@@ -192,10 +187,10 @@ async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): 
     const res = await fetch(proxy(`${base}/${primaryDoc}`))
     if (res.ok) {
       const text = await res.text()
-      const matches = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
-      for (const m of matches) {
-        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
-        if (xmlUrl.includes('primary_doc')) continue
+      const allXmlLinks = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
+        .map(m => m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`)
+        .filter(url => !url.includes('primary_doc'))
+      for (const xmlUrl of allXmlLinks) {
         try {
           const xmlRes = await fetch(proxy(xmlUrl))
           if (xmlRes.ok) {
@@ -208,8 +203,7 @@ async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): 
   } catch {}
 
   // 3. 일반적인 파일명 직접 시도
-  const candidates = ['form13fInfoTable.xml', 'infotable.xml', 'information_table.xml']
-  for (const name of candidates) {
+  for (const name of ['form13fInfoTable.xml', 'infotable.xml', 'information_table.xml']) {
     try {
       const res = await fetch(proxy(`${base}/${name}`))
       if (res.ok) {
