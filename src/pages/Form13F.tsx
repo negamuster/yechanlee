@@ -80,11 +80,10 @@ function LastTransactionTag({ curr, prev }: { curr: number; prev?: number }) {
 function DonutChart({ holdings }: { holdings: Holding[] }) {
   const top10 = holdings.slice(0, 10)
   const total = holdings.reduce((s, h) => s + h.value, 0)
-  const top10Total = top10.reduce((s, h) => s + h.value, 0)
   const R = 80, r = 52, cx = 100, cy = 100
   let angle = -Math.PI / 2
   const slices = top10.map((h, i) => {
-    const pct = h.value / top10Total
+    const pct = h.value / total  // 전체 기준 비율
     const start = angle; angle += pct * 2 * Math.PI; const end = angle
     const x1 = cx + R * Math.cos(start), y1 = cy + R * Math.sin(start)
     const x2 = cx + R * Math.cos(end), y2 = cy + R * Math.sin(end)
@@ -94,11 +93,26 @@ function DonutChart({ holdings }: { holdings: Holding[] }) {
     const d = `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`
     return { d, color: COLORS[i], name: h.name, pct: Math.round(h.value / total * 1000) / 10 }
   })
+  // 나머지 비율
+  const othersStart = angle
+  angle = Math.PI * 1.5  // 360도 마감
+  const othersPct = 1 - top10.reduce((s, h) => s + h.value / total, 0)
+
   return (
     <div style={{ display: 'flex', gap: '40px', alignItems: 'center', marginBottom: '40px' }}>
       <div style={{ flexShrink: 0 }}>
         <svg viewBox="0 0 200 200" style={{ width: '180px' }}>
           {slices.map((s, i) => <path key={i} d={s.d} fill={s.color} stroke="#fff" strokeWidth="2" />)}
+          {othersPct > 0.005 && (() => {
+            const start2 = othersStart
+            const end2 = start2 + othersPct * 2 * Math.PI
+            const x1 = cx + R * Math.cos(start2), y1 = cy + R * Math.sin(start2)
+            const x2 = cx + R * Math.cos(end2), y2 = cy + R * Math.sin(end2)
+            const ix1 = cx + r * Math.cos(end2), iy1 = cy + r * Math.sin(end2)
+            const ix2 = cx + r * Math.cos(start2), iy2 = cy + r * Math.sin(start2)
+            const large = othersPct > 0.5 ? 1 : 0
+            return <path d={`M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`} fill="#e8e8e8" stroke="#fff" strokeWidth="2" />
+          })()}
           <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000" fontFamily='"Times New Roman",serif' fontWeight="500">{formatValue(total)}</text>
           <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">Total value</text>
         </svg>
@@ -108,7 +122,7 @@ function DonutChart({ holdings }: { holdings: Holding[] }) {
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: s.color, flexShrink: 0 }} />
             <span style={{ fontSize: '12px', color: '#333', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getTicker(s.name)}</span>
-            <span style={{ fontSize: '12px', color: '#aaa' }}>{s.pct}%</span>
+            <span style={{ fontSize: '12px', color: '#aaa', minWidth: '36px', textAlign: 'right' }}>{s.pct}%</span>
           </div>
         ))}
       </div>
@@ -140,42 +154,52 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
 
 async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
-  const errors: string[] = []
 
-  // 1. primary doc에서 XML 링크 파싱
+  // 1. index.htm에서 INFORMATION TABLE 타입 XML 우선 탐색
+  try {
+    const idxRes = await fetch(proxy(`${base}/${accNum}-index.htm`))
+    if (idxRes.ok) {
+      const idxText = await idxRes.text()
+      // "INFORMATION TABLE" 행에서 .xml 링크 찾기
+      const infoTableMatch = idxText.match(/INFORMATION TABLE[^<]*<[^>]*>[^<]*<[^>]*href="([^"]*\.xml)"/i)
+        || idxText.match(/href="([^"]*\.xml)"[^>]*>[^<]*<\/[^>]*>[^<]*INFORMATION TABLE/i)
+      if (infoTableMatch) {
+        const xmlUrl = infoTableMatch[1].startsWith('http') ? infoTableMatch[1] : `https://www.sec.gov${infoTableMatch[1]}`
+        const xmlRes = await fetch(proxy(xmlUrl))
+        if (xmlRes.ok) {
+          const map = parseInfoTable(await xmlRes.text())
+          if (map.size > 0) return map
+        }
+      }
+      // INFORMATION TABLE 못 찾으면 모든 .xml 링크 시도
+      const allXml = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
+      for (const m of allXml) {
+        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+        if (xmlUrl.includes('primary_doc')) continue // primary_doc.xml은 메타데이터라 스킵
+        try {
+          const xmlRes = await fetch(proxy(xmlUrl))
+          if (xmlRes.ok) {
+            const map = parseInfoTable(await xmlRes.text())
+            if (map.size > 0) return map
+          }
+        } catch {}
+      }
+    }
+  } catch {}
+
+  // 2. primary doc에서 XML 링크 파싱
   try {
     const res = await fetch(proxy(`${base}/${primaryDoc}`))
     if (res.ok) {
       const text = await res.text()
-      // XML 링크들 전부 찾기
       const matches = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
       for (const m of matches) {
         const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+        if (xmlUrl.includes('primary_doc')) continue
         try {
           const xmlRes = await fetch(proxy(xmlUrl))
           if (xmlRes.ok) {
-            const xmlText = await xmlRes.text()
-            const map = parseInfoTable(xmlText)
-            if (map.size > 0) return map
-          }
-        } catch (e: any) { errors.push(e.message) }
-      }
-    }
-  } catch (e: any) { errors.push(e.message) }
-
-  // 2. index.htm 에서 XML 링크 파싱
-  try {
-    const res = await fetch(proxy(`${base}/${accNum}-index.htm`))
-    if (res.ok) {
-      const text = await res.text()
-      const matches = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
-      for (const m of matches) {
-        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
-        try {
-          const xmlRes = await fetch(proxy(xmlUrl))
-          if (xmlRes.ok) {
-            const xmlText = await xmlRes.text()
-            const map = parseInfoTable(xmlText)
+            const map = parseInfoTable(await xmlRes.text())
             if (map.size > 0) return map
           }
         } catch {}
@@ -184,13 +208,12 @@ async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): 
   } catch {}
 
   // 3. 일반적인 파일명 직접 시도
-  const candidates = ['form13fInfoTable.xml', 'infotable.xml', 'primary_doc.xml', 'information_table.xml']
+  const candidates = ['form13fInfoTable.xml', 'infotable.xml', 'information_table.xml']
   for (const name of candidates) {
     try {
       const res = await fetch(proxy(`${base}/${name}`))
       if (res.ok) {
-        const text = await res.text()
-        const map = parseInfoTable(text)
+        const map = parseInfoTable(await res.text())
         if (map.size > 0) return map
       }
     } catch {}
@@ -331,19 +354,30 @@ export default function Form13F() {
                   <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'16px' }}>Top 10 Holdings</p>
                   <DonutChart holdings={current.holdings} />
 
-                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'14px' }}>
+                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
+                    <colgroup>
+                      <col style={{ width: '32px' }} />
+                      <col style={{ width: 'auto' }} />
+                      <col style={{ width: '120px' }} />
+                      <col style={{ width: '100px' }} />
+                      <col style={{ width: '110px' }} />
+                      <col style={{ width: '140px' }} />
+                    </colgroup>
                     <thead>
                       <tr style={{ borderBottom:'1px solid #e8e8e8' }}>
-                        {['#','Stock','% of Portfolio','보유 주수','시장가치','Last Transaction'].map((h,i) => (
-                          <th key={i} style={{ textAlign:i<=1?'left':'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', ...(i===0?{width:'32px'}:{}) }}>{h}</th>
-                        ))}
+                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>#</th>
+                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Stock</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>% of Portfolio</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>보유 주수</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>시장가치</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Last Transaction</th>
                       </tr>
                     </thead>
                     <tbody>
                       {current.holdings.map((h,i) => (
                         <tr key={i} className="table-row" style={{ borderBottom:'1px solid #f4f4f4' }}>
                           <td style={{ padding:'12px 0', color:'#bbb', fontSize:'12px' }}>{i+1}</td>
-                          <td style={{ padding:'12px 0', color:'#000' }}>{getTicker(h.name)}</td>
+                          <td style={{ padding:'12px 0', color:'#000', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getTicker(h.name)}</td>
                           <td style={{ padding:'12px 0', textAlign:'right', color:'#555' }}>{h.pct}%</td>
                           <td style={{ padding:'12px 0', textAlign:'right', color:'#555', fontVariantNumeric:'tabular-nums' }}>{formatShares(h.shares)}</td>
                           <td style={{ padding:'12px 0', textAlign:'right', color:'#000', fontVariantNumeric:'tabular-nums' }}>{formatValue(h.value)}</td>
