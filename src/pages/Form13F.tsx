@@ -14,7 +14,6 @@ const MANAGERS = [
 
 const COLORS = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#06B6D4','#F97316','#84CC16','#6366F1']
 
-// 종목명 → 티커 매핑
 const NAME_TO_TICKER: Record<string, string> = {
   'APPLE INC': 'AAPL', 'MICROSOFT CORP': 'MSFT', 'NVIDIA CORPORATION': 'NVDA',
   'NVIDIA CORP': 'NVDA', 'AMAZON COM INC': 'AMZN', 'ALPHABET INC': 'GOOGL',
@@ -29,41 +28,29 @@ const NAME_TO_TICKER: Record<string, string> = {
   'ADVANCED MICRO DEVICES INC': 'AMD', 'QUALCOMM INC': 'QCOM', 'INTEL CORP': 'INTC',
   'AMERICAN EXPRESS CO': 'AXP', 'WELLS FARGO & CO': 'WFC', 'MORGAN STANLEY': 'MS',
   'GOLDMAN SACHS GROUP INC': 'GS', 'CITIGROUP INC': 'C', 'T MOBILE US INC': 'TMUS',
-  'VERIZON COMMUNICATIONS INC': 'VZ', 'AT&T INC': 'T', 'BOEING CO': 'BA',
-  'CATERPILLAR INC': 'CAT', 'DEERE & CO': 'DE', 'UNION PACIFIC CORP': 'UNP',
+  'VERIZON COMMUNICATIONS INC': 'VZ', 'BOEING CO': 'BA', 'CATERPILLAR INC': 'CAT',
   'PALANTIR TECHNOLOGIES INC': 'PLTR', 'COINBASE GLOBAL INC': 'COIN',
-  'ROKU INC': 'ROKU', 'ROBLOX CORP': 'RBLX', 'UIPATH INC': 'PATH',
-  'SPOTIFY TECHNOLOGY SA': 'SPOT', 'BLOCK INC': 'SQ', 'TWILIO INC': 'TWLO',
-  'ZOOM VIDEO COMMUNICATIONS': 'ZM', 'SHOPIFY INC': 'SHOP',
+  'ROKU INC': 'ROKU', 'ROBLOX CORP': 'RBLX', 'BLOCK INC': 'SQ',
   'MOLINA HEALTHCARE INC': 'MOH', 'LULULEMON ATHLETICA INC': 'LULU',
   'ALIBABA GROUP HOLDING LTD': 'BABA', 'BAIDU INC': 'BIDU',
-  'ISHARES TR': 'iShares', 'SPDR S&P 500 ETF': 'SPY', 'VANGUARD': 'VG-ETF',
+  'AMERICAN INTERNATIONAL GROUP': 'AIG', 'CHUBB LTD': 'CB',
+  'INTERACTIVE BROKERS GROUP': 'IBKR', 'BANK OF NEW YORK MELLON': 'BK',
+  'CHARLES SCHWAB CORP': 'SCHW', 'BLACKROCK INC': 'BLK',
 }
 
 function getTicker(name: string): string {
   const upper = name.toUpperCase().trim()
   for (const [key, ticker] of Object.entries(NAME_TO_TICKER)) {
-    if (upper.includes(key) || key.includes(upper)) return ticker
+    if (upper === key || upper.startsWith(key)) return ticker
   }
-  // 단어 4개 이상이면 약어로
-  const words = name.trim().split(/\s+/)
-  if (words.length >= 3) return name
   return name
 }
 
 interface Holding {
-  name: string
-  shares: number
-  value: number
-  prevShares?: number
-  pct?: number
+  name: string; shares: number; value: number; prevShares?: number; pct?: number
 }
-
 interface FilingData {
-  period: string
-  holdings: Holding[]
-  loading: boolean
-  error: string | null
+  period: string; holdings: Holding[]; loading: boolean; error: string | null
 }
 
 const proxy = (url: string) => `/api/sec-proxy?url=${encodeURIComponent(url)}`
@@ -98,9 +85,7 @@ function DonutChart({ holdings }: { holdings: Holding[] }) {
   let angle = -Math.PI / 2
   const slices = top10.map((h, i) => {
     const pct = h.value / top10Total
-    const start = angle
-    angle += pct * 2 * Math.PI
-    const end = angle
+    const start = angle; angle += pct * 2 * Math.PI; const end = angle
     const x1 = cx + R * Math.cos(start), y1 = cy + R * Math.sin(start)
     const x2 = cx + R * Math.cos(end), y2 = cy + R * Math.sin(end)
     const ix1 = cx + r * Math.cos(end), iy1 = cy + r * Math.sin(end)
@@ -114,7 +99,7 @@ function DonutChart({ holdings }: { holdings: Holding[] }) {
       <div style={{ flexShrink: 0 }}>
         <svg viewBox="0 0 200 200" style={{ width: '180px' }}>
           {slices.map((s, i) => <path key={i} d={s.d} fill={s.color} stroke="#fff" strokeWidth="2" />)}
-          <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000" fontFamily='"Times New Roman",serif' fontWeight="500">{formatValue(holdings.reduce((s,h)=>s+h.value,0))}</text>
+          <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000" fontFamily='"Times New Roman",serif' fontWeight="500">{formatValue(total)}</text>
           <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">Total value</text>
         </svg>
       </div>
@@ -153,53 +138,65 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
   return map
 }
 
-async function findXmlInFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<string | null> {
+async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
+  const errors: string[] = []
 
-  // 1. filing-index.json으로 실제 파일 목록 확인
+  // 1. primary doc에서 XML 링크 파싱
   try {
-    const res = await fetch(proxy(`${base}/${accNum}-index.json`))
+    const res = await fetch(proxy(`${base}/${primaryDoc}`))
     if (res.ok) {
-      const data = await res.json()
-      const items: any[] = data.directory?.item || []
-      const xml = items.find((f: any) => f.type === 'XML' || (f.name && f.name.toLowerCase().endsWith('.xml') && (
-        f.name.toLowerCase().includes('info') || f.name.toLowerCase().includes('13f') || f.name.toLowerCase().includes('primary')
-      ))) || items.find((f: any) => f.name && f.name.toLowerCase().endsWith('.xml') && !f.name.toLowerCase().includes('primary'))
-      if (xml?.name) return `${base}/${xml.name}`
+      const text = await res.text()
+      // XML 링크들 전부 찾기
+      const matches = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
+      for (const m of matches) {
+        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+        try {
+          const xmlRes = await fetch(proxy(xmlUrl))
+          if (xmlRes.ok) {
+            const xmlText = await xmlRes.text()
+            const map = parseInfoTable(xmlText)
+            if (map.size > 0) return map
+          }
+        } catch (e: any) { errors.push(e.message) }
+      }
+    }
+  } catch (e: any) { errors.push(e.message) }
+
+  // 2. index.htm 에서 XML 링크 파싱
+  try {
+    const res = await fetch(proxy(`${base}/${accNum}-index.htm`))
+    if (res.ok) {
+      const text = await res.text()
+      const matches = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
+      for (const m of matches) {
+        const xmlUrl = m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
+        try {
+          const xmlRes = await fetch(proxy(xmlUrl))
+          if (xmlRes.ok) {
+            const xmlText = await xmlRes.text()
+            const map = parseInfoTable(xmlText)
+            if (map.size > 0) return map
+          }
+        } catch {}
+      }
     }
   } catch {}
 
-  // 2. primary doc HTML에서 XML 링크 파싱
-  try {
-    const res = await fetch(proxy(`${base}/${primaryDoc}`))
-    const text = await res.text()
-    const m = text.match(/href="([^"]*infotable[^"]*\.xml)"/i)
-      || text.match(/href="([^"]*13f[^"]*\.xml)"/i)
-      || text.match(/href="([^"]*table[^"]*\.xml)"/i)
-      || text.match(/href="([^"]*\.xml)"/i)
-    if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
-  } catch {}
+  // 3. 일반적인 파일명 직접 시도
+  const candidates = ['form13fInfoTable.xml', 'infotable.xml', 'primary_doc.xml', 'information_table.xml']
+  for (const name of candidates) {
+    try {
+      const res = await fetch(proxy(`${base}/${name}`))
+      if (res.ok) {
+        const text = await res.text()
+        const map = parseInfoTable(text)
+        if (map.size > 0) return map
+      }
+    } catch {}
+  }
 
-  // 3. index.htm
-  try {
-    const res = await fetch(proxy(`${base}/${accNum}-index.htm`))
-    const text = await res.text()
-    const m = text.match(/href="([^"]*\.xml)"/i)
-    if (m) return m[1].startsWith('http') ? m[1] : `https://www.sec.gov${m[1]}`
-  } catch {}
-
-  return null
-}
-
-async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
-  const xmlUrl = await findXmlInFiling(cikInt, accNum, primaryDoc)
-  if (!xmlUrl) throw new Error('XML URL not found')
-  const res = await fetch(proxy(xmlUrl))
-  if (!res.ok) throw new Error(`xml fetch failed: ${xmlUrl}`)
-  const text = await res.text()
-  const map = parseInfoTable(text)
-  if (map.size === 0) throw new Error('no holdings parsed')
-  return map
+  throw new Error(`XML not found for accession ${accNum}`)
 }
 
 async function fetchLatest13F(cik: string): Promise<FilingData> {
@@ -266,14 +263,15 @@ export default function Form13F() {
   return (
     <>
       <style>{`
-        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-        .page-title { opacity:0; animation:slideUp 0.7s ease forwards 0.1s; }
-        .page-desc  { opacity:0; animation:slideUp 0.7s ease forwards 0.3s; }
-        .page-section { opacity:0; animation:slideUp 0.7s ease forwards 0.5s; }
-        .mgr-btn { transition:all 0.15s ease; cursor:pointer; }
-        .mgr-btn:hover { background:#f5f5f5 !important; }
-        .table-row:hover { background:#fafafa; }
-        .edgar-link:hover { opacity:0.4; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);} }
+        .page-title{opacity:0;animation:slideUp 0.7s ease forwards 0.1s;}
+        .page-desc{opacity:0;animation:slideUp 0.7s ease forwards 0.3s;}
+        .page-section{opacity:0;animation:slideUp 0.7s ease forwards 0.5s;}
+        .mgr-btn{transition:all 0.15s ease;cursor:pointer;}
+        .mgr-btn:hover{background:#f5f5f5 !important;}
+        .table-row:hover{background:#fafafa;}
+        .edgar-link{transition:opacity 0.15s;}
+        .edgar-link:hover{opacity:0.4;}
       `}</style>
 
       <div style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'"Times New Roman",Times,serif', color:'#000' }}>
@@ -292,16 +290,16 @@ export default function Form13F() {
             {['최대 45일 지연 - 공시 시점과 실제 보유 시점에 차이가 있습니다.',
               '미국 상장 주식 중심 - 현금, 채권, 공매도(Short), 비상장 투자, 해외 주식 상당수는 포함되지 않습니다.',
               '복사 매매 주의 - 공시 데이터만으로 투자 결정을 내리는 것은 위험할 수 있습니다.',
-            ].map((t, i) => <p key={i} style={{ fontSize:'14px', color:'#666', lineHeight:'1.6' }}>{t}</p>)}
+            ].map((t,i) => <p key={i} style={{ fontSize:'14px', color:'#666', lineHeight:'1.6' }}>{t}</p>)}
           </div>
 
           <div className="page-section" style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:'48px', alignItems:'start' }}>
             <div style={{ borderRight:'1px solid #e8e8e8', paddingRight:'40px' }}>
               <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'20px' }}>Investors</p>
-              {MANAGERS.map((m, i) => (
+              {MANAGERS.map((m,i) => (
                 <div key={i} className="mgr-btn" onClick={() => setSelectedIdx(i)}
-                  style={{ padding:'16px 18px', borderRadius:'4px', marginBottom:'4px', background: selectedIdx===i ? '#f5f5f5' : 'transparent', borderLeft: selectedIdx===i ? '2px solid #000' : '2px solid transparent' }}>
-                  <p style={{ fontSize:'15px', fontWeight: selectedIdx===i ? '500' : '400', color:'#000', marginBottom:'3px' }}>{m.name}</p>
+                  style={{ padding:'16px 18px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
+                  <p style={{ fontSize:'15px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'3px' }}>{m.name}</p>
                   <p style={{ fontSize:'12px', color:'#aaa' }}>{m.firm}</p>
                 </div>
               ))}
@@ -323,7 +321,7 @@ export default function Form13F() {
                   <p style={{ fontSize:'14px', color:'#aaa', marginBottom:'8px' }}>데이터를 불러오지 못했습니다.</p>
                   <p style={{ fontSize:'12px', color:'#ccc', marginBottom:'16px' }}>{current.error}</p>
                   <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none' }}>
-                    <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer', transition:'opacity 0.15s' }}>
+                    <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer' }}>
                       SEC EDGAR에서 직접 보기 ↗
                     </div>
                   </a>
@@ -337,12 +335,12 @@ export default function Form13F() {
                     <thead>
                       <tr style={{ borderBottom:'1px solid #e8e8e8' }}>
                         {['#','Stock','% of Portfolio','보유 주수','시장가치','Last Transaction'].map((h,i) => (
-                          <th key={i} style={{ textAlign: i<=1 ? 'left' : 'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', ...(i===0?{width:'32px'}:{}) }}>{h}</th>
+                          <th key={i} style={{ textAlign:i<=1?'left':'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase', ...(i===0?{width:'32px'}:{}) }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {current.holdings.map((h, i) => (
+                      {current.holdings.map((h,i) => (
                         <tr key={i} className="table-row" style={{ borderBottom:'1px solid #f4f4f4' }}>
                           <td style={{ padding:'12px 0', color:'#bbb', fontSize:'12px' }}>{i+1}</td>
                           <td style={{ padding:'12px 0', color:'#000' }}>{getTicker(h.name)}</td>
@@ -357,7 +355,7 @@ export default function Form13F() {
 
                   <div style={{ marginTop:'32px' }}>
                     <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${manager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none' }}>
-                      <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer', transition:'opacity 0.15s' }}>
+                      <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer' }}>
                         SEC EDGAR 원본 공시 보기 ↗
                       </div>
                     </a>
