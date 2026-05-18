@@ -56,8 +56,9 @@ interface FilingData {
 const proxy = (url: string) => `/api/sec-proxy?url=${encodeURIComponent(url)}`
 
 function formatValue(v: number): string {
-  if (v >= 1_000_000_000) return '$' + Math.round(v / 1_000_000_000).toLocaleString() + 'B'
-  if (v >= 1_000_000) return '$' + Math.round(v / 1_000_000).toLocaleString() + 'M'
+  if (v >= 1_000_000_000_000) return '$' + Math.round(v / 1_000_000_000_000).toLocaleString() + 'T'
+  if (v >= 1_000_000_000) return '$' + (v / 1_000_000_000).toFixed(1) + 'B'
+  if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(1) + 'M'
   if (v >= 1_000) return '$' + Math.round(v / 1_000).toLocaleString() + 'K'
   return '$' + Math.round(v).toLocaleString()
 }
@@ -367,12 +368,12 @@ export default function Form13F() {
                     </colgroup>
                     <thead>
                       <tr style={{ borderBottom:'1px solid #e8e8e8' }}>
-                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>#</th>
-                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Stock</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>% of Portfolio</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Shares</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Market Value</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em', textTransform:'uppercase' }}>Last Transaction</th>
+                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>#</th>
+                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>Stock</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>% of Portfolio</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>Shares</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>Market Value</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px', letterSpacing:'0.1em' }}>Last Transaction</th>
                       </tr>
                     </thead>
                     <tbody>
