@@ -141,7 +141,7 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
   entries.forEach(entry => {
     const name = (entry.querySelector('nameOfIssuer, NAMEOFISSUER')?.textContent || '').trim()
     const shares = parseInt(entry.querySelector('sshPrnamt, SSHPRNAMT, shrQty, SHRQTY')?.textContent || '0') || 0
-    const value = (parseInt(entry.querySelector('value, VALUE')?.textContent || '0') || 0) * 1000
+    const value = parseInt(entry.querySelector('value, VALUE')?.textContent || '0') || 0
 
     // 옵션(Put/Call) 제외 — 순수 주식(SH)만 포함
     const putCall = entry.querySelector('putCall, PUTCALL')?.textContent?.trim() || ''
