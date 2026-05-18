@@ -160,15 +160,18 @@ function parseInfoTable(xmlText: string): Map<string, Holding> {
 async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
   const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
 
+  // accNum(대시 없음)을 대시 형식으로 변환: 0001193125-26-226661
+  const accNumDashed = accNum.replace(/(\d{10})(\d{2})(\d{6})/, '$1-$2-$3')
+
   const resolveUrl = (href: string): string => {
     if (href.startsWith('http')) return href
     if (href.startsWith('/')) return `https://www.sec.gov${href}`
-    return `${base}/${href}` // 상대경로 처리
+    return `${base}/${href}`
   }
 
   // 1. index.htm에서 XML 링크 파싱
   try {
-    const idxRes = await fetch(proxy(`${base}/${accNum}-index.htm`))
+    const idxRes = await fetch(proxy(`${base}/${accNumDashed}-index.htm`))
     if (idxRes.ok) {
       const idxText = await idxRes.text()
       const allXmlLinks = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
