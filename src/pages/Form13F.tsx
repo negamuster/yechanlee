@@ -279,24 +279,37 @@ export default function Form13F() {
   const [managers, setManagers] = useState<Manager[]>(INITIAL_MANAGERS)
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [cache, setCache] = useState<Record<string, FilingData>>({})
+  const [initialLoadDone, setInitialLoadDone] = useState(false)
 
   const selectedManager = managers[selectedIdx]
 
+  // 최초 진입 시 전체 기관 totalValue 로드 → 정렬 고정
   useEffect(() => {
-    const cik = selectedManager.cik
-    if (cache[cik]) return
-    setCache(prev => ({ ...prev, [cik]: { period:'', holdings:[], loading:true, error:null, totalValue:0 } }))
-    fetchLatest13F(cik).then(data => {
-      setCache(prev => ({ ...prev, [cik]: data }))
-      // totalValue 업데이트 후 정렬
-      setManagers(prev => {
-        const updated = prev.map(m => m.cik === cik ? { ...m, totalValue: data.totalValue } : m)
-        return [...updated].sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0))
-      })
-    })
-  }, [selectedIdx])
+    if (initialLoadDone) return
+    setInitialLoadDone(true)
 
-  const current = cache[selectedManager.cik]
+    const loadAll = async () => {
+      const results = await Promise.allSettled(
+        INITIAL_MANAGERS.map(m => fetchLatest13F(m.cik))
+      )
+      const newCache: Record<string, FilingData> = {}
+      const updated = INITIAL_MANAGERS.map((m, i) => {
+        const result = results[i]
+        const data = result.status === 'fulfilled' ? result.value : { period:'', holdings:[], loading:false, error:'failed', totalValue:0 }
+        newCache[m.cik] = data
+        return { ...m, totalValue: data.totalValue }
+      })
+      const sorted = [...updated].sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0))
+      setCache(newCache)
+      setManagers(sorted)
+      // 선택된 항목도 정렬 후 인덱스 유지 (첫 번째로)
+      setSelectedIdx(0)
+    }
+
+    loadAll()
+  }, [])
+
+  const current = cache[selectedManager?.cik]
 
   return (
     <>
@@ -340,7 +353,7 @@ export default function Form13F() {
                   style={{ padding:'14px 16px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
                     <p style={{ fontSize:'14px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'2px' }}>
-                      {m.name}({m.nameKo})
+                      {m.name} ({m.nameKo})
                     </p>
                     {cache[m.cik]?.totalValue ? (
                       <span style={{ fontSize:'11px', color:'#aaa', flexShrink:0, marginLeft:'8px' }}>{formatValue(cache[m.cik].totalValue)}</span>
