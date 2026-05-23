@@ -244,6 +244,7 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const subData = await subRes.json()
     if (!subData.filings) throw new Error('no filings data')
 
+    // recent에서 먼저 탐색
     let forms: string[] = subData.filings.recent?.form || []
     let dates: string[] = subData.filings.recent?.reportDate || subData.filings.recent?.filingDate || []
     let accNums: string[] = subData.filings.recent?.accessionNumber || []
@@ -273,6 +274,7 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     }
 
     if (indices13f.length === 0) throw new Error('no 13F-HR filings found')
+
     const idx = indices13f[0]
     const idxPrev = indices13f.length > 1 ? indices13f[1] : undefined
     const period = dates[idx] || ''
@@ -326,7 +328,6 @@ export default function Form13F() {
       const sorted = [...updated].sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0))
       setCache(newCache)
       setManagers(sorted)
-      // 선택된 항목도 정렬 후 인덱스 유지 (첫 번째로)
       setSelectedIdx(0)
       setLoadingAll(false)
     }
@@ -340,6 +341,7 @@ export default function Form13F() {
     <>
       <style>{`
         @keyframes slideUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);} }
+        @keyframes spin { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
         .page-title{opacity:0;animation:slideUp 0.7s ease forwards 0.1s;}
         .page-desc{opacity:0;animation:slideUp 0.7s ease forwards 0.3s;}
         .page-section{opacity:0;animation:slideUp 0.7s ease forwards 0.5s;}
@@ -370,16 +372,28 @@ export default function Form13F() {
           </div>
 
           <div className="page-section" style={{ display:'grid', gridTemplateColumns:'300px 1fr', gap:'48px', alignItems:'start' }}>
+
             {/* 왼쪽 */}
             <div style={{ borderRight:'1px solid #e8e8e8', paddingRight:'40px' }}>
               <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'20px' }}>Investors</p>
+
               {loadingAll ? (
-                Array.from({ length: 14 }).map((_, i) => (
-                  <div key={i} style={{ padding:'14px 16px', marginBottom:'4px' }}>
-                    <div style={{ height:'14px', background:'#f0f0f0', borderRadius:'3px', marginBottom:'6px', width: i % 3 === 0 ? '80%' : i % 3 === 1 ? '65%' : '72%' }} />
-                    <div style={{ height:'11px', background:'#f7f7f7', borderRadius:'3px', width:'50%' }} />
+                // 스켈레톤 + 스피너
+                <>
+                  <div style={{ display:'flex', justifyContent:'center', padding:'24px 0 20px' }}>
+                    <div style={{
+                      width:'24px', height:'24px', borderRadius:'50%',
+                      border:'2px solid #e8e8e8', borderTopColor:'#000',
+                      animation:'spin 0.8s linear infinite'
+                    }} />
                   </div>
-                ))
+                  {Array.from({ length: 14 }).map((_, i) => (
+                    <div key={i} style={{ padding:'14px 16px', marginBottom:'4px' }}>
+                      <div style={{ height:'14px', background:'#f0f0f0', borderRadius:'3px', marginBottom:'6px', width: i % 3 === 0 ? '80%' : i % 3 === 1 ? '65%' : '72%' }} />
+                      <div style={{ height:'11px', background:'#f7f7f7', borderRadius:'3px', width:'50%' }} />
+                    </div>
+                  ))}
+                </>
               ) : (
                 managers.map((m, i) => (
                   <div key={m.cik} className="mgr-btn" onClick={() => setSelectedIdx(i)}
@@ -406,8 +420,12 @@ export default function Form13F() {
               </div>
 
               {!current || current.loading ? (
-                <div style={{ padding:'64px 0', textAlign:'center' }}>
-                  <p style={{ fontSize:'14px', color:'#aaa' }}>SEC EDGAR에서 데이터를 불러오는 중...</p>
+                <div style={{ padding:'64px 0', display:'flex', justifyContent:'center' }}>
+                  <div style={{
+                    width:'28px', height:'28px', borderRadius:'50%',
+                    border:'2px solid #e8e8e8', borderTopColor:'#000',
+                    animation:'spin 0.8s linear infinite'
+                  }} />
                 </div>
               ) : current.error ? (
                 <div style={{ padding:'32px', border:'1px solid #e8e8e8', borderRadius:'4px' }}>
