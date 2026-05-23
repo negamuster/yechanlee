@@ -242,13 +242,36 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${cik}.json`))
     if (!subRes.ok) throw new Error('submissions fetch failed')
     const subData = await subRes.json()
-    const filings = subData.filings?.recent
-    if (!filings) throw new Error('no filings data')
-    const forms: string[] = filings.form || []
-    const dates: string[] = filings.reportDate || filings.filingDate || []
-    const accNums: string[] = filings.accessionNumber || []
-    const primaryDocs: string[] = filings.primaryDocument || []
-    const indices13f = forms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
+    if (!subData.filings) throw new Error('no filings data')
+
+    let forms: string[] = subData.filings.recent?.form || []
+    let dates: string[] = subData.filings.recent?.reportDate || subData.filings.recent?.filingDate || []
+    let accNums: string[] = subData.filings.recent?.accessionNumber || []
+    let primaryDocs: string[] = subData.filings.recent?.primaryDocument || []
+    let indices13f = forms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
+
+    // recent에 없으면 files 배열(페이지네이션된 추가 제출 기록)도 탐색
+    if (indices13f.length === 0) {
+      const extraFiles: { name: string }[] = subData.filings.files || []
+      for (const file of extraFiles) {
+        try {
+          const fileRes = await fetch(proxy(`https://data.sec.gov/submissions/${file.name}`))
+          if (!fileRes.ok) continue
+          const fileData = await fileRes.json()
+          const moreForms: string[] = fileData.form || []
+          const moreIdx = moreForms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
+          if (moreIdx.length > 0) {
+            forms = moreForms
+            dates = fileData.reportDate || fileData.filingDate || []
+            accNums = fileData.accessionNumber || []
+            primaryDocs = fileData.primaryDocument || []
+            indices13f = moreIdx
+            break
+          }
+        } catch {}
+      }
+    }
+
     if (indices13f.length === 0) throw new Error('no 13F-HR filings found')
     const idx = indices13f[0]
     const idxPrev = indices13f.length > 1 ? indices13f[1] : undefined
@@ -280,6 +303,7 @@ export default function Form13F() {
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [cache, setCache] = useState<Record<string, FilingData>>({})
   const [initialLoadDone, setInitialLoadDone] = useState(false)
+  const [loadingAll, setLoadingAll] = useState(true)
 
   const selectedManager = managers[selectedIdx]
 
@@ -304,6 +328,7 @@ export default function Form13F() {
       setManagers(sorted)
       // 선택된 항목도 정렬 후 인덱스 유지 (첫 번째로)
       setSelectedIdx(0)
+      setLoadingAll(false)
     }
 
     loadAll()
@@ -348,20 +373,29 @@ export default function Form13F() {
             {/* 왼쪽 */}
             <div style={{ borderRight:'1px solid #e8e8e8', paddingRight:'40px' }}>
               <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'20px' }}>Investors</p>
-              {managers.map((m, i) => (
-                <div key={m.cik} className="mgr-btn" onClick={() => setSelectedIdx(i)}
-                  style={{ padding:'14px 16px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
-                    <p style={{ fontSize:'14px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'2px' }}>
-                      {m.name} ({m.nameKo})
-                    </p>
-                    {cache[m.cik]?.totalValue ? (
-                      <span style={{ fontSize:'11px', color:'#aaa', flexShrink:0, marginLeft:'8px' }}>{formatValue(cache[m.cik].totalValue)}</span>
-                    ) : null}
+              {loadingAll ? (
+                Array.from({ length: 14 }).map((_, i) => (
+                  <div key={i} style={{ padding:'14px 16px', marginBottom:'4px' }}>
+                    <div style={{ height:'14px', background:'#f0f0f0', borderRadius:'3px', marginBottom:'6px', width: i % 3 === 0 ? '80%' : i % 3 === 1 ? '65%' : '72%' }} />
+                    <div style={{ height:'11px', background:'#f7f7f7', borderRadius:'3px', width:'50%' }} />
                   </div>
-                  <p style={{ fontSize:'11px', color:'#aaa' }}>{m.firm}</p>
-                </div>
-              ))}
+                ))
+              ) : (
+                managers.map((m, i) => (
+                  <div key={m.cik} className="mgr-btn" onClick={() => setSelectedIdx(i)}
+                    style={{ padding:'14px 16px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
+                      <p style={{ fontSize:'14px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'2px' }}>
+                        {m.name} ({m.nameKo})
+                      </p>
+                      {cache[m.cik]?.totalValue ? (
+                        <span style={{ fontSize:'11px', color:'#aaa', flexShrink:0, marginLeft:'8px' }}>{formatValue(cache[m.cik].totalValue)}</span>
+                      ) : null}
+                    </div>
+                    <p style={{ fontSize:'11px', color:'#aaa' }}>{m.firm}</p>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* 오른쪽 */}
