@@ -96,7 +96,7 @@ export default function Home() {
         {/* ── HERO ── */}
         <section style={{ height: 'calc(100vh - 81px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 48px', position: 'relative' }}>
           <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '20px', color: '#000000', whiteSpace: 'nowrap' }}>
-            Alphasight
+            Alpha Sight
           </h1>
           <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '40px' }}>
             시장을 꿰뚫어 보다
