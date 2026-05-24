@@ -414,12 +414,14 @@ export default function Form13F() {
 
             {/* 오른쪽 */}
             <div>
+              {!loadingAll && (
               <div style={{ marginBottom:'28px' }}>
                 <h2 style={{ fontSize:'28px', fontWeight:'400', marginBottom:'6px' }}>{selectedManager.firm}</h2>
                 {current?.period && <p style={{ fontSize:'13px', color:'#aaa', marginTop:'4px' }}>최신 공시 기준: {current.period}</p>}
               </div>
+              )}
 
-              {!current || current.loading ? (
+              {loadingAll ? null : !current || current.loading ? (
                 <div style={{ padding:'64px 0', display:'flex', justifyContent:'center' }}>
                   <div style={{
                     width:'28px', height:'28px', borderRadius:'50%',
