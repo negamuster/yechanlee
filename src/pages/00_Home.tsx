@@ -37,12 +37,22 @@ const indicators = [
 export default function Home() {
   const navigate = useNavigate()
   const [showArrow, setShowArrow] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const handleScroll = () => setShowArrow(window.scrollY < 80)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleSearch = () => {
+    const q = searchQuery.trim().toUpperCase()
+    if (q) navigate(`/stock/${q}`)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSearch()
+  }
 
   return (
     <>
@@ -57,7 +67,14 @@ export default function Home() {
         }
         .slide-up-1 { opacity: 0; animation: slideUp 0.8s ease forwards 0.2s; }
         .slide-up-2 { opacity: 0; animation: slideUp 0.8s ease forwards 0.5s; }
+        .slide-up-3 { opacity: 0; animation: slideUp 0.8s ease forwards 0.7s; }
         .scroll-arrow { animation: bounce 2s ease-in-out infinite; transition: opacity 0.4s ease; }
+        .search-wrap input::placeholder { color: #bbb; }
+        .search-wrap input:focus { outline: none; }
+        .search-btn { transition: opacity 0.15s ease; }
+        .search-btn:hover { opacity: 0.5; }
+        .chip { transition: opacity 0.15s ease; cursor: pointer; }
+        .chip:hover { opacity: 0.5; }
       `}</style>
 
       <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
@@ -78,12 +95,80 @@ export default function Home() {
 
         {/* ── HERO ── */}
         <section style={{ height: 'calc(100vh - 81px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 48px', position: 'relative' }}>
-          <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '24px', color: '#000000', whiteSpace: 'nowrap' }}>
-            So You See Clarity
+          <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '20px', color: '#000000', whiteSpace: 'nowrap' }}>
+            Alphasight
           </h1>
-          <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px' }}>
-            경제와 시장의 흐름을 더 명확하게 이해할 수 있도록
+          <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '40px' }}>
+            시장을 꿰뚫어 보다
           </p>
+
+          {/* ── SEARCH BAR ── */}
+          <div className="slide-up-3" style={{ width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            <div className="search-wrap" style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}>
+              {/* 돋보기 아이콘 */}
+              <svg
+                width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="#aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                style={{ position: 'absolute', left: '18px', pointerEvents: 'none', flexShrink: 0 }}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="종목명 또는 티커 검색  (NVDA, GOOGL...)"
+                style={{
+                  width: '100%',
+                  padding: '16px 60px 16px 50px',
+                  fontSize: '15px',
+                  fontFamily: '"Times New Roman", Times, serif',
+                  border: '1px solid #000',
+                  borderRadius: '0',
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  boxSizing: 'border-box',
+                }}
+              />
+
+              {/* 검색 버튼 */}
+              <button
+                onClick={handleSearch}
+                className="search-btn"
+                style={{
+                  position: 'absolute', right: '0',
+                  height: '100%', padding: '0 20px',
+                  background: '#000', border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 힌트 + 빠른 티커 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <span style={{ fontSize: '12px', color: '#bbb', letterSpacing: '0.05em' }}>바로가기</span>
+              {['NVDA', 'AAPL', 'TSLA', 'GOOGL', 'MSFT'].map(t => (
+                <span
+                  key={t}
+                  className="chip"
+                  onClick={() => navigate(`/stock/${t}`)}
+                  style={{ fontSize: '12px', color: '#888', border: '1px solid #e8e8e8', padding: '4px 10px' }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 스크롤 화살표 */}
           <div
             className="scroll-arrow"
             style={{ position: 'absolute', bottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: showArrow ? 1 : 0, pointerEvents: showArrow ? 'auto' : 'none' }}
@@ -96,7 +181,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── MAIN GRID: Indicators + Simulator ── */}
+        {/* ── MAIN GRID: Indicators + Tools ── */}
         <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 0' }}>
           <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
 
@@ -124,7 +209,7 @@ export default function Home() {
               ))}
             </div>
 
-            {/* 오른쪽: Simulator + Form 13F */}
+            {/* 오른쪽: Tools */}
             <div>
               <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '48px' }}>
                 Tools
