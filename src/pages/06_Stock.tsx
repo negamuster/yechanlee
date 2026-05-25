@@ -1,50 +1,72 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const FINNHUB_KEY = import.meta.env.VITE_FINNHUB_KEY
-const fh = (path: string) => `/finnhub/api/v1/${path}&token=${FINNHUB_KEY}`
-
-interface Quote { c: number; d: number; dp: number; h: number; l: number; o: number; pc: number }
-interface Profile { name: string; ticker: string; finnhubIndustry: string; marketCapitalization: number; shareOutstanding: number; logo: string; weburl: string; country: string; currency: string; exchange: string }
-interface Metrics { metric: Record<string, number | string | null> }
-interface NewsItem { headline: string; summary: string; url: string; datetime: number; source: string; image: string }
-interface Candle { t: number; c: number; o: number; h: number; l: number }
-interface PriceTarget { targetHigh: number; targetLow: number; targetMean: number; lastUpdated: string }
-interface RecommendTrend { buy: number; hold: number; sell: number; strongBuy: number; strongSell: number; period: string }
-interface UpDowngrade { company: string; fromGrade: string; toGrade: string; action: string; gradeDate: string }
-
-function fmtCap(v: number | null | undefined): string {
-  if (!v) return 'N/A'
-  if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(2) + 'T'
-  if (v >= 1_000) return '$' + (v / 1_000).toFixed(1) + 'B'
-  return '$' + v.toFixed(0) + 'M'
+// ── URL helpers (local: Vite proxy, prod: Vercel edge function) ──
+const isDev = import.meta.env.DEV
+function yq1(path: string) {
+  return isDev
+    ? `/yq1${path}`
+    : `/api/yahoo-proxy?url=${encodeURIComponent('https://query1.finance.yahoo.com' + path)}`
 }
-function fmt(n: number | string | null | undefined, prefix = '', suffix = '', digits = 2): string {
-  if (n === null || n === undefined || n === '' || isNaN(Number(n))) return 'N/A'
-  return prefix + Number(n).toFixed(digits) + suffix
+function yq2(path: string) {
+  return isDev
+    ? `/yq2${path}`
+    : `/api/yahoo-proxy?url=${encodeURIComponent('https://query2.finance.yahoo.com' + path)}`
 }
+
+// ── Safe value extractor ──
+function rv(obj: any, ...keys: string[]): any {
+  let v = obj
+  for (const k of keys) { if (v == null) return null; v = v[k] }
+  return v?.raw ?? v ?? null
+}
+function fmtNum(v: any, prefix = '', suffix = '', digits = 2): string {
+  const n = Number(v)
+  if (v == null || isNaN(n)) return 'N/A'
+  return prefix + n.toFixed(digits) + suffix
+}
+function fmtCap(v: any): string {
+  const n = Number(v)
+  if (!n || isNaN(n)) return 'N/A'
+  if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + 'T'
+  if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B'
+  if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'
+  return '$' + n.toFixed(0)
+}
+function periodLabel(period: string): string {
+  const n = parseInt(period) || 0
+  const d = new Date(); d.setMonth(d.getMonth() + n)
+  return d.toLocaleDateString('en-US', { month: 'short' })
+}
+
+// ── Types ──
+interface Candle { t: number; c: number }
+interface NewsItem { title: string; publisher: string; link: string; providerPublishTime: number; thumbnail?: string }
+interface RecommendTrend { period: string; strongBuy: number; buy: number; hold: number; sell: number; strongSell: number }
+interface UpDowngrade { firm: string; toGrade: string; fromGrade: string; action: string; epochGradeDate: number }
+
 function Spinner({ size = 24 }: { size?: number }) {
   return <div style={{ width: size, height: size, borderRadius: '50%', border: '2px solid #e8e8e8', borderTopColor: '#000', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
 }
 
-// ── Price Chart ──────────────────────────────────────────────
+// ── Price Chart ──
 function PriceChart({ candles, isPositive }: { candles: Candle[]; isPositive: boolean }) {
   if (!candles.length) return null
   const W = 1000, H = 220, pad = { top: 16, right: 16, bottom: 32, left: 64 }
   const prices = candles.map(c => c.c)
   const minP = Math.min(...prices), maxP = Math.max(...prices), range = maxP - minP || 1
-  const minT = Math.min(...candles.map(c => c.t)), maxT = Math.max(...candles.map(c => c.t))
+  const minT = candles[0].t, maxT = candles[candles.length - 1].t
   const sx = (t: number) => pad.left + ((t - minT) / (maxT - minT || 1)) * (W - pad.left - pad.right)
   const sy = (p: number) => pad.top + ((maxP - p) / range) * (H - pad.top - pad.bottom)
   const pts = candles.map(c => `${sx(c.t).toFixed(1)},${sy(c.c).toFixed(1)}`).join(' ')
   const areaPts = `${sx(minT)},${H - pad.bottom} ${pts} ${sx(maxT)},${H - pad.bottom}`
   const color = isPositive ? '#16a34a' : '#ff3b30'
   const step = Math.floor(candles.length / 4)
-  const xLabels = [0, step, step * 2, step * 3, candles.length - 1].filter((i, idx, arr) => arr.indexOf(i) === idx && i < candles.length)
+  const xIdx = [0, step, step * 2, step * 3, candles.length - 1].filter((i, j, a) => a.indexOf(i) === j && i < candles.length)
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
       <defs>
-        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.12" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
@@ -55,9 +77,9 @@ function PriceChart({ candles, isPositive }: { candles: Candle[]; isPositive: bo
           <text x={pad.left - 8} y={sy(p) + 4} textAnchor="end" fontSize="10" fill="#bbb">${p.toFixed(0)}</text>
         </g>
       ))}
-      <polygon points={areaPts} fill="url(#chartGrad)" />
+      <polygon points={areaPts} fill="url(#cg)" />
       <polyline points={pts} fill="none" stroke={color} strokeWidth="1.8" strokeLinejoin="round" />
-      {xLabels.map(i => (
+      {xIdx.map(i => (
         <text key={i} x={sx(candles[i].t)} y={H - 8} textAnchor="middle" fontSize="10" fill="#bbb">
           {new Date(candles[i].t * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </text>
@@ -67,55 +89,53 @@ function PriceChart({ candles, isPositive }: { candles: Candle[]; isPositive: bo
   )
 }
 
-// ── Price Target Visualization ───────────────────────────────
-function PriceTargetBar({ target, currentPrice }: { target: PriceTarget; currentPrice: number }) {
-  const { targetLow: low, targetMean: avg, targetHigh: high } = target
+// ── Price Target Bar ──
+function PriceTargetBar({ low, avg, high, current }: { low: number; avg: number; high: number; current: number }) {
   if (!low || !high || low >= high) return null
   const total = high - low
   const avgPct = ((avg - low) / total) * 100
-  const currPct = Math.min(Math.max(((currentPrice - low) / total) * 100, 0), 100)
-  const currOutside = currentPrice > high || currentPrice < low
-
+  const currPct = Math.min(Math.max(((current - low) / total) * 100, 0), 100)
+  const upside = current ? (((avg - current) / current) * 100).toFixed(1) : null
   return (
     <div>
-      <div style={{ position: 'relative', height: '6px', background: '#f0f0f0', borderRadius: '3px', margin: '32px 0 8px' }}>
-        {/* Filled range */}
-        <div style={{ position: 'absolute', left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, #e8e8e8, #16a34a22, #e8e8e8)', borderRadius: '3px' }} />
-        {/* Average marker */}
-        <div style={{ position: 'absolute', left: `${avgPct}%`, transform: 'translateX(-50%)', top: '-20px', background: '#000', color: '#fff', fontSize: '11px', padding: '2px 6px', whiteSpace: 'nowrap', borderRadius: '2px' }}>
-          ${avg.toFixed(2)} <span style={{ fontSize: '10px', opacity: 0.7 }}>Avg</span>
+      <div style={{ position: 'relative', height: '6px', background: '#f0f0f0', borderRadius: '3px', margin: '36px 0 8px' }}>
+        <div style={{ position: 'absolute', left: `${avgPct}%`, transform: 'translateX(-50%)', top: '-22px', background: '#000', color: '#fff', fontSize: '11px', padding: '2px 7px', borderRadius: '2px', whiteSpace: 'nowrap' }}>
+          ${avg.toFixed(2)} <span style={{ opacity: 0.6, fontSize: '10px' }}>Avg</span>
         </div>
         <div style={{ position: 'absolute', left: `${avgPct}%`, transform: 'translateX(-50%)', width: '10px', height: '10px', borderRadius: '50%', background: '#000', top: '-2px' }} />
-        {/* Current price marker */}
-        {!currOutside && (
-          <div style={{ position: 'absolute', left: `${currPct}%`, transform: 'translateX(-50%)', width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6', border: '2px solid #fff', boxShadow: '0 0 0 1px #3B82F6', top: '-1px' }} />
-        )}
+        <div style={{ position: 'absolute', left: `${currPct}%`, transform: 'translateX(-50%)', width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6', border: '2px solid #fff', boxShadow: '0 0 0 1.5px #3B82F6', top: '-1px' }} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#888' }}>
-        <span><b style={{ color: '#000' }}>${low.toFixed(2)}</b><br /><span style={{ fontSize: '11px' }}>Low</span></span>
-        <span style={{ textAlign: 'right' }}><b style={{ color: '#000' }}>${high.toFixed(2)}</b><br /><span style={{ fontSize: '11px' }}>High</span></span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#aaa' }}>
+        <span><b style={{ color: '#000', fontSize: '13px' }}>${low.toFixed(2)}</b><br />Low</span>
+        <span style={{ textAlign: 'right' }}><b style={{ color: '#000', fontSize: '13px' }}>${high.toFixed(2)}</b><br />High</span>
       </div>
-      {currOutside && (
-        <p style={{ fontSize: '12px', color: '#3B82F6', marginTop: '8px' }}>
-          Current ${currentPrice.toFixed(2)} — {currentPrice > high ? 'above target range' : 'below target range'}
-        </p>
-      )}
+      <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+        {[
+          { label: 'Average', val: `$${avg.toFixed(2)}` },
+          { label: 'Current', val: `$${current.toFixed(2)}`, color: '#3B82F6' },
+          { label: 'Upside', val: upside ? `${upside}%` : 'N/A', color: upside && Number(upside) >= 0 ? '#16a34a' : '#ff3b30' },
+        ].map((item, i) => (
+          <div key={i} style={{ textAlign: 'center', padding: '10px', background: '#f9f9f9' }}>
+            <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '4px' }}>{item.label}</p>
+            <p style={{ fontSize: '16px', color: item.color ?? '#000' }}>{item.val}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
-// ── Recommendation Bar Chart ─────────────────────────────────
+// ── Recommend Bar Chart ──
 function RecommendChart({ data }: { data: RecommendTrend[] }) {
   if (!data.length) return null
-  const last3 = data.slice(0, 3).reverse()
-  const maxTotal = Math.max(...last3.map(d => d.strongBuy + d.buy + d.hold + d.sell + d.strongSell)) || 1
-  const W = 340, H = 160, barW = 60, gap = 60, padB = 24, padT = 16
-
+  const show = [...data].reverse().slice(0, 3)
+  const maxTotal = Math.max(...show.map(d => d.strongBuy + d.buy + d.hold + d.sell + d.strongSell)) || 1
+  const W = 300, H = 160, barW = 52, gap = 50, padB = 24, padT = 16
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: '340px', height: 'auto', display: 'block' }}>
-      {last3.map((d, i) => {
-        const x = 30 + i * (barW + gap)
-        const segments = [
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: '300px', height: 'auto', display: 'block' }}>
+      {show.map((d, i) => {
+        const x = 24 + i * (barW + gap)
+        const segs = [
           { v: d.strongBuy, color: '#15803d' },
           { v: d.buy, color: '#4ade80' },
           { v: d.hold, color: '#fbbf24' },
@@ -123,27 +143,21 @@ function RecommendChart({ data }: { data: RecommendTrend[] }) {
         ]
         const totalH = H - padB - padT
         let yOff = H - padB
-        const total = segments.reduce((s, seg) => s + seg.v, 0)
+        const total = segs.reduce((s, g) => s + g.v, 0)
         return (
           <g key={i}>
-            {segments.map((seg, j) => {
+            {segs.map((seg, j) => {
               if (!seg.v) return null
               const bH = (seg.v / maxTotal) * totalH
-              yOff -= bH
-              const y = yOff
+              yOff -= bH; const y = yOff
               return (
                 <g key={j}>
                   <rect x={x} y={y} width={barW} height={bH} fill={seg.color} />
-                  {seg.v >= 1 && bH > 14 && (
-                    <text x={x + barW / 2} y={y + bH / 2 + 4} textAnchor="middle" fontSize="11" fill="#fff" fontWeight="600">{seg.v}</text>
-                  )}
+                  {bH > 14 && <text x={x + barW / 2} y={y + bH / 2 + 4} textAnchor="middle" fontSize="11" fill="#fff" fontWeight="600">{seg.v}</text>}
                 </g>
               )
-              yOff = y
             })}
-            <text x={x + barW / 2} y={H - 6} textAnchor="middle" fontSize="11" fill="#aaa">
-              {new Date(d.period).toLocaleDateString('en-US', { month: 'short' })}
-            </text>
+            <text x={x + barW / 2} y={H - 6} textAnchor="middle" fontSize="11" fill="#aaa">{periodLabel(d.period)}</text>
             <text x={x + barW / 2} y={H - padB - (total / maxTotal) * totalH - 6} textAnchor="middle" fontSize="11" fill="#555">{total}</text>
           </g>
         )
@@ -152,22 +166,20 @@ function RecommendChart({ data }: { data: RecommendTrend[] }) {
   )
 }
 
-// ── Main Component ───────────────────────────────────────────
+// ── Main Component ──
 export default function Stock() {
   const { ticker } = useParams<{ ticker: string }>()
   const navigate = useNavigate()
   const symbol = ticker?.toUpperCase() || ''
 
-  const [quote, setQuote] = useState<Quote | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [metrics, setMetrics] = useState<Metrics | null>(null)
+  // Data state
+  const [summary, setSummary] = useState<any>(null)
+  const [candles, setCandles] = useState<Candle[]>([])
   const [news, setNews] = useState<NewsItem[]>([])
   const [peers, setPeers] = useState<string[]>([])
-  const [candles, setCandles] = useState<Candle[]>([])
-  const [priceTarget, setPriceTarget] = useState<PriceTarget | null>(null)
-  const [recommendations, setRecommendations] = useState<RecommendTrend[]>([])
+  const [recTrend, setRecTrend] = useState<RecommendTrend[]>([])
   const [upgrades, setUpgrades] = useState<UpDowngrade[]>([])
-  const [period, setPeriod] = useState<'1M' | '3M' | '6M' | '1Y'>('3M')
+  const [period, setPeriod] = useState<'1mo' | '3mo' | '6mo' | '1y'>('3mo')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [aiAnalysis, setAiAnalysis] = useState('')
@@ -175,81 +187,93 @@ export default function Stock() {
   const [aiDone, setAiDone] = useState(false)
   const [searchQuery, setSearchQuery] = useState(symbol)
 
-  const periodDays: Record<string, number> = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 }
-
-  const fetchCandles = useCallback(async (sym: string, days: number) => {
-    const to = Math.floor(Date.now() / 1000)
-    const from = to - days * 86400
+  const fetchCandles = useCallback(async (sym: string, range: string) => {
     try {
-      const res = await fetch(fh(`stock/candle?symbol=${sym}&resolution=D&from=${from}&to=${to}`))
+      const res = await fetch(yq1(`/v8/finance/chart/${sym}?interval=1d&range=${range}`))
       const data = await res.json()
-      if (data.s === 'ok' && data.t)
-        setCandles(data.t.map((t: number, i: number) => ({ t, c: data.c[i], o: data.o[i], h: data.h[i], l: data.l[i] })))
+      const result = data?.chart?.result?.[0]
+      if (!result) return
+      const ts: number[] = result.timestamp || []
+      const close: number[] = result.indicators?.quote?.[0]?.close || []
+      const pairs = ts.map((t, i) => ({ t, c: close[i] })).filter(p => p.c != null)
+      setCandles(pairs)
     } catch {}
   }, [])
 
   useEffect(() => { setSearchQuery(symbol); if (symbol) loadData() }, [symbol])
-  useEffect(() => { if (symbol) fetchCandles(symbol, periodDays[period]) }, [period, symbol])
+  useEffect(() => { if (symbol) fetchCandles(symbol, period) }, [period, symbol])
 
   const loadData = async () => {
     setLoading(true); setError('')
-    setQuote(null); setProfile(null); setMetrics(null)
-    setNews([]); setPeers([]); setCandles([])
-    setPriceTarget(null); setRecommendations([]); setUpgrades([])
+    setSummary(null); setCandles([]); setNews([])
+    setPeers([]); setRecTrend([]); setUpgrades([])
     setAiAnalysis(''); setAiDone(false)
 
-    const today = new Date()
-    const from30 = new Date(today); from30.setDate(from30.getDate() - 30)
-    const from180 = new Date(today); from180.setDate(from180.getDate() - 180)
-    const toStr = today.toISOString().split('T')[0]
-    const fromStr = from30.toISOString().split('T')[0]
-    const from180Str = from180.toISOString().split('T')[0]
-
     try {
-      const results = await Promise.allSettled([
-        fetch(fh(`quote?symbol=${symbol}`)).then(r => r.json()),
-        fetch(fh(`stock/profile2?symbol=${symbol}`)).then(r => r.json()),
-        fetch(fh(`stock/metric?symbol=${symbol}&metric=all`)).then(r => r.json()),
-        fetch(fh(`company-news?symbol=${symbol}&from=${fromStr}&to=${toStr}`)).then(r => r.json()),
-        fetch(fh(`stock/peers?symbol=${symbol}`)).then(r => r.json()),
-        fetch(fh(`stock/price-target?symbol=${symbol}`)).then(r => r.json()),
-        fetch(fh(`stock/recommendation?symbol=${symbol}`)).then(r => r.json()),
-        fetch(fh(`stock/upgrade-downgrade?symbol=${symbol}&from=${from180Str}`)).then(r => r.json()),
+      const modules = 'price,summaryDetail,defaultKeyStatistics,financialData,recommendationTrend,upgradeDowngradeHistory,assetProfile'
+      const [sumRes, newsRes, peersRes] = await Promise.allSettled([
+        fetch(yq1(`/v10/finance/quoteSummary/${symbol}?modules=${modules}`)).then(r => r.json()),
+        fetch(yq1(`/v1/finance/search?q=${symbol}&newsCount=8&quotesCount=0`)).then(r => r.json()),
+        fetch(yq2(`/v6/finance/recommendationsbyticker?symbols=${symbol}`)).then(r => r.json()),
       ])
-      const [quoteR, profileR, metricsR, newsR, peersR, ptR, recR, upR] = results
 
-      let q: Quote | null = null
-      if (quoteR.status === 'fulfilled') { q = quoteR.value; setQuote(q) }
-      if (profileR.status === 'fulfilled') setProfile(profileR.value)
-      if (metricsR.status === 'fulfilled') setMetrics(metricsR.value)
-      if (newsR.status === 'fulfilled') setNews((newsR.value || []).slice(0, 6))
-      if (peersR.status === 'fulfilled') setPeers((peersR.value || []).filter((p: string) => p !== symbol).slice(0, 8))
-      if (ptR.status === 'fulfilled' && ptR.value?.targetMean) setPriceTarget(ptR.value)
-      if (recR.status === 'fulfilled') setRecommendations((recR.value || []).slice(0, 3))
-      if (upR.status === 'fulfilled') setUpgrades((upR.value || []).slice(0, 1))
+      if (sumRes.status === 'fulfilled') {
+        const result = sumRes.value?.quoteSummary?.result?.[0]
+        if (!result) { setError('찾을 수 없는 종목입니다.'); setLoading(false); return }
+        setSummary(result)
+        // Recommendation trend
+        const trend = result.recommendationTrend?.trend || []
+        setRecTrend(trend)
+        // Upgrades
+        const hist = result.upgradeDowngradeHistory?.history || []
+        setUpgrades(hist.slice(0, 1))
+      } else {
+        setError('데이터를 불러오지 못했습니다.'); setLoading(false); return
+      }
 
-      if (!q || q.c === 0) setError('찾을 수 없는 종목입니다. 티커를 확인해주세요.')
-      else await fetchCandles(symbol, periodDays['3M'])
+      if (newsRes.status === 'fulfilled') {
+        const items = newsRes.value?.news || []
+        setNews(items.map((n: any) => ({
+          title: n.title,
+          publisher: n.publisher,
+          link: n.link,
+          providerPublishTime: n.providerPublishTime,
+          thumbnail: n.thumbnail?.resolutions?.[0]?.url,
+        })))
+      }
+
+      if (peersRes.status === 'fulfilled') {
+        const recommended = peersRes.value?.finance?.result?.[0]?.recommendedSymbols || []
+        setPeers(recommended.map((p: any) => p.symbol).filter((s: string) => s !== symbol).slice(0, 8))
+      }
+
+      await fetchCandles(symbol, '3mo')
     } catch { setError('데이터를 불러오지 못했습니다.') }
     finally { setLoading(false) }
   }
 
   const generateAnalysis = async () => {
-    if (!quote || !profile || aiLoading) return
+    if (!summary || aiLoading) return
     setAiLoading(true); setAiAnalysis(''); setAiDone(false)
-    const m = metrics?.metric || {}
-    const prompt = `다음은 ${profile.name}(${symbol})의 최신 재무 데이터입니다.
 
-현재가: $${quote.c} (${quote.dp > 0 ? '+' : ''}${quote.dp?.toFixed(2)}%)
-52주 고/저: $${m['52WeekHigh'] ?? 'N/A'} / $${m['52WeekLow'] ?? 'N/A'}
-P/E (TTM): ${m['peBasicExclExtraTTM'] ?? 'N/A'}
-EPS (TTM): $${m['epsTTM'] ?? 'N/A'}
-시가총액: ${fmtCap(profile.marketCapitalization)}
-섹터: ${profile.finnhubIndustry ?? 'N/A'}
-배당수익률: ${m['dividendYieldIndicatedAnnual'] ?? 0}%
-ROE (TTM): ${m['roeTTM'] ?? 'N/A'}%
-매출성장률 YoY: ${m['revenueGrowthTTMYoy'] ?? 'N/A'}%
-${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?.toFixed(2)} (Low $${priceTarget.targetLow} / High $${priceTarget.targetHigh})` : ''}
+    const price = summary.price
+    const fin = summary.financialData
+    const stat = summary.defaultKeyStatistics
+    const det = summary.summaryDetail
+
+    const prompt = `다음은 ${rv(price, 'longName') || rv(price, 'shortName')}(${symbol})의 최신 재무 데이터입니다.
+
+현재가: $${rv(price, 'regularMarketPrice')} (${rv(price, 'regularMarketChangePercent') > 0 ? '+' : ''}${(rv(price, 'regularMarketChangePercent') * 100).toFixed(2)}%)
+시가총액: ${fmtCap(rv(price, 'marketCap'))}
+섹터/산업: ${rv(summary.assetProfile, 'sector')} / ${rv(summary.assetProfile, 'industry')}
+P/E (TTM): ${fmtNum(rv(det, 'trailingPE'))}
+EPS (TTM): $${fmtNum(rv(stat, 'trailingEps'))}
+52주 고/저: $${fmtNum(rv(det, 'fiftyTwoWeekHigh'))} / $${fmtNum(rv(det, 'fiftyTwoWeekLow'))}
+배당수익률: ${rv(det, 'dividendYield') ? (rv(det, 'dividendYield') * 100).toFixed(2) + '%' : 'N/A'}
+ROE: ${rv(fin, 'returnOnEquity') ? (rv(fin, 'returnOnEquity') * 100).toFixed(1) + '%' : 'N/A'}
+매출성장률 YoY: ${rv(fin, 'revenueGrowth') ? (rv(fin, 'revenueGrowth') * 100).toFixed(1) + '%' : 'N/A'}
+애널리스트 목표주가: $${fmtNum(rv(fin, 'targetMeanPrice'))} (Low $${fmtNum(rv(fin, 'targetLowPrice'))} / High $${fmtNum(rv(fin, 'targetHighPrice'))})
+애널리스트 권고: ${rv(fin, 'recommendationKey') || 'N/A'}
 
 위 데이터를 바탕으로 이 종목에 대해 한국어로 분석해주세요. 아래 구조를 따르되, 각 항목은 자연스러운 문장으로 작성하세요:
 
@@ -281,21 +305,41 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
   }
 
   const handleSearch = () => { const q = searchQuery.trim().toUpperCase(); if (q) navigate(`/stock/${q}`) }
-  const isPositive = (quote?.dp ?? 0) >= 0
-  const color = isPositive ? '#16a34a' : '#ff3b30'
 
-  const fundamentals = !metrics ? [] : [
-    { label: 'P/E Ratio (TTM)', value: fmt(metrics.metric['peBasicExclExtraTTM']) },
-    { label: 'P/B (Annual)',    value: fmt(metrics.metric['pbAnnual']) },
-    { label: 'EPS (TTM)',       value: fmt(metrics.metric['epsTTM'], '$') },
-    { label: 'Dividend Yield', value: fmt(metrics.metric['dividendYieldIndicatedAnnual'], '', '%') },
-    { label: '52W High',        value: fmt(metrics.metric['52WeekHigh'], '$') },
-    { label: '52W Low',         value: fmt(metrics.metric['52WeekLow'], '$') },
-    { label: 'ROE (TTM)',       value: fmt(metrics.metric['roeTTM'], '', '%') },
-    { label: 'Revenue Growth',  value: fmt(metrics.metric['revenueGrowthTTMYoy'], '', '%') },
-    { label: 'Beta (5Y)',       value: fmt(metrics.metric['beta']) },
-    { label: 'Debt/Equity',     value: fmt(metrics.metric['totalDebt/totalEquityAnnual'], '', '%') },
-  ]
+  // Derived values
+  const price = summary?.price
+  const fin = summary?.financialData
+  const stat = summary?.defaultKeyStatistics
+  const det = summary?.summaryDetail
+  const currentPrice: number = rv(price, 'regularMarketPrice') ?? 0
+  const change: number = rv(price, 'regularMarketChange') ?? 0
+  const changePct: number = rv(price, 'regularMarketChangePercent') ?? 0
+  const isPositive = changePct >= 0
+  const priceColor = isPositive ? '#16a34a' : '#ff3b30'
+
+  const fundamentals = summary ? [
+    { label: 'P/E Ratio (TTM)',  value: fmtNum(rv(det, 'trailingPE')) },
+    { label: 'Forward P/E',      value: fmtNum(rv(det, 'forwardPE')) },
+    { label: 'EPS (TTM)',        value: fmtNum(rv(stat, 'trailingEps'), '$') },
+    { label: 'P/B Ratio',        value: fmtNum(rv(stat, 'priceToBook')) },
+    { label: '52W High',         value: fmtNum(rv(det, 'fiftyTwoWeekHigh'), '$') },
+    { label: '52W Low',          value: fmtNum(rv(det, 'fiftyTwoWeekLow'), '$') },
+    { label: 'ROE',              value: rv(fin, 'returnOnEquity') != null ? (rv(fin, 'returnOnEquity') * 100).toFixed(1) + '%' : 'N/A' },
+    { label: 'Revenue Growth',   value: rv(fin, 'revenueGrowth') != null ? (rv(fin, 'revenueGrowth') * 100).toFixed(1) + '%' : 'N/A' },
+    { label: 'Gross Margin',     value: rv(fin, 'grossMargins') != null ? (rv(fin, 'grossMargins') * 100).toFixed(1) + '%' : 'N/A' },
+    { label: 'Beta (5Y)',        value: fmtNum(rv(det, 'beta')) },
+  ] : []
+
+  const quickSummary = summary ? [
+    { label: 'Market Cap',      value: fmtCap(rv(price, 'marketCap')) },
+    { label: 'P/E Ratio',       value: fmtNum(rv(det, 'trailingPE')) },
+    { label: 'EPS (TTM)',        value: fmtNum(rv(stat, 'trailingEps'), '$') },
+    { label: 'ROE',             value: rv(fin, 'returnOnEquity') != null ? (rv(fin, 'returnOnEquity') * 100).toFixed(1) + '%' : 'N/A' },
+    { label: 'Dividend Yield',  value: rv(det, 'dividendYield') != null ? (rv(det, 'dividendYield') * 100).toFixed(2) + '%' : 'N/A' },
+    { label: 'Revenue Growth',  value: rv(fin, 'revenueGrowth') != null ? (rv(fin, 'revenueGrowth') * 100).toFixed(1) + '%' : 'N/A' },
+    { label: 'Beta (5Y)',       value: fmtNum(rv(det, 'beta')) },
+    { label: '52W Position',    value: (() => { const h = rv(det, 'fiftyTwoWeekHigh'), l = rv(det, 'fiftyTwoWeekLow'); return h && l ? Math.round(((currentPrice - l) / (h - l)) * 100) + '%' : 'N/A' })() },
+  ] : []
 
   const renderAiText = (text: string) =>
     text.split('\n').map((line, i) => {
@@ -307,6 +351,7 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
     })
 
   const latestUpgrade = upgrades[0]
+  const hasAnalystInsights = (rv(fin, 'targetMeanPrice') != null) || recTrend.length > 0 || !!latestUpgrade
 
   return (
     <>
@@ -320,7 +365,7 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
         .s5{opacity:0;animation:slideUp 0.6s ease forwards 0.45s;}
         .peer-chip{transition:opacity 0.15s;cursor:pointer;}
         .peer-chip:hover{opacity:0.4;}
-        .news-row{transition:opacity 0.15s;cursor:pointer;text-decoration:none;color:inherit;display:block;}
+        .news-row{transition:opacity 0.15s;text-decoration:none;color:inherit;display:block;}
         .news-row:hover{opacity:0.5;}
         .srch:focus{outline:none;}
         .srch::placeholder{color:#bbb;}
@@ -356,38 +401,37 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
             <p style={{ fontSize: '20px', marginBottom: '12px' }}>{error}</p>
             <p style={{ fontSize: '14px', color: '#aaa' }}>티커 예시: AAPL, NVDA, MSFT, GOOGL, TSLA</p>
           </div>
-        ) : (
+        ) : summary && (
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 48px 120px' }}>
 
-            {/* ── HEADER ── */}
+            {/* HEADER */}
             <div className="s1" style={{ marginBottom: '36px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                  {profile?.logo && (
-                    <img src={profile.logo} alt="" style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'contain', border: '1px solid #f0f0f0' }}
-                      onError={e => (e.currentTarget.style.display = 'none')} />
-                  )}
                   <div>
                     <p style={{ fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '3px' }}>
-                      {symbol} · {profile?.exchange} · {profile?.finnhubIndustry}
+                      {symbol} · {rv(price, 'exchangeName')} · {rv(summary.assetProfile, 'industry')}
                     </p>
-                    <h1 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '-0.02em', lineHeight: 1.1 }}>{profile?.name ?? symbol}</h1>
+                    <h1 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                      {rv(price, 'longName') || rv(price, 'shortName') || symbol}
+                    </h1>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px' }}>
-                  <span style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '-0.02em' }}>${quote?.c.toFixed(2)}</span>
-                  <span style={{ fontSize: '18px', color }}>{isPositive ? '+' : ''}{quote?.d.toFixed(2)} ({isPositive ? '+' : ''}{quote?.dp.toFixed(2)}%)</span>
+                  <span style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '-0.02em' }}>${currentPrice.toFixed(2)}</span>
+                  <span style={{ fontSize: '18px', color: priceColor }}>
+                    {isPositive ? '+' : ''}{change.toFixed(2)} ({isPositive ? '+' : ''}{(changePct * 100).toFixed(2)}%)
+                  </span>
                 </div>
 
-                {/* Stats row — English */}
                 <div style={{ display: 'flex', gap: '0', marginTop: '14px', flexWrap: 'wrap', borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
                   {[
-                    { label: 'Open',       value: `$${quote?.o.toFixed(2)}` },
-                    { label: 'High',       value: `$${quote?.h.toFixed(2)}` },
-                    { label: 'Low',        value: `$${quote?.l.toFixed(2)}` },
-                    { label: 'Prev Close', value: `$${quote?.pc.toFixed(2)}` },
-                    { label: 'Market Cap', value: fmtCap(profile?.marketCapitalization) },
+                    { label: 'Open',       value: `$${fmtNum(rv(price, 'regularMarketOpen'))}` },
+                    { label: 'High',       value: `$${fmtNum(rv(price, 'regularMarketDayHigh'))}` },
+                    { label: 'Low',        value: `$${fmtNum(rv(price, 'regularMarketDayLow'))}` },
+                    { label: 'Prev Close', value: `$${fmtNum(rv(price, 'regularMarketPreviousClose'))}` },
+                    { label: 'Market Cap', value: fmtCap(rv(price, 'marketCap')) },
                   ].map((s, i) => (
                     <div key={i} style={{ paddingRight: '28px', marginRight: '28px', borderRight: i < 4 ? '1px solid #f0f0f0' : 'none' }}>
                       <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '3px' }}>{s.label}</p>
@@ -397,7 +441,6 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
                 </div>
               </div>
 
-              {/* Peers */}
               {peers.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxWidth: '300px', justifyContent: 'flex-end' }}>
                   {peers.map(p => (
@@ -408,15 +451,15 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
               )}
             </div>
 
-            {/* ── CHART ── */}
+            {/* CHART */}
             <div className="s2" style={{ marginBottom: '48px', border: '1px solid #e8e8e8', padding: '20px 24px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Price Chart</p>
                 <div style={{ display: 'flex', gap: '2px' }}>
-                  {(['1M', '3M', '6M', '1Y'] as const).map(p => (
+                  {(['1mo', '3mo', '6mo', '1y'] as const).map(p => (
                     <button key={p} className="period-btn" onClick={() => setPeriod(p)}
                       style={{ padding: '5px 12px', fontSize: '12px', color: period === p ? '#fff' : '#aaa', background: period === p ? '#000' : 'transparent', fontFamily: '"Times New Roman",serif' }}>
-                      {p}
+                      {p === '1mo' ? '1M' : p === '3mo' ? '3M' : p === '6mo' ? '6M' : '1Y'}
                     </button>
                   ))}
                 </div>
@@ -426,7 +469,7 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
                 : <div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Spinner /></div>}
             </div>
 
-            {/* ── TWO COLUMN ── */}
+            {/* TWO COLUMN */}
             <div className="s3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start', marginBottom: '64px' }}>
 
               {/* LEFT: Fundamentals + News */}
@@ -445,15 +488,17 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
                   <>
                     <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Recent News</p>
                     {news.map((n, i) => (
-                      <a key={i} href={n.url} target="_blank" rel="noopener noreferrer" className="news-row">
+                      <a key={i} href={n.link} target="_blank" rel="noopener noreferrer" className="news-row">
                         <div style={{ padding: '16px 0', borderBottom: '1px solid #f4f4f4', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                          {n.image && (
-                            <img src={n.image} alt="" style={{ width: '68px', height: '48px', objectFit: 'cover', borderRadius: '2px', flexShrink: 0, marginTop: '2px' }}
+                          {n.thumbnail && (
+                            <img src={n.thumbnail} alt="" style={{ width: '68px', height: '48px', objectFit: 'cover', borderRadius: '2px', flexShrink: 0 }}
                               onError={e => (e.currentTarget.style.display = 'none')} />
                           )}
                           <div style={{ flex: 1 }}>
-                            <p style={{ fontSize: '14px', lineHeight: '1.5', marginBottom: '5px' }}>{n.headline}</p>
-                            <p style={{ fontSize: '11px', color: '#aaa' }}>{n.source} · {new Date(n.datetime * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                            <p style={{ fontSize: '14px', lineHeight: '1.5', marginBottom: '5px' }}>{n.title}</p>
+                            <p style={{ fontSize: '11px', color: '#aaa' }}>
+                              {n.publisher} · {new Date(n.providerPublishTime * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </p>
                           </div>
                         </div>
                       </a>
@@ -464,19 +509,9 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
 
               {/* RIGHT: Quick Summary + AI Analysis */}
               <div>
-                {/* Quick Summary */}
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Quick Summary</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '36px' }}>
-                  {metrics && quote && [
-                    { label: 'Market Cap',      value: fmtCap(profile?.marketCapitalization) },
-                    { label: 'P/E Ratio',       value: fmt(metrics.metric['peBasicExclExtraTTM']) },
-                    { label: 'EPS (TTM)',        value: fmt(metrics.metric['epsTTM'], '$') },
-                    { label: 'ROE',             value: fmt(metrics.metric['roeTTM'], '', '%') },
-                    { label: 'Dividend Yield',  value: fmt(metrics.metric['dividendYieldIndicatedAnnual'], '', '%') },
-                    { label: 'Revenue Growth',  value: fmt(metrics.metric['revenueGrowthTTMYoy'], '', '%') },
-                    { label: 'Beta (5Y)',        value: fmt(metrics.metric['beta']) },
-                    { label: '52W Position', value: (() => { const h = Number(metrics.metric['52WeekHigh']), l = Number(metrics.metric['52WeekLow']); return h && l ? Math.round(((quote.c - l) / (h - l)) * 100) + '%' : 'N/A' })() },
-                  ].map((item, i) => (
+                  {quickSummary.map((item, i) => (
                     <div key={i} style={{ padding: '14px 16px', border: '1px solid #f0f0f0', background: '#fafafa' }}>
                       <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '6px' }}>{item.label}</p>
                       <p style={{ fontSize: '20px', fontWeight: '400' }}>{item.value}</p>
@@ -484,7 +519,6 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
                   ))}
                 </div>
 
-                {/* AI Analysis */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>AI Analysis</p>
                   {!aiDone && (
@@ -509,101 +543,98 @@ ${priceTarget ? `애널리스트 목표주가: 평균 $${priceTarget.targetMean?
               </div>
             </div>
 
-            {/* ── ANALYST INSIGHTS (full width) ── */}
-            {(priceTarget || recommendations.length > 0 || latestUpgrade) && (
+            {/* ANALYST INSIGHTS */}
+            {hasAnalystInsights && (
               <div className="s4">
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '20px' }}>
                   Analyst Insights: {symbol}
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: priceTarget && recommendations.length && latestUpgrade ? '1fr 1fr 1fr' : '1fr 1fr', gap: '24px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
 
                   {/* Price Target */}
-                  {priceTarget && (
-                    <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
-                      <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Analyst Price Targets</p>
-                      <p style={{ fontSize: '12px', color: '#aaa', marginBottom: '8px' }}>
-                        {priceTarget.lastUpdated ? new Date(priceTarget.lastUpdated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
-                      </p>
-                      <PriceTargetBar target={priceTarget} currentPrice={quote?.c ?? 0} />
-                      <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', padding: '12px', background: '#f9f9f9', borderRadius: '2px' }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <p style={{ fontSize: '11px', color: '#aaa' }}>Average</p>
-                          <p style={{ fontSize: '18px' }}>${priceTarget.targetMean?.toFixed(2)}</p>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <p style={{ fontSize: '11px', color: '#aaa' }}>Current</p>
-                          <p style={{ fontSize: '18px', color: isPositive ? '#16a34a' : '#ff3b30' }}>${quote?.c.toFixed(2)}</p>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <p style={{ fontSize: '11px', color: '#aaa' }}>Upside</p>
-                          <p style={{ fontSize: '18px', color: (priceTarget.targetMean - (quote?.c ?? 0)) >= 0 ? '#16a34a' : '#ff3b30' }}>
-                            {quote?.c ? `${(((priceTarget.targetMean - quote.c) / quote.c) * 100).toFixed(1)}%` : 'N/A'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Analyst Price Targets</p>
+                    <p style={{ fontSize: '12px', color: '#aaa', marginBottom: '4px' }}>
+                      {rv(fin, 'numberOfAnalystOpinions') ? `Based on ${rv(fin, 'numberOfAnalystOpinions')} analysts` : ''}
+                    </p>
+                    {rv(fin, 'targetMeanPrice') ? (
+                      <PriceTargetBar
+                        low={rv(fin, 'targetLowPrice')}
+                        avg={rv(fin, 'targetMeanPrice')}
+                        high={rv(fin, 'targetHighPrice')}
+                        current={currentPrice}
+                      />
+                    ) : <p style={{ fontSize: '13px', color: '#bbb', marginTop: '20px' }}>데이터 없음</p>}
+                  </div>
 
                   {/* Recommendations */}
-                  {recommendations.length > 0 && (
-                    <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
-                      <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '20px' }}>Analyst Recommendations</p>
-                      <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-end' }}>
-                        <RecommendChart data={recommendations} />
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-                          {[
-                            { label: 'Strong Buy', color: '#15803d' },
-                            { label: 'Buy',         color: '#4ade80' },
-                            { label: 'Hold',        color: '#fbbf24' },
-                            { label: 'Sell',        color: '#ff3b30' },
-                          ].map(item => (
-                            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                              <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: item.color, flexShrink: 0 }} />
-                              <span style={{ fontSize: '12px', color: '#555' }}>{item.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Latest month summary */}
-                      {recommendations[0] && (() => {
-                        const r = recommendations[0]
-                        const total = r.strongBuy + r.buy + r.hold + r.sell + r.strongSell
-                        const bullish = r.strongBuy + r.buy
-                        const pct = total ? Math.round((bullish / total) * 100) : 0
-                        return (
-                          <div style={{ marginTop: '20px', padding: '12px', background: '#f9f9f9', fontSize: '13px', color: '#555' }}>
-                            최신 기준 ({new Date(r.period).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}): 총 {total}명 중 Buy 이상 <b style={{ color: pct >= 60 ? '#16a34a' : '#ff3b30' }}>{pct}%</b>
+                  <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '20px' }}>Analyst Recommendations</p>
+                    {recTrend.length > 0 ? (
+                      <>
+                        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end' }}>
+                          <RecommendChart data={recTrend} />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', flexShrink: 0 }}>
+                            {[{ label: 'Strong Buy', color: '#15803d' }, { label: 'Buy', color: '#4ade80' }, { label: 'Hold', color: '#fbbf24' }, { label: 'Sell', color: '#ff3b30' }].map(item => (
+                              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ width: '9px', height: '9px', borderRadius: '2px', background: item.color, flexShrink: 0 }} />
+                                <span style={{ fontSize: '11px', color: '#555' }}>{item.label}</span>
+                              </div>
+                            ))}
                           </div>
-                        )
-                      })()}
-                    </div>
-                  )}
+                        </div>
+                        {recTrend[0] && (() => {
+                          const r = recTrend[0]
+                          const total = r.strongBuy + r.buy + r.hold + r.sell + r.strongSell
+                          const bullish = r.strongBuy + r.buy
+                          const pct = total ? Math.round((bullish / total) * 100) : 0
+                          return (
+                            <div style={{ marginTop: '16px', padding: '10px 14px', background: '#f9f9f9', fontSize: '12px', color: '#555' }}>
+                              최신 기준: 총 {total}명 중 Buy 이상 <b style={{ color: pct >= 60 ? '#16a34a' : '#ff3b30' }}>{pct}%</b>
+                            </div>
+                          )
+                        })()}
+                      </>
+                    ) : <p style={{ fontSize: '13px', color: '#bbb' }}>데이터 없음</p>}
+                  </div>
 
                   {/* Latest Rating */}
-                  {latestUpgrade && (
-                    <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
-                      <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '20px' }}>Latest Rating</p>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                  <div style={{ padding: '24px', border: '1px solid #e8e8e8' }}>
+                    <p style={{ fontSize: '14px', fontWeight: '500', marginBottom: '20px' }}>Latest Rating</p>
+                    {latestUpgrade ? (
+                      <div>
                         {[
-                          { label: 'Date',          value: new Date(latestUpgrade.gradeDate).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }) },
-                          { label: 'Analyst',        value: latestUpgrade.company },
-                          { label: 'Action',         value: latestUpgrade.action?.charAt(0).toUpperCase() + latestUpgrade.action?.slice(1) || '—' },
-                          { label: 'From',           value: latestUpgrade.fromGrade || '—' },
-                          { label: 'Rating',         value: latestUpgrade.toGrade || '—' },
+                          { label: 'Date',   value: new Date(latestUpgrade.epochGradeDate * 1000).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }) },
+                          { label: 'Analyst', value: latestUpgrade.firm },
+                          { label: 'Action',  value: latestUpgrade.action?.charAt(0).toUpperCase() + latestUpgrade.action?.slice(1) || '—' },
+                          { label: 'From',    value: latestUpgrade.fromGrade || '—' },
+                          { label: 'Rating',  value: latestUpgrade.toGrade || '—' },
                         ].map((row, i) => (
                           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #f4f4f4' }}>
                             <span style={{ fontSize: '13px', color: '#aaa' }}>{row.label}</span>
                             <span style={{ fontSize: '13px', fontWeight: row.label === 'Rating' ? '500' : '400',
                               color: row.label === 'Action'
                                 ? (latestUpgrade.action?.toLowerCase().includes('up') ? '#16a34a' : latestUpgrade.action?.toLowerCase().includes('down') ? '#ff3b30' : '#000')
-                                : '#000'
-                            }}>{row.value}</span>
+                                : '#000' }}>
+                              {row.value}
+                            </span>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <p style={{ fontSize: '13px', color: '#bbb' }}>최근 등급 변경 없음</p>
+                    )}
+
+                    {/* Recommendation key badge */}
+                    {rv(fin, 'recommendationKey') && (
+                      <div style={{ marginTop: '20px', textAlign: 'center', padding: '12px', background: '#f9f9f9' }}>
+                        <p style={{ fontSize: '11px', color: '#aaa', marginBottom: '4px' }}>Consensus</p>
+                        <p style={{ fontSize: '16px', fontWeight: '500', textTransform: 'capitalize', color: rv(fin, 'recommendationKey')?.includes('buy') ? '#16a34a' : rv(fin, 'recommendationKey')?.includes('sell') ? '#ff3b30' : '#000' }}>
+                          {rv(fin, 'recommendationKey')?.replace('_', ' ')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
