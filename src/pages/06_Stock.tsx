@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const FINNHUB_KEY = import.meta.env.VITE_FINNHUB_KEY
-const fh = (path: string) => `https://finnhub.io/api/v1/${path}&token=${FINNHUB_KEY}`
+const fh = (path: string) => `/finnhub/api/v1/${path}&token=${FINNHUB_KEY}`
 
 interface Quote { c: number; d: number; dp: number; h: number; l: number; o: number; pc: number }
 interface Profile { name: string; ticker: string; finnhubIndustry: string; marketCapitalization: number; shareOutstanding: number; logo: string; weburl: string; country: string; currency: string; exchange: string }
