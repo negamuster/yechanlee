@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const KEY = import.meta.env.VITE_POLYGON_KEY
+const stockCache = new Map<string, any>()
 const poly = (path: string) =>
   `https://api.polygon.io${path}${path.includes('?') ? '&' : '?'}apiKey=${KEY}`
 
@@ -109,12 +110,23 @@ export default function Stock() {
 
   const loadData = async () => {
   setLoading(true); setError('')
-  setDetails(null); setPrevDay(null); setCandles([]); setYearCandles([])
-  setNews([]); setRelated([]); setFinancials([])
   setAiAnalysis(''); setAiDone(false)
 
+  // 캐시 있으면 바로 사용
+  if (stockCache.has(symbol)) {
+    const c = stockCache.get(symbol)
+    setDetails(c.details); setPrevDay(c.prevDay); setNews(c.news)
+    setRelated(c.related); setFinancials(c.financials); setYearCandles(c.yearCandles)
+    setLoading(false)
+    fetchCandles(symbol, periodDays[period])
+    return
+  }
+
+  setDetails(null); setPrevDay(null); setCandles([]); setYearCandles([])
+  setNews([]); setRelated([]); setFinancials([])
+
   try {
-    // 1단계: 핵심 데이터만 먼저 (3개)
+    // 1단계: 핵심 3개
     const [detRes, prevRes, newsRes] = await Promise.allSettled([
       fetch(poly(`/v3/reference/tickers/${symbol}`)).then(r => r.json()),
       fetch(poly(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`)).then(r => r.json()),
@@ -127,13 +139,15 @@ export default function Stock() {
       setError('찾을 수 없는 종목입니다. 티커를 확인해주세요.')
       setLoading(false); return
     }
-    if (prevRes.status === 'fulfilled' && prevRes.value?.results?.[0]) setPrevDay(prevRes.value.results[0])
-    if (newsRes.status === 'fulfilled') setNews(newsRes.value?.results || [])
 
+    const pd = prevRes.status === 'fulfilled' ? prevRes.value?.results?.[0] : null
+    const nw = newsRes.status === 'fulfilled' ? newsRes.value?.results || [] : []
+    if (pd) setPrevDay(pd)
+    setNews(nw)
     setLoading(false)
 
-    // 2단계: 나머지 데이터 (차트, 관련종목, 재무) — 약간 딜레이 후
-    await new Promise(r => setTimeout(r, 500))
+    // 2단계: 나머지 — 2초 딜레이
+    await new Promise(r => setTimeout(r, 2000))
 
     const [relRes, finRes, yrRes] = await Promise.allSettled([
       fetch(poly(`/v1/related-companies/${symbol}`)).then(r => r.json()),
@@ -141,13 +155,20 @@ export default function Stock() {
       fetch(poly(`/v2/aggs/ticker/${symbol}/range/1/day/${dateStr(365)}/${dateStr(0)}?adjusted=true&sort=asc&limit=365`)).then(r => r.json()),
     ])
 
-    if (relRes.status === 'fulfilled') setRelated((relRes.value?.results || []).map((r: any) => r.ticker).slice(0, 8))
-    if (finRes.status === 'fulfilled') setFinancials(finRes.value?.results || [])
-    if (yrRes.status === 'fulfilled' && yrRes.value?.results) {
-      setYearCandles(yrRes.value.results.map((b: any) => ({ t: Math.floor(b.t / 1000), c: b.c })))
-    }
+    const rel = relRes.status === 'fulfilled' ? (relRes.value?.results || []).map((r: any) => r.ticker).slice(0, 8) : []
+    const fin = finRes.status === 'fulfilled' ? finRes.value?.results || [] : []
+    const yr  = yrRes.status === 'fulfilled' && yrRes.value?.results
+      ? yrRes.value.results.map((b: any) => ({ t: Math.floor(b.t / 1000), c: b.c })) : []
 
-    await fetchCandles(symbol, 90)
+    setRelated(rel); setFinancials(fin); setYearCandles(yr)
+
+    // 캐시에 저장
+    stockCache.set(symbol, {
+      details: detRes.status === 'fulfilled' ? detRes.value.results : null,
+      prevDay: pd, news: nw, related: rel, financials: fin, yearCandles: yr,
+    })
+
+    await fetchCandles(symbol, periodDays[period])
 
   } catch { setError('데이터를 불러오지 못했습니다.') }
   finally { setLoading(false) }
