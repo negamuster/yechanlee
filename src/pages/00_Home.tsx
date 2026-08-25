@@ -68,110 +68,95 @@ export default function Home() {
         }
         .slide-up-1 { opacity: 0; animation: slideUp 0.8s ease forwards 0.2s; }
         .slide-up-2 { opacity: 0; animation: slideUp 0.8s ease forwards 0.5s; }
-        .slide-up-3 { opacity: 0; animation: slideUp 0.8s ease forwards 0.7s; }
         .scroll-arrow { animation: bounce 2s ease-in-out infinite; transition: opacity 0.4s ease; }
-        .search-wrap input::placeholder { color: #bbb; }
-        .search-wrap input:focus { outline: none; }
-        .search-btn { transition: opacity 0.15s ease; }
-        .search-btn:hover { opacity: 0.5; }
+        .nav-search-wrap input::placeholder { color: #bbb; }
+        .nav-search-wrap input:focus { outline: none; }
+        .nav-search-btn { transition: opacity 0.15s ease; }
+        .nav-search-btn:hover { opacity: 0.6; }
         .chip { transition: opacity 0.15s ease; cursor: pointer; }
         .chip:hover { opacity: 0.5; }
+        .footer-link { transition: opacity 0.15s ease; }
+        .footer-link:hover { opacity: 0.5; }
       `}</style>
 
       <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
 
-        {/* ── NAV ── */}
-        <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-          <span style={{ fontSize: '22px', fontWeight: '600', letterSpacing: '-0.01em' }}>Anthracite</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px' }}>
-            <span style={{ color: '#aaa' }}>Contact</span>
-            <a href="mailto:yechan030102@gmail.com" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
-              yechan030102@gmail.com
-            </a>
-            <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
-              LinkedIn
-            </a>
+        {/* ── NAV: 로고 + 검색창만 ── */}
+        <nav style={{ padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
+          <span
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{ fontSize: '22px', fontWeight: '600', letterSpacing: '-0.01em', cursor: 'pointer', flexShrink: 0 }}
+          >
+            Anthracite
+          </span>
+
+          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '280px', maxWidth: '46vw' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }}>
+              <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="티커 검색 (NVDA, AAPL...)"
+              style={{
+                width: '100%',
+                padding: '9px 44px 9px 34px',
+                fontSize: '13px',
+                fontFamily: '"Times New Roman", Times, serif',
+                border: '1px solid #e0e0e0',
+                background: '#fafafa',
+                color: '#000',
+                boxSizing: 'border-box',
+              }}
+            />
+            <button
+              onClick={handleSearch}
+              className="nav-search-btn"
+              style={{
+                position: 'absolute', right: '0', top: '0', bottom: '0',
+                padding: '0 12px',
+                background: '#000', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </nav>
 
+        {/* ── TICKER STRIP: nav 바로 아래, 상시 노출 ── */}
+        <div style={{ borderBottom: '1px solid #e8e8e8', backgroundColor: '#fff' }}>
+          <MarketOverview variant="ticker" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+        </div>
+
         {/* ── HERO ── */}
-        <section style={{ minHeight: 'calc(100vh - 81px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '80px 48px 40px', position: 'relative' }}>
+        <section style={{ minHeight: 'calc(100vh - 130px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '60px 48px 40px', position: 'relative' }}>
           <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '24px', color: '#000000', whiteSpace: 'nowrap' }}>
             Alphasight
           </h1>
-          <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '40px' }}>
+          <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '32px' }}>
             시장을 꿰뚫어 보다
           </p>
 
-          {/* ── SEARCH BAR ── */}
-          <div className="slide-up-3" style={{ width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginBottom: '64px' }}>
-            <div className="search-wrap" style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <svg
-                width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="#aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-                style={{ position: 'absolute', left: '18px', pointerEvents: 'none', flexShrink: 0 }}
+          {/* 빠른 티커 바로가기 */}
+          <div className="slide-up-2" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <span style={{ fontSize: '12px', color: '#bbb', letterSpacing: '0.05em' }}>바로가기</span>
+            {['NVDA', 'AAPL', 'TSLA', 'GOOGL', 'MSFT'].map(t => (
+              <span
+                key={t}
+                className="chip"
+                onClick={() => navigate(`/stock/${t}`)}
+                style={{ fontSize: '12px', color: '#888', border: '1px solid #e8e8e8', padding: '4px 10px' }}
               >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
-
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="종목명 또는 티커 검색  (NVDA, GOOGL...)"
-                style={{
-                  width: '100%',
-                  padding: '16px 60px 16px 50px',
-                  fontSize: '15px',
-                  fontFamily: '"Times New Roman", Times, serif',
-                  border: '1px solid #000',
-                  borderRadius: '0',
-                  backgroundColor: '#fff',
-                  color: '#000',
-                  boxSizing: 'border-box',
-                }}
-              />
-
-              <button
-                onClick={handleSearch}
-                className="search-btn"
-                style={{
-                  position: 'absolute', right: '0',
-                  height: '100%', padding: '0 20px',
-                  background: '#000', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <span style={{ fontSize: '12px', color: '#bbb', letterSpacing: '0.05em' }}>바로가기</span>
-              {['NVDA', 'AAPL', 'TSLA', 'GOOGL', 'MSFT'].map(t => (
-                <span
-                  key={t}
-                  className="chip"
-                  onClick={() => navigate(`/stock/${t}`)}
-                  style={{ fontSize: '12px', color: '#888', border: '1px solid #e8e8e8', padding: '4px 10px' }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* ── MARKET OVERVIEW ── */}
-          <div className="slide-up-3" style={{ width: '100%', maxWidth: '1100px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px', textAlign: 'left' }}>
-              Market Overview
-            </p>
-            <MarketOverview onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+                {t}
+              </span>
+            ))}
           </div>
 
           {/* 스크롤 화살표 */}
@@ -255,9 +240,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FOOTER ── */}
-        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', marginTop: '120px', fontSize: '12px', color: '#aaa' }}>
-          <span>Anthracite © 2026</span>
+        {/* ── FOOTER: Contact 이동 ── */}
+        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '40px 48px', marginTop: '120px' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <span style={{ fontSize: '12px', color: '#aaa' }}>Anthracite © 2026</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px' }}>
+              <span style={{ color: '#aaa' }}>Contact</span>
+              <a href="mailto:yechan030102@gmail.com" className="footer-link" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
+                yechan030102@gmail.com
+              </a>
+              <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
+                LinkedIn
+              </a>
+            </div>
+          </div>
         </footer>
 
       </div>
