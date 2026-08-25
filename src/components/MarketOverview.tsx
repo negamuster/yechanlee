@@ -24,10 +24,10 @@ const INDEX_LIST: IndexItem[] = [
   { label: 'VIX',      sub: 'VIXY', ticker: 'VIXY' },
 ]
 
-interface Row { o: number; c: number }
+interface Row { o: number; c: number; prevClose?: number; series: number[] }
 type DataMap = Record<string, Row>
 
-const CACHE_KEY = 'anthracite_market_overview'
+const CACHE_KEY = 'anthracite_market_overview_v2'
 const CACHE_TTL = 1000 * 60 * 60 * 4 // 4시간
 
 function dateStr(daysAgo: number): string {
@@ -35,23 +35,32 @@ function dateStr(daysAgo: number): string {
   d.setDate(d.getDate() - daysAgo)
   return d.toISOString().split('T')[0]
 }
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
-async function fetchGroupedForDate(date: string): Promise<{ stocks: any[]; crypto: any[] } | null> {
+async function fetchStocksGrouped(date: string): Promise<any[] | null> {
   try {
-    const [stocksRes, cryptoRes] = await Promise.allSettled([
-      fetch(poly(`/v2/aggs/grouped/locale/us/market/stocks/${date}?adjusted=true`)).then(r => r.json()),
-      fetch(poly(`/v2/aggs/grouped/locale/global/market/crypto/${date}?adjusted=true`)).then(r => r.json()),
-    ])
-    const stocks = stocksRes.status === 'fulfilled' ? stocksRes.value?.results || [] : []
-    const crypto = cryptoRes.status === 'fulfilled' ? cryptoRes.value?.results || [] : []
-    return { stocks, crypto }
+    const res = await fetch(poly(`/v2/aggs/grouped/locale/us/market/stocks/${date}?adjusted=true`))
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.results || null
   } catch {
     return null
   }
 }
 
+async function fetchCryptoGrouped(date: string): Promise<any[] | null> {
+  try {
+    const res = await fetch(poly(`/v2/aggs/grouped/locale/global/market/crypto/${date}?adjusted=true`))
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.results || null
+  } catch {
+    return null
+  }
+}
+
+// 무료 플랜 분당 5회 제한 안에서 안전하게: 주식 그룹 데이터 최대 3거래일치 + 크립토 1회 = 총 4회 호출
 async function loadMarketData(): Promise<DataMap | null> {
-  // 캐시 확인
   try {
     const cached = sessionStorage.getItem(CACHE_KEY)
     if (cached) {
@@ -60,23 +69,69 @@ async function loadMarketData(): Promise<DataMap | null> {
     }
   } catch {}
 
-  // 최근 거래일 탐색 (주말/휴일 대비 최대 6일 전까지)
-  for (let i = 0; i < 6; i++) {
+  const wantedTickers = new Set(INDEX_LIST.filter(t => !t.isCrypto).map(t => t.ticker))
+  const validDays: { date: string; rows: any[] }[] = []
+
+  // 최근 거래일 최대 3개 수집 (주말/휴일 스킵), 순차 호출 + 딜레이
+  for (let i = 1; i <= 8 && validDays.length < 3; i++) {
     const date = dateStr(i)
-    const result = await fetchGroupedForDate(date)
-    if (result && (result.stocks.length > 0 || result.crypto.length > 0)) {
-      const map: DataMap = {}
-      const wantedTickers = new Set(INDEX_LIST.map(t => t.ticker))
-      for (const row of [...result.stocks, ...result.crypto]) {
-        if (wantedTickers.has(row.T)) map[row.T] = { o: row.o, c: row.c }
-      }
-      if (Object.keys(map).length > 0) {
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: map })) } catch {}
-        return map
-      }
+    const rows = await fetchStocksGrouped(date)
+    if (rows && rows.length > 0) {
+      const filtered = rows.filter((r: any) => wantedTickers.has(r.T))
+      if (filtered.length > 0) validDays.push({ date, rows: filtered })
     }
+    await sleep(350)
   }
-  return null
+
+  if (validDays.length === 0) return null
+
+  // oldest -> newest 정렬
+  validDays.sort((a, b) => a.date.localeCompare(b.date))
+  const latest = validDays[validDays.length - 1]
+  const prev = validDays.length > 1 ? validDays[validDays.length - 2] : null
+
+  const map: DataMap = {}
+  for (const item of INDEX_LIST) {
+    if (item.isCrypto) continue
+    const latestRow = latest.rows.find((r: any) => r.T === item.ticker)
+    if (!latestRow) continue
+    const prevRow = prev?.rows.find((r: any) => r.T === item.ticker)
+    const series = validDays
+      .map(d => d.rows.find((r: any) => r.T === item.ticker)?.c)
+      .filter((v): v is number => v != null)
+    map[item.ticker] = { o: latestRow.o, c: latestRow.c, prevClose: prevRow?.c, series }
+  }
+
+  // 크립토(BTC): 최신 거래일 기준 1회만 호출
+  await sleep(350)
+  const cryptoRows = await fetchCryptoGrouped(latest.date)
+  if (cryptoRows) {
+    const btc = cryptoRows.find((r: any) => r.T === 'X:BTCUSD')
+    if (btc) map['X:BTCUSD'] = { o: btc.o, c: btc.c, series: [btc.o, btc.c] }
+  }
+
+  if (Object.keys(map).length === 0) return null
+
+  try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: map })) } catch {}
+  return map
+}
+
+function Sparkline({ series, color }: { series: number[]; color: string }) {
+  if (series.length < 2) return null
+  const min = Math.min(...series)
+  const max = Math.max(...series)
+  const range = max - min || 1
+  const W = 44, H = 18
+  const pts = series.map((v, i) => {
+    const x = (i / (series.length - 1)) * W
+    const y = H - ((v - min) / range) * H
+    return `${x.toFixed(1)},${y.toFixed(1)}`
+  }).join(' ')
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 interface MarketOverviewProps {
@@ -100,7 +155,12 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
     return () => { mounted = false }
   }, [])
 
-  // ── Ticker variant: thin persistent strip (Yahoo Finance style) ──
+  const getChangePct = (row: Row) => {
+    if (row.prevClose) return ((row.c - row.prevClose) / row.prevClose) * 100
+    return row.o ? ((row.c - row.o) / row.o) * 100 : 0
+  }
+
+  // ── Ticker variant: Yahoo Finance 스타일 얇은 상시 스트립 (스파크라인 포함) ──
   if (variant === 'ticker') {
     return (
       <div style={{ width: '100%' }}>
@@ -114,7 +174,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
           {loading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div key={i} style={{ padding: '10px 20px', borderRight: '1px solid #f0f0f0', flexShrink: 0 }}>
-                <div style={{ height: '10px', width: '70px', background: '#f0f0f0', borderRadius: '2px' }} />
+                <div style={{ height: '10px', width: '90px', background: '#f0f0f0', borderRadius: '2px' }} />
               </div>
             ))
           ) : failed ? (
@@ -123,22 +183,26 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
             INDEX_LIST.map(item => {
               const row = data?.[item.ticker]
               if (!row) return null
-              const change = row.c - row.o
-              const changePct = row.o ? (change / row.o) * 100 : 0
-              const isPositive = change >= 0
+              const changePct = getChangePct(row)
+              const isPositive = changePct >= 0
               const color = isPositive ? '#16a34a' : '#ff3b30'
               return (
                 <div
                   key={item.ticker}
                   className="mo-ticker-item"
                   onClick={() => onSelect(item.isCrypto ? item.sub : item.ticker)}
-                  style={{ display: 'flex', alignItems: 'baseline', gap: '8px', padding: '10px 20px', borderRight: '1px solid #f0f0f0', flexShrink: 0, whiteSpace: 'nowrap' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 20px', borderRight: '1px solid #f0f0f0', flexShrink: 0, whiteSpace: 'nowrap' }}
                 >
-                  <span style={{ fontSize: '12px', color: '#888' }}>{item.label}</span>
-                  <span style={{ fontSize: '13px', color: '#000', fontVariantNumeric: 'tabular-nums' }}>${row.c.toFixed(2)}</span>
-                  <span style={{ fontSize: '12px', color, fontVariantNumeric: 'tabular-nums' }}>
-                    {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
-                  </span>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', color: '#888' }}>{item.label}</span>
+                      <span style={{ fontSize: '13px', color: '#000', fontVariantNumeric: 'tabular-nums' }}>${row.c.toFixed(2)}</span>
+                    </div>
+                    <span style={{ fontSize: '11px', color, fontVariantNumeric: 'tabular-nums' }}>
+                      {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
+                    </span>
+                  </div>
+                  <Sparkline series={row.series} color={color} />
                 </div>
               )
             })
@@ -148,7 +212,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
     )
   }
 
-  // ── Cards variant: default larger card layout ──
+  // ── Cards variant: 큰 카드 레이아웃 ──
   return (
     <div style={{ width: '100%' }}>
       <style>{`
@@ -180,9 +244,8 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
                 </div>
               )
             }
-            const change = row.c - row.o
-            const changePct = row.o ? (change / row.o) * 100 : 0
-            const isPositive = change >= 0
+            const changePct = getChangePct(row)
+            const isPositive = changePct >= 0
             const color = isPositive ? '#16a34a' : '#ff3b30'
             return (
               <div
@@ -191,9 +254,12 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
                 onClick={() => onSelect(item.isCrypto ? item.sub : item.ticker)}
                 style={{ minWidth: '150px', padding: '18px 20px', border: '1px solid #e8e8e8', flexShrink: 0 }}
               >
-                <p style={{ fontSize: '11px', letterSpacing: '0.03em', color: '#aaa', marginBottom: '10px', whiteSpace: 'nowrap' }}>
-                  {item.label} <span style={{ color: '#ccc' }}>· {item.sub}</span>
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <p style={{ fontSize: '11px', letterSpacing: '0.03em', color: '#aaa', marginBottom: '10px', whiteSpace: 'nowrap' }}>
+                    {item.label} <span style={{ color: '#ccc' }}>· {item.sub}</span>
+                  </p>
+                  <Sparkline series={row.series} color={color} />
+                </div>
                 <p style={{ fontSize: '20px', fontWeight: '400', marginBottom: '6px', fontVariantNumeric: 'tabular-nums' }}>
                   ${row.c.toFixed(2)}
                 </p>

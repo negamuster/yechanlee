@@ -77,12 +77,16 @@ export default function Home() {
         .chip:hover { opacity: 0.5; }
         .footer-link { transition: opacity 0.15s ease; }
         .footer-link:hover { opacity: 0.5; }
+        @media (max-width: 720px) {
+          .nav-search-wrap { max-width: 100% !important; }
+          nav.main-nav { flex-wrap: wrap; gap: 14px; }
+        }
       `}</style>
 
       <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
 
-        {/* ── NAV: 로고 + 검색창만 ── */}
-        <nav style={{ padding: '20px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
+        {/* ── NAV: 로고 + 넓은 pill 검색창 ── */}
+        <nav className="main-nav" style={{ padding: '18px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '32px', borderBottom: '1px solid #e8e8e8' }}>
           <span
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             style={{ fontSize: '22px', fontWeight: '600', letterSpacing: '-0.01em', cursor: 'pointer', flexShrink: 0 }}
@@ -90,9 +94,9 @@ export default function Home() {
             Anthracite
           </span>
 
-          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '280px', maxWidth: '46vw' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }}>
+          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: 1, maxWidth: '520px', minWidth: '220px' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ position: 'absolute', left: '18px', pointerEvents: 'none' }}>
               <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
             </svg>
             <input
@@ -100,13 +104,14 @@ export default function Home() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="티커 검색 (NVDA, AAPL...)"
+              placeholder="종목명 또는 티커 검색 (NVDA, AAPL...)"
               style={{
                 width: '100%',
-                padding: '9px 44px 9px 34px',
-                fontSize: '13px',
+                padding: '11px 50px 11px 42px',
+                fontSize: '14px',
                 fontFamily: '"Times New Roman", Times, serif',
                 border: '1px solid #e0e0e0',
+                borderRadius: '999px',
                 background: '#fafafa',
                 color: '#000',
                 boxSizing: 'border-box',
@@ -116,8 +121,9 @@ export default function Home() {
               onClick={handleSearch}
               className="nav-search-btn"
               style={{
-                position: 'absolute', right: '0', top: '0', bottom: '0',
-                padding: '0 12px',
+                position: 'absolute', right: '5px', top: '5px', bottom: '5px',
+                width: '32px',
+                borderRadius: '50%',
                 background: '#000', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -130,7 +136,7 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* ── TICKER STRIP: nav 바로 아래, 상시 노출 ── */}
+        {/* ── TICKER STRIP: nav 바로 아래, 상시 노출 (스파크라인 포함) ── */}
         <div style={{ borderBottom: '1px solid #e8e8e8', backgroundColor: '#fff' }}>
           <MarketOverview variant="ticker" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
         </div>
