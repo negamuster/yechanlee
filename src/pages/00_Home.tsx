@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import MarketOverview from '../components/MarketOverview'
 
 const indicators = [
   {
@@ -94,18 +95,17 @@ export default function Home() {
         </nav>
 
         {/* ── HERO ── */}
-        <section style={{ height: 'calc(100vh - 81px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 48px', position: 'relative' }}>
-          <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '20px', color: '#000000', whiteSpace: 'nowrap' }}>
-            Alpha Sight
+        <section style={{ minHeight: 'calc(100vh - 81px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '80px 48px 40px', position: 'relative' }}>
+          <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '24px', color: '#000000', whiteSpace: 'nowrap' }}>
+            Alphasight
           </h1>
           <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '40px' }}>
             시장을 꿰뚫어 보다
           </p>
 
           {/* ── SEARCH BAR ── */}
-          <div className="slide-up-3" style={{ width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+          <div className="slide-up-3" style={{ width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginBottom: '64px' }}>
             <div className="search-wrap" style={{ width: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}>
-              {/* 돋보기 아이콘 */}
               <svg
                 width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="#aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
@@ -134,7 +134,6 @@ export default function Home() {
                 }}
               />
 
-              {/* 검색 버튼 */}
               <button
                 onClick={handleSearch}
                 className="search-btn"
@@ -152,7 +151,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* 힌트 + 빠른 티커 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <span style={{ fontSize: '12px', color: '#bbb', letterSpacing: '0.05em' }}>바로가기</span>
               {['NVDA', 'AAPL', 'TSLA', 'GOOGL', 'MSFT'].map(t => (
@@ -168,10 +166,18 @@ export default function Home() {
             </div>
           </div>
 
+          {/* ── MARKET OVERVIEW ── */}
+          <div className="slide-up-3" style={{ width: '100%', maxWidth: '1100px' }}>
+            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px', textAlign: 'left' }}>
+              Market Overview
+            </p>
+            <MarketOverview onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+          </div>
+
           {/* 스크롤 화살표 */}
           <div
             className="scroll-arrow"
-            style={{ position: 'absolute', bottom: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: showArrow ? 1 : 0, pointerEvents: showArrow ? 'auto' : 'none' }}
+            style={{ position: 'absolute', bottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: showArrow ? 1 : 0, pointerEvents: showArrow ? 'auto' : 'none' }}
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
           >
             <span style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
