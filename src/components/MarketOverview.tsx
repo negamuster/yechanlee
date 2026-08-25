@@ -21,7 +21,7 @@ const INDEX_LIST: IndexItem[] = [
   { label: '은',              sub: 'SLV',  ticker: 'SLV' },
   { label: '비트코인',        sub: 'BTC',  ticker: 'X:BTCUSD', isCrypto: true },
   { label: 'WTI 원유',        sub: 'USO',  ticker: 'USO' },
-  { label: 'VIX',      sub: 'VIXY', ticker: 'VIXY' },
+  { label: 'VIX 변동성',      sub: 'VIXY', ticker: 'VIXY' },
 ]
 
 interface Row { o: number; c: number; prevClose?: number; series: number[] }
@@ -116,27 +116,26 @@ async function loadMarketData(): Promise<DataMap | null> {
   return map
 }
 
-function Sparkline({ series, color }: { series: number[]; color: string }) {
+function Sparkline({ series, color, w = 44, h = 18 }: { series: number[]; color: string; w?: number; h?: number }) {
   if (series.length < 2) return null
   const min = Math.min(...series)
   const max = Math.max(...series)
   const range = max - min || 1
-  const W = 44, H = 18
   const pts = series.map((v, i) => {
-    const x = (i / (series.length - 1)) * W
-    const y = H - ((v - min) / range) * H
+    const x = (i / (series.length - 1)) * w
+    const y = h - ((v - min) / range) * h
     return `${x.toFixed(1)},${y.toFixed(1)}`
   }).join(' ')
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
-      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ flexShrink: 0 }}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
 interface MarketOverviewProps {
   onSelect: (ticker: string) => void
-  variant?: 'cards' | 'ticker'
+  variant?: 'cards' | 'ticker' | 'sidebar'
 }
 
 export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOverviewProps) {
@@ -208,6 +207,57 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
             })
           )}
         </div>
+      </div>
+    )
+  }
+
+  // ── Sidebar variant: 세로 리스트, 큰 카드 + 차트 ──
+  if (variant === 'sidebar') {
+    return (
+      <div style={{ width: '100%' }}>
+        <style>{`
+          .mo-sidebar-item { transition: opacity 0.15s ease; }
+          .mo-sidebar-item:hover { opacity: 0.5; }
+        `}</style>
+        {loading ? (
+          Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} style={{ padding: '18px 0', borderBottom: '1px solid #f0f0f0' }}>
+              <div style={{ height: '12px', width: '50%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '10px' }} />
+              <div style={{ height: '20px', width: '35%', background: '#f0f0f0', borderRadius: '2px' }} />
+            </div>
+          ))
+        ) : failed ? (
+          <p style={{ fontSize: '13px', color: '#bbb', padding: '20px 0' }}>시장 데이터를 불러오지 못했습니다.</p>
+        ) : (
+          INDEX_LIST.map(item => {
+            const row = data?.[item.ticker]
+            if (!row) return null
+            const changePct = getChangePct(row)
+            const isPositive = changePct >= 0
+            const color = isPositive ? '#16a34a' : '#ff3b30'
+            return (
+              <div
+                key={item.ticker}
+                className="mo-sidebar-item"
+                onClick={() => onSelect(item.isCrypto ? item.sub : item.ticker)}
+                style={{ padding: '20px 0', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: '12px', color: '#aaa', marginBottom: '6px' }}>
+                    {item.label} <span style={{ color: '#ccc' }}>· {item.sub}</span>
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                    <span style={{ fontSize: '22px', fontWeight: '400', fontVariantNumeric: 'tabular-nums' }}>${row.c.toFixed(2)}</span>
+                    <span style={{ fontSize: '13px', color, fontVariantNumeric: 'tabular-nums' }}>
+                      {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+                <Sparkline series={row.series} color={color} w={72} h={30} />
+              </div>
+            )
+          })
+        )}
       </div>
     )
   }

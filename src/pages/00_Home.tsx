@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import MarketOverview from '../components/MarketOverview'
+import NewsFeed from '../components/NewsFeed'
 
 const indicators = [
   {
@@ -37,14 +38,7 @@ const indicators = [
 
 export default function Home() {
   const navigate = useNavigate()
-  const [showArrow, setShowArrow] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-
-  useEffect(() => {
-    const handleScroll = () => setShowArrow(window.scrollY < 80)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   const handleSearch = () => {
     const q = searchQuery.trim().toUpperCase()
@@ -58,35 +52,22 @@ export default function Home() {
   return (
     <>
       <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(10px); }
-        }
-        .slide-up-1 { opacity: 0; animation: slideUp 0.8s ease forwards 0.2s; }
-        .slide-up-2 { opacity: 0; animation: slideUp 0.8s ease forwards 0.5s; }
-        .scroll-arrow { animation: bounce 2s ease-in-out infinite; transition: opacity 0.4s ease; }
         .nav-search-wrap input::placeholder { color: #bbb; }
         .nav-search-wrap input:focus { outline: none; }
         .nav-search-btn { transition: opacity 0.15s ease; }
         .nav-search-btn:hover { opacity: 0.6; }
-        .chip { transition: opacity 0.15s ease; cursor: pointer; }
-        .chip:hover { opacity: 0.5; }
         .footer-link { transition: opacity 0.15s ease; }
         .footer-link:hover { opacity: 0.5; }
-        @media (max-width: 720px) {
-          .nav-search-wrap { max-width: 100% !important; }
-          nav.main-nav { flex-wrap: wrap; gap: 14px; }
+        @media (max-width: 860px) {
+          .home-main-grid { grid-template-columns: 1fr !important; }
+          .home-market-col { order: -1; }
         }
       `}</style>
 
       <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
 
-        {/* ── NAV: 로고 + 넓은 pill 검색창 ── */}
-        <nav className="main-nav" style={{ padding: '18px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '32px', borderBottom: '1px solid #e8e8e8' }}>
+        {/* ── NAV: 로고 바로 옆 컴팩트 검색창 ── */}
+        <nav style={{ padding: '18px 48px', display: 'flex', alignItems: 'center', gap: '24px', borderBottom: '1px solid #e8e8e8' }}>
           <span
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             style={{ fontSize: '22px', fontWeight: '600', letterSpacing: '-0.01em', cursor: 'pointer', flexShrink: 0 }}
@@ -94,9 +75,9 @@ export default function Home() {
             Anthracite
           </span>
 
-          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: 1, maxWidth: '520px', minWidth: '220px' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{ position: 'absolute', left: '18px', pointerEvents: 'none' }}>
+          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '300px' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              style={{ position: 'absolute', left: '16px', pointerEvents: 'none' }}>
               <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
             </svg>
             <input
@@ -104,11 +85,11 @@ export default function Home() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="종목명 또는 티커 검색 (NVDA, AAPL...)"
+              placeholder="티커 검색 (NVDA, AAPL...)"
               style={{
                 width: '100%',
-                padding: '11px 50px 11px 42px',
-                fontSize: '14px',
+                padding: '9px 42px 9px 40px',
+                fontSize: '13px',
                 fontFamily: '"Times New Roman", Times, serif',
                 border: '1px solid #e0e0e0',
                 borderRadius: '999px',
@@ -121,14 +102,14 @@ export default function Home() {
               onClick={handleSearch}
               className="nav-search-btn"
               style={{
-                position: 'absolute', right: '5px', top: '5px', bottom: '5px',
-                width: '32px',
+                position: 'absolute', right: '4px', top: '4px', bottom: '4px',
+                width: '28px',
                 borderRadius: '50%',
                 background: '#000', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                 stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
@@ -136,51 +117,34 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* ── TICKER STRIP: nav 바로 아래, 상시 노출 (스파크라인 포함) ── */}
-        <div style={{ borderBottom: '1px solid #e8e8e8', backgroundColor: '#fff' }}>
-          <MarketOverview variant="ticker" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
-        </div>
+        {/* ── MAIN: News (좌) + Market Overview (우) ── */}
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 48px 0' }}>
+          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '64px', alignItems: 'start' }}>
 
-        {/* ── HERO ── */}
-        <section style={{ minHeight: 'calc(100vh - 130px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '60px 48px 40px', position: 'relative' }}>
-          <h1 className="slide-up-1" style={{ fontSize: 'clamp(40px, 6vw, 72px)', lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '400', marginBottom: '24px', color: '#000000', whiteSpace: 'nowrap' }}>
-            Alphasight
-          </h1>
-          <p className="slide-up-2" style={{ fontSize: '17px', lineHeight: '1.75', color: '#000000', maxWidth: '480px', marginBottom: '32px' }}>
-            시장을 꿰뚫어 보다
-          </p>
+            {/* 좌측: 최신 뉴스 */}
+            <div>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
+                Latest News
+              </p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '32px' }}>시장을 움직이는 최신 소식</p>
+              <NewsFeed />
+            </div>
 
-          {/* 빠른 티커 바로가기 */}
-          <div className="slide-up-2" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <span style={{ fontSize: '12px', color: '#bbb', letterSpacing: '0.05em' }}>바로가기</span>
-            {['NVDA', 'AAPL', 'TSLA', 'GOOGL', 'MSFT'].map(t => (
-              <span
-                key={t}
-                className="chip"
-                onClick={() => navigate(`/stock/${t}`)}
-                style={{ fontSize: '12px', color: '#888', border: '1px solid #e8e8e8', padding: '4px 10px' }}
-              >
-                {t}
-              </span>
-            ))}
-          </div>
+            {/* 우측: 주요 지수 (차트 포함, 크게) */}
+            <div className="home-market-col">
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
+                Market Overview
+              </p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '32px' }}>주요 지수·원자재·암호화폐</p>
+              <MarketOverview variant="sidebar" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+            </div>
 
-          {/* 스크롤 화살표 */}
-          <div
-            className="scroll-arrow"
-            style={{ position: 'absolute', bottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', opacity: showArrow ? 1 : 0, pointerEvents: showArrow ? 'auto' : 'none' }}
-            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-          >
-            <span style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Scroll</span>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
           </div>
         </section>
 
         {/* ── MAIN GRID: Indicators + Tools ── */}
         <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 0' }}>
-          <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
+          <div style={{ borderTop: '1px solid #e8e8e8', marginTop: '80px', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
 
             {/* 왼쪽: Indicators */}
             <div>
@@ -246,7 +210,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── FOOTER: Contact 이동 ── */}
+        {/* ── FOOTER ── */}
         <footer style={{ borderTop: '1px solid #e8e8e8', padding: '40px 48px', marginTop: '120px' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
             <span style={{ fontSize: '12px', color: '#aaa' }}>Anthracite © 2026</span>
