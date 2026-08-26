@@ -62,12 +62,20 @@ export default function Home() {
           .home-main-grid { grid-template-columns: 1fr !important; }
           .home-market-col { order: -1; }
         }
+        @media (max-width: 560px) {
+          .nav-search-wrap { width: 100% !important; }
+          .main-nav { flex-wrap: wrap; }
+        }
       `}</style>
 
       <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
 
-        {/* ── NAV: 로고 바로 옆 컴팩트 검색창 ── */}
-        <nav style={{ padding: '18px 48px', display: 'flex', alignItems: 'center', gap: '24px', borderBottom: '1px solid #e8e8e8' }}>
+        {/* ── NAV: sticky, 로고 + 오른쪽으로 이동한 넓은 검색창 ── */}
+        <nav className="main-nav" style={{
+          position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#ffffff',
+          padding: '18px 48px', display: 'flex', alignItems: 'center', gap: '48px',
+          borderBottom: '1px solid #e8e8e8',
+        }}>
           <span
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             style={{ fontSize: '22px', fontWeight: '600', letterSpacing: '-0.01em', cursor: 'pointer', flexShrink: 0 }}
@@ -75,7 +83,7 @@ export default function Home() {
             Anthracite
           </span>
 
-          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '300px' }}>
+          <div className="nav-search-wrap" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '440px', maxWidth: '50vw' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
               style={{ position: 'absolute', left: '16px', pointerEvents: 'none' }}>
               <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
@@ -85,10 +93,10 @@ export default function Home() {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="티커 검색 (NVDA, AAPL...)"
+              placeholder="종목명 또는 티커 검색 (NVDA, AAPL...)"
               style={{
                 width: '100%',
-                padding: '9px 42px 9px 40px',
+                padding: '10px 44px 10px 40px',
                 fontSize: '13px',
                 fontFamily: '"Times New Roman", Times, serif',
                 border: '1px solid #e0e0e0',
@@ -103,7 +111,7 @@ export default function Home() {
               className="nav-search-btn"
               style={{
                 position: 'absolute', right: '4px', top: '4px', bottom: '4px',
-                width: '28px',
+                width: '30px',
                 borderRadius: '50%',
                 background: '#000', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -117,26 +125,26 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* ── MAIN: News (좌) + Market Overview (우) ── */}
-        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 48px 0' }}>
-          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '64px', alignItems: 'start' }}>
+        {/* ── MAIN: News (좌) + Market Overview (우, 2열 박스 그리드) ── */}
+        <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '48px 48px 0' }}>
+          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '64px', alignItems: 'start' }}>
 
             {/* 좌측: 최신 뉴스 */}
             <div>
               <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
                 Latest News
               </p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '32px' }}>시장을 움직이는 최신 소식</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>시장을 움직이는 최신 소식</p>
               <NewsFeed />
             </div>
 
-            {/* 우측: 주요 지수 (차트 포함, 크게) */}
+            {/* 우측: 주요 지수 (2열 박스, 차트 포함) */}
             <div className="home-market-col">
               <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
                 Market Overview
               </p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '32px' }}>주요 지수·원자재·암호화폐</p>
-              <MarketOverview variant="sidebar" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>주요 지수·원자재·암호화폐 (1주)</p>
+              <MarketOverview variant="grid" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
             </div>
 
           </div>

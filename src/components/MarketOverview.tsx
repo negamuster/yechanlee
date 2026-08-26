@@ -21,14 +21,15 @@ const INDEX_LIST: IndexItem[] = [
   { label: '은',              sub: 'SLV',  ticker: 'SLV' },
   { label: '비트코인',        sub: 'BTC',  ticker: 'X:BTCUSD', isCrypto: true },
   { label: 'WTI 원유',        sub: 'USO',  ticker: 'USO' },
-  { label: 'VIX 변동성',      sub: 'VIXY', ticker: 'VIXY' },
+  { label: 'VIX',            sub: 'VIXY', ticker: 'VIXY' },
 ]
 
 interface Row { o: number; c: number; prevClose?: number; series: number[] }
 type DataMap = Record<string, Row>
 
-const CACHE_KEY = 'anthracite_market_overview_v2'
-const CACHE_TTL = 1000 * 60 * 60 * 4 // 4시간
+// localStorage에 하루 종일 캐싱 → API 호출 횟수를 하루 1회 수준으로 최소화
+const CACHE_KEY = 'anthracite_market_overview_v3'
+const CACHE_TTL = 1000 * 60 * 60 * 20 // 20시간
 
 function dateStr(daysAgo: number): string {
   const d = new Date()
@@ -37,10 +38,13 @@ function dateStr(daysAgo: number): string {
 }
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
-async function fetchStocksGrouped(date: string): Promise<any[] | null> {
+async function fetchStocksGrouped(date: string, retry = true): Promise<any[] | null> {
   try {
     const res = await fetch(poly(`/v2/aggs/grouped/locale/us/market/stocks/${date}?adjusted=true`))
-    if (!res.ok) return null
+    if (!res.ok) {
+      if (retry && res.status === 429) { await sleep(1500); return fetchStocksGrouped(date, false) }
+      return null
+    }
     const data = await res.json()
     return data?.results || null
   } catch {
@@ -59,33 +63,32 @@ async function fetchCryptoGrouped(date: string): Promise<any[] | null> {
   }
 }
 
-// 무료 플랜 분당 5회 제한 안에서 안전하게: 주식 그룹 데이터 최대 3거래일치 + 크립토 1회 = 총 4회 호출
-async function loadMarketData(): Promise<DataMap | null> {
+// 1주(5거래일) 종가로 스파크라인 구성. localStorage 캐싱(20시간)으로 API 호출은 하루 1회 수준.
+async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
   try {
-    const cached = sessionStorage.getItem(CACHE_KEY)
+    const cached = localStorage.getItem(CACHE_KEY)
     if (cached) {
       const parsed = JSON.parse(cached)
-      if (Date.now() - parsed.ts < CACHE_TTL) return parsed.data
+      if (Date.now() - parsed.ts < CACHE_TTL) return parsed
     }
   } catch {}
 
   const wantedTickers = new Set(INDEX_LIST.filter(t => !t.isCrypto).map(t => t.ticker))
   const validDays: { date: string; rows: any[] }[] = []
 
-  // 최근 거래일 최대 3개 수집 (주말/휴일 스킵), 순차 호출 + 딜레이
-  for (let i = 1; i <= 8 && validDays.length < 3; i++) {
+  // 최근 거래일 5개(1주) 수집, 순차 호출 + 딜레이
+  for (let i = 1; i <= 10 && validDays.length < 5; i++) {
     const date = dateStr(i)
     const rows = await fetchStocksGrouped(date)
     if (rows && rows.length > 0) {
       const filtered = rows.filter((r: any) => wantedTickers.has(r.T))
       if (filtered.length > 0) validDays.push({ date, rows: filtered })
     }
-    await sleep(350)
+    await sleep(400)
   }
 
   if (validDays.length === 0) return null
 
-  // oldest -> newest 정렬
   validDays.sort((a, b) => a.date.localeCompare(b.date))
   const latest = validDays[validDays.length - 1]
   const prev = validDays.length > 1 ? validDays[validDays.length - 2] : null
@@ -102,8 +105,8 @@ async function loadMarketData(): Promise<DataMap | null> {
     map[item.ticker] = { o: latestRow.o, c: latestRow.c, prevClose: prevRow?.c, series }
   }
 
-  // 크립토(BTC): 최신 거래일 기준 1회만 호출
-  await sleep(350)
+  // 크립토(BTC): 최신 거래일 기준 1회만 (당일 시가/종가 기준)
+  await sleep(400)
   const cryptoRows = await fetchCryptoGrouped(latest.date)
   if (cryptoRows) {
     const btc = cryptoRows.find((r: any) => r.T === 'X:BTCUSD')
@@ -112,8 +115,9 @@ async function loadMarketData(): Promise<DataMap | null> {
 
   if (Object.keys(map).length === 0) return null
 
-  try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: map })) } catch {}
-  return map
+  const result = { data: map, ts: Date.now() }
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(result)) } catch {}
+  return result
 }
 
 function Sparkline({ series, color, w = 44, h = 18 }: { series: number[]; color: string; w?: number; h?: number }) {
@@ -133,21 +137,31 @@ function Sparkline({ series, color, w = 44, h = 18 }: { series: number[]; color:
   )
 }
 
+function timeAgoShort(ts: number): string {
+  const mins = Math.floor((Date.now() - ts) / 60000)
+  if (mins < 1) return '방금 전'
+  if (mins < 60) return `${mins}분 전`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}시간 전`
+  return `${Math.floor(hours / 24)}일 전`
+}
+
 interface MarketOverviewProps {
   onSelect: (ticker: string) => void
-  variant?: 'cards' | 'ticker' | 'sidebar'
+  variant?: 'cards' | 'ticker' | 'grid'
 }
 
 export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOverviewProps) {
   const [data, setData] = useState<DataMap | null>(null)
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let mounted = true
-    loadMarketData().then(map => {
+    loadMarketData().then(result => {
       if (!mounted) return
-      if (map) setData(map)
+      if (result) { setData(result.data); setUpdatedAt(result.ts) }
       else setFailed(true)
       setLoading(false)
     })
@@ -159,7 +173,70 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
     return row.o ? ((row.c - row.o) / row.o) * 100 : 0
   }
 
-  // ── Ticker variant: Yahoo Finance 스타일 얇은 상시 스트립 (스파크라인 포함) ──
+  // ── Grid variant: 2열 박스 카드 (참고 이미지 스타일) ──
+  if (variant === 'grid') {
+    return (
+      <div style={{ width: '100%' }}>
+        <style>{`
+          .mo-box { transition: opacity 0.15s ease; cursor: pointer; }
+          .mo-box:hover { opacity: 0.6; }
+        `}</style>
+        {updatedAt && !loading && (
+          <p style={{ fontSize: '11px', color: '#ccc', marginBottom: '14px' }}>업데이트: {timeAgoShort(updatedAt)}</p>
+        )}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          {loading ? (
+            Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} style={{ padding: '16px 18px', border: '1px solid #f0f0f0' }}>
+                <div style={{ height: '10px', width: '70%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '12px' }} />
+                <div style={{ height: '18px', width: '55%', background: '#f0f0f0', borderRadius: '2px' }} />
+              </div>
+            ))
+          ) : failed ? (
+            <p style={{ fontSize: '13px', color: '#bbb', gridColumn: '1 / -1' }}>시장 데이터를 불러오지 못했습니다.</p>
+          ) : (
+            INDEX_LIST.map(item => {
+              const row = data?.[item.ticker]
+              if (!row) {
+                return (
+                  <div key={item.ticker} style={{ padding: '16px 18px', border: '1px solid #f0f0f0' }}>
+                    <p style={{ fontSize: '11px', color: '#ccc', marginBottom: '10px' }}>{item.label}</p>
+                    <p style={{ fontSize: '14px', color: '#ccc' }}>N/A</p>
+                  </div>
+                )
+              }
+              const changePct = getChangePct(row)
+              const isPositive = changePct >= 0
+              const color = isPositive ? '#16a34a' : '#ff3b30'
+              return (
+                <div
+                  key={item.ticker}
+                  className="mo-box"
+                  onClick={() => onSelect(item.isCrypto ? item.sub : item.ticker)}
+                  style={{ padding: '16px 18px', border: '1px solid #e8e8e8' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                    <p style={{ fontSize: '11px', color: '#aaa', lineHeight: '1.4' }}>
+                      {item.label}<br /><span style={{ color: '#ccc' }}>{item.sub}</span>
+                    </p>
+                    <Sparkline series={row.series} color={color} w={48} h={20} />
+                  </div>
+                  <p style={{ fontSize: '19px', fontWeight: '400', marginBottom: '4px', fontVariantNumeric: 'tabular-nums' }}>
+                    ${row.c.toFixed(2)}
+                  </p>
+                  <p style={{ fontSize: '12px', color, fontVariantNumeric: 'tabular-nums' }}>
+                    {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
+                  </p>
+                </div>
+              )
+            })
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Ticker variant: Yahoo Finance 스타일 얇은 상시 스트립 ──
   if (variant === 'ticker') {
     return (
       <div style={{ width: '100%' }}>
@@ -211,58 +288,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
     )
   }
 
-  // ── Sidebar variant: 세로 리스트, 큰 카드 + 차트 ──
-  if (variant === 'sidebar') {
-    return (
-      <div style={{ width: '100%' }}>
-        <style>{`
-          .mo-sidebar-item { transition: opacity 0.15s ease; }
-          .mo-sidebar-item:hover { opacity: 0.5; }
-        `}</style>
-        {loading ? (
-          Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} style={{ padding: '18px 0', borderBottom: '1px solid #f0f0f0' }}>
-              <div style={{ height: '12px', width: '50%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '10px' }} />
-              <div style={{ height: '20px', width: '35%', background: '#f0f0f0', borderRadius: '2px' }} />
-            </div>
-          ))
-        ) : failed ? (
-          <p style={{ fontSize: '13px', color: '#bbb', padding: '20px 0' }}>시장 데이터를 불러오지 못했습니다.</p>
-        ) : (
-          INDEX_LIST.map(item => {
-            const row = data?.[item.ticker]
-            if (!row) return null
-            const changePct = getChangePct(row)
-            const isPositive = changePct >= 0
-            const color = isPositive ? '#16a34a' : '#ff3b30'
-            return (
-              <div
-                key={item.ticker}
-                className="mo-sidebar-item"
-                onClick={() => onSelect(item.isCrypto ? item.sub : item.ticker)}
-                style={{ padding: '20px 0', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', cursor: 'pointer' }}
-              >
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: '12px', color: '#aaa', marginBottom: '6px' }}>
-                    {item.label} <span style={{ color: '#ccc' }}>· {item.sub}</span>
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                    <span style={{ fontSize: '22px', fontWeight: '400', fontVariantNumeric: 'tabular-nums' }}>${row.c.toFixed(2)}</span>
-                    <span style={{ fontSize: '13px', color, fontVariantNumeric: 'tabular-nums' }}>
-                      {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
-                    </span>
-                  </div>
-                </div>
-                <Sparkline series={row.series} color={color} w={72} h={30} />
-              </div>
-            )
-          })
-        )}
-      </div>
-    )
-  }
-
-  // ── Cards variant: 큰 카드 레이아웃 ──
+  // ── Cards variant: 가로 스크롤 큰 카드 ──
   return (
     <div style={{ width: '100%' }}>
       <style>{`
