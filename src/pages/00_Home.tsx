@@ -127,7 +127,7 @@ export default function Home() {
 
         {/* ── MAIN: News (좌) + Market Overview (우, 2열 박스 그리드) ── */}
         <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '48px 40px 0' }}>
-          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '64px', alignItems: 'start' }}>
+          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.9fr', gap: '64px', alignItems: 'start' }}>
 
             {/* 좌측: 최신 뉴스 */}
             <div>

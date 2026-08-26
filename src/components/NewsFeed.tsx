@@ -14,7 +14,21 @@ interface NewsItem {
   tickers?: string[]
 }
 
-const CACHE_KEY = 'anthracite_home_news_v2'
+// 집단소송 로펌 광고성 보도자료 차단 (제목 기반 키워드 필터)
+const SPAM_PATTERNS = [
+  'CLASS ACTION', 'SHAREHOLDER ALERT', 'INVESTOR ALERT', 'LEAD PLAINTIFF',
+  'ENCOURAGES', 'REMINDS INVESTORS', 'SECURITIES FRAUD', 'TO SECURE COUNSEL',
+  'LAW FIRM', 'LAW OFFICES', 'ROSEN', 'POMERANTZ', 'KESSLER TOPAZ',
+  'LEVI & KORSINSKY', 'GLANCY PRONGAY', 'BRAGAR EAGEL', 'BRONSTEIN, GEWIRTZ',
+  'ROBBINS GELLER', 'JOHNSON FISTEL', 'HALPER SADEH', 'KAHN SWICK',
+  'SCHALL LAW', 'FARUQI & FARUQI', 'GROSS LAW FIRM', 'INVESTIGATION',
+]
+function isSpam(title: string): boolean {
+  const t = title.toUpperCase()
+  return SPAM_PATTERNS.some(p => t.includes(p))
+}
+
+const CACHE_KEY = 'anthracite_home_news_v3' // v2 → v3: 스팸 필터 반영을 위해 기존 캐시 무효화
 const CACHE_TTL = 1000 * 60 * 20 // 20분
 
 async function loadNews(): Promise<{ items: NewsItem[]; ts: number } | null> {
@@ -37,6 +51,7 @@ async function loadNews(): Promise<{ items: NewsItem[]; ts: number } | null> {
     const perPublisherCount: Record<string, number> = {}
     const diversified: NewsItem[] = []
     for (const item of all) {
+      if (isSpam(item.title)) continue
       const pub = item.publisher?.name || 'unknown'
       const count = perPublisherCount[pub] || 0
       if (count >= 2) continue

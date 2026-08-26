@@ -27,6 +27,11 @@ const INDEX_LIST: IndexItem[] = [
 interface Row { o: number; c: number; prevClose?: number; series: number[] }
 type DataMap = Record<string, Row>
 
+// 1,000 이상 숫자에 천 단위 콤마 자동 적용 (비트코인처럼 큰 값 대응, 다른 곳에서도 재사용 가능)
+function fmtPrice(v: number): string {
+  return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 // localStorage에 하루 종일 캐싱 → API 호출 횟수를 하루 1회 수준으로 최소화
 const CACHE_KEY = 'anthracite_market_overview_v3'
 const CACHE_TTL = 1000 * 60 * 60 * 20 // 20시간
@@ -222,7 +227,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
                     <Sparkline series={row.series} color={color} w={48} h={20} />
                   </div>
                   <p style={{ fontSize: '19px', fontWeight: '400', marginBottom: '4px', fontVariantNumeric: 'tabular-nums' }}>
-                    ${row.c.toFixed(2)}
+                    ${fmtPrice(row.c)}
                   </p>
                   <p style={{ fontSize: '12px', color, fontVariantNumeric: 'tabular-nums' }}>
                     {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
@@ -272,7 +277,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
                   <div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                       <span style={{ fontSize: '12px', color: '#888' }}>{item.label}</span>
-                      <span style={{ fontSize: '13px', color: '#000', fontVariantNumeric: 'tabular-nums' }}>${row.c.toFixed(2)}</span>
+                      <span style={{ fontSize: '13px', color: '#000', fontVariantNumeric: 'tabular-nums' }}>${fmtPrice(row.c)}</span>
                     </div>
                     <span style={{ fontSize: '11px', color, fontVariantNumeric: 'tabular-nums' }}>
                       {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
@@ -337,7 +342,7 @@ export default function MarketOverview({ onSelect, variant = 'cards' }: MarketOv
                   <Sparkline series={row.series} color={color} />
                 </div>
                 <p style={{ fontSize: '20px', fontWeight: '400', marginBottom: '6px', fontVariantNumeric: 'tabular-nums' }}>
-                  ${row.c.toFixed(2)}
+                  ${fmtPrice(row.c)}
                 </p>
                 <p style={{ fontSize: '13px', color, fontVariantNumeric: 'tabular-nums' }}>
                   {isPositive ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
