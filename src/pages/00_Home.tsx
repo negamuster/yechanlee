@@ -126,24 +126,22 @@ export default function Home() {
         </nav>
 
         {/* ── MAIN: News (좌) + Market Overview (우, 2열 박스 그리드) ── */}
-        <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '48px 48px 0' }}>
+        <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '48px 40px 0' }}>
           <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '64px', alignItems: 'start' }}>
 
             {/* 좌측: 최신 뉴스 */}
             <div>
-              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '28px' }}>
                 Latest News
               </p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>시장을 움직이는 최신 소식</p>
               <NewsFeed />
             </div>
 
             {/* 우측: 주요 지수 (2열 박스, 차트 포함) */}
             <div className="home-market-col">
-              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '8px' }}>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '28px' }}>
                 Market Overview
               </p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>주요 지수·원자재·암호화폐 (1주)</p>
               <MarketOverview variant="grid" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
             </div>
 
@@ -151,8 +149,8 @@ export default function Home() {
         </section>
 
         {/* ── MAIN GRID: Indicators + Tools ── */}
-        <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 48px 0' }}>
-          <div style={{ borderTop: '1px solid #e8e8e8', marginTop: '80px', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 80px', alignItems: 'start' }}>
+        <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 40px 0' }}>
+          <div style={{ borderTop: '1px solid #e8e8e8', marginTop: '80px', paddingTop: '64px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 100px', alignItems: 'start', maxWidth: '1240px' }}>
 
             {/* 왼쪽: Indicators */}
             <div>

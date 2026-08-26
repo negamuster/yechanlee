@@ -27,11 +27,25 @@ async function loadNews(): Promise<{ items: NewsItem[]; ts: number } | null> {
   } catch {}
 
   try {
-    const res = await fetch(poly('/v2/reference/news?limit=11&order=desc'))
+    // 더 많이 가져와서(40개) 언론사별로 다양화 (한 매체가 도배하지 않도록 최대 2개씩)
+    const res = await fetch(poly('/v2/reference/news?limit=40&order=desc'))
     if (!res.ok) return null
     const data = await res.json()
-    const items: NewsItem[] = data?.results || []
-    if (items.length === 0) return null
+    const all: NewsItem[] = data?.results || []
+    if (all.length === 0) return null
+
+    const perPublisherCount: Record<string, number> = {}
+    const diversified: NewsItem[] = []
+    for (const item of all) {
+      const pub = item.publisher?.name || 'unknown'
+      const count = perPublisherCount[pub] || 0
+      if (count >= 2) continue
+      perPublisherCount[pub] = count + 1
+      diversified.push(item)
+      if (diversified.length >= 11) break
+    }
+
+    const items = diversified.length > 0 ? diversified : all.slice(0, 11)
     const result = { items, ts: Date.now() }
     try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)) } catch {}
     return result
