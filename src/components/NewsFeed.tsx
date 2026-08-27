@@ -122,7 +122,7 @@ export default function NewsFeed() {
         <>
           {/* 대표 기사 스켈레톤 */}
           <div style={{ marginBottom: '36px' }}>
-            <div style={{ width: '100%', height: '340px', background: '#f0f0f0', borderRadius: '2px', marginBottom: '18px' }} />
+            <div style={{ width: '100%', height: '220px', background: '#f0f0f0', borderRadius: '2px', marginBottom: '18px' }} />
             <div style={{ height: '28px', width: '80%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '10px' }} />
             <div style={{ height: '13px', width: '30%', background: '#f5f5f5', borderRadius: '2px' }} />
           </div>
@@ -150,7 +150,7 @@ export default function NewsFeed() {
                   <img
                     src={lead.image_url}
                     alt=""
-                    style={{ width: '100%', height: '340px', objectFit: 'cover', borderRadius: '2px', marginBottom: '20px' }}
+                    style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '2px', marginBottom: '20px' }}
                     onError={e => (e.currentTarget.style.display = 'none')}
                   />
                 )}

@@ -33,7 +33,7 @@ function fmtPrice(v: number): string {
 }
 
 // localStorage에 하루 종일 캐싱 → API 호출 횟수를 하루 1회 수준으로 최소화
-const CACHE_KEY = 'anthracite_market_overview_v3'
+const CACHE_KEY = 'anthracite_market_overview_v4' // v3 → v4: 스파크라인 기간 5일→15일 확장
 const CACHE_TTL = 1000 * 60 * 60 * 20 // 20시간
 
 function dateStr(daysAgo: number): string {
@@ -68,7 +68,7 @@ async function fetchCryptoGrouped(date: string): Promise<any[] | null> {
   }
 }
 
-// 1주(5거래일) 종가로 스파크라인 구성. localStorage 캐싱(20시간)으로 API 호출은 하루 1회 수준.
+// 3주(15거래일) 종가로 스파크라인 구성. localStorage 캐싱(20시간)으로 API 호출은 하루 1회 수준.
 async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
   try {
     const cached = localStorage.getItem(CACHE_KEY)
@@ -81,8 +81,8 @@ async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
   const wantedTickers = new Set(INDEX_LIST.filter(t => !t.isCrypto).map(t => t.ticker))
   const validDays: { date: string; rows: any[] }[] = []
 
-  // 최근 거래일 5개(1주) 수집, 순차 호출 + 딜레이
-  for (let i = 1; i <= 10 && validDays.length < 5; i++) {
+  // 최근 거래일 15개(3주) 수집, 순차 호출 + 딜레이 → 스파크라인이 직선처럼 보이지 않고 실제 등락을 반영
+  for (let i = 1; i <= 25 && validDays.length < 15; i++) {
     const date = dateStr(i)
     const rows = await fetchStocksGrouped(date)
     if (rows && rows.length > 0) {
