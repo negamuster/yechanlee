@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import MarketOverview from '../components/MarketOverview'
 import NewsFeed from '../components/NewsFeed'
+import MarketMovers from '../components/MarketMovers'
 
 const indicators = [
   {
@@ -143,6 +144,7 @@ export default function Home() {
                 Market Overview
               </p>
               <MarketOverview variant="grid" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
+              <MarketMovers />
             </div>
 
           </div>
