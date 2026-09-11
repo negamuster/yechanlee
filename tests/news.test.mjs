@@ -61,7 +61,8 @@ test('oversized feeds are rejected', async () => {
 test('API rejects writes, does not cache outages, and coalesces concurrent refreshes', async () => {
   const originalFetch = globalThis.fetch
   try {
-    const { default: handler } = await import('../api/news.js')
+    const { default: api } = await import('../api/news.js')
+    const handler = api.fetch
     const post = await handler(new Request('https://example.com/api/news', { method: 'POST' }))
     assert.equal(post.status, 405)
     globalThis.fetch = async () => new Response('Unavailable', { status: 503 })
@@ -82,4 +83,49 @@ test('API rejects writes, does not cache outages, and coalesces concurrent refre
     await handler(new Request('https://example.com/api/news'))
     assert.equal(count, 7)
   } finally { globalThis.fetch = originalFetch }
+})
+
+test('collector does not require the optional AbortSignal.timeout static method', async () => {
+  const original = AbortSignal.timeout
+  try {
+    AbortSignal.timeout = undefined
+    let calls = 0
+    const result = await collectNews(async () => { calls++; return new Response(rss(article())) }, [source], now)
+    assert.equal(calls, 1)
+    assert.equal(result.items.length, 1)
+    assert.equal(result.version, 'rss-node-v2')
+  } finally { AbortSignal.timeout = original }
+})
+
+test('follows publisher redirects but rejects redirects outside the allowed domains', async () => {
+  const visited = []
+  const result = await collectNews(async url => {
+    visited.push(url)
+    return visited.length === 1 ? new Response(null, { status: 301, headers: { location: 'https://www.wsj.com/new-feed.xml' } })
+      : new Response(rss(article()))
+  }, [source], now)
+  assert.equal(result.items.length, 1)
+  assert.deepEqual(visited, ['https://feed.example/rss', 'https://www.wsj.com/new-feed.xml'])
+  let requests = 0
+  const blocked = await collectNews(async () => {
+    requests++
+    return new Response(null, { status: 302, headers: { location: 'https://unrelated.example/feed' } })
+  }, [source], now)
+  assert.equal(requests, 1)
+  assert.equal(blocked.sources[0].error, 'redirect_not_allowed')
+})
+
+test('deadline finishes even when a fetch implementation ignores its abort signal', async () => {
+  const start = Date.now()
+  const result = await collectNews(() => new Promise(() => {}), [source], now, 20)
+  assert.equal(result.sources[0].error, 'timeout')
+  assert.ok(Date.now() - start < 1000)
+})
+
+test('failed feeds report sanitized stage or HTTP codes without exposing response bodies', async () => {
+  const http = await collectNews(async () => new Response('Private upstream details', { status: 403 }), [source], now)
+  assert.equal(http.sources[0].error, 'http_403')
+  assert.ok(!JSON.stringify(http).includes('Private upstream'))
+  const xml = await collectNews(async () => new Response('<html>Not a feed</html>'), [source], now)
+  assert.equal(xml.sources[0].error, 'parse_failed')
 })

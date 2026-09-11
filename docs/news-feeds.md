@@ -1,6 +1,6 @@
 # Homepage news
 
-The homepage now requests `/api/news`, a Vercel Edge function collecting
+The homepage now requests `/api/news`, a Vercel Node.js function collecting
 publisher-owned RSS feeds. No new API key is required. The existing Polygon
 integration on other pages is unchanged.
 
@@ -49,7 +49,7 @@ Official source references:
   publication time. The lead story is the newest selected story.
 - Headlines are rendered as React text, never HTML. Only HTTP(S) links to each
   configured publisher's domains are accepted. XML declarations of custom
-  entities are rejected. Feed reads are bounded to 2 MiB and 12 seconds.
+  entities are rejected. Feed reads are bounded to 2 MiB and 10 seconds.
 - A failed source never reinstates filtered articles. Other sources continue;
   total failure returns 503 with no-store. Source statuses distinguish a failed
   feed from a working feed without eligible recent articles.
@@ -64,7 +64,7 @@ Official source references:
 
 `npm install` then `npm run dev` uses the Vite middleware to run the same
 `api/news.js` handler locally. `npm run preview` only serves static build
-output and does not emulate Vercel Edge functions.
+output and does not emulate Vercel Functions.
 
 Run `node --test tests/news.test.mjs` for parser, URL validation, filtering,
 partial outage, size limits, API cache and concurrent request checks. Run
@@ -75,3 +75,28 @@ remain; this change uses ordinary CSS and does not change Tailwind setup.
 Browser interaction testing and Vercel deployment are not performed by this
 change. Test the preview's region buttons, original links, and `/api/news`
 source statuses before merging to the production branch.
+
+## Follow-up: all sources unavailable in preview
+
+The user supplied a deployed response in which all seven sources were
+`unavailable`. That confirms the route executed but does not identify the
+underlying exception; the first version discarded the error details.
+
+The follow-up uses Vercel's documented Node.js `export default { fetch }`
+handler rather than Edge. The collection path no longer depends on
+`AbortSignal.timeout`: an AbortController plus a hard promise deadline covers
+both request and response-body reads, even if an upstream ignores abort.
+Publisher redirects are followed only within the configured feed/publisher
+hosts (HTTPS, up to three hops). Requests identify the Anthracite application.
+
+Responses include `version: "rss-node-v2"`. Unavailable sources include a
+sanitized `error` such as `http_403`, `timeout`, `request_failed`,
+`read_failed`, `parse_failed` or `redirect_not_allowed`. No response bodies,
+stack traces, or credentials are exposed. These codes let the owner inspect
+failures through the authenticated preview's `/api/news` route.
+
+Eleven automated checks pass, including the absence of the static timeout
+API, redirect handling, hard deadlines, and failure diagnostics. The hosted
+runtime cause and end-to-end recovery still require confirmation in the
+login-protected Vercel preview. A successful deployment status alone does
+not prove the feeds load.

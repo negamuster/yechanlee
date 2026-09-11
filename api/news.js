@@ -1,11 +1,12 @@
 import { collectNews } from '../lib/news.js'
 
-export const config = { runtime: 'edge' }
+// Use Vercel's Node.js Web Standard handler so production uses the same runtime
+// as the feed collector's integration tests. Other API routes remain unchanged.
 const TTL = 10 * 60 * 1000
 let cached = null
 let inFlight = null
 
-export default async function handler(req) {
+async function handler(req) {
   if (req.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } })
   try {
     if (!cached || Date.now() - cached.fetchedAt >= TTL) {
@@ -27,3 +28,5 @@ export default async function handler(req) {
     return Response.json({ error: 'News temporarily unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } })
   }
 }
+
+export default { fetch: handler }
