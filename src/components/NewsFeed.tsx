@@ -1,195 +1,157 @@
 import { useEffect, useState } from 'react'
+import './NewsFeed.css'
 
-const KEY = import.meta.env.VITE_POLYGON_KEY
-const poly = (path: string) =>
-  `https://api.polygon.io${path}${path.includes('?') ? '&' : '?'}apiKey=${KEY}`
+import { selectNews } from './newsSelection'
+import type { NewsItem, Region } from './newsSelection'
 
-interface NewsItem {
-  id: string
-  title: string
-  article_url: string
-  published_utc: string
-  image_url?: string
-  publisher: { name: string }
-  tickers?: string[]
+interface Feed {
+  items: NewsItem[]
+  fetchedAt: number
+  sources: { id: string; publisher: string; region: string; status: string }[]
 }
-
-// 집단소송 로펌 광고성 보도자료 차단 (제목 기반 키워드 필터)
-const SPAM_PATTERNS = [
-  'CLASS ACTION', 'SHAREHOLDER ALERT', 'INVESTOR ALERT', 'LEAD PLAINTIFF',
-  'ENCOURAGES', 'REMINDS INVESTORS', 'SECURITIES FRAUD', 'TO SECURE COUNSEL',
-  'LAW FIRM', 'LAW OFFICES', 'ROSEN', 'POMERANTZ', 'KESSLER TOPAZ',
-  'LEVI & KORSINSKY', 'GLANCY PRONGAY', 'BRAGAR EAGEL', 'BRONSTEIN, GEWIRTZ',
-  'ROBBINS GELLER', 'JOHNSON FISTEL', 'HALPER SADEH', 'KAHN SWICK',
-  'SCHALL LAW', 'FARUQI & FARUQI', 'GROSS LAW FIRM', 'INVESTIGATION',
+const CACHE_KEY = 'anthracite_curated_news_v3'
+const TTL = 10 * 60 * 1000
+const FILTERS: { value: Region; label: string }[] = [
+  { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
 ]
-function isSpam(title: string): boolean {
-  const t = title.toUpperCase()
-  return SPAM_PATTERNS.some(p => t.includes(p))
+
+function isFeed(value: unknown): value is Feed {
+  if (!value || typeof value !== 'object') return false
+  const data = value as Feed
+  return Number.isFinite(data.fetchedAt) && data.fetchedAt <= Date.now() + 300000
+    && Array.isArray(data.sources) && data.sources.every(source => source && typeof source.publisher === 'string' && typeof source.status === 'string')
+    && Array.isArray(data.items) && data.items.every(item => item && typeof item.id === 'string'
+      && typeof item.title === 'string' && typeof item.publisher === 'string'
+      && typeof item.article_url === 'string' && /^https?:\/\//.test(item.article_url)
+      && (item.image_url === undefined || (typeof item.image_url === 'string' && item.image_url.startsWith('https://')))
+      && (item.image_credit === undefined || typeof item.image_credit === 'string')
+      && ['kr', 'global'].includes(item.region) && Number.isFinite(Date.parse(item.published_utc)))
 }
 
-const CACHE_KEY = 'anthracite_home_news_v3' // v2 → v3: 스팸 필터 반영을 위해 기존 캐시 무효화
-const CACHE_TTL = 1000 * 60 * 20 // 20분
-
-async function loadNews(): Promise<{ items: NewsItem[]; ts: number } | null> {
+function readCache(): Feed | null {
   try {
-    const cached = sessionStorage.getItem(CACHE_KEY)
-    if (cached) {
-      const parsed = JSON.parse(cached)
-      if (Date.now() - parsed.ts < CACHE_TTL) return parsed
-    }
-  } catch {}
-
-  try {
-    // 더 많이 가져와서(40개) 언론사별로 다양화 (한 매체가 도배하지 않도록 최대 2개씩)
-    const res = await fetch(poly('/v2/reference/news?limit=40&order=desc'))
-    if (!res.ok) return null
-    const data = await res.json()
-    const all: NewsItem[] = data?.results || []
-    if (all.length === 0) return null
-
-    const perPublisherCount: Record<string, number> = {}
-    const diversified: NewsItem[] = []
-    for (const item of all) {
-      if (isSpam(item.title)) continue
-      const pub = item.publisher?.name || 'unknown'
-      const count = perPublisherCount[pub] || 0
-      if (count >= 2) continue
-      perPublisherCount[pub] = count + 1
-      diversified.push(item)
-      if (diversified.length >= 11) break
-    }
-
-    const items = diversified.length > 0 ? diversified : all.slice(0, 11)
-    const result = { items, ts: Date.now() }
-    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(result)) } catch {}
-    return result
-  } catch {
-    return null
-  }
+    const data: unknown = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null')
+    return isFeed(data) && data.items.length > 0 && Date.now() - data.fetchedAt < TTL ? data : null
+  } catch { return null }
 }
 
-function timeAgo(dateStr: string): string {
-  const diffMs = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diffMs / 60000)
-  if (mins < 1) return '방금 전'
-  if (mins < 60) return `${mins}분 전`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}시간 전`
-  const days = Math.floor(hours / 24)
-  return `${days}일 전`
+function relativeTime(timestamp: number) {
+  const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000))
+  if (minutes < 1) return '방금 전'
+  if (minutes < 60) return `${minutes}분 전`
+  const hours = Math.floor(minutes / 60)
+  return hours < 24 ? `${hours}시간 전` : `${Math.floor(hours / 24)}일 전`
 }
 
-function timeAgoShort(ts: number): string {
-  const mins = Math.floor((Date.now() - ts) / 60000)
-  if (mins < 1) return '방금 전'
-  if (mins < 60) return `${mins}분 전`
-  const hours = Math.floor(mins / 60)
-  return `${hours}시간 전`
+function NewsImage({ item, prominent }: { item: NewsItem; prominent: boolean }) {
+  const [failed, setFailed] = useState(false)
+  if (!item.image_url || failed || !item.image_url.startsWith('https://')) return null
+  return <figure className="news-image-wrap">
+    <img className={prominent ? 'news-image news-image-lead' : 'news-image'} src={item.image_url} alt=""
+      loading={prominent ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+      onLoad={event => {
+        const img = event.currentTarget
+        if (img.naturalWidth < 160 || img.naturalHeight < 90) setFailed(true)
+        else img.style.maxWidth = `${img.naturalWidth}px`
+      }} />
+    {item.image_credit && <figcaption className="news-image-credit">{item.image_credit}</figcaption>}
+  </figure>
 }
 
 export default function NewsFeed() {
-  const [news, setNews] = useState<NewsItem[] | null>(null)
-  const [updatedAt, setUpdatedAt] = useState<number | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [feed, setFeed] = useState<Feed | null>(readCache)
+  const [region, setRegion] = useState<Region>('all')
+  const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
+  const [revision, setRevision] = useState(0)
+  const [, setClock] = useState(0)
 
   useEffect(() => {
-    let mounted = true
-    loadNews().then(result => {
-      if (!mounted) return
-      if (result) { setNews(result.items); setUpdatedAt(result.ts) }
-      else setFailed(true)
-      setLoading(false)
-    })
-    return () => { mounted = false }
+    const refresh = window.setInterval(() => setRevision(value => value + 1), TTL)
+    const clock = window.setInterval(() => setClock(value => value + 1), 60000)
+    return () => { window.clearInterval(refresh); window.clearInterval(clock) }
   }, [])
 
+  useEffect(() => {
+    if (revision === 0 && readCache()) return
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 18000)
+    let active = true
+    async function refresh() {
+      setLoading(true)
+      setFailed(false)
+      try {
+        const response = await fetch('/api/news', { signal: controller.signal })
+        if (!response.ok) throw new Error('News unavailable')
+        const data: unknown = await response.json()
+        if (!isFeed(data)) throw new Error('Invalid news response')
+        if (!active) return
+        setFeed(data)
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch { /* Storage is optional. */ }
+      } catch {
+        if (active) setFailed(true)
+      } finally {
+        window.clearTimeout(timeout)
+        if (active) setLoading(false)
+      }
+    }
+    void refresh()
+    return () => { active = false; controller.abort(); window.clearTimeout(timeout) }
+  }, [revision])
+
+  const news = selectNews(feed?.items || [], region)
+  const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
+  const partial = relevantSources.some(source => source.status === 'unavailable')
+  const publishers = [...new Set(news.map(item => item.publisher))]
+  const lead = news[0]
+
+  function article(item: NewsItem, prominent = false) {
+    return (
+      <article key={item.id} className={prominent ? 'news-lead' : 'news-card'}>
+        <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
+          <NewsImage key={item.image_url || item.id} item={item} prominent={prominent} />
+          <p className="news-meta">{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
+          <h3 className={prominent ? 'news-lead-title' : 'news-title'}>{item.title}</h3>
+          <p className="news-meta">
+            <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
+              {relativeTime(Date.parse(item.published_utc))}
+            </time>
+            <span className="news-original">원문 읽기 ↗</span>
+          </p>
+        </a>
+      </article>
+    )
+  }
+
   return (
-    <div style={{ width: '100%' }}>
-      <style>{`
-        .news-row { transition: opacity 0.15s ease; text-decoration: none; color: inherit; display: block; }
-        .news-row:hover { opacity: 0.55; }
-      `}</style>
-
-      {updatedAt && !loading && (
-        <p style={{ fontSize: '11px', color: '#ccc', marginBottom: '20px', marginTop: '-16px' }}>
-          최근 업데이트: {timeAgoShort(updatedAt)}
-        </p>
-      )}
-
-      {loading ? (
-        <>
-          {/* 대표 기사 스켈레톤 */}
-          <div style={{ marginBottom: '36px' }}>
-            <div style={{ width: '100%', height: '220px', background: '#f0f0f0', borderRadius: '2px', marginBottom: '18px' }} />
-            <div style={{ height: '28px', width: '80%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '10px' }} />
-            <div style={{ height: '13px', width: '30%', background: '#f5f5f5', borderRadius: '2px' }} />
-          </div>
-          {/* 나머지 그리드 스켈레톤 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px 24px' }}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i}>
-                <div style={{ width: '100%', height: '140px', background: '#f0f0f0', borderRadius: '2px', marginBottom: '12px' }} />
-                <div style={{ height: '14px', width: '90%', background: '#f0f0f0', borderRadius: '2px', marginBottom: '8px' }} />
-                <div style={{ height: '11px', width: '40%', background: '#f5f5f5', borderRadius: '2px' }} />
-              </div>
-            ))}
-          </div>
-        </>
-      ) : failed || !news || news.length === 0 ? (
-        <p style={{ fontSize: '13px', color: '#bbb', padding: '20px 0' }}>뉴스를 불러오지 못했습니다.</p>
-      ) : (
-        <>
-          {/* 대표 기사 (크게) */}
-          {(() => {
-            const lead = news[0]
-            return (
-              <a href={lead.article_url} target="_blank" rel="noopener noreferrer" className="news-row" style={{ marginBottom: '44px' }}>
-                {lead.image_url && (
-                  <img
-                    src={lead.image_url}
-                    alt=""
-                    style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '2px', marginBottom: '20px' }}
-                    onError={e => (e.currentTarget.style.display = 'none')}
-                  />
-                )}
-                <p style={{ fontSize: '30px', lineHeight: '1.3', color: '#000', marginBottom: '12px', fontWeight: '400' }}>
-                  {lead.title}
-                </p>
-                <p style={{ fontSize: '13px', color: '#aaa' }}>
-                  {lead.publisher?.name} · {timeAgo(lead.published_utc)}
-                  {lead.tickers && lead.tickers.length > 0 && (
-                    <span style={{ marginLeft: '8px', color: '#ccc' }}>· {lead.tickers.slice(0, 3).join(', ')}</span>
-                  )}
-                </p>
-              </a>
-            )
-          })()}
-
-          {/* 나머지 기사: 2열 그리드 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '36px 28px', borderTop: '1px solid #f0f0f0', paddingTop: '36px' }}>
-            {news.slice(1).map(item => (
-              <a key={item.id} href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
-                {item.image_url && (
-                  <img
-                    src={item.image_url}
-                    alt=""
-                    style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '2px', marginBottom: '14px' }}
-                    onError={e => (e.currentTarget.style.display = 'none')}
-                  />
-                )}
-                <p style={{ fontSize: '15px', lineHeight: '1.5', color: '#000', marginBottom: '8px' }}>
-                  {item.title}
-                </p>
-                <p style={{ fontSize: '12px', color: '#aaa' }}>
-                  {item.publisher?.name} · {timeAgo(item.published_utc)}
-                </p>
-              </a>
-            ))}
-          </div>
-        </>
-      )}
+    <div className="news-feed">
+      <div className="news-toolbar">
+        <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
+          {FILTERS.map(filter => (
+            <button key={filter.value} type="button" aria-pressed={region === filter.value}
+              onClick={() => setRegion(filter.value)}>{filter.label}</button>
+          ))}
+        </div>
+        <button type="button" className="news-refresh" disabled={loading} onClick={() => setRevision(value => value + 1)}>
+          {loading ? '불러오는 중…' : '새로고침'}
+        </button>
+      </div>
+      {feed && <p className="news-updated">최근 수집: <time dateTime={new Date(feed.fetchedAt).toISOString()}
+        title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
+      <div role="status" aria-live="polite">
+        {failed ? <p className="news-notice">{news.length ? '업데이트하지 못해 이전 수집 기사를 표시합니다.' : '뉴스를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.'}</p>
+          : partial ? <p className="news-notice">일부 매체의 뉴스를 불러오지 못했습니다. 수집된 기사를 표시합니다.</p> : null}
+      </div>
+      <div aria-busy={loading}>
+        {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">
+          <div /><div /><div />
+        </div> : lead ? <>
+          {article(lead, true)}
+          <div className="news-grid">{news.slice(1).map(item => article(item))}</div>
+          <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
+        </> : !failed ? <p className="news-notice">최근 72시간 내 표시할 {region === 'kr' ? '국내 ' : region === 'global' ? '해외 ' : ''}기사가 없습니다.</p> : null}
+      </div>
     </div>
   )
 }
