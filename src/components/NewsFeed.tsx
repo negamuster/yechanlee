@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react'
 import './NewsFeed.css'
 
-type Region = 'all' | 'global' | 'kr'
-interface NewsItem {
-  id: string
-  title: string
-  article_url: string
-  published_utc: string
-  publisher: string
-  region: Exclude<Region, 'all'>
-}
+import { selectNews } from './newsSelection'
+import type { NewsItem, Region } from './newsSelection'
+
 interface Feed {
   items: NewsItem[]
   fetchedAt: number
   sources: { id: string; publisher: string; region: string; status: string }[]
 }
-const CACHE_KEY = 'anthracite_curated_news_v1'
+const CACHE_KEY = 'anthracite_curated_news_v3'
 const TTL = 10 * 60 * 1000
-const MAX_AGE = 72 * 60 * 60 * 1000
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
 ]
@@ -30,6 +23,8 @@ function isFeed(value: unknown): value is Feed {
     && Array.isArray(data.items) && data.items.every(item => item && typeof item.id === 'string'
       && typeof item.title === 'string' && typeof item.publisher === 'string'
       && typeof item.article_url === 'string' && /^https?:\/\//.test(item.article_url)
+      && (item.image_url === undefined || (typeof item.image_url === 'string' && item.image_url.startsWith('https://')))
+      && (item.image_credit === undefined || typeof item.image_credit === 'string')
       && ['kr', 'global'].includes(item.region) && Number.isFinite(Date.parse(item.published_utc)))
 }
 
@@ -48,27 +43,20 @@ function relativeTime(timestamp: number) {
   return hours < 24 ? `${hours}시간 전` : `${Math.floor(hours / 24)}일 전`
 }
 
-function selectNews(items: NewsItem[], region: Region) {
-  const now = Date.now()
-  const pools = { global: [] as NewsItem[], kr: [] as NewsItem[] }
-  const counts = new Map<string, number>()
-  for (const item of [...items].sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc))) {
-    if (now - Date.parse(item.published_utc) > MAX_AGE) continue
-    const count = counts.get(item.publisher) || 0
-    if (count >= 3) continue
-    counts.set(item.publisher, count + 1)
-    pools[item.region].push(item)
-  }
-  if (region !== 'all') return pools[region].slice(0, 12)
-  // Alternate regions before the final time sort so both have room in the list.
-  const selected: NewsItem[] = []
-  while (selected.length < 12 && (pools.global.length || pools.kr.length)) {
-    for (const key of ['global', 'kr'] as const) {
-      const item = pools[key].shift()
-      if (item && selected.length < 12) selected.push(item)
-    }
-  }
-  return selected.sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc))
+function NewsImage({ item, prominent }: { item: NewsItem; prominent: boolean }) {
+  const [failed, setFailed] = useState(false)
+  if (!item.image_url || failed || !item.image_url.startsWith('https://')) return null
+  return <figure className="news-image-wrap">
+    <img className={prominent ? 'news-image news-image-lead' : 'news-image'} src={item.image_url} alt=""
+      loading={prominent ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+      onLoad={event => {
+        const img = event.currentTarget
+        if (img.naturalWidth < 160 || img.naturalHeight < 90) setFailed(true)
+        else img.style.maxWidth = `${img.naturalWidth}px`
+      }} />
+    {item.image_credit && <figcaption className="news-image-credit">{item.image_credit}</figcaption>}
+  </figure>
 }
 
 export default function NewsFeed() {
@@ -122,6 +110,7 @@ export default function NewsFeed() {
     return (
       <article key={item.id} className={prominent ? 'news-lead' : 'news-card'}>
         <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
+          <NewsImage key={item.image_url || item.id} item={item} prominent={prominent} />
           <p className="news-meta">{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
           <h3 className={prominent ? 'news-lead-title' : 'news-title'}>{item.title}</h3>
           <p className="news-meta">

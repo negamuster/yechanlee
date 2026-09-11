@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { collectNews, parseFeed, safeArticleUrl } from '../lib/news.js'
+import { collectNews, parseFeed, safeArticleUrl, SOURCES, feedImage, publicationTime } from '../lib/news.js'
 
 const now = Date.parse('2026-09-11T03:00:00Z')
 const source = { id: 'test', publisher: 'WSJ', region: 'global', hosts: ['wsj.com'], url: 'https://feed.example/rss' }
@@ -77,11 +77,11 @@ test('API rejects writes, does not cache outages, and coalesces concurrent refre
     const responses = await Promise.all([handler(new Request('https://example.com/api/news')), handler(new Request('https://example.com/api/news'))])
     assert.equal(responses[0].status, 200)
     assert.equal(responses[1].status, 200)
-    assert.equal(count, 7)
+    assert.equal(count, SOURCES.filter(source => source.url).length)
     const payload = await responses[0].json()
     assert.equal(payload.items.length, 1)
     await handler(new Request('https://example.com/api/news'))
-    assert.equal(count, 7)
+    assert.equal(count, SOURCES.filter(source => source.url).length)
   } finally { globalThis.fetch = originalFetch }
 })
 
@@ -93,7 +93,7 @@ test('collector does not require the optional AbortSignal.timeout static method'
     const result = await collectNews(async () => { calls++; return new Response(rss(article())) }, [source], now)
     assert.equal(calls, 1)
     assert.equal(result.items.length, 1)
-    assert.equal(result.version, 'rss-node-v2')
+    assert.equal(result.version, 'rss-node-v3')
   } finally { AbortSignal.timeout = original }
 })
 
@@ -128,4 +128,52 @@ test('failed feeds report sanitized stage or HTTP codes without exposing respons
   assert.ok(!JSON.stringify(http).includes('Private upstream'))
   const xml = await collectNews(async () => new Response('<html>Not a feed</html>'), [source], now)
   assert.equal(xml.sources[0].error, 'parse_failed')
+})
+
+
+test('feed image metadata chooses a usable image and retains its credit', () => {
+  const entry = { 'media:content': [
+    { '@_url': 'https://wsj.com/pixel.jpg', '@_width': '1', '@_height': '1' },
+    { '@_url': 'https://images.wsj.net/photo.jpg?width=900&token=signed', '@_type': 'image/jpeg', '@_width': '900', 'media:credit': 'Photo agency' },
+  ] }
+  assert.deepEqual(feedImage(entry, { ...source, imageHosts: ['images.wsj.net'] }), {
+    image_url: 'https://images.wsj.net/photo.jpg?width=900&token=signed', image_credit: 'Photo agency',
+  })
+  assert.deepEqual(feedImage({ 'media:thumbnail': { '@_url': 'https://evil.test/photo.jpg' } }, source), {})
+  assert.deepEqual(feedImage({ 'media:thumbnail': { '@_url': 'javascript:alert(1)' } }, source), {})
+  assert.deepEqual(feedImage({ 'media:content': { '@_url': 'https://wsj.com/movie.mp4', '@_type': 'video/mp4' } }, source), {})
+})
+
+test('RSS enclosures and description images are extracted without rendering HTML', () => {
+  assert.equal(feedImage({ enclosure: { '@_type': 'image/jpeg', '@_url': 'https://wsj.com/photo.jpg' } }, source).image_url, 'https://wsj.com/photo.jpg')
+  assert.equal(feedImage({ description: '<p>Body</p><img src="https://wsj.com/photo.jpg?a=1&amp;b=2" onerror="alert(1)">' }, source).image_url, 'https://wsj.com/photo.jpg?a=1&b=2')
+  assert.deepEqual(feedImage({ description: '<script>alert(1)</script>' }, source), {})
+})
+
+test('timezone-less Korean dates use the publisher timezone', () => {
+  const korean = { ...source, timezone: '+09:00' }
+  assert.equal(publicationTime('2026-09-11 11:00:00', korean), Date.parse('2026-09-11T02:00:00Z'))
+  assert.equal(publicationTime('Fri, 11 Sep 2026 11:00:00 +0900', korean), Date.parse('2026-09-11T02:00:00Z'))
+  assert.ok(Number.isNaN(publicationTime('2026-09-11 11:00:00', source)))
+})
+
+test('licensed Reuters feed is explicit and does not expose configuration secrets', async () => {
+  const key = 'ANTHRACITE_TEST_REUTERS_RSS_URL'
+  const reuters = { ...SOURCES.find(source => source.id === 'reuters'), env: key }
+  try {
+    delete process.env[key]
+    let requests = 0
+    const missing = await collectNews(async () => { requests++; return new Response('') }, [reuters], now)
+    assert.equal(missing.sources[0].status, 'not_configured')
+    assert.equal(requests, 0)
+    process.env[key] = 'https://unrelated.example/rss?token=private'
+    const invalid = await collectNews(async () => { requests++; return new Response('') }, [reuters], now)
+    assert.equal(invalid.sources[0].error, 'invalid_configuration')
+    assert.equal(requests, 0)
+    assert.ok(!JSON.stringify(invalid).includes('private'))
+    process.env[key] = 'https://feeds.reuters.com/account/rss?token=private'
+    const valid = await collectNews(async () => new Response(rss(article('Markets', 'https://www.reuters.com/markets/story'))), [reuters], now)
+    assert.equal(valid.items.length, 1)
+    assert.ok(!JSON.stringify(valid).includes('private'))
+  } finally { delete process.env[key] }
 })

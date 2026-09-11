@@ -1,102 +1,113 @@
 # Homepage news
 
-The homepage now requests `/api/news`, a Vercel Node.js function collecting
-publisher-owned RSS feeds. No new API key is required. The existing Polygon
-integration on other pages is unchanged.
+`/api/news` is a Vercel Node.js Web Standard handler. It collects publisher
+RSS feeds and returns headline metadata, original links, publication times,
+and optional feed-provided images. It never scrapes article pages or returns
+article bodies. The current response version is `rss-node-v3`.
 
-## Sources and verification
+## Publishers
 
-| Publisher | Feed coverage | Verification in this development environment, 2026-09-11 |
+| Publisher | Coverage / connection | Latest verification in this development environment |
 | --- | --- | --- |
-| BBC Business | Business | HTTP 200; 38 recent entries parsed from a downloaded live feed |
-| WSJ | Markets, US business | Markets HTTP 200; 43 recent entries parsed. US business is configured but not verified. Node requests to WSJ timed out here. |
-| 조선비즈 | General feed, filtered for business/finance topics | Live collection through the application collector returned 19 recent entries |
-| CNBC | Finance | Configured; HTTP 403 from this environment |
-| 매일경제 | Economy, stocks | Official RSS URLs configured; requests blocked or timed out here |
+| BBC Business | Business RSS | Live XML parsed in the first version; deployment verification is separate |
+| WSJ | Markets and US business RSS | Markets XML parsed in the first version; US business remains unverified |
+| CNBC | Finance RSS | Configured; this environment previously returned 403 |
+| Bloomberg | Markets RSS | HTTP 200; 20 eligible articles parsed; this sample contains no image metadata |
+| Financial Times | Markets RSS | Configured; HTTP 403 here, needs preview confirmation |
+| Yahoo Finance | News RSS | Configured; HTTP 429 here, needs preview confirmation |
+| Reuters | Optional provider-issued authenticated RSS URL | Not active without `REUTERS_RSS_URL`; not advertised as a working free feed |
+| 매일경제 | Economy and stocks RSS | Existing integration; this environment previously blocked/timed out |
+| 조선비즈 | General RSS filtered for business topics | Existing integration; live collection succeeded in the first version |
+| 한국경제 | Economy RSS | Added; HTTP 403 here, needs preview confirmation |
+| 연합뉴스 | Economy RSS | HTTP 200; 120 eligible articles, 109 with accepted image metadata |
+| 연합인포맥스 | All articles RSS | HTTP 200; 50 eligible articles; feed dates without a timezone use Korea (+09:00) |
 
-BBC and WSJ counts describe live XML downloaded using this environment's
-system HTTP proxy and then parsed by `parseFeed`; they are not a claim that
-the deployed Vercel function has been tested. Confirm source statuses in
-`/api/news` after deploying a preview on the existing Vercel project. Do not
-advertise every configured publisher as available until that check passes.
+The new feed samples were retrieved on 2026-09-11. HTTP success and local
+parsing do not prove that every feed and image loads in the deployed browser.
+The user reported that the preceding Node version looked good in preview.
+The preview is Vercel-login-protected, so the agent cannot independently
+inspect its authenticated API responses. Inspect `sources` in `/api/news`
+to distinguish `ok`, `empty`, `unavailable` and `not_configured`.
 
-Reuters, Bloomberg, Financial Times and Yahoo Finance are **not integrated**
-in this version. Add them only after verifying a suitable feed/provider and
-the relevant display rights. Public RSS availability is not a blanket license
-for redistribution. The owner should review the publishers' applicable terms
-for their site use before public rollout, including headline display. No
-article body, summary, photo, paid content, or publisher logo is republished.
-Links open the original publisher; any subscription requirements still apply.
+이데일리 was considered but its tested feed returned 502, so it was not
+added to the active list. Google News RSS was also evaluated but deliberately
+not integrated: its feed notice limits use to a personal, non-commercial feed
+reader. It is not used as a workaround for this public site's Reuters feed.
 
-Official source references:
+## Reuters configuration
 
-- https://www.mk.co.kr/rss/
-- https://www.cnbc.com/rss-feeds/
-- https://feeds.bbci.co.uk/news/business/rss.xml
-- https://feeds.content.dowjones.io/public/rss/RSSMarketsMain
-- https://biz.chosun.com/arc/outboundfeeds/rss/?outputType=xml
+Reuters documents authenticated RSS delivery to Reuters Connect customers:
+https://liaison.thomsonreuters.com/page/rss-feeds-tech-notes
 
-## Behavior
+Set `REUTERS_RSS_URL` in the existing Vercel project's appropriate environment
+to a provider-issued HTTPS RSS URL that is authorized for the intended site
+use, then redeploy. Never commit the URL if it includes a token. The current
+adapter accepts URL-based authentication only. If the provider requires
+Basic authentication or an OAuth flow, that authentication adapter needs to
+be added after the provider's requirements are known.
 
-- 전체 / 해외 / 국내 filters refer to the publisher's feed group, not the country
-  discussed in each article. Original headline language is preserved.
-- Most recent 72 hours only; reject missing/invalid dates and implausible future dates.
-- Suppress promotional headline/category patterns and deduplicate canonical URLs
-  and normalized exact titles. Similar reporting about the same event can remain;
-  there is no semantic clustering or importance ranking.
-- The display contains up to 12 stories, with at most 3 per publisher. The
-  combined view reserves room for both regions when available, then sorts by
-  publication time. The lead story is the newest selected story.
-- Headlines are rendered as React text, never HTML. Only HTTP(S) links to each
-  configured publisher's domains are accepted. XML declarations of custom
-  entities are rejected. Feed reads are bounded to 2 MiB and 10 seconds.
-- A failed source never reinstates filtered articles. Other sources continue;
-  total failure returns 503 with no-store. Source statuses distinguish a failed
-  feed from a working feed without eligible recent articles.
-- Server cache and browser session cache: 10 minutes. CDN cache: up to 5
-  minutes. Open pages refresh every 10 minutes. A refresh button requests the
-  current server result; it does not bypass server/CDN caching. `fetchedAt`
-  remains the original collection time, not the time the page was opened.
-- Failed refreshes retain previously loaded articles, show the old collection
-  time and an error notice, and stop showing articles older than 72 hours.
+The configured URL and redirects are restricted to approved Reuters /
+Thomson Reuters hosts. Query credentials remain server-side and are never
+included in responses, logs or frontend code. No value is configured by this
+change. Missing configuration is reported as `not_configured` and does not
+prevent other feeds from loading.
 
-## Local development and validation
+## Images and selection
 
-`npm install` then `npm run dev` uses the Vite middleware to run the same
-`api/news.js` handler locally. `npm run preview` only serves static build
-output and does not emulate Vercel Functions.
+- Extract images from `media:content`, `media:thumbnail`, Media RSS groups,
+  image enclosures, or an `<img>` attribute supplied in a feed description.
+  Never render the feed's HTML or fetch article pages to find more images.
+- Accept HTTPS images only on the publisher's configured domains/CDNs.
+  Preserve image URL signature and resize parameters, and show image credit
+  when the feed supplies it. Reject obvious tracking/logo URLs and tiny images.
+- Images load lazily except the lead image. Broken or very small images are
+  removed cleanly; low-resolution images are not stretched beyond native width.
+  Articles without a usable image retain the text layout. Not all publishers
+  include images in RSS even when the article page has a photograph.
+- Show up to 12 stories, with at most 3 per publisher. Give each available
+  publisher one slot before taking its next story. Interleave regions while
+  choosing the combined view, then sort the selected stories by publication time.
+- Region labels describe the publisher/feed group, not the country discussed.
+  Headline language is preserved. There is no importance ranking or semantic
+  clustering of related stories from different publishers.
+- Filter promotional titles/categories, duplicate normalized exact titles,
+  duplicate canonical URLs, missing/invalid dates, implausible future dates,
+  and articles older than 72 hours. No fallback restores rejected articles.
 
-Run `node --test tests/news.test.mjs` for parser, URL validation, filtering,
-partial outage, size limits, API cache and concurrent request checks. Run
-`npm run build` for the TypeScript and production bundle check.
+Feed availability is not a blanket redistribution license. The site owner
+should check the applicable publisher terms for their intended headline and
+image display use before public rollout. Paid original articles still require
+the original publisher's subscription. This change does not bypass paywalls.
 
-The repository's existing Tailwind `@theme` / `@tailwind` build warnings
-remain; this change uses ordinary CSS and does not change Tailwind setup.
-Browser interaction testing and Vercel deployment are not performed by this
-change. Test the preview's region buttons, original links, and `/api/news`
-source statuses before merging to the production branch.
+## Resilience, cache and diagnostics
 
-## Follow-up: all sources unavailable in preview
+- Bound each complete feed request/body read to 10 seconds and 2 MiB. Use an
+  AbortController plus a hard promise deadline without `AbortSignal.timeout`.
+- Follow up to three HTTPS redirects within configured feed/publisher hosts.
+  Requests identify the Anthracite application.
+- A source failure does not discard working sources. No eligible articles
+  across all sources returns 503 with `Cache-Control: no-store`.
+- Unavailable sources include sanitized codes such as `http_403`, `timeout`,
+  `request_failed`, `read_failed`, `parse_failed` or `redirect_not_allowed`.
+  Response bodies, stack traces and credentials are not exposed.
+- Server and session caches last 10 minutes; CDN cache lasts up to 5 minutes.
+  Open pages refresh every 10 minutes. The refresh button uses current server
+  data rather than bypassing upstream/CDN caches. `fetchedAt` is the original
+  collection time. The expanded version uses a new browser cache key.
+- Failed refreshes retain previously loaded eligible articles and show an error
+  notice with the old collection time. Articles over 72 hours old disappear.
 
-The user supplied a deployed response in which all seven sources were
-`unavailable`. That confirms the route executed but does not identify the
-underlying exception; the first version discarded the error details.
+## Development and validation
 
-The follow-up uses Vercel's documented Node.js `export default { fetch }`
-handler rather than Edge. The collection path no longer depends on
-`AbortSignal.timeout`: an AbortController plus a hard promise deadline covers
-both request and response-body reads, even if an upstream ignores abort.
-Publisher redirects are followed only within the configured feed/publisher
-hosts (HTTPS, up to three hops). Requests identify the Anthracite application.
+`npm install` then `npm run dev` runs the same Node handler using the Vite
+middleware. `npm run preview` serves static output only and does not emulate
+Vercel Functions.
 
-Responses include `version: "rss-node-v2"`. Unavailable sources include a
-sanitized `error` such as `http_403`, `timeout`, `request_failed`,
-`read_failed`, `parse_failed` or `redirect_not_allowed`. No response bodies,
-stack traces, or credentials are exposed. These codes let the owner inspect
-failures through the authenticated preview's `/api/news` route.
+Run `node --test tests/news*.test.mjs` (Node 24 for native TypeScript imports in
+selection tests), and `npm run build`. Eighteen tests cover feed parsing,
+filters, image metadata, publisher selection, Korean timestamps, Reuters
+configuration isolation, time limits, redirects, partial outages and caches.
+The repository's existing Tailwind build warnings remain unchanged.
 
-Eleven automated checks pass, including the absence of the static timeout
-API, redirect handling, hard deadlines, and failure diagnostics. The hosted
-runtime cause and end-to-end recovery still require confirmation in the
-login-protected Vercel preview. A successful deployment status alone does
-not prove the feeds load.
+No browser interaction testing or production merge is performed. Check the
+Vercel preview's images, region buttons and source statuses before merging.
