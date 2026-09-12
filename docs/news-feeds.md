@@ -60,10 +60,14 @@ prevent other feeds from loading.
 - Accept HTTPS images only on the publisher's configured domains/CDNs.
   Preserve image URL signature and resize parameters, and show image credit
   when the feed supplies it. Reject obvious tracking/logo URLs and tiny images.
-- Images load lazily except the lead image. Broken or very small images are
-  removed cleanly; low-resolution images are not stretched beyond native width.
-  Articles without a usable image retain the text layout. Not all publishers
-  include images in RSS even when the article page has a photograph.
+- All stories use equal-sized cards in two columns (one column on small screens),
+  with a fixed 16:9 image frame and a three-line headline area. Full headline text
+  remains in the document and the title tooltip. There is no oversized lead card.
+- Images fill the frame with `object-fit: cover`; the first two load eagerly and
+  remaining images load lazily. Small source images may be enlarged to fit.
+  Missing, broken, or very small images use a neutral same-size frame labelled
+  "이미지 없음". Reserve one line for image credit even when none is supplied.
+  Not all publishers include images in RSS when the article page has a photograph.
 - Show up to 12 stories, with at most 3 per publisher. Give each available
   publisher one slot before taking its next story. Interleave regions while
   choosing the combined view, then sort the selected stories by publication time.

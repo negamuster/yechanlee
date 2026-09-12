@@ -43,19 +43,22 @@ function relativeTime(timestamp: number) {
   return hours < 24 ? `${hours}시간 전` : `${Math.floor(hours / 24)}일 전`
 }
 
-function NewsImage({ item, prominent }: { item: NewsItem; prominent: boolean }) {
+function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
   const [failed, setFailed] = useState(false)
-  if (!item.image_url || failed || !item.image_url.startsWith('https://')) return null
+  const available = item.image_url?.startsWith('https://') && !failed
   return <figure className="news-image-wrap">
-    <img className={prominent ? 'news-image news-image-lead' : 'news-image'} src={item.image_url} alt=""
-      loading={prominent ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer"
-      onError={() => setFailed(true)}
-      onLoad={event => {
-        const img = event.currentTarget
-        if (img.naturalWidth < 160 || img.naturalHeight < 90) setFailed(true)
-        else img.style.maxWidth = `${img.naturalWidth}px`
-      }} />
-    {item.image_credit && <figcaption className="news-image-credit">{item.image_credit}</figcaption>}
+    <div className="news-image-frame">
+      {available ? <img className="news-image" src={item.image_url} alt=""
+        loading={eager ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        onLoad={event => {
+          const img = event.currentTarget
+          if (img.naturalWidth < 160 || img.naturalHeight < 90) setFailed(true)
+        }} /> : <span className="news-image-empty" aria-hidden="true">이미지 없음</span>}
+    </div>
+    <figcaption className="news-image-credit" title={available ? item.image_credit : undefined}>
+      {available ? item.image_credit : null}
+    </figcaption>
   </figure>
 }
 
@@ -104,16 +107,14 @@ export default function NewsFeed() {
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => source.status === 'unavailable')
   const publishers = [...new Set(news.map(item => item.publisher))]
-  const lead = news[0]
-
-  function article(item: NewsItem, prominent = false) {
+  function article(item: NewsItem, index: number) {
     return (
-      <article key={item.id} className={prominent ? 'news-lead' : 'news-card'}>
+      <article key={item.id} className="news-card">
         <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
-          <NewsImage key={item.image_url || item.id} item={item} prominent={prominent} />
-          <p className="news-meta">{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
-          <h3 className={prominent ? 'news-lead-title' : 'news-title'}>{item.title}</h3>
-          <p className="news-meta">
+          <NewsImage key={item.image_url || item.id} item={item} eager={index < 2} />
+          <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
+          <h3 className="news-title" title={item.title}>{item.title}</h3>
+          <p className="news-meta news-card-footer">
             <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
               {relativeTime(Date.parse(item.published_utc))}
             </time>
@@ -146,9 +147,8 @@ export default function NewsFeed() {
       <div aria-busy={loading}>
         {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">
           <div /><div /><div />
-        </div> : lead ? <>
-          {article(lead, true)}
-          <div className="news-grid">{news.slice(1).map(item => article(item))}</div>
+        </div> : news.length ? <>
+          <div className="news-grid">{news.map(article)}</div>
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
         </> : !failed ? <p className="news-notice">최근 72시간 내 표시할 {region === 'kr' ? '국내 ' : region === 'global' ? '해외 ' : ''}기사가 없습니다.</p> : null}
       </div>
