@@ -1,4 +1,10 @@
 export type Region = 'all' | 'global' | 'kr'
+export const TOPICS = [
+  { value: 'economy', label: '경제' }, { value: 'tech', label: '테크' },
+  { value: 'investing', label: '투자' }, { value: 'business', label: '기업' },
+] as const
+export type Topic = typeof TOPICS[number]['value']
+export type TopicFilter = 'all' | Topic
 export interface NewsItem {
   id: string
   title: string
@@ -8,6 +14,17 @@ export interface NewsItem {
   region: Exclude<Region, 'all'>
   image_url?: string
   image_credit?: string
+  topics?: Topic[]
+}
+
+export function filterNews(items: NewsItem[], region: Region, topic: TopicFilter, query = '', now = Date.now()): NewsItem[] {
+  const terms = query.normalize('NFKC').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean)
+  return items.filter(item => Number.isFinite(Date.parse(item.published_utc))
+    && now - Date.parse(item.published_utc) <= 72 * 60 * 60 * 1000
+    && Date.parse(item.published_utc) <= now + 300000
+    && (region === 'all' || item.region === region)
+    && (topic === 'all' || item.topics?.includes(topic))
+    && terms.every(term => `${item.title} ${item.publisher}`.normalize('NFKC').toLocaleLowerCase().includes(term)))
 }
 
 export function selectNews(items: NewsItem[], region: Region, now = Date.now(), limit = 12): NewsItem[] {

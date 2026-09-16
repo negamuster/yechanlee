@@ -3,7 +3,7 @@
 `/api/news` is a Vercel Node.js Web Standard handler. It collects publisher
 RSS feeds and returns headline metadata, original links, publication times,
 and optional feed-provided images. It never scrapes article pages or returns
-article bodies. The current response version is `rss-node-v3`.
+article bodies. The current response version is `rss-node-v4`.
 
 ## Publishers
 
@@ -115,3 +115,38 @@ The repository's existing Tailwind build warnings remain unchanged.
 
 No browser interaction testing or production merge is performed. Check the
 Vercel preview's images, region buttons and source statuses before merging.
+
+
+## Topic-focused news (September 2026)
+
+All publishers now pass through the same headline/RSS-category rules in
+`lib/news-topics.js`, rather than only filtering the ChosunBiz general feed.
+Retain economy, technology, investing and business articles; attach multiple
+`topics` where appropriate. Exclude promotional content and common lifestyle,
+celebrity, sports-result and incident headlines without explicit business impact.
+Headlines with no recognised topic may use the publisher's RSS categories;
+otherwise they are omitted. English short terms such as AI use word boundaries.
+This is a transparent keyword heuristic, not semantic AI analysis: false positives
+and missed stories remain possible, especially with ambiguous headlines or broad
+publisher categories. No full article text is fetched, classified or republished.
+
+The home page adds topic buttons, title/publisher search, and a compact list option
+alongside the existing equal-sized image cards. Region/topic/search filters apply
+to the collected eligible pool before the 12-story display limit and publisher
+balancing. Search only covers collected titles and publishers, not the entire web.
+The client cache key advances to v4 so previous unclassified articles are not reused.
+Source outages remain distinct from an empty filter result, which offers a reset.
+
+Reference review: Neuberg's news-feed component provides category selection,
+search and article/cluster views. Its checked-in scraper reads a separately
+configured NEWS_API_URL; the repository is not itself an included news or AI
+analysis subscription. This change is independently written for Anthracite and
+copies no Neuberg code or assets. It adds no trading signals, personalised ranking,
+article clustering, translation or AI summaries. Those require separate design
+and data validation. Neuberg's LICENSE specifies BSL 1.1 with restrictions on
+commercial use; direct code reuse would require reviewing those terms.
+
+References:
+- https://github.com/KoNananachan/Neuberg/blob/main/client/src/components/panels/news-feed.tsx
+- https://github.com/KoNananachan/Neuberg/blob/main/server/src/services/scraper/neuberg-scraper.ts
+- https://github.com/KoNananachan/Neuberg/blob/main/LICENSE

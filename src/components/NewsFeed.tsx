@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import './NewsFeed.css'
 
-import { selectNews } from './newsSelection'
-import type { NewsItem, Region } from './newsSelection'
+import { selectNews, filterNews, TOPICS } from './newsSelection'
+import type { NewsItem, Region, TopicFilter } from './newsSelection'
 
 interface Feed {
   items: NewsItem[]
   fetchedAt: number
   sources: { id: string; publisher: string; region: string; status: string }[]
 }
-const CACHE_KEY = 'anthracite_curated_news_v3'
+const CACHE_KEY = 'anthracite_curated_news_v4'
 const TTL = 10 * 60 * 1000
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
@@ -25,6 +25,8 @@ function isFeed(value: unknown): value is Feed {
       && typeof item.article_url === 'string' && /^https?:\/\//.test(item.article_url)
       && (item.image_url === undefined || (typeof item.image_url === 'string' && item.image_url.startsWith('https://')))
       && (item.image_credit === undefined || typeof item.image_credit === 'string')
+      && Array.isArray(item.topics) && item.topics.length > 0
+      && item.topics.every(topic => TOPICS.some(known => known.value === topic))
       && ['kr', 'global'].includes(item.region) && Number.isFinite(Date.parse(item.published_utc)))
 }
 
@@ -65,6 +67,9 @@ function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
 export default function NewsFeed() {
   const [feed, setFeed] = useState<Feed | null>(readCache)
   const [region, setRegion] = useState<Region>('all')
+  const [topic, setTopic] = useState<TopicFilter>('all')
+  const [query, setQuery] = useState('')
+  const [view, setView] = useState<'cards' | 'list'>('cards')
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
@@ -103,7 +108,8 @@ export default function NewsFeed() {
     return () => { active = false; controller.abort(); window.clearTimeout(timeout) }
   }, [revision])
 
-  const news = selectNews(feed?.items || [], region)
+  const matching = filterNews(feed?.items || [], region, topic, query)
+  const news = selectNews(matching, region)
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => source.status === 'unavailable')
   const publishers = [...new Set(news.map(item => item.publisher))]
@@ -111,8 +117,11 @@ export default function NewsFeed() {
     return (
       <article key={item.id} className="news-card">
         <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
-          <NewsImage key={item.image_url || item.id} item={item} eager={index < 2} />
+          {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} eager={index < 2} />}
           <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
+          <div className="news-topic-tags" aria-label="기사 주제">
+            {TOPICS.filter(t => item.topics?.includes(t.value)).map(t => <span key={t.value}>{t.label}</span>)}
+          </div>
           <h3 className="news-title" title={item.title}>{item.title}</h3>
           <p className="news-meta news-card-footer">
             <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
@@ -138,6 +147,20 @@ export default function NewsFeed() {
           {loading ? '불러오는 중…' : '새로고침'}
         </button>
       </div>
+      <div className="news-topic-filters" role="group" aria-label="뉴스 주제 선택">
+        {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
+          <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => setTopic(t.value)}>{t.label}</button>)}
+      </div>
+      <div className="news-search-tools">
+        <label className="news-search"><span className="news-sr-only">기사 제목 또는 매체 검색</span>
+          <input type="search" value={query} maxLength={120} onChange={event => setQuery(event.target.value)} placeholder="기사 제목·매체 검색" />
+        </label>
+        <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
+          <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
+          <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
+        </div>
+      </div>
+      <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
       {feed && <p className="news-updated">최근 수집: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
       <div role="status" aria-live="polite">
@@ -148,9 +171,12 @@ export default function NewsFeed() {
         {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">
           <div /><div /><div />
         </div> : news.length ? <>
-          <div className="news-grid">{news.map(article)}</div>
+          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 최신순 · 매체별 최대 3개</p>
+          <div className={view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
-        </> : !failed ? <p className="news-notice">최근 72시간 내 표시할 {region === 'kr' ? '국내 ' : region === 'global' ? '해외 ' : ''}기사가 없습니다.</p> : null}
+        </> : !failed ? <div className="news-notice" role="status"><p>최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.</p>
+          {(topic !== 'all' || region !== 'all' || query) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery('') }}>필터 초기화</button>}
+        </div> : null}
       </div>
     </div>
   )
