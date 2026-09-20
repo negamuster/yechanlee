@@ -93,7 +93,7 @@ test('collector does not require the optional AbortSignal.timeout static method'
     const result = await collectNews(async () => { calls++; return new Response(rss(article())) }, [source], now)
     assert.equal(calls, 1)
     assert.equal(result.items.length, 1)
-    assert.equal(result.version, 'rss-node-v4')
+    assert.equal(result.version, 'rss-node-v5')
   } finally { AbortSignal.timeout = original }
 })
 

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import MarketOverview from '../components/MarketOverview'
+import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
@@ -126,6 +126,7 @@ export default function Home() {
             </button>
           </div>
         </nav>
+        <MarketTicker />
 
         {/* ── MAIN: News (좌) + Market Overview (우, 2열 박스 그리드) ── */}
         <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '48px 40px 0' }}>
@@ -141,10 +142,6 @@ export default function Home() {
 
             {/* 우측: 주요 지수 (2열 박스, 차트 포함) */}
             <div className="home-market-col">
-              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '28px' }}>
-                Market Overview
-              </p>
-              <MarketOverview variant="grid" onSelect={(ticker) => navigate(`/stock/${ticker}`)} />
               <MarketLive />
               <MarketMovers />
             </div>

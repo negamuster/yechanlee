@@ -3,7 +3,7 @@
 `/api/news` is a Vercel Node.js Web Standard handler. It collects publisher
 RSS feeds and returns headline metadata, original links, publication times,
 and optional feed-provided images. It never scrapes article pages or returns
-article bodies. The current response version is `rss-node-v4`.
+article bodies. The current response version is `rss-node-v5`.
 
 ## Publishers
 
@@ -61,7 +61,7 @@ prevent other feeds from loading.
   Preserve image URL signature and resize parameters, and show image credit
   when the feed supplies it. Reject obvious tracking/logo URLs and tiny images.
 - All stories use equal-sized cards in two columns (one column on small screens),
-  with a fixed 16:9 image frame and a three-line headline area. Full headline text
+  with a fixed 2.2:1 image frame and a three-line headline area. Full headline text
   remains in the document and the title tooltip. There is no oversized lead card.
 - Images fill the frame with `object-fit: cover`; the first two load eagerly and
   remaining images load lazily. Small source images may be enlarged to fit.
@@ -134,7 +134,7 @@ The home page adds topic buttons, title/publisher search, and a compact list opt
 alongside the existing equal-sized image cards. Region/topic/search filters apply
 to the collected eligible pool before the 12-story display limit and publisher
 balancing. Search only covers collected titles and publishers, not the entire web.
-The client cache key advances to v4 so previous unclassified articles are not reused.
+The client cache key advances to v5 so articles selected by the old topic rules are not reused.
 Source outages remain distinct from an empty filter result, which offers a reset.
 
 Reference review: Neuberg's news-feed component provides category selection,
