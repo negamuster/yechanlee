@@ -92,7 +92,6 @@ export default function Stock() {
   const [aiAnalysis, setAiAnalysis] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
   const [aiDone, setAiDone] = useState(false)
-  const [searchQuery, setSearchQuery] = useState(symbol)
 
   const periodDays: Record<string, number> = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 }
 
@@ -105,7 +104,8 @@ export default function Stock() {
     } catch {}
   }, [])
 
-  useEffect(() => { setSearchQuery(symbol); if (symbol) loadData() }, [symbol])
+  useEffect(() => { if (symbol) loadData() }, [symbol])
+
   useEffect(() => { if (symbol) fetchCandles(symbol, periodDays[period]) }, [period, symbol])
 
   const loadData = async () => {
@@ -242,7 +242,6 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
     finally { setAiLoading(false) }
   }
 
-  const handleSearch = () => { const q = searchQuery.trim().toUpperCase(); if (q) navigate(`/stock/${q}`) }
 
   const fundamentals = [
     { label: 'P/E Ratio',       value: pe ? pe.toFixed(1) : 'N/A' },
@@ -302,20 +301,6 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
       <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000' }}>
 
         {/* NAV */}
-        <nav style={{ padding: '28px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-          <span onClick={() => navigate('/')} style={{ fontSize: '22px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e8e8e8', position: 'relative' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }}>
-              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input className="srch" type="text" value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              placeholder="Search ticker..."
-              style={{ padding: '9px 12px 9px 34px', fontSize: '13px', fontFamily: '"Times New Roman",serif', border: 'none', width: '180px', background: 'transparent' }} />
-            <button onClick={handleSearch} style={{ padding: '9px 14px', background: '#000', border: 'none', cursor: 'pointer', color: '#fff', fontSize: '13px', fontFamily: '"Times New Roman",serif' }}>→</button>
-          </div>
-        </nav>
 
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '20px' }}>

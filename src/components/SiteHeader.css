@@ -1,0 +1,17 @@
+.site-header { position: sticky; top: 0; z-index: 70; background: #fff; color: #171717; border-bottom: 1px solid #e8e8e8; font-family: "Times New Roman", serif; }
+.site-header-top { display:flex; align-items:center; gap:32px; padding:16px 40px; max-width:1600px; margin:auto; }
+.site-brand { font-size:24px; font-weight:600; text-decoration:none; color:inherit; }
+.site-search { display:flex; border:1px solid #ddd; border-radius:30px; width:420px; max-width:50vw; padding:4px; }
+.site-search input { min-width:0; width:100%; border:0; background:transparent; padding:6px 12px; font:inherit; }
+.site-search button { border:0; border-radius:50%; background:#171717; color:white; width:32px; height:32px; flex-shrink:0; cursor:pointer; }
+.site-menu { display:flex; align-items:center; gap:28px; max-width:1600px; margin:auto; padding:0 40px; }
+.site-menu a,.site-tools>button { color:#555; font:inherit; font-size:14px; text-decoration:none; padding:12px 0; display:block; border:0; background:none; cursor:pointer; }
+.site-menu a[aria-current="page"] { color:#000; box-shadow:inset 0 -2px #171717; }
+.site-tools { position:relative; }
+.site-tools-links { position:absolute; top:100%; right:0; width:220px; background:#fff; border:1px solid #ddd; padding:8px 18px; box-shadow:0 8px 20px #0000000c; }
+.site-header a:focus-visible,.site-header button:focus-visible,.site-header input:focus-visible { outline:2px solid #555; outline-offset:3px; }
+.site-menu-toggle { display:none; }
+@media(max-width:860px) { .site-header-top { padding:14px 18px; gap:14px; flex-wrap:wrap; }.site-brand { font-size:21px; }.site-search { flex:1; max-width:none; width:auto; }.site-menu-toggle { display:block; border:1px solid #ddd; background:#fff; font:inherit; padding:8px; }.site-menu { display:none; padding:8px 18px 18px; gap:0; }.site-menu.is-open { display:grid; grid-template-columns:1fr 1fr; }.site-tools-links { position:static; width:auto; box-shadow:none; }.site-tools { grid-column:1/-1; } }
+@media(max-width:440px) { .site-search { order:3; flex-basis:100%; }.site-menu-toggle { margin-left:auto; } }
+
+@media(max-width:760px) { .portfolio-layout { grid-template-columns:1fr !important; gap:24px !important; }.portfolio-layout>div { min-width:0; overflow-x:auto; }.portfolio-layout>div:first-child { border-right:0 !important; padding-right:0 !important; } }

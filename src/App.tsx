@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import Home from './pages/00_Home'
+import SiteHeader from './components/SiteHeader'
 import StockMarket from './pages/01_StockMarket'
 import BondMarket from './pages/02_BondMarket'
 import Fed from './pages/03_Fed'
@@ -22,6 +23,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/equity" element={<StockMarket />} />

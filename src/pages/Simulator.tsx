@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 function formatInput(value: string): string {
   const num = value.replace(/[^0-9]/g, '')
@@ -60,7 +59,6 @@ interface YearData {
 const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
 
 export default function Simulator() {
-  const navigate = useNavigate()
 
   const [currentAge, setCurrentAge] = useState('')
   const [retireAge, setRetireAge] = useState('')
@@ -150,19 +148,17 @@ export default function Simulator() {
 
       <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000' }}>
 
-        <nav style={{ padding: '32px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
-          <span onClick={() => navigate('/')} style={{ fontSize: '22px', fontWeight: '600', cursor: 'pointer' }}>Anthracite</span>
-        </nav>
 
-        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 48px 120px' }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '40px 24px 80px' }}>
 
           <h1 className="page-title" style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '16px', lineHeight: '1.1' }}>
-            Simulator
+            자산 시뮬레이터
           </h1>
-          <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', marginBottom: '64px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-            나이, 자산, 소득, 소비, 부채를 입력하면 100세까지의 순자산 추이를 예측해 볼 수 있습니다. 복리의 힘이 시간과 함께 어떻게 작동하는지 직접 확인해보세요.
+          <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', marginBottom: '24px', textAlign: 'justify', wordBreak: 'keep-all' }}>
+            자산·소득·지출과 수익률 가정을 입력해 100세까지의 순자산 변화를 계산합니다. 실제 미래 수익을 예측하는 모델은 아닙니다.
           </p>
 
+          <p style={{ fontSize: 13, color: '#666', lineHeight: 1.8, marginBottom: 24 }}>연간 소득·지출 기준의 단순 계산입니다. 세금·수수료·수익률 변동과 별도 대출 상환 일정은 반영하지 않습니다. 수익률과 지출 가정을 바꾸어 결과를 비교해 보세요.</p>
           <div className="page-section">
 
             {/* ── 나이 ── */}
@@ -258,7 +254,7 @@ export default function Simulator() {
             </div>
 
             {/* ── 부채 ── */}
-            <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '64px' }}>
+            <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '24px' }}>
               <p style={sectionTitleStyle}>내 부채</p>
               <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>총 자산에서 차감하여 순자산을 계산합니다</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
