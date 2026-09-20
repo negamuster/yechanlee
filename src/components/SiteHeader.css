@@ -1,9 +1,9 @@
 .site-header { position: sticky; top: 0; z-index: 70; background: #fff; color: #171717; border-bottom: 1px solid #e8e8e8; font-family: "Times New Roman", serif; }
 .site-header-top { display:flex; align-items:center; gap:32px; padding:16px 40px; max-width:1600px; margin:auto; }
-.site-brand { font-size:24px; font-weight:600; text-decoration:none; color:inherit; }
-.site-search { display:flex; border:1px solid #ddd; border-radius:30px; width:420px; max-width:50vw; padding:4px; }
-.site-search input { min-width:0; width:100%; border:0; background:transparent; padding:6px 12px; font:inherit; }
-.site-search button { border:0; border-radius:50%; background:#171717; color:white; width:32px; height:32px; flex-shrink:0; cursor:pointer; }
+.site-brand { font-size:24px; font-weight:600; text-decoration:none; color:inherit; flex-shrink:0; }
+.site-search { display:flex; border:1px solid #ddd; border-radius:30px; flex:1 1 420px; min-width:0; padding:5px; background:#fafafa; box-sizing:border-box; transition:border-color .15s, box-shadow .15s; }
+.site-search input { min-width:0; width:100%; border:0; background:transparent; padding:8px 18px; font:inherit; font-size:15px; color:#222; }
+.site-search button { border:0; border-radius:50%; background:#171717; color:white; width:36px; height:36px; flex-shrink:0; cursor:pointer; }
 .site-menu { display:flex; align-items:center; gap:28px; max-width:1600px; margin:auto; padding:0 40px; }
 .site-menu a,.site-tools>button { color:#555; font:inherit; font-size:14px; text-decoration:none; padding:12px 0; display:block; border:0; background:none; cursor:pointer; }
 .site-menu a[aria-current="page"] { color:#000; box-shadow:inset 0 -2px #171717; }
@@ -22,3 +22,6 @@
 .site-contact-links a { display:block; color:#333; font-size:14px; text-decoration:none; padding:10px 0; overflow-wrap:anywhere; }
 .site-contact-links a:hover { text-decoration:underline; }
 @media(max-width:860px) { .site-search { order:3; flex-basis:100%; }.site-menu-toggle { margin-left:0; }.site-header-top { column-gap:12px; }.site-contact-links { right:-70px; } }
+
+.site-search:focus-within { border-color:#888; box-shadow:0 0 0 2px #00000008; }
+.site-search input::placeholder { color:#999; }
