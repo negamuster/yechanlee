@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface Manager {
   name: string
@@ -91,6 +90,7 @@ interface Holding {
   name: string; shares: number; value: number; prevShares?: number; pct?: number
 }
 interface FilingData {
+  filedAt?: string
   period: string; holdings: Holding[]; loading: boolean; error: string | null; totalValue: number
 }
 
@@ -111,7 +111,8 @@ function formatShares(n: number): string {
 }
 
 function LastTransactionTag({ curr, prev }: { curr: number; prev?: number }) {
-  if (prev === undefined || prev === 0) return <span style={{ fontSize:'12px', color:'#16a34a' }}>New holding</span>
+  if (prev === undefined) return <span style={{ fontSize:'12px', color:'#666' }}>비교 자료 없음</span>
+  if (prev === 0) return <span style={{ fontSize:'12px', color:'#16a34a' }}>New holding</span>
   if (curr === 0) return <span style={{ fontSize:'12px', color:'#ff3b30' }}>Sold out</span>
   const pct = Math.round(((curr - prev) / prev) * 100)
   if (pct > 0) return <span style={{ fontSize:'12px', color:'#16a34a' }}>+{pct}%</span>
@@ -246,7 +247,8 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
 
     // recent에서 먼저 탐색
     let forms: string[] = subData.filings.recent?.form || []
-    let dates: string[] = subData.filings.recent?.reportDate || subData.filings.recent?.filingDate || []
+    let dates: string[] = subData.filings.recent?.reportDate || []
+    let filedDates: string[] = subData.filings.recent?.filingDate || []
     let accNums: string[] = subData.filings.recent?.accessionNumber || []
     let primaryDocs: string[] = subData.filings.recent?.primaryDocument || []
     let indices13f = forms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
@@ -263,7 +265,8 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
           const moreIdx = moreForms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
           if (moreIdx.length > 0) {
             forms = moreForms
-            dates = fileData.reportDate || fileData.filingDate || []
+            dates = fileData.reportDate || []
+            filedDates = fileData.filingDate || []
             accNums = fileData.accessionNumber || []
             primaryDocs = fileData.primaryDocument || []
             indices13f = moreIdx
@@ -282,25 +285,26 @@ async function fetchLatest13F(cik: string): Promise<FilingData> {
     const cikInt = parseInt(cik)
     const holdingMap = await fetchFiling(cikInt, accNum, primaryDocs[idx])
     const prevMap = new Map<string, number>()
+    let previousAvailable = false
     if (idxPrev !== undefined) {
       try {
         const prevAccNum = accNums[idxPrev].replace(/-/g, '')
         const pm = await fetchFiling(cikInt, prevAccNum, primaryDocs[idxPrev])
+        previousAvailable = pm.size > 0
         pm.forEach((h, name) => prevMap.set(name, h.shares))
       } catch {}
     }
     const totalValue = Array.from(holdingMap.values()).reduce((s, h) => s + h.value, 0)
     const holdings: Holding[] = Array.from(holdingMap.values())
-      .map(h => ({ ...h, prevShares: prevMap.get(h.name), pct: Math.round(h.value / totalValue * 1000) / 10 }))
+      .map(h => ({ ...h, prevShares: previousAvailable ? (prevMap.get(h.name) ?? 0) : undefined, pct: Math.round(h.value / totalValue * 1000) / 10 }))
       .sort((a, b) => b.value - a.value).slice(0, 30)
-    return { period, holdings, loading: false, error: null, totalValue }
+    return { period, filedAt: filedDates[idx] || undefined, holdings, loading: false, error: null, totalValue }
   } catch (e: any) {
     return { period: '', holdings: [], loading: false, error: e.message, totalValue: 0 }
   }
 }
 
 export default function Form13F() {
-  const navigate = useNavigate()
   const [managers, setManagers] = useState<Manager[]>(INITIAL_MANAGERS)
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [cache, setCache] = useState<Record<string, FilingData>>({})
@@ -353,25 +357,23 @@ export default function Form13F() {
       `}</style>
 
       <div style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'"Times New Roman",Times,serif', color:'#000' }}>
-        <nav style={{ padding:'32px 48px', display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1px solid #e8e8e8' }}>
-          <span onClick={() => navigate('/')} style={{ fontSize:'22px', fontWeight:'600', cursor:'pointer' }}>Anthracite</span>
-        </nav>
 
-        <div style={{ maxWidth:'1100px', margin:'0 auto', padding:'80px 48px 120px' }}>
-          <h1 className="page-title" style={{ fontSize:'52px', fontWeight:'400', letterSpacing:'-0.02em', marginBottom:'20px', lineHeight:'1.1' }}>Form 13F</h1>
+        <div style={{ maxWidth:'1100px', margin:'0 auto', padding:'40px 24px 80px' }}>
+          <h1 className="page-title" style={{ fontSize:'52px', fontWeight:'400', letterSpacing:'-0.02em', marginBottom:'20px', lineHeight:'1.1' }}>기관 포트폴리오 · 13F</h1>
           <p className="page-desc" style={{ fontSize:'18px', lineHeight:'1.85', color:'#444', maxWidth:'720px', marginBottom:'32px', textAlign:'justify', wordBreak:'keep-all' }}>
-            미국에서 일정 규모 이상의 자산(AUM)을 운용하는 기관투자자는 분기마다 보유 주식을 미국 증권거래위원회(SEC)에 공개해야 하며, 이를 Form 13F라고 합니다. 이를 통해 주요 기관투자자들의 최신 포트폴리오와 보유 종목 변화를 확인할 수 있으며, 투자 비중과 신규 매수·매도 내역을 통해 기관 자금의 흐름과 시장에 대한 시각을 살펴볼 수 있습니다.
+            기관의 분기별 공시에서 보유 종목과 수량 변화를 확인합니다. 현재 보유나 실제 거래 시점과는 차이가 있습니다.
           </p>
 
-          <div className="page-desc" style={{ padding:'20px 24px', border:'1px solid #e8e8e8', borderRadius:'4px', marginBottom:'64px', display:'flex', flexDirection:'column', gap:'10px' }}>
-            <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'4px' }}>주의사항</p>
-            {['최대 45일 지연 - 공시 시점과 실제 보유 시점에 차이가 있습니다.',
+          <details className="page-desc" style={{ padding:'16px 20px', border:'1px solid #e8e8e8', borderRadius:'4px', marginBottom:'28px', display:'flex', flexDirection:'column', gap:'10px' }}>
+            <summary style={{ cursor:'pointer', fontSize:14 }}>공시를 읽기 전에</summary>
+            {['분기말 보유 현황은 통상 분기 종료 후 45일 이내 제출됩니다. 보유 기준일과 제출일을 구분하세요.',
               '미국 상장 주식 중심 - 현금, 채권, 공매도(Short), 비상장 투자, 해외 주식 상당수는 포함되지 않습니다.',
               '복사 매매 주의 - 공시 데이터만으로 투자 결정을 내리는 것은 위험할 수 있습니다.',
             ].map((t,i) => <p key={i} style={{ fontSize:'14px', color:'#666', lineHeight:'1.6' }}>{t}</p>)}
-          </div>
+            <a href="https://www.sec.gov/files/form13f.pdf" target="_blank" rel="noopener noreferrer">SEC Form 13F 안내 ↗</a>
+          </details>
 
-          <div className="page-section" style={{ display:'grid', gridTemplateColumns:'300px 1fr', gap:'48px', alignItems:'start' }}>
+          <div className="page-section portfolio-layout" style={{ display:'grid', gridTemplateColumns:'300px 1fr', gap:'48px', alignItems:'start' }}>
 
             {/* 왼쪽 */}
             <div style={{ borderRight:'1px solid #e8e8e8', paddingRight:'40px' }}>
@@ -417,7 +419,7 @@ export default function Form13F() {
               {!loadingAll && (
               <div style={{ marginBottom:'28px' }}>
                 <h2 style={{ fontSize:'28px', fontWeight:'400', marginBottom:'6px' }}>{selectedManager.firm}</h2>
-                {current?.period && <p style={{ fontSize:'13px', color:'#aaa', marginTop:'4px' }}>최신 공시 기준: {current.period}</p>}
+                {current && !current.loading && !current.error && <p style={{ fontSize:'13px', color:'#aaa', marginTop:'4px' }}>보유 기준일: {current.period || '미확인'} · 제출일: {current.filedAt || '미확인'}</p>}
               </div>
               )}
 
