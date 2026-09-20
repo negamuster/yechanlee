@@ -63,3 +63,14 @@ test('region, topic and search combine before display limits; multiple topic lab
   assert.deepEqual(filterNews(items, 'all', 'all', 'not found', now), [])
   assert.deepEqual(filterNews(items, 'all', 'all', '', now + 4 * 86400000), [])
 })
+
+test('teqball and sports medals do not pass via tech substring or broad feed categories', () => {
+  for (const title of [
+    '아시안게임 첫 테크볼 金은 한국… 이준석 남자 단식 우승',
+    '정규직 포기하고 금메달 걸었다! 이준석, 2-0 완승→아시안게임 테크볼 역사상 첫 금메달',
+    '테크볼 새 강자 등장', 'Teqball tournament winner crowned', '국가대표 탁구 금메달',
+  ]) assert.deepEqual(classifyNews(title, 'Technology Business'), [])
+  assert.ok(classifyNews('핀테크 기업 실적 개선').includes('tech'))
+  assert.ok(classifyNews('빅테크 AI 데이터센터 투자 확대').includes('tech'))
+  assert.ok(classifyNews('올림픽 중계권 매출 증가').includes('business'))
+})

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './NewsFeed.css'
+import { PUBLISHER_LOGOS } from './publisherLogos'
 
 import { selectNews, filterNews, TOPICS } from './newsSelection'
 import type { NewsItem, Region, TopicFilter } from './newsSelection'
@@ -9,7 +10,7 @@ interface Feed {
   fetchedAt: number
   sources: { id: string; publisher: string; region: string; status: string }[]
 }
-const CACHE_KEY = 'anthracite_curated_news_v4'
+const CACHE_KEY = 'anthracite_curated_news_v5'
 const TTL = 10 * 60 * 1000
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
@@ -47,6 +48,8 @@ function relativeTime(timestamp: number) {
 
 function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
   const [failed, setFailed] = useState(false)
+  const [logoFailed, setLogoFailed] = useState(false)
+  const logo = PUBLISHER_LOGOS[item.publisher]
   const available = item.image_url?.startsWith('https://') && !failed
   return <figure className="news-image-wrap">
     <div className="news-image-frame">
@@ -56,7 +59,10 @@ function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
         onLoad={event => {
           const img = event.currentTarget
           if (img.naturalWidth < 160 || img.naturalHeight < 90) setFailed(true)
-        }} /> : <span className="news-image-empty" aria-hidden="true">이미지 없음</span>}
+        }} /> : <span className="news-publisher-logo">
+          {logo && !logoFailed && <img src={logo} alt={`${item.publisher} 로고`} loading="lazy" referrerPolicy="no-referrer" onError={() => setLogoFailed(true)} />}
+          <span>{item.publisher}</span>
+        </span>}
     </div>
     <figcaption className="news-image-credit" title={available ? item.image_credit : undefined}>
       {available ? item.image_credit : null}

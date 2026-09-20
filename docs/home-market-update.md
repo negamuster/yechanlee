@@ -1,0 +1,10 @@
+# Home market update
+
+- Teqball no longer matches the Korean tech keyword. Sports/medal headlines are rejected even when broad RSS categories say Technology or Business; explicit business-impact stories (e.g. broadcast-rights revenue) remain eligible. This is headline/category matching, not semantic AI.
+- Card image ratio changes from 16:9 to 2.2:1, reducing height by about 19%. Missing/broken article images use publisher-owned icons plus publisher names. External icons may fail; names remain. Logos identify the source, not an endorsement.
+- Yahoo Finance loads immediately with autoplay=1, mute=1, playsinline=1 and iframe autoplay permission. Browser settings or YouTube availability can still prevent playback. Native controls allow unmuting; close unmounts the player.
+- The home overview moves to a scrolling strip under navigation. Instrument identities and order match https://github.com/KoNananachan/Neuberg/blob/main/server/src/routes/stocks.ts as inspected 2026-09-20. UI/server code is independently implemented; no Neuberg source is copied.
+- 19 instruments: S&P 500, Dow Jones, NASDAQ Composite, Russell 2000, VIX, FTSE 100, Nikkei 225, Hang Seng, DAX, CAC 40, Shanghai Composite, Sensex, ASX 200, KOSPI, TSX, gold futures, WTI futures, Bitcoin, US Dollar Index. These are not the old ETF substitutes.
+- /api/market-indices uses Yahoo chart metadata, 60-second server cache and request coalescing, 18-second upstream timeout. Frontend polls after each completed request plus 60 seconds. Prices are provider-delayed/as-of, not guaranteed real time. Each instrument displays timestamp in KST and units. Missing prices/previous close are never replaced with zeros.
+- Pause button, hover/focus pause, and prefers-reduced-motion horizontal scrolling are supported. Duplicate animation content is hidden from screen readers/tab order.
+- Tests cover specific reported headlines, retained finance stories, returns, partial/total provider failure and cache behavior. Live integration returned all 19 instruments during development.

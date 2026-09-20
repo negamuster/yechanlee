@@ -7,10 +7,10 @@ const DEFAULT_VIDEO_ID = 'KQp-e_XQnDE'
 const configuredId = import.meta.env.VITE_YAHOO_LIVE_VIDEO_ID?.trim()
 const videoId = configuredId && /^[A-Za-z0-9_-]{11}$/.test(configuredId) ? configuredId : DEFAULT_VIDEO_ID
 const channelUrl = 'https://www.youtube.com/@YahooFinance/live'
-const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&playsinline=1&rel=0`
+const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&rel=0`
 
 export default function MarketLive() {
-  const [opened, setOpened] = useState(false)
+  const [opened, setOpened] = useState(true)
 
   return (
     <section className="market-live" aria-labelledby="market-live-heading">
@@ -25,7 +25,7 @@ export default function MarketLive() {
           title="Yahoo Finance 24/7 Stream: Daily Market Coverage & more"
           width="640" height="360"
           referrerPolicy="strict-origin-when-cross-origin"
-          allow="encrypted-media; picture-in-picture; fullscreen"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         /> : <button type="button" className="market-live-open"
           aria-controls="market-live-player" onClick={() => setOpened(true)}>
@@ -38,7 +38,7 @@ export default function MarketLive() {
         <a href={channelUrl} target="_blank" rel="noopener noreferrer">YouTube에서 보기 ↗</a>
         {opened && <button type="button" onClick={() => setOpened(false)}>영상 닫기</button>}
       </div>
-      <p className="market-live-note">플레이어에서 재생 버튼을 눌러 시청하세요. 재생되지 않으면 YouTube에서 확인할 수 있습니다.</p>
+      <p className="market-live-note">음소거 상태로 자동 재생됩니다. 소리는 플레이어에서 켤 수 있습니다. 자동 재생이 차단되면 재생 버튼을 눌러 주세요.</p>
     </section>
   )
 }
