@@ -15,7 +15,7 @@ export default function SiteHeader() {
       <form className="site-search" onSubmit={e => { e.preventDefault(); const q = query.trim().toUpperCase(); if (q) { navigate(`/stock/${encodeURIComponent(q)}`); close() } }}>
         <label className="news-sr-only" htmlFor="site-stock-search">종목 티커 검색</label>
         <input id="site-stock-search" value={query} onChange={e => setQuery(e.target.value)} placeholder="티커 검색 (NVDA, AAPL…)" />
-        <button type="submit" aria-label="종목 검색">→</button>
+        <button type="submit" aria-label="종목 검색"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg></button>
       </form>
       <div className="site-contact">
         <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>
