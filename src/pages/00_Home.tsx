@@ -53,15 +53,6 @@ export default function Home() {
         <footer style={{ borderTop: '1px solid #e8e8e8', padding: '40px 48px', marginTop: '120px' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
             <span style={{ fontSize: '12px', color: '#aaa' }}>Anthracite © 2026</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '13px' }}>
-              <span style={{ color: '#aaa' }}>Contact</span>
-              <a href="mailto:yechan030102@gmail.com" className="footer-link" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
-                yechan030102@gmail.com
-              </a>
-              <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ color: '#000000', textDecoration: 'none', borderBottom: '1px solid #ccc' }}>
-                LinkedIn
-              </a>
-            </div>
           </div>
         </footer>
 

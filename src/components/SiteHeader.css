@@ -15,3 +15,10 @@
 @media(max-width:440px) { .site-search { order:3; flex-basis:100%; }.site-menu-toggle { margin-left:auto; } }
 
 @media(max-width:760px) { .portfolio-layout { grid-template-columns:1fr !important; gap:24px !important; }.portfolio-layout>div { min-width:0; overflow-x:auto; }.portfolio-layout>div:first-child { border-right:0 !important; padding-right:0 !important; } }
+
+.site-contact { position:relative; margin-left:auto; flex-shrink:0; }
+.site-contact>button { border:0; background:transparent; color:#333; font:inherit; font-size:14px; padding:10px 0; cursor:pointer; }
+.site-contact-links { position:absolute; right:0; top:100%; background:#fff; border:1px solid #ddd; padding:12px 18px; box-shadow:0 8px 20px #0000000c; width:250px; max-width:calc(100vw - 36px); box-sizing:border-box; }
+.site-contact-links a { display:block; color:#333; font-size:14px; text-decoration:none; padding:10px 0; overflow-wrap:anywhere; }
+.site-contact-links a:hover { text-decoration:underline; }
+@media(max-width:860px) { .site-search { order:3; flex-basis:100%; }.site-menu-toggle { margin-left:0; }.site-header-top { column-gap:12px; }.site-contact-links { right:-70px; } }

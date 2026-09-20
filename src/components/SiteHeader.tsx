@@ -5,9 +5,10 @@ const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·�
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
-  function close() { setOpen(false); setToolsOpen(false) }
+  function close() { setOpen(false); setToolsOpen(false); setContactOpen(false) }
   return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') close() }}>
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
@@ -16,6 +17,13 @@ export default function SiteHeader() {
         <input id="site-stock-search" value={query} onChange={e => setQuery(e.target.value)} placeholder="티커 검색 (NVDA, AAPL…)" />
         <button type="submit" aria-label="종목 검색">→</button>
       </form>
+      <div className="site-contact">
+        <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>
+        {contactOpen && <div id="site-contact-links" className="site-contact-links">
+          <a href="mailto:yechan030102@gmail.com">yechan030102@gmail.com</a>
+          <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+        </div>}
+      </div>
       <button className="site-menu-toggle" type="button" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(!open)}>메뉴 {open ? '닫기' : '열기'}</button>
     </div>
     <nav id="site-menu" className={`site-menu${open ? ' is-open' : ''}`} aria-label="주요 메뉴">
