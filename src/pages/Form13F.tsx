@@ -1,3 +1,4 @@
+import { portfolioSlices } from '../lib/financialMath'
 import { useState, useEffect } from 'react'
 
 interface Manager {
@@ -5,24 +6,24 @@ interface Manager {
   nameKo: string
   firm: string
   cik: string
-  totalValue?: number
+  totalValue?: number; note?: string
 }
 
 const INITIAL_MANAGERS: Manager[] = [
-  { name: 'Warren Buffett', nameKo: '워렌 버핏', firm: 'Berkshire Hathaway', cik: '0001067983' },
-  { name: 'BlackRock', nameKo: '블랙록', firm: 'BlackRock Inc.', cik: '0001364742' },
-  { name: 'Vanguard Group', nameKo: '뱅가드', firm: 'The Vanguard Group', cik: '0000102909' },
+  { name: 'Berkshire Hathaway', nameKo: '버크셔 해서웨이', firm: 'Berkshire Hathaway', cik: '0001067983' },
+  { name: 'BlackRock', nameKo: '블랙록', firm: 'BlackRock Inc.', cik: '0002012383' },
+  { name: 'Vanguard Group', nameKo: '뱅가드', firm: 'The Vanguard Group', cik: '0000102909', note: '기존 그룹 공시 기록입니다. 2026년 공시는 여러 운용 법인으로 나뉘어 제출되므로 그룹 전체의 최신 포트폴리오로 해석하지 마세요.' },
   { name: 'State Street', nameKo: '스테이트 스트리트', firm: 'State Street Corporation', cik: '0000093751' },
-  { name: 'Ray Dalio', nameKo: '레이 달리오', firm: 'Bridgewater Associates', cik: '0001350694' },
-  { name: 'Ken Griffin', nameKo: '켄 그리핀', firm: 'Citadel Advisors', cik: '0001423298' },
-  { name: 'Jim Simons', nameKo: '짐 사이먼스', firm: 'Renaissance Technologies', cik: '0001037389' },
+  { name: 'Bridgewater', nameKo: '브리지워터', firm: 'Bridgewater Associates', cik: '0001350694' },
+  { name: 'Ken Griffin', nameKo: '켄 그리핀', firm: 'Citadel Advisors', cik: '0001423053' },
+  { name: 'Renaissance', nameKo: '르네상스', firm: 'Renaissance Technologies', cik: '0001037389' },
   { name: 'Stanley Druckenmiller', nameKo: '스탠리 드러켄밀러', firm: 'Duquesne Family Office', cik: '0001536411' },
-  { name: 'Bill Ackman', nameKo: '빌 애크먼', firm: 'Pershing Square', cik: '0001336528' },
-  { name: 'David Tepper', nameKo: '데이비드 테퍼', firm: 'Appaloosa Management', cik: '0001418736' },
-  { name: 'George Soros', nameKo: '조지 소로스', firm: 'Soros Fund Management', cik: '0001029160' },
+  { name: 'Bill Ackman', nameKo: '빌 애크먼', firm: 'Pershing Square Inc.', cik: '0002026053' },
+  { name: 'David Tepper', nameKo: '데이비드 테퍼', firm: 'Appaloosa LP', cik: '0001656456' },
+  { name: 'Soros Fund', nameKo: '소로스 펀드', firm: 'Soros Fund Management', cik: '0001029160' },
   { name: 'Cathie Wood', nameKo: '캐시 우드', firm: 'ARK Invest', cik: '0001697748' },
   { name: 'Li Lu', nameKo: '리 루', firm: 'Himalaya Capital', cik: '0001709323' },
-  { name: 'Michael Burry', nameKo: '마이클 버리', firm: 'Scion Asset Management', cik: '0001649339' },
+  { name: 'Michael Burry', nameKo: '마이클 버리', firm: 'Scion Asset Management', cik: '0001649339', note: '최근 확인되는 보유 기준일을 확인하세요. 과거 공시이며 현재 보유를 의미하지 않습니다.' },
 ]
 
 const COLORS = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#06B6D4','#F97316','#84CC16','#6366F1']
@@ -87,14 +88,14 @@ function StockLogo({ name }: { name: string }) {
 }
 
 interface Holding {
-  name: string; shares: number; value: number; prevShares?: number; pct?: number
+  name: string; shares: number; value: number; prevShares?: number; pct?: number; cusip: string; title: string
 }
 interface FilingData {
-  filedAt?: string
+  filedAt?: string; checkedAt?: number; stale?: boolean; verification?: string; reportedTotal?: number; excludedValue?: number; holdingCount?: number; refreshError?: string
+  sources?: { accession: string; form: string; indexUrl: string; reportedTotal: number; parsedTotal: number; reportedCount: number; parsedCount: number }[]
   period: string; holdings: Holding[]; loading: boolean; error: string | null; totalValue: number
 }
 
-const proxy = (url: string) => `/api/sec-proxy?url=${encodeURIComponent(url)}`
 
 function formatValue(v: number): string {
   if (v >= 1_000_000_000_000) return '$' + (v / 1_000_000_000_000).toFixed(1) + 'T'
@@ -120,224 +121,67 @@ function LastTransactionTag({ curr, prev }: { curr: number; prev?: number }) {
   return <span style={{ fontSize:'12px', color:'#aaa' }}>Unchanged</span>
 }
 
-function DonutChart({ holdings }: { holdings: Holding[] }) {
-  const top10 = holdings.slice(0, 10)
-  const total = holdings.reduce((s, h) => s + h.value, 0)
-  const R = 80, r = 52, cx = 100, cy = 100
-  let angle = -Math.PI / 2
-  const slices = top10.map((h, i) => {
-    const pct = h.value / total
-    const start = angle; angle += pct * 2 * Math.PI; const end = angle
-    const x1 = cx + R * Math.cos(start), y1 = cy + R * Math.sin(start)
-    const x2 = cx + R * Math.cos(end), y2 = cy + R * Math.sin(end)
-    const ix1 = cx + r * Math.cos(end), iy1 = cy + r * Math.sin(end)
-    const ix2 = cx + r * Math.cos(start), iy2 = cy + r * Math.sin(start)
-    const large = pct > 0.5 ? 1 : 0
-    const d = `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`
-    return { d, color: COLORS[i], name: h.name, pct: Math.round(h.value / total * 1000) / 10 }
-  })
-  const othersStart = angle
-  const othersPct = 1 - top10.reduce((s, h) => s + h.value / total, 0)
+function DonutChart({ holdings, total }: { holdings: Holding[]; total: number }) {
+  const slices = portfolioSlices(holdings, total)
+  let offset = 0
   return (
-    <div style={{ display:'flex', gap:'40px', alignItems:'center', marginBottom:'40px' }}>
-      <div style={{ flexShrink:0 }}>
-        <svg viewBox="0 0 200 200" style={{ width:'180px' }}>
-          {slices.map((s, i) => <path key={i} d={s.d} fill={s.color} stroke="#fff" strokeWidth="2" />)}
-          {othersPct > 0.005 && (() => {
-            const end2 = othersStart + othersPct * 2 * Math.PI
-            const x1 = cx + R * Math.cos(othersStart), y1 = cy + R * Math.sin(othersStart)
-            const x2 = cx + R * Math.cos(end2), y2 = cy + R * Math.sin(end2)
-            const ix1 = cx + r * Math.cos(end2), iy1 = cy + r * Math.sin(end2)
-            const ix2 = cx + r * Math.cos(othersStart), iy2 = cy + r * Math.sin(othersStart)
-            const large = othersPct > 0.5 ? 1 : 0
-            return <path d={`M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${r} ${r} 0 ${large} 0 ${ix2} ${iy2} Z`} fill="#e8e8e8" stroke="#fff" strokeWidth="2" />
-          })()}
-          <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000" fontFamily='"Times New Roman",serif' fontWeight="500">{formatValue(total)}</text>
-          <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">Total value</text>
-        </svg>
-      </div>
-      <div style={{ display:'flex', flexDirection:'column', gap:'8px', flex:1 }}>
-        {slices.map((s, i) => (
-          <div key={i} style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div style={{ width:'10px', height:'10px', borderRadius:'2px', background:s.color, flexShrink:0 }} />
-            <span style={{ fontSize:'12px', color:'#333', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{formatName(s.name)}</span>
-            <span style={{ fontSize:'12px', color:'#aaa', minWidth:'36px', textAlign:'right' }}>{s.pct}%</span>
-          </div>
-        ))}
+    <div style={{ display:'flex', flexWrap:'wrap', gap:'24px', alignItems:'center', marginBottom:'32px' }}>
+      <svg viewBox="0 0 200 200" role="img" aria-label="수집된 13F 보유금액 기준 상위 10개와 기타 종목 비중" style={{ width:180, flexShrink:0 }}>
+        {slices.map((slice, i) => {
+          const start = offset; offset += slice.fraction * 100
+          return <circle key={i} cx="100" cy="100" r="66" fill="none" stroke={slice.other ? '#e8e8e8' : COLORS[i]}
+            strokeWidth="28" pathLength="100" strokeDasharray={`${slice.fraction * 100} ${100 - slice.fraction * 100}`}
+            strokeDashoffset={-start} transform="rotate(-90 100 100)">
+            <title>{slice.name}: {slice.pct}%</title>
+          </circle>
+        })}
+        <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000">{formatValue(total)}</text>
+        <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#666">수집 보유금액 합계</text>
+      </svg>
+      <div style={{ display:'flex', flexDirection:'column', gap:8, flex:1, minWidth:180 }}>
+        {slices.map((slice, i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ width:10, height:10, background:slice.other ? '#e8e8e8' : COLORS[i], flexShrink:0 }} />
+          <span style={{ fontSize:12, color:'#333', flex:1 }}>{slice.other ? slice.name : formatName(slice.name)}</span>
+          <span style={{ fontSize:12, color:'#666' }}>{slice.pct}%</span>
+        </div>)}
+        {!slices.length && <p>표시할 보유금액이 없습니다.</p>}
       </div>
     </div>
   )
 }
 
-function parseInfoTable(xmlText: string): Map<string, Holding> {
-  const map = new Map<string, Holding>()
-  const cleaned = xmlText.replace(/<[a-zA-Z][a-zA-Z0-9]*:/g, '<').replace(/<\/[a-zA-Z][a-zA-Z0-9]*:/g, '</')
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(cleaned, 'application/xml')
-  let entries = doc.querySelectorAll('infoTable')
-  if (entries.length === 0) entries = doc.querySelectorAll('InfoTable')
-  entries.forEach(entry => {
-    const name = (entry.querySelector('nameOfIssuer, NAMEOFISSUER')?.textContent || '').trim()
-    const shares = parseInt(entry.querySelector('sshPrnamt, SSHPRNAMT, shrQty, SHRQTY')?.textContent || '0') || 0
-    const value = parseInt(entry.querySelector('value, VALUE')?.textContent || '0') || 0
-    const putCall = entry.querySelector('putCall, PUTCALL')?.textContent?.trim() || ''
-    if (putCall === 'Put' || putCall === 'Call') return
-    if (!name) return
-    if (map.has(name)) {
-      const e = map.get(name)!
-      map.set(name, { name, shares: e.shares + shares, value: e.value + value })
-    } else {
-      map.set(name, { name, shares, value })
-    }
-  })
-  return map
-}
-
-async function fetchFiling(cikInt: number, accNum: string, primaryDoc: string): Promise<Map<string, Holding>> {
-  const base = `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNum}`
-  const accNumDashed = accNum.replace(/(\d{10})(\d{2})(\d{6})/, '$1-$2-$3')
-  const resolveUrl = (href: string): string => {
-    if (href.startsWith('http')) return href
-    if (href.startsWith('/')) return `https://www.sec.gov${href}`
-    return `${base}/${href}`
-  }
-  try {
-    const idxRes = await fetch(proxy(`${base}/${accNumDashed}-index.htm`))
-    if (idxRes.ok) {
-      const idxText = await idxRes.text()
-      const links = [...idxText.matchAll(/href="([^"]*\.xml)"/gi)]
-        .map(m => resolveUrl(m[1])).filter(u => !u.includes('primary_doc'))
-      for (const xmlUrl of links) {
-        try {
-          const r = await fetch(proxy(xmlUrl))
-          if (r.ok) { const m = parseInfoTable(await r.text()); if (m.size > 0) return m }
-        } catch {}
-      }
-    }
-  } catch {}
-  try {
-    const res = await fetch(proxy(`${base}/${primaryDoc}`))
-    if (res.ok) {
-      const text = await res.text()
-      const links = [...text.matchAll(/href="([^"]*\.xml)"/gi)]
-        .map(m => resolveUrl(m[1])).filter(u => !u.includes('primary_doc'))
-      for (const xmlUrl of links) {
-        try {
-          const r = await fetch(proxy(xmlUrl))
-          if (r.ok) { const m = parseInfoTable(await r.text()); if (m.size > 0) return m }
-        } catch {}
-      }
-    }
-  } catch {}
-  for (const name of ['form13fInfoTable.xml', 'infotable.xml', 'information_table.xml']) {
-    try {
-      const r = await fetch(proxy(`${base}/${name}`))
-      if (r.ok) { const m = parseInfoTable(await r.text()); if (m.size > 0) return m }
-    } catch {}
-  }
-  throw new Error(`XML not found for accession ${accNum}`)
-}
-
-async function fetchLatest13F(cik: string): Promise<FilingData> {
-  try {
-    const subRes = await fetch(proxy(`https://data.sec.gov/submissions/CIK${cik}.json`))
-    if (!subRes.ok) throw new Error('submissions fetch failed')
-    const subData = await subRes.json()
-    if (!subData.filings) throw new Error('no filings data')
-
-    // recent에서 먼저 탐색
-    let forms: string[] = subData.filings.recent?.form || []
-    let dates: string[] = subData.filings.recent?.reportDate || []
-    let filedDates: string[] = subData.filings.recent?.filingDate || []
-    let accNums: string[] = subData.filings.recent?.accessionNumber || []
-    let primaryDocs: string[] = subData.filings.recent?.primaryDocument || []
-    let indices13f = forms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
-
-    // recent에 없으면 files 배열(페이지네이션된 추가 제출 기록)도 탐색
-    if (indices13f.length === 0) {
-      const extraFiles: { name: string }[] = subData.filings.files || []
-      for (const file of extraFiles) {
-        try {
-          const fileRes = await fetch(proxy(`https://data.sec.gov/submissions/${file.name}`))
-          if (!fileRes.ok) continue
-          const fileData = await fileRes.json()
-          const moreForms: string[] = fileData.form || []
-          const moreIdx = moreForms.reduce<number[]>((acc, f, i) => { if (f === '13F-HR') acc.push(i); return acc }, [])
-          if (moreIdx.length > 0) {
-            forms = moreForms
-            dates = fileData.reportDate || []
-            filedDates = fileData.filingDate || []
-            accNums = fileData.accessionNumber || []
-            primaryDocs = fileData.primaryDocument || []
-            indices13f = moreIdx
-            break
-          }
-        } catch {}
-      }
-    }
-
-    if (indices13f.length === 0) throw new Error('no 13F-HR filings found')
-
-    const idx = indices13f[0]
-    const idxPrev = indices13f.length > 1 ? indices13f[1] : undefined
-    const period = dates[idx] || ''
-    const accNum = accNums[idx].replace(/-/g, '')
-    const cikInt = parseInt(cik)
-    const holdingMap = await fetchFiling(cikInt, accNum, primaryDocs[idx])
-    const prevMap = new Map<string, number>()
-    let previousAvailable = false
-    if (idxPrev !== undefined) {
-      try {
-        const prevAccNum = accNums[idxPrev].replace(/-/g, '')
-        const pm = await fetchFiling(cikInt, prevAccNum, primaryDocs[idxPrev])
-        previousAvailable = pm.size > 0
-        pm.forEach((h, name) => prevMap.set(name, h.shares))
-      } catch {}
-    }
-    const totalValue = Array.from(holdingMap.values()).reduce((s, h) => s + h.value, 0)
-    const holdings: Holding[] = Array.from(holdingMap.values())
-      .map(h => ({ ...h, prevShares: previousAvailable ? (prevMap.get(h.name) ?? 0) : undefined, pct: Math.round(h.value / totalValue * 1000) / 10 }))
-      .sort((a, b) => b.value - a.value).slice(0, 30)
-    return { period, filedAt: filedDates[idx] || undefined, holdings, loading: false, error: null, totalValue }
-  } catch (e: any) {
-    return { period: '', holdings: [], loading: false, error: e.message, totalValue: 0 }
-  }
-}
-
 export default function Form13F() {
-  const [managers, setManagers] = useState<Manager[]>(INITIAL_MANAGERS)
+  const managers = INITIAL_MANAGERS
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [cache, setCache] = useState<Record<string, FilingData>>({})
-  const [initialLoadDone, setInitialLoadDone] = useState(false)
-  const [loadingAll, setLoadingAll] = useState(true)
-
+  const [refresh, setRefresh] = useState(0)
+  const [busy, setBusy] = useState(false)
+  const loadingAll = false
   const selectedManager = managers[selectedIdx]
 
-  // 최초 진입 시 전체 기관 totalValue 로드 → 정렬 고정
   useEffect(() => {
-    if (initialLoadDone) return
-    setInitialLoadDone(true)
-
-    const loadAll = async () => {
-      const results = await Promise.allSettled(
-        INITIAL_MANAGERS.map(m => fetchLatest13F(m.cik))
-      )
-      const newCache: Record<string, FilingData> = {}
-      const updated = INITIAL_MANAGERS.map((m, i) => {
-        const result = results[i]
-        const data = result.status === 'fulfilled' ? result.value : { period:'', holdings:[], loading:false, error:'failed', totalValue:0 }
-        newCache[m.cik] = data
-        return { ...m, totalValue: data.totalValue }
-      })
-      const sorted = [...updated].sort((a, b) => (b.totalValue || 0) - (a.totalValue || 0))
-      setCache(newCache)
-      setManagers(sorted)
-      setSelectedIdx(0)
-      setLoadingAll(false)
+    const controller = new AbortController()
+    let active = true
+    const cik = selectedManager.cik
+    setBusy(true)
+    async function load() {
+      try {
+        const response = await fetch(`/api/form13f?cik=${cik}`, { signal: controller.signal })
+        const result = await response.json()
+        if (!response.ok || result.verification !== 'matched') throw new Error(result.error || '공시 검증 실패')
+        if (active) setCache(prev => ({ ...prev, [cik]: { ...result, loading:false, error:null } }))
+      } catch (error) {
+        if (active) setCache(prev => ({ ...prev, [cik]: prev[cik]?.holdings.length
+          ? { ...prev[cik], stale:true, refreshError:'최신 공시를 다시 확인하지 못했습니다.' }
+          : { period:'', holdings:[], totalValue:0, loading:false, error: error instanceof Error ? error.message : '조회 실패' } }))
+      } finally { if (active) setBusy(false) }
     }
-
-    loadAll()
-  }, [])
+    void load()
+    const interval = setInterval(() => { if (!document.hidden) setRefresh(value => value + 1) }, 15 * 60000)
+    const visible = () => { if (!document.hidden) setRefresh(value => value + 1) }
+    document.addEventListener('visibilitychange', visible)
+    return () => { active = false; controller.abort(); clearInterval(interval); document.removeEventListener('visibilitychange', visible) }
+  }, [selectedManager.cik, refresh])
 
   const current = cache[selectedManager?.cik]
 
@@ -398,7 +242,7 @@ export default function Form13F() {
                 </>
               ) : (
                 managers.map((m, i) => (
-                  <div key={m.cik} className="mgr-btn" onClick={() => setSelectedIdx(i)}
+                  <div key={m.cik} className="mgr-btn" role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdx(i) } }} onClick={() => setSelectedIdx(i)}
                     style={{ padding:'14px 16px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
                       <p style={{ fontSize:'14px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'2px' }}>
@@ -419,6 +263,12 @@ export default function Form13F() {
               {!loadingAll && (
               <div style={{ marginBottom:'28px' }}>
                 <h2 style={{ fontSize:'28px', fontWeight:'400', marginBottom:'6px' }}>{selectedManager.firm}</h2>
+                {selectedManager.note && <p style={{ color:'#9a6700', fontSize:12, lineHeight:1.7 }}>{selectedManager.note}</p>}
+                {current?.period && Date.now() - Date.parse(current.period) > 180 * 86400000 && <p style={{ color:'#9a6700', fontSize:12 }}>보유 기준일로부터 6개월 이상 지난 공시입니다.</p>}
+                <button type="button" disabled={busy} onClick={() => setRefresh(value => value + 1)}>{busy ? '공시 확인 중…' : '새로고침'}</button>
+                <p style={{ fontSize:12, color:'#666', lineHeight:1.7 }}>선택한 기관은 페이지를 보는 동안 15분마다 확인합니다. 서버 캐시는 최대 15분이며 새 공시는 재배포 없이 반영됩니다.</p>
+                {current?.checkedAt && <p style={{ fontSize:12, color:'#666' }}>최근 검증: {new Date(current.checkedAt).toLocaleString('ko-KR', { timeZone:'Asia/Seoul' })} KST</p>}
+                {current?.stale && <p role="status" style={{ color:'#b42318' }}>최신 조회에 실패해 마지막 검증 자료를 표시합니다.</p>}
                 {current && !current.loading && !current.error && <p style={{ fontSize:'13px', color:'#aaa', marginTop:'4px' }}>보유 기준일: {current.period || '미확인'} · 제출일: {current.filedAt || '미확인'}</p>}
               </div>
               )}
@@ -443,10 +293,20 @@ export default function Form13F() {
                 </div>
               ) : (
                 <>
+                  <details style={{ fontSize:12, lineHeight:1.8, marginBottom:24 }}>
+                    <summary>SEC 원문 대조: 공시별 금액 합계·행 수 일치</summary>
+                    <p>옵션·원금 단위 항목 포함 공시 합계: {formatValue(current.reportedTotal ?? 0)} · 화면에서 제외한 금액: {formatValue(current.excludedValue ?? 0)}</p>
+                    {current.sources?.map(source => <p key={source.accession}>
+                      <a href={source.indexUrl} target="_blank" rel="noopener noreferrer">{source.form} · {source.accession} ↗</a><br />
+                      원문 / 수집: ${source.reportedTotal.toLocaleString()} / ${source.parsedTotal.toLocaleString()} · {source.reportedCount} / {source.parsedCount}행
+                    </p>)}
+                    <p>합계 대조는 파싱 검증이며 SEC가 투자 내용을 보증한다는 뜻은 아닙니다. 수정 공시는 재작성과 추가 보유 항목을 구분해 반영합니다.</p>
+                  </details>
                   <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'16px' }}>Top 10 Holdings</p>
-                  <DonutChart holdings={current.holdings} />
+                  <DonutChart holdings={current.holdings} total={current.totalValue} />
+                  <p style={{ fontSize:12, color:'#666', lineHeight:1.7, marginBottom:20 }}>차트와 표의 비중은 옵션·원금 단위 항목을 제외한 보유종목 전체 합계를 기준으로 합니다. 차트는 상위 10개와 기타, 표는 상위 30개를 표시합니다. 기타에는 표에 없는 종목도 포함됩니다. 옵션 등 제외 항목이 있어 기관의 전체 운용자산(AUM)과 다르며, 반올림으로 비중 합계가 100%와 다를 수 있습니다.</p>
 
-                  <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
+                  <div style={{ overflowX:'auto' }}><table style={{ width:'100%', minWidth:620, borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
                     <colgroup>
                       <col style={{ width:'32px' }} />
                       <col />
@@ -462,7 +322,7 @@ export default function Form13F() {
                         <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>% of Portfolio</th>
                         <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Shares</th>
                         <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Market Value</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Last Transaction</th>
+                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>전 분기 수량 변화</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -472,7 +332,7 @@ export default function Form13F() {
                           <td style={{ padding:'12px 0' }}>
                             <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
                               <StockLogo name={h.name} />
-                              <span style={{ color:'#000', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'13px' }}>{formatName(h.name)}</span>
+                              <span style={{ color:'#000', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'13px' }}>{formatName(h.name)}<small style={{ display:'block', color:'#666', fontSize:10 }}>{h.title} · {h.cusip}</small></span>
                             </div>
                           </td>
                           <td style={{ padding:'12px 0', textAlign:'right', color:'#555' }}>{h.pct}%</td>
@@ -482,7 +342,7 @@ export default function Form13F() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
 
                   <div style={{ marginTop:'32px' }}>
                     <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none' }}>

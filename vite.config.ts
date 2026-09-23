@@ -12,6 +12,9 @@ import { createStockHandler } from './lib/stock-data.js'
 // @ts-expect-error Shared server implementation.
 import { createAnalysisHandler } from './lib/stock-analysis.js'
 
+// @ts-expect-error Shared SEC server handler.
+import { create13FHandler } from './lib/form13f.js'
+
 export default defineConfig({
   // Only this non-secret setting may be exposed to browser code.
   envPrefix: 'VITE_YAHOO_LIVE_VIDEO_ID',
@@ -20,7 +23,9 @@ export default defineConfig({
     name: 'local-news-api',
     configureServer(server) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
+      const filingHandler = create13FHandler()
       const handlers: Record<string, (req: Request) => Promise<Response>> = {
+        '/api/form13f': filingHandler,
         '/api/stock-data': createStockHandler({ getKey: () => process.env.POLYGON_KEY || env.POLYGON_KEY || env.VITE_POLYGON_KEY }),
         '/api/claude-proxy': createAnalysisHandler({ getKey: () => process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY }),
       }
