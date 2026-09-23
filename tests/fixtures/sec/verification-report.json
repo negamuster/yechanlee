@@ -1,0 +1,90 @@
+[
+  {
+    "cik": "0001067983",
+    "name": "BERKSHIRE HATHAWAY INC",
+    "period": "2026-06-30",
+    "total": 299253556246,
+    "excluded": 0,
+    "displayedTotal": 299253556246,
+    "holdingCount": 29,
+    "sources": [
+      {
+        "accession": "0001193125-26-352200",
+        "form": "13F-HR",
+        "indexUrl": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/0001193125-26-352200-index.htm",
+        "coverUrl": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/primary_doc.xml",
+        "tableUrls": [
+          "https://www.sec.gov/Archives/edgar/data/1067983/000119312526352200/56757.xml"
+        ],
+        "reportedTotal": 299253556246,
+        "parsedTotal": 299253556246,
+        "reportedCount": 89,
+        "parsedCount": 89
+      }
+    ],
+    "previousAvailable": true
+  },
+  {
+    "cik": "0002026053",
+    "name": "PERSHING SQUARE INC.",
+    "period": "2026-06-30",
+    "total": 19465692772,
+    "excluded": 0,
+    "displayedTotal": 19465692772,
+    "holdingCount": 14,
+    "sources": [
+      {
+        "accession": "0001172661-26-003790",
+        "form": "13F-HR",
+        "indexUrl": "https://www.sec.gov/Archives/edgar/data/2026053/000117266126003790/0001172661-26-003790-index.htm",
+        "coverUrl": "https://www.sec.gov/Archives/edgar/data/2026053/000117266126003790/primary_doc.xml",
+        "tableUrls": [
+          "https://www.sec.gov/Archives/edgar/data/2026053/000117266126003790/infotable.xml"
+        ],
+        "reportedTotal": 19465692772,
+        "parsedTotal": 19465692772,
+        "reportedCount": 15,
+        "parsedCount": 15
+      }
+    ],
+    "previousAvailable": true
+  },
+  {
+    "cik": "0001423053",
+    "name": "CITADEL ADVISORS LLC",
+    "period": "2026-06-30",
+    "total": 875011794337,
+    "excluded": 703255985461,
+    "displayedTotal": 171755808876,
+    "holdingCount": 6290,
+    "sources": [
+      {
+        "accession": "0001104659-26-097200",
+        "form": "13F-HR",
+        "indexUrl": "https://www.sec.gov/Archives/edgar/data/1423053/000110465926097200/0001104659-26-097200-index.htm",
+        "coverUrl": "https://www.sec.gov/Archives/edgar/data/1423053/000110465926097200/primary_doc.xml",
+        "tableUrls": [
+          "https://www.sec.gov/Archives/edgar/data/1423053/000110465926097200/infotable.xml"
+        ],
+        "reportedTotal": 875096281441,
+        "parsedTotal": 875096281441,
+        "reportedCount": 16127,
+        "parsedCount": 16127
+      },
+      {
+        "accession": "0001104659-26-104387",
+        "form": "13F-HR/A",
+        "indexUrl": "https://www.sec.gov/Archives/edgar/data/1423053/000110465926104387/0001104659-26-104387-index.htm",
+        "coverUrl": "https://www.sec.gov/Archives/edgar/data/1423053/000110465926104387/primary_doc.xml",
+        "tableUrls": [
+          "https://www.sec.gov/Archives/edgar/data/1423053/000110465926104387/infotable.xml"
+        ],
+        "reportedTotal": 875011794337,
+        "parsedTotal": 875011794337,
+        "reportedCount": 16122,
+        "parsedCount": 16122
+      }
+    ],
+    "previousAvailable": true
+  }
+]

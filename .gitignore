@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# SEC downloads are reproducible; retain only small regression fixtures and the audit.
+tests/fixtures/sec/*
+!tests/fixtures/sec/000119312526352200-primary_doc.xml
+!tests/fixtures/sec/000119312526352200-56757.xml
+!tests/fixtures/sec/verification-report.json

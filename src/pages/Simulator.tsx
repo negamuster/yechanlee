@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { projectAssets } from '../lib/financialMath'
 
 function formatInput(value: string): string {
   const num = value.replace(/[^0-9]/g, '')
@@ -51,11 +52,6 @@ const hintStyle: React.CSSProperties = {
   marginTop: '5px',
 }
 
-interface YearData {
-  age: number
-  asset: number
-}
-
 const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
 
 export default function Simulator() {
@@ -75,37 +71,29 @@ export default function Simulator() {
   const [mortgage, setMortgage] = useState('')
   const [otherDebt, setOtherDebt] = useState('')
 
+  const [mortgageRate, setMortgageRate] = useState('')
+  const [otherDebtRate, setOtherDebtRate] = useState('')
+  const [mortgagePrincipal, setMortgagePrincipal] = useState('')
+  const [otherPrincipal, setOtherPrincipal] = useState('')
+
   const hasInput = currentAge && (savings || stocks || other) && expense && income
 
-  const data: YearData[] = useMemo(() => {
-    if (!hasInput) return []
-    const startAge = parseInt(currentAge)
-    const retireAgeNum = retireAge ? parseInt(retireAge) : 100
-    const totalAsset = parseInput(savings) + parseInput(stocks) + parseInput(other)
-    const totalDebt = parseInput(mortgage) + parseInput(otherDebt)
-    let netAsset = totalAsset - totalDebt
-    const totalForRate = totalAsset || 1
-    const weightedRate = (
-      parseInput(savings) * (parseFloat(savingsRate) || 0) +
-      parseInput(stocks) * (parseFloat(stocksRate) || 0) +
-      parseInput(other) * (parseFloat(otherRate) || 0)
-    ) / totalForRate / 100
-    let currentExpense = parseInput(expense)
-    let currentIncome = parseInput(income)
-    const expGrowthRate = (parseFloat(expenseGrowth) || 0) / 100
-    const incGrowthRate = (parseFloat(incomeGrowth) || 0) / 100
-    const result: YearData[] = []
-    for (let age = startAge; age <= 100; age++) {
-      result.push({ age, asset: netAsset })
-      const effectiveIncome = age >= retireAgeNum ? 0 : currentIncome
-      netAsset = netAsset * (1 + weightedRate) + effectiveIncome - currentExpense
-      currentExpense = currentExpense * (1 + expGrowthRate)
-      currentIncome = currentIncome * (1 + incGrowthRate)
-    }
-    return result
-  }, [currentAge, retireAge, savings, savingsRate, stocks, stocksRate, other, otherRate, expense, expenseGrowth, income, incomeGrowth, mortgage, otherDebt, hasInput])
-
-  const netIncrease = parseInput(income) - parseInput(expense)
+  const data = useMemo(() => hasInput ? projectAssets({
+    age: Number(currentAge), retireAge: retireAge ? Number(retireAge) : 100,
+    assets: [
+      { balance: parseInput(savings), rate: Number(savingsRate) },
+      { balance: parseInput(stocks), rate: Number(stocksRate) },
+      { balance: parseInput(other), rate: Number(otherRate) },
+    ],
+    debts: [
+      { balance: parseInput(mortgage), rate: Number(mortgageRate), annualPrincipal: parseInput(mortgagePrincipal) },
+      { balance: parseInput(otherDebt), rate: Number(otherDebtRate), annualPrincipal: parseInput(otherPrincipal) },
+    ],
+    income: parseInput(income), expense: parseInput(expense),
+    incomeGrowth: Number(incomeGrowth), expenseGrowth: Number(expenseGrowth),
+  }) : [], [currentAge, retireAge, savings, savingsRate, stocks, stocksRate, other, otherRate, expense, expenseGrowth, income, incomeGrowth, mortgage, otherDebt, mortgageRate, otherDebtRate, mortgagePrincipal, otherPrincipal, hasInput])
+  const netIncrease = data[0]?.cashFlow ?? 0
+  const firstGap = data.find(row => row.fundingGap > 0)
 
   const W = 620, H = 280, PL = 64, PR = 20, PT = 20, PB = 44
   const gW = W - PL - PR
@@ -158,7 +146,7 @@ export default function Simulator() {
             자산·소득·지출과 수익률 가정을 입력해 100세까지의 순자산 변화를 계산합니다. 실제 미래 수익을 예측하는 모델은 아닙니다.
           </p>
 
-          <p style={{ fontSize: 13, color: '#666', lineHeight: 1.8, marginBottom: 24 }}>연간 소득·지출 기준의 단순 계산입니다. 세금·수수료·수익률 변동과 별도 대출 상환 일정은 반영하지 않습니다. 수익률과 지출 가정을 바꾸어 결과를 비교해 보세요.</p>
+          <p style={{ fontSize: 13, color: '#666', lineHeight: 1.8, marginBottom: 24 }}>연초 자산에 수익률을 적용하고 연말에 소득·소비·대출 이자·원금 상환을 반영합니다. 최초 자산 비중으로 매년 재조정한다고 가정하며 초기 자산이 0원이면 수익률은 0%입니다. 세금·수수료·수익률 변동은 반영하지 않습니다.</p>
           <div className="page-section">
 
             {/* ── 나이 ── */}
@@ -181,7 +169,7 @@ export default function Simulator() {
             {/* ── 금융 자산 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
               <p style={sectionTitleStyle}>금융 자산 (Financial Assets)</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>부채를 제외한 순자산 기준 · 퇴직연금 포함</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>부채를 차감하기 전 자산을 입력하세요. 주택담보대출이 있다면 대응하는 주택 가치도 기타 자산에 포함하세요.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                   <div>
@@ -202,12 +190,12 @@ export default function Simulator() {
                   <div>
                     <p style={labelStyle}>연 수익률 (%)</p>
                     <input className="sim-input" style={inputStyle} type="number" placeholder="예: 8" value={stocksRate} onChange={e => setStocksRate(e.target.value)} onWheel={handleWheel} />
-                    <p style={hintStyle}>S&P 500 → 약 7~10%</p>
+                    <p style={hintStyle}>미래 수익률 가정 · 음수도 입력 가능</p>
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
                   <div>
-                    <p style={labelStyle}>3. 기타 자산 · 암호화폐 등 (원)</p>
+                    <p style={labelStyle}>3. 기타 자산 · 부동산 등 (원)</p>
                     <input className="sim-input" style={inputStyle} type="text" placeholder="예: 5,000,000" value={other} onChange={e => setOther(formatInput(e.target.value))} />
                   </div>
                   <div>
@@ -231,7 +219,7 @@ export default function Simulator() {
                 <div>
                   <p style={labelStyle}>연 소비 증가율 (%)</p>
                   <input className="sim-input" style={inputStyle} type="number" placeholder="예: 2" value={expenseGrowth} onChange={e => setExpenseGrowth(e.target.value)} onWheel={handleWheel} />
-                  <p style={hintStyle}>인플레이션 기준 약 2%</p>
+                  <p style={hintStyle}>소비 증가율 가정 · 명목 금액 기준</p>
                 </div>
               </div>
             </div>
@@ -256,7 +244,7 @@ export default function Simulator() {
             {/* ── 부채 ── */}
             <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '24px' }}>
               <p style={sectionTitleStyle}>내 부채</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>총 자산에서 차감하여 순자산을 계산합니다</p>
+              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>이자는 매년 초 대출 잔액에 적용합니다. 원금은 연말에 입력한 금액만큼 상환하며 잔액보다 많이 갚지 않습니다. 금리와 상환액을 비우면 0으로 계산합니다.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
                 <div>
                   <p style={labelStyle}>1. 주택담보대출 (원)</p>
@@ -269,12 +257,26 @@ export default function Simulator() {
               </div>
             </div>
 
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(2, minmax(0, 1fr))', gap:24, marginBottom:32 }}>
+              {[
+                { label:'주택담보대출 연 이자율 (%)', value:mortgageRate, set:setMortgageRate, money:false },
+                { label:'기타 대출 연 이자율 (%)', value:otherDebtRate, set:setOtherDebtRate, money:false },
+                { label:'주택담보대출 연 원금 상환액 (원)', value:mortgagePrincipal, set:setMortgagePrincipal, money:true },
+                { label:'기타 대출 연 원금 상환액 (원)', value:otherPrincipal, set:setOtherPrincipal, money:true },
+              ].map(field => <label key={field.label} style={labelStyle}>{field.label}
+                <input className="sim-input" style={inputStyle} type={field.money ? 'text' : 'number'} min="0" value={field.value}
+                  onChange={e => field.set(field.money ? formatInput(e.target.value) : e.target.value)} placeholder="0" />
+              </label>)}
+            </div>
+            <p style={{ fontSize:12, color:'#666', lineHeight:1.8 }}>연 소비에는 여기 입력한 대출 이자·원금 상환액을 중복 입력하지 마세요. 잉여자금은 같은 자산 비중으로 재투자합니다. 자산이 부족하면 부족자금을 별도 표시하고 순자산에서 차감합니다. 부족자금의 추가 대출 이자와 실제 대출 가능 여부는 반영하지 않습니다.</p>
+            {hasInput && !data.length && <p role="alert">나이는 0~100의 정수, 자산 수익률·소득 및 소비 증가율은 -100~1,000%, 대출 금리는 0~1,000% 범위로 입력해 주세요.</p>}
+            {firstGap && <p role="status" style={{ color:'#b42318' }}>{firstGap.age}세부터 자산만으로 지출·상환을 충당할 수 없습니다. 아래 부족자금은 추가 조달이 필요한 누적 금액입니다.</p>}
             {/* ── 결과 ── */}
-            {!hasInput ? (
+            {!hasInput || !data.length ? (
               <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
-                <h2 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '16px' }}>100세까지 내 자산을 예측해 보세요!</h2>
+                <h2 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '16px' }}>가정을 입력해 순자산 변화를 비교하세요</h2>
                 <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#555', maxWidth: '560px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                  복리는 시간이 지날수록 눈덩이처럼 불어나요. 처음엔 느리게 느껴지지만, 10년, 20년이 지나면 수익이 수익을 낳는 폭발적인 성장이 시작돼요.
+                  소득·소비·수익률과 대출 조건에 따라 결과가 달라집니다. 0원도 입력할 수 있으며, 나이별 금액은 해당 나이의 연초 기준입니다.
                 </p>
               </div>
             ) : (
@@ -282,7 +284,7 @@ export default function Simulator() {
 
                 {/* 연간 순 증가 */}
                 <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>연간 순 증가</p>
+                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>첫해 상환 후 현금흐름</p>
                   <div style={{ padding: '28px 32px', border: '1px solid #e8e8e8', borderRadius: '4px', display: 'flex', alignItems: 'baseline', gap: '12px' }}>
                     <span style={{ fontSize: '40px', fontWeight: '400', letterSpacing: '-0.02em', color: netIncrease >= 0 ? '#000' : '#ff3b30' }}>
                       {netIncrease >= 0 ? '+' : ''}{netIncrease.toLocaleString()}
@@ -290,13 +292,13 @@ export default function Simulator() {
                     <span style={{ fontSize: '15px', color: '#aaa' }}>원 / 년</span>
                   </div>
                   <p style={{ fontSize: '12px', color: '#bbb', marginTop: '8px' }}>
-                    연 수입 {parseInput(income).toLocaleString()}원 — 연 소비 {parseInput(expense).toLocaleString()}원
+                    은퇴 여부 반영 소득 − 소비 − 이자 {Math.round(data[0]?.interest ?? 0).toLocaleString()}원 − 원금 {Math.round(data[0]?.principal ?? 0).toLocaleString()}원 · 투자 수익 제외
                   </p>
                 </div>
 
                 {/* 그래프 */}
                 <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>예상 순자산 추이</p>
+                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>가정에 따른 순자산 추이</p>
                   <div style={{ overflowX: 'auto' }}>
                     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', minWidth: '400px', height: 'auto' }}>
                       {yTicks.map((v, i) => (
@@ -326,25 +328,26 @@ export default function Simulator() {
 
                 {/* 테이블 */}
                 <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>나이별 예상 순자산</p>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '15px' }}>
+                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>나이별 연초 자산·부채</p>
+                  <div style={{ overflowX:'auto' }}><table style={{ width: '100%', minWidth:600, borderCollapse: 'collapse', fontSize: '15px' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid #e8e8e8' }}>
                         <th style={{ textAlign: 'left', padding: '12px 0', fontWeight: '400', color: '#aaa', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>나이</th>
-                        <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '400', color: '#aaa', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>예상 순자산</th>
+                        {['총자산', '대출 잔액', '부족자금', '순자산'].map(label => <th key={label} style={{ textAlign:'right', padding:'12px 0', fontWeight:400, color:'#666', fontSize:12 }}>{label}</th>)}
                       </tr>
                     </thead>
                     <tbody>
                       {data.map((row, i) => (
                         <tr key={i} className="table-row" style={{ borderBottom: '1px solid #f4f4f4' }}>
                           <td style={{ padding: '12px 0', color: '#000' }}>{row.age}세</td>
+                          {[row.grossAssets, row.debt, row.fundingGap].map((value, index) => <td key={index} style={{ padding:'12px 0', textAlign:'right', fontSize:12 }}>{Math.round(value).toLocaleString()}원</td>)}
                           <td style={{ padding: '12px 0', textAlign: 'right', color: row.asset < 0 ? '#ff3b30' : '#000', fontVariantNumeric: 'tabular-nums' }}>
-                            {row.asset < 0 ? '-' : Math.floor(row.asset).toLocaleString() + '원'}
+                            {Math.round(row.asset).toLocaleString()}원
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </table></div>
                 </div>
 
               </div>
