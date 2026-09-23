@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const KEY = import.meta.env.VITE_POLYGON_KEY
-const poly = (path: string) =>
-  `https://api.polygon.io${path}${path.includes('?') ? '&' : '?'}apiKey=${KEY}`
+const poly = (path: string) => `/api/stock-data?path=${encodeURIComponent(path)}`
 
 interface IndexItem {
   label: string

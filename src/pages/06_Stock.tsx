@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const KEY = import.meta.env.VITE_POLYGON_KEY
 const stockCache = new Map<string, any>()
-const poly = (path: string) =>
-  `https://api.polygon.io${path}${path.includes('?') ? '&' : '?'}apiKey=${KEY}`
+const poly = (path: string) => `/api/stock-data?path=${encodeURIComponent(path)}`
 
 function dateStr(daysAgo = 0): string {
   const d = new Date(); d.setDate(d.getDate() - daysAgo)
@@ -233,10 +231,10 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
       const res = await fetch('/api/claude-proxy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800, messages: [{ role: 'user', content: prompt }] }),
+        body: JSON.stringify({ prompt }),
       })
       const data = await res.json()
-      setAiAnalysis(data.content?.[0]?.text || '분석 결과를 가져오지 못했습니다.')
+      setAiAnalysis(res.ok ? (data.content?.[0]?.text || '분석 결과를 가져오지 못했습니다.') : (data.error || '분석을 불러오지 못했습니다.'))
       setAiDone(true)
     } catch { setAiAnalysis('분석을 불러오지 못했습니다.'); setAiDone(true) }
     finally { setAiLoading(false) }
@@ -276,7 +274,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
         style={{ fontSize: '14px', lineHeight: '1.85', color: isBold ? '#000' : '#444', margin: '0 0 4px', fontWeight: isBold ? '600' : '400' }} />
     })
 
-  const logoUrl = details?.branding?.icon_url ? `${details.branding.icon_url}?apiKey=${KEY}` : null
+  const logoUrl = details?.branding?.icon_url ? `/api/stock-data?logo=${encodeURIComponent(symbol)}` : null
 
   return (
     <>
