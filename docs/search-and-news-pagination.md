@@ -8,3 +8,7 @@
 - Added Baupost Group (1061768), Dodge & Cox (200217), Third Point (1040273) to the existing SEC validation/refresh flow. Berkshire remains the default selection. No subscriptions or extra API keys are needed.
 
 Checks: `node --test tests/news-selection.test.mjs tests/api-security.test.mjs`; `npm run build`.
+
+SEC raw XML checks for the additions (2026 Q2): Baupost 23 rows / reported sum 5,415,853; Dodge & Cox 222 rows / 191,008,088,994; Third Point 43 rows / 4,679,571,988. Each matched its own cover summary and the previous quarter was available. Amounts follow the submitted XML units; this validates extraction, not the accuracy of the filer's figures. In particular, Baupost's displayed amount follows the SEC cover's 5,415,853 rather than applying a guessed ×1,000 adjustment.
+
+Legacy submission metadata can lack a primary-document filename. Such metadata no longer invalidates unrelated modern filings; a selected filing must still supply a valid XML document or fail verification. Regression test added.
