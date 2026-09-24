@@ -24,6 +24,9 @@ const INITIAL_MANAGERS: Manager[] = [
   { name: 'Cathie Wood', nameKo: '캐시 우드', firm: 'ARK Invest', cik: '0001697748' },
   { name: 'Li Lu', nameKo: '리 루', firm: 'Himalaya Capital', cik: '0001709323' },
   { name: 'Michael Burry', nameKo: '마이클 버리', firm: 'Scion Asset Management', cik: '0001649339', note: '최근 확인되는 보유 기준일을 확인하세요. 과거 공시이며 현재 보유를 의미하지 않습니다.' },
+  { name: 'Baupost Group', nameKo: '바우포스트', firm: 'Baupost Group LLC/MA', cik: '0001061768' },
+  { name: 'Dodge & Cox', nameKo: '닷지 앤 콕스', firm: 'Dodge & Cox', cik: '0000200217' },
+  { name: 'Third Point', nameKo: '서드 포인트', firm: 'Third Point LLC', cik: '0001040273' },
 ]
 
 const COLORS = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#06B6D4','#F97316','#84CC16','#6366F1']

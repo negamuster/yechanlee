@@ -50,3 +50,17 @@ export function selectNews(items: NewsItem[], region: Region, now = Date.now(), 
   }
   return selected.sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc))
 }
+
+// Each batch keeps publisher diversity; subsequent batches expose all remaining articles.
+export function newsBatches(items: NewsItem[], region: Region, now = Date.now()): NewsItem[][] {
+  let remaining = [...new Map(items.map(item => [item.id, item])).values()]
+  const batches: NewsItem[][] = []
+  while (remaining.length) {
+    const batch = selectNews(remaining, region, now)
+    if (!batch.length) break
+    batches.push(batch)
+    const used = new Set(batch.map(item => item.id))
+    remaining = remaining.filter(item => !used.has(item.id))
+  }
+  return batches
+}

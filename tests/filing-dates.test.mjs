@@ -66,3 +66,8 @@ test('handler refreshes after cache expiry, coalesces requests and retains last 
  time+=16*60000;fail=true;const stale=await (await handler(req())).json();assert.equal(stale.stale,true);assert.equal(stale.checkedAt,refreshed.checkedAt)
  assert.equal((await handler(new Request('https://example.com/api/form13f?cik=not-allowed'))).status,400)
 })
+
+test('legacy metadata with no primary document does not block selection of modern filings',()=>{
+ const records=submissionRecords({form:['13F-HR','13F-HR'],reportDate:['2026-06-30','1999-12-31'],filingDate:['2026-08-14','2000-02-11'],accessionNumber:['0000000001-26-000001','0000000001-00-000001'],primaryDocument:['primary_doc.xml','']})
+ assert.equal(records.length,2);assert.equal(records[0].primary,'primary_doc.xml');assert.equal(records[1].primary,'')
+})

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
 
-import { selectNews, filterNews, TOPICS } from './newsSelection'
+import { newsBatches, filterNews, TOPICS } from './newsSelection'
 import type { NewsItem, Region, TopicFilter } from './newsSelection'
 
 interface Feed {
@@ -79,10 +79,11 @@ export default function NewsFeed() {
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
+  const [visibleBatches, setVisibleBatches] = useState(1)
   const [, setClock] = useState(0)
 
   useEffect(() => {
-    const refresh = window.setInterval(() => setRevision(value => value + 1), TTL)
+    const refresh = window.setInterval(() => { setRevision(value => value + 1); setVisibleBatches(1) }, TTL)
     const clock = window.setInterval(() => setClock(value => value + 1), 60000)
     return () => { window.clearInterval(refresh); window.clearInterval(clock) }
   }, [])
@@ -115,7 +116,8 @@ export default function NewsFeed() {
   }, [revision])
 
   const matching = filterNews(feed?.items || [], region, topic, query)
-  const news = selectNews(matching, region)
+  const batches = newsBatches(matching, region)
+  const news = batches.slice(0, visibleBatches).flat()
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => source.status === 'unavailable')
   const publishers = [...new Set(news.map(item => item.publisher))]
@@ -146,20 +148,20 @@ export default function NewsFeed() {
         <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
           {FILTERS.map(filter => (
             <button key={filter.value} type="button" aria-pressed={region === filter.value}
-              onClick={() => setRegion(filter.value)}>{filter.label}</button>
+              onClick={() => { setRegion(filter.value); setVisibleBatches(1) }}>{filter.label}</button>
           ))}
         </div>
-        <button type="button" className="news-refresh" disabled={loading} onClick={() => setRevision(value => value + 1)}>
+        <button type="button" className="news-refresh" disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
           {loading ? '불러오는 중…' : '새로고침'}
         </button>
       </div>
       <div className="news-topic-filters" role="group" aria-label="뉴스 주제 선택">
         {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
-          <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => setTopic(t.value)}>{t.label}</button>)}
+          <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
       </div>
       <div className="news-search-tools">
         <label className="news-search"><span className="news-sr-only">기사 제목 또는 매체 검색</span>
-          <input type="search" value={query} maxLength={120} onChange={event => setQuery(event.target.value)} placeholder="기사 제목·매체 검색" />
+          <input type="search" value={query} maxLength={120} onChange={event => { setQuery(event.target.value); setVisibleBatches(1) }} placeholder="기사 제목·매체 검색" />
         </label>
         <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
           <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
@@ -177,11 +179,12 @@ export default function NewsFeed() {
         {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">
           <div /><div /><div />
         </div> : news.length ? <>
-          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 최신순 · 매체별 최대 3개</p>
+          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 묶음별 최신순 · 묶음당 매체별 최대 3개</p>
           <div className={view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
+          {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
         </> : !failed ? <div className="news-notice" role="status"><p>최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.</p>
-          {(topic !== 'all' || region !== 'all' || query) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery('') }}>필터 초기화</button>}
+          {(topic !== 'all' || region !== 'all' || query) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery(''); setVisibleBatches(1) }}>필터 초기화</button>}
         </div> : null}
       </div>
     </div>

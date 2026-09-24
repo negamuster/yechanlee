@@ -1,22 +1,17 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import './SiteHeader.css'
+import StockSearch from './StockSearch'
 const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로']]
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const navigate = useNavigate()
   function close() { setOpen(false); setToolsOpen(false); setContactOpen(false) }
   return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') close() }}>
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
-      <form className="site-search" onSubmit={e => { e.preventDefault(); const q = query.trim().toUpperCase(); if (q) { navigate(`/stock/${encodeURIComponent(q)}`); close() } }}>
-        <label className="news-sr-only" htmlFor="site-stock-search">종목 티커 검색</label>
-        <input id="site-stock-search" value={query} onChange={e => setQuery(e.target.value)} placeholder="티커 검색 (NVDA, AAPL…)" />
-        <button type="submit" aria-label="종목 검색"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg></button>
-      </form>
+      <StockSearch onSelect={close} />
       <div className="site-contact">
         <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>
         {contactOpen && <div id="site-contact-links" className="site-contact-links">

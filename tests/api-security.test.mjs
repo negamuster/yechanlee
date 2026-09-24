@@ -60,3 +60,14 @@ test('concurrent upstream analysis failures both return controlled errors', asyn
   const responses = await Promise.all([handler(aiReq({ prompt })), handler(aiReq({ prompt }))])
   for (const response of responses) { assert.equal(response.status, 503); assert.ok(!(await response.text()).includes('secret')) }
 })
+
+test('ticker search fixes scope and limits, rejects mixed proxy parameters', async () => {
+  let calls=0
+  const handler=createStockHandler({getKey:()=> 'secret', fetchImpl:async url=>{
+    calls++;assert.equal(url.pathname,'/v3/reference/tickers');assert.equal(url.searchParams.get('market'),'stocks');assert.equal(url.searchParams.get('locale'),'us');assert.equal(url.searchParams.get('limit'),'8');assert.equal(url.searchParams.get('search'),'Apple')
+    return Response.json({results:[{ticker:'AAPL',name:'Apple Inc.'}]})
+  }})
+  assert.equal((await handler(new Request(`${base}/api/stock-data?search=Apple`))).status,200)
+  for(const query of ['search=Apple&path=/v3/reference/tickers/AAPL','search=Apple&search=Tesla','search=','search='+ 'a'.repeat(61),'search=https://evil.test'])assert.equal((await handler(new Request(`${base}/api/stock-data?${query}`))).status,400)
+  assert.equal(calls,1)
+})
