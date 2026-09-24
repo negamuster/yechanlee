@@ -20,3 +20,15 @@ test('stale and future headlines are excluded and each publisher is capped at th
   data.push(item('Old','kr',5000),item('Future','kr',-60))
   assert.equal(selectNews(data,'all',now).length,3)
 })
+
+test('more batches expose all matching articles once and preserve earlier batches', async () => {
+  const { newsBatches } = await import('../src/components/newsSelection.ts')
+  const items = [...Array.from({length:20},(_,i)=>item('A','kr',i+1)),...Array.from({length:14},(_,i)=>item('B','global',i+1))]
+  const batches = newsBatches([...items,items[0]],'all',now)
+  assert.equal(batches.flat().length,34)
+  assert.equal(new Set(batches.flat().map(x=>x.id)).size,34)
+  assert.deepEqual(batches[0],selectNews(items,'all',now))
+  for(const batch of batches)for(const publisher of ['A','B'])assert.ok(batch.filter(x=>x.publisher===publisher).length<=3)
+  assert.equal(newsBatches(items,'kr',now).flat().length,20)
+  assert.deepEqual(newsBatches([item('Old','kr',5000)],'all',now),[])
+})
