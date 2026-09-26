@@ -1,3 +1,4 @@
+import { BookmarkButton } from './SavedItemsProvider'
 import { useEffect, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
@@ -138,6 +139,7 @@ export default function NewsFeed() {
             <span className="news-original">원문 읽기 ↗</span>
           </p>
         </a>
+      <BookmarkButton article={item} />
       </article>
     )
   }

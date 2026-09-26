@@ -1,0 +1,29 @@
+.save-button { flex-shrink:0; align-self:flex-start; min-height:40px; padding:8px 12px; border:1px solid #ddd; border-radius:20px; background:#fff; color:#555; font:inherit; font-size:12px; cursor:pointer; white-space:nowrap; }
+.save-button[aria-pressed="true"] { background:#171717; border-color:#171717; color:#fff; }
+.save-button:hover { border-color:#555; }
+.save-button:focus-visible, .saved-page a:focus-visible { outline:2px solid #555; outline-offset:4px; }
+.news-card { display:flex; flex-direction:column; }
+.news-card > .news-row { flex:1; height:auto; }
+.news-card > .save-button { margin-top:14px; }
+.movers-list > li { display:flex; align-items:center; gap:10px; }
+.movers-list .mover-row { flex:1; min-width:0; }
+.movers-list .save-button { align-self:center; padding:8px; font-size:11px; }
+.saved-page { max-width:1000px; margin:0 auto; padding:48px 24px 80px; color:#222; }
+.saved-eyebrow { font-size:12px; letter-spacing:.18em; color:#777; }
+.saved-page h1 { font-size:32px; font-weight:500; margin:12px 0; }
+.saved-description { color:#555; line-height:1.7; }
+.saved-note { font-size:12px; color:#777; line-height:1.8; }
+.saved-page section { margin-top:40px; }
+.saved-page h2 { font-size:21px; font-weight:500; padding-bottom:16px; border-bottom:1px solid #ddd; }
+.saved-page h2 span { color:#777; font-size:15px; margin-left:8px; }
+.saved-list { list-style:none; padding:0; margin:0; }
+.saved-list li { display:flex; gap:20px; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid #eee; }
+.saved-content { display:flex; flex:1; min-width:0; flex-direction:column; gap:8px; text-decoration:none; color:inherit; overflow-wrap:anywhere; line-height:1.6; }
+.saved-content:hover strong { text-decoration:underline; }
+.saved-content strong { font-size:17px; font-weight:500; }
+.saved-content span, .saved-content small { color:#777; font-size:12px; }
+.saved-empty { padding:28px 20px; background:#f7f7f7; color:#666; line-height:1.9; font-size:14px; }
+.saved-empty a { color:#222; }
+.saved-error { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:min(540px,90vw); padding:16px; box-sizing:border-box; background:#222; color:#fff; box-shadow:0 4px 20px #0003; z-index:200; font-size:14px; line-height:1.7; }
+.saved-error button { background:transparent; color:white; border:1px solid #888; padding:5px 10px; margin-left:12px; cursor:pointer; }
+@media(max-width:560px) { .saved-page { padding:32px 20px 60px; }.saved-list li { flex-wrap:wrap; gap:12px; }.saved-list .saved-content { flex-basis:100%; }.movers-list > li { flex-wrap:wrap; gap:0; padding-bottom:12px; }.movers-list .mover-row { flex-basis:100%; } }

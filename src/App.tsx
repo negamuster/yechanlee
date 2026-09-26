@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
+import Saved from './pages/Saved'
+import SavedItemsProvider from './components/SavedItemsProvider'
 import Home from './pages/00_Home'
 import SiteHeader from './components/SiteHeader'
 import StockMarket from './pages/01_StockMarket'
@@ -22,9 +24,11 @@ function ScrollToTop() {
 function App() {
   return (
     <BrowserRouter>
+      <SavedItemsProvider>
       <ScrollToTop />
       <SiteHeader />
       <Routes>
+        <Route path="/saved" element={<Saved />} />
         <Route path="/" element={<Home />} />
         <Route path="/equity" element={<StockMarket />} />
         <Route path="/rates" element={<BondMarket />} />
@@ -35,6 +39,7 @@ function App() {
         <Route path="/simulator" element={<Simulator />} />
         <Route path="/form13f" element={<Form13F />} />
       </Routes>
+    </SavedItemsProvider>
     </BrowserRouter>
   )
 }
