@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/saved", "destination": "/index.html" },
     { "source": "/equity", "destination": "/index.html" },
     { "source": "/rates", "destination": "/index.html" },
     { "source": "/fed", "destination": "/index.html" },

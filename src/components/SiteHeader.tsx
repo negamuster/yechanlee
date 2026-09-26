@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import './SiteHeader.css'
 import StockSearch from './StockSearch'
-const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로']]
+const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로'], ['/saved', '저장한 항목']]
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)

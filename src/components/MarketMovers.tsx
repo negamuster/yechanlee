@@ -1,3 +1,4 @@
+import { WatchButton } from './SavedItemsProvider'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './MarketMovers.css'
@@ -89,6 +90,7 @@ export default function MarketMovers() {
                 </span>
               </div>
             </Link>
+            <WatchButton ticker={row.ticker} />
           </li>)}
         </ol>
       </div>

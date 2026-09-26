@@ -1,3 +1,4 @@
+import { WatchButton } from '../components/SavedItemsProvider'
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -325,6 +326,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                       {symbol} · {details.primary_exchange} · {details.sic_description}
                     </p>
                     <h1 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '-0.02em', lineHeight: 1.1 }}>{details.name}</h1>
+                    <div style={{ marginTop: 12 }}><WatchButton ticker={symbol} name={details.name} /></div>
                   </div>
                 </div>
 
