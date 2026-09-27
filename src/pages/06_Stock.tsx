@@ -297,7 +297,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
         .ai-btn:hover{opacity:0.7;}
       `}</style>
 
-      <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000' }}>
+      <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'var(--font-ui)', color: '#000' }}>
 
         {/* NAV */}
 
@@ -370,7 +370,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                 <div style={{ display: 'flex', gap: '2px' }}>
                   {(['1M', '3M', '6M', '1Y'] as const).map(p => (
                     <button key={p} className="period-btn" onClick={() => setPeriod(p)}
-                      style={{ padding: '5px 12px', fontSize: '12px', color: period === p ? '#fff' : '#aaa', background: period === p ? '#000' : 'transparent', fontFamily: '"Times New Roman",serif' }}>
+                      style={{ padding: '5px 12px', fontSize: '12px', color: period === p ? '#fff' : '#aaa', background: period === p ? '#000' : 'transparent', fontFamily: 'var(--font-ui)' }}>
                       {p}
                     </button>
                   ))}

@@ -23,7 +23,7 @@ const inputStyle: React.CSSProperties = {
   borderBottom: '1px solid #e8e8e8',
   padding: '10px 0',
   fontSize: '16px',
-  fontFamily: '"Times New Roman", Times, serif',
+  fontFamily: 'var(--font-ui)',
   outline: 'none',
   background: 'transparent',
   color: '#000',
@@ -134,7 +134,7 @@ export default function Simulator() {
         .table-row:hover { background: #fafafa; }
       `}</style>
 
-      <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: '"Times New Roman", Times, serif', color: '#000' }}>
+      <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: 'var(--font-ui)', color: '#000' }}>
 
 
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '40px 24px 80px' }}>
@@ -304,7 +304,7 @@ export default function Simulator() {
                       {yTicks.map((v, i) => (
                         <g key={i}>
                           <line x1={PL} y1={yOf(v)} x2={W - PR} y2={yOf(v)} stroke="#f0f0f0" strokeWidth="1" />
-                          <text x={PL - 6} y={yOf(v) + 4} textAnchor="end" fontSize="10" fill="#bbb" fontFamily="system-ui">{formatKorean(v)}</text>
+                          <text x={PL - 6} y={yOf(v) + 4} textAnchor="end" fontSize="10" fill="#bbb" fontFamily="var(--font-ui)">{formatKorean(v)}</text>
                         </g>
                       ))}
                       {xGrids.map(a => (
@@ -318,7 +318,7 @@ export default function Simulator() {
                         <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="2.5" fill="#000" />
                       ))}
                       {xTicks.map(a => (
-                        <text key={a} x={xOf(a)} y={PT + gH + 18} textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="system-ui">{a}세</text>
+                        <text key={a} x={xOf(a)} y={PT + gH + 18} textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="var(--font-ui)">{a}세</text>
                       ))}
                       <line x1={PL} y1={PT} x2={PL} y2={PT + gH} stroke="#e8e8e8" strokeWidth="1" />
                       <line x1={PL} y1={PT + gH} x2={W - PR} y2={PT + gH} stroke="#e8e8e8" strokeWidth="1" />

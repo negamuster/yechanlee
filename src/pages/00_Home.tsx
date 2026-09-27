@@ -24,7 +24,7 @@ export default function Home() {
         }
       `}</style>
 
-      <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
+      <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'var(--font-ui)' }}>
 
         {/* ── NAV: sticky, 로고 + 오른쪽으로 이동한 넓은 검색창 ── */}
         <MarketTicker />
@@ -43,9 +43,9 @@ export default function Home() {
 
             {/* 우측: 주요 지수 (2열 박스, 차트 포함) */}
             <div className="home-market-col">
+              <SectorPerformance compact />
               <MarketLive />
               <MarketMovers />
-              <SectorPerformance compact />
             </div>
 
           </div>

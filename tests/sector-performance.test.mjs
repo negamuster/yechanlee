@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { compareSeries, parseHistory, createSectorHandler } from '../lib/sector-performance.js'
 const points = [['2025-12-31',100],['2026-08-25',110],['2026-09-18',115],['2026-09-24',120],['2026-09-25',125]].map(([date,price])=>({date,price}))
-test('YTD uses prior year close, week/month use dates, SPY difference uses percentage points',()=>{
+test('YTD uses prior year close, week/month use dates, VOO difference uses percentage points',()=>{
  const r=compareSeries(points.map(p=>({...p,price:p.date==='2026-09-25'?130:p.price})),points)
  assert.equal(r.returns.ytd,30.000000000000004)
  assert.ok(Math.abs(r.relative.ytd-5)<1e-10)
@@ -15,16 +15,16 @@ test('missing exact benchmark endpoints and absent benchmark are unavailable, no
  assert.equal(compareSeries(points.filter(p=>p.date!=='2025-12-31'),points).returns.ytd,null)
  assert.equal(compareSeries(points,[]).asOf,null)
 })
-const chart=(symbol='SPY')=>({meta:{symbol,currency:'USD',currentTradingPeriod:{regular:{end:Date.parse('2026-09-25T20:00:00Z')/1000}}},timestamp:points.map(p=>Date.parse(p.date+'T13:30:00Z')/1000),indicators:{quote:[{close:points.map(p=>p.price)}]}})
+const chart=(symbol='VOO')=>({meta:{symbol,currency:'USD',currentTradingPeriod:{regular:{end:Date.parse('2026-09-25T20:00:00Z')/1000}}},timestamp:points.map(p=>Date.parse(p.date+'T13:30:00Z')/1000),indicators:{quote:[{close:points.map(p=>p.price)}]}})
 test('exclude unfinished session, allow completed session, reject wrong instrument and null prices',()=>{
- assert.equal(parseHistory(chart(),'SPY',Date.parse('2026-09-25T18:00:00Z')).at(-1).date,'2026-09-24')
- assert.equal(parseHistory(chart(),'SPY',Date.parse('2026-09-25T20:16:00Z')).at(-1).date,'2026-09-25')
+ assert.equal(parseHistory(chart(),'VOO',Date.parse('2026-09-25T18:00:00Z')).at(-1).date,'2026-09-24')
+ assert.equal(parseHistory(chart(),'VOO',Date.parse('2026-09-25T20:16:00Z')).at(-1).date,'2026-09-25')
  assert.deepEqual(parseHistory(chart(),'XLK'),[])
  const bad=chart();bad.indicators.quote[0].close[4]=null
- assert.equal(parseHistory(bad,'SPY',Date.parse('2026-09-26')).at(-1).date,'2026-09-24')
+ assert.equal(parseHistory(bad,'VOO',Date.parse('2026-09-26')).at(-1).date,'2026-09-24')
 })
 test('weekend cutoff uses last available session; same-day pre-close is not reported as full day',()=>{
- assert.equal(parseHistory(chart(),'SPY',Date.parse('2026-09-26')).length,5)
+ assert.equal(parseHistory(chart(),'VOO',Date.parse('2026-09-26')).length,5)
 })
 test('shared cache, partial failure, stale fallback and method validation',async()=>{
  let calls=0, failure=false, clock=Date.parse('2026-09-26')
