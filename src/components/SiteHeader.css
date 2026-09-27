@@ -1,4 +1,4 @@
-.site-header { position: sticky; top: 0; z-index: 70; background: #fff; color: #171717; border-bottom: 1px solid #e8e8e8; font-family: "Times New Roman", serif; }
+.site-header { position: sticky; top: 0; z-index: 70; background: #fff; color: #171717; border-bottom: 1px solid #e8e8e8; font-family: var(--font-ui); }
 .site-header-top { display:flex; align-items:center; gap:32px; padding:16px 40px; max-width:1600px; margin:auto; }
 .site-brand { font-size:24px; font-weight:600; text-decoration:none; color:inherit; flex-shrink:0; }
 .site-search { display:flex; border:1px solid transparent; border-radius:30px; flex:0 1 600px; width:600px; max-width:46vw; min-width:0; padding:0; background:#f1f3f5; box-sizing:border-box; transition:border-color .15s, box-shadow .15s; }
@@ -37,3 +37,6 @@
 .stock-search-option[aria-selected="true"] { background:#f1f3f5; }
 .stock-search-option span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .stock-search-option small { grid-column:2; color:#777; font-size:11px; }
+
+
+.site-brand { font-family: "Times New Roman", serif; }

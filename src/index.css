@@ -1,3 +1,7 @@
 @import "tailwindcss";
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root { --font-ui: Arial, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+body { font-family: var(--font-ui); }
+button, input, select, textarea { font-family: inherit; }

@@ -1,3 +1,4 @@
+import SectorPerformance from '../components/SectorPerformance'
 import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
@@ -15,7 +16,6 @@ export default function Home() {
         .footer-link:hover { opacity: 0.5; }
         @media (max-width: 860px) {
           .home-main-grid { grid-template-columns: 1fr !important; }
-          .home-market-col { order: -1; }
         }
         @media (max-width: 560px) {
           .nav-search-wrap { width: 100% !important; }
@@ -23,7 +23,7 @@ export default function Home() {
         }
       `}</style>
 
-      <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: '"Times New Roman", Times, serif' }}>
+      <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'var(--font-ui)' }}>
 
         {/* ── NAV: sticky, 로고 + 오른쪽으로 이동한 넓은 검색창 ── */}
         <MarketTicker />
@@ -32,15 +32,16 @@ export default function Home() {
         <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '48px 40px 0' }}>
           <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.9fr', gap: '64px', alignItems: 'start' }}>
 
-            {/* 좌측: 최신 뉴스 */}
-            <div>
+            {/* 좌측: 업종별 히트맵 + 최신 뉴스 */}
+            <div className="home-news-col" style={{ minWidth: 0 }}>
+              <SectorPerformance compact />
               <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '28px' }}>
                 Latest News
               </p>
               <NewsFeed />
             </div>
 
-            {/* 우측: 주요 지수 (2열 박스, 차트 포함) */}
+            {/* 우측: Yahoo Finance Live + Market Movers */}
             <div className="home-market-col">
               <MarketLive />
               <MarketMovers />
@@ -60,3 +61,4 @@ export default function Home() {
     </>
   )
 }
+

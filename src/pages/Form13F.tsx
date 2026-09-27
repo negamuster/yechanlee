@@ -76,7 +76,7 @@ function StockLogo({ name }: { name: string }) {
     const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
     return (
       <div style={{ width:'36px', height:'36px', borderRadius:'8px', background:'#f0f0f0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <span style={{ fontSize:'11px', fontWeight:'600', color:'#888', fontFamily:'system-ui' }}>{initials}</span>
+        <span style={{ fontSize:'11px', fontWeight:'600', color:'#888', fontFamily:'var(--font-ui)' }}>{initials}</span>
       </div>
     )
   }
@@ -203,7 +203,7 @@ export default function Form13F() {
         .edgar-link:hover{opacity:0.4;}
       `}</style>
 
-      <div style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'"Times New Roman",Times,serif', color:'#000' }}>
+      <div style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'var(--font-ui)', color:'#000' }}>
 
         <div style={{ maxWidth:'1100px', margin:'0 auto', padding:'40px 24px 80px' }}>
           <h1 className="page-title" style={{ fontSize:'52px', fontWeight:'400', letterSpacing:'-0.02em', marginBottom:'20px', lineHeight:'1.1' }}>기관 포트폴리오 · 13F</h1>

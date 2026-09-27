@@ -36,7 +36,7 @@ export const marketGuides = {
       [
         "시장 참여의 폭 확인하기",
         "지수 상승만으로 시장 전체가 강하다고 판단하기는 어렵습니다. 업종별 등락과 상승·하락 종목 수를 함께 살펴보세요.",
-        "현재 화면은 주요 지수 시세를 제공합니다. 업종별 수익률과 시장 폭 데이터는 아직 연결하지 않았습니다."
+        "업종별 성과는 미국 11개 업종 ETF의 종가 기준 가격수익률입니다. 시장 전체의 상승·하락 종목 수는 아직 제공하지 않습니다."
       ]
     ]
   },
@@ -207,3 +207,4 @@ export const marketGuides = {
   }
 } as const
 export type GuideId = keyof typeof marketGuides
+
