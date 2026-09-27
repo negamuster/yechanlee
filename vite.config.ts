@@ -1,3 +1,5 @@
+// @ts-expect-error Shared JavaScript server handler.
+import sectorAPI from './api/sector-performance.js'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 // @ts-expect-error The same JavaScript Node.js handler also serves local development.
@@ -26,6 +28,7 @@ export default defineConfig({
       const filingHandler = create13FHandler()
       const handlers: Record<string, (req: Request) => Promise<Response>> = {
         '/api/form13f': filingHandler,
+        '/api/sector-performance': sectorAPI.fetch,
         '/api/stock-data': createStockHandler({ getKey: () => process.env.POLYGON_KEY || env.POLYGON_KEY || env.VITE_POLYGON_KEY }),
         '/api/claude-proxy': createAnalysisHandler({ getKey: () => process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY }),
       }
@@ -94,3 +97,4 @@ export default defineConfig({
     },
   }],
 })
+

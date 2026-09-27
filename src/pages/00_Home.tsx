@@ -1,3 +1,4 @@
+import SectorPerformance from '../components/SectorPerformance'
 import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
@@ -44,6 +45,7 @@ export default function Home() {
             <div className="home-market-col">
               <MarketLive />
               <MarketMovers />
+              <SectorPerformance compact />
             </div>
 
           </div>
@@ -60,3 +62,4 @@ export default function Home() {
     </>
   )
 }
+

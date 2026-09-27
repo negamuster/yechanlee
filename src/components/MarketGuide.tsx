@@ -1,3 +1,4 @@
+import SectorPerformance from './SectorPerformance'
 import { useEffect, useState } from 'react'
 import { marketGuides } from '../data/marketGuides'
 import type { GuideId } from '../data/marketGuides'
@@ -35,6 +36,7 @@ export default function MarketGuide({ id }: { id: GuideId }) {
     <p className="guide-eyebrow">MARKET EXPLORER</p>
     <h1>{guide.title}</h1><p className="guide-description">{guide.description}</p>
     {!!guide.symbols.length && <section aria-label="주요 시세"><Snapshot key={id} symbols={guide.symbols} /><p className="guide-source">Yahoo Finance · 조회 시점에 수집한 지연 시세 포함 · 항목별 기준 시각 표시</p></section>}
+    {id === 'equity' && <SectorPerformance />}
     <section className="guide-resources" aria-labelledby="guide-resources-title"><h2 id="guide-resources-title">데이터와 차트 확인</h2>
       <div>{guide.links.map(([label, url]) => <a key={url} href={url} target="_blank" rel="noopener noreferrer">{label} ↗</a>)}</div>
       {!guide.symbols.length && <p className="guide-source">외부 공식 자료로 이동합니다. 최신 발표치와 발표 일정은 해당 기관에서 확인하세요.</p>}
@@ -42,3 +44,4 @@ export default function MarketGuide({ id }: { id: GuideId }) {
     <section className="guide-reading"><h2>어떻게 읽을까요?</h2>{guide.sections.map(([title, desc, note]) => <details key={title}><summary>{title}</summary><p>{desc}</p><p className="guide-note">{note}</p></details>)}</section>
   </main>
 }
+
