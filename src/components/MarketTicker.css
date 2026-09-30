@@ -1,6 +1,6 @@
 .market-ticker { border-bottom: 1px solid #e8e8e8; background: #fafafa; min-width: 0; }
 .market-ticker-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 10px 32px 4px; color: #666; font-size: 12px; }
-.market-ticker-meta strong { color: #222; letter-spacing: .08em; text-transform: uppercase; }
+.market-ticker-meta strong { color: #222; letter-spacing: .08em; text-transform: none; }
 .market-ticker-meta button { font: inherit; background: transparent; color: #444; border: 0; text-decoration: underline; cursor: pointer; }
 .market-ticker-window { overflow: hidden; }
 .market-ticker-track { display: flex; width: max-content; animation: market-scroll 110s linear infinite; }
@@ -15,3 +15,4 @@
 @keyframes market-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .market-ticker-track { animation: none; }.market-ticker-window { overflow-x: auto; }.market-ticker-group[aria-hidden="true"] { display: none; } }
 @media (max-width: 560px) { .market-ticker-meta { padding-left: 16px; gap: 10px; } }
+

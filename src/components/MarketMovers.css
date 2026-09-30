@@ -1,6 +1,6 @@
 .market-movers { margin-top: 40px; padding-top: 30px; border-top: 1px solid #e8e8e8; min-width: 0; }
 .movers-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-.movers-heading h2 { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; }
+.movers-heading h2 { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .12em; text-transform: none; }
 .movers-heading > span { font-size: 13px; color: #666; }
 .movers-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
 .movers-tabs button { border: 1px solid #e5e5e5; border-radius: 999px; padding: 9px 17px; background: white; color: #555; font: inherit; font-size: 14px; cursor: pointer; min-height: 40px; }
@@ -25,3 +25,4 @@
 .movers-footnote p { margin: 0 0 8px; }
 .market-movers button:focus-visible, .mover-row:focus-visible { outline: 2px solid #222; outline-offset: 4px; }
 @media (max-width: 400px) { .mover-row { grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; }.mover-price { font-size: 16px; } }
+

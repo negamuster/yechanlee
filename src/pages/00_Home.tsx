@@ -35,7 +35,7 @@ export default function Home() {
             {/* 좌측: 업종별 히트맵 + 최신 뉴스 */}
             <div className="home-news-col" style={{ minWidth: 0 }}>
               <SectorPerformance compact />
-              <p style={{ fontSize: '20px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#000000', marginBottom: '28px' }}>
+              <p style={{ fontSize: '20px', letterSpacing: '0.15em', color: '#000000', marginBottom: '28px' }}>
                 Latest News
               </p>
               <NewsFeed />

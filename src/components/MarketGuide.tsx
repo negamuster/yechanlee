@@ -33,7 +33,7 @@ function Snapshot({ symbols }: { symbols: readonly string[] }) {
 export default function MarketGuide({ id }: { id: GuideId }) {
   const guide = marketGuides[id]
   return <main className="market-guide">
-    <p className="guide-eyebrow">MARKET EXPLORER</p>
+    <p className="guide-eyebrow">Market Explorer</p>
     <h1>{guide.title}</h1><p className="guide-description">{guide.description}</p>
     {!!guide.symbols.length && <section aria-label="주요 시세"><Snapshot key={id} symbols={guide.symbols} /><p className="guide-source">Yahoo Finance · 조회 시점에 수집한 지연 시세 포함 · 항목별 기준 시각 표시</p></section>}
     {id === 'equity' && <SectorPerformance />}
