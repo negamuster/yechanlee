@@ -3,62 +3,22 @@ import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
+import './Home.css'
 
 export default function Home() {
-  return (
-    <>
-      <style>{`
-        .nav-search-wrap input::placeholder { color: #bbb; }
-        .nav-search-wrap input:focus { outline: none; }
-        .nav-search-btn { transition: opacity 0.15s ease; }
-        .nav-search-btn:hover { opacity: 0.6; }
-        .footer-link { transition: opacity 0.15s ease; }
-        .footer-link:hover { opacity: 0.5; }
-        @media (max-width: 860px) {
-          .home-main-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 560px) {
-          .nav-search-wrap { width: 100% !important; }
-          .main-nav { flex-wrap: wrap; }
-        }
-      `}</style>
-
-      <div style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'var(--font-ui)' }}>
-
-        {/* ── NAV: sticky, 로고 + 오른쪽으로 이동한 넓은 검색창 ── */}
-        <MarketTicker />
-
-        {/* ── MAIN: News (좌) + Market Overview (우, 2열 박스 그리드) ── */}
-        <section style={{ maxWidth: '1600px', margin: '0 auto', padding: '48px 40px 0' }}>
-          <div className="home-main-grid" style={{ display: 'grid', gridTemplateColumns: '1.7fr 0.9fr', gap: '64px', alignItems: 'start' }}>
-
-            {/* 좌측: 업종별 히트맵 + 최신 뉴스 */}
-            <div className="home-news-col" style={{ minWidth: 0 }}>
-              <SectorPerformance compact />
-              <p style={{ fontSize: '20px', letterSpacing: '0.15em', color: '#000000', marginBottom: '28px' }}>
-                Latest News
-              </p>
-              <NewsFeed />
-            </div>
-
-            {/* 우측: Yahoo Finance Live + Market Movers */}
-            <div className="home-market-col">
-              <MarketLive />
-              <MarketMovers />
-            </div>
-
-          </div>
-        </section>
-
-        {/* ── FOOTER ── */}
-        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '40px 48px', marginTop: '120px' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            <span style={{ fontSize: '12px', color: '#aaa' }}>Anthracite © 2026</span>
-          </div>
-        </footer>
-
+  return <div className="home-page">
+    <MarketTicker />
+    <main className="home-content">
+      <div className="home-dashboard">
+        <div className="home-dashboard-movers" tabIndex={0} role="region" aria-label="Market Movers 목록"><MarketMovers /></div>
+        <div className="home-dashboard-maps"><SectorPerformance compact /></div>
+        <div className="home-dashboard-live"><MarketLive /></div>
       </div>
-    </>
-  )
+      <section className="home-news" aria-labelledby="home-news-title">
+        <h2 id="home-news-title">Latest News</h2>
+        <NewsFeed />
+      </section>
+    </main>
+    <footer className="home-footer">Anthracite © 2026</footer>
+  </div>
 }
-
