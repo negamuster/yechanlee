@@ -5,16 +5,17 @@
 
 .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 650px) { .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-
 /* Denser home tiles keep the news feed closer to the top. */
 .home-news-col .sector-compact .sector-grid { gap: 6px; margin: 12px 0; }
 .home-news-col .sector-compact .sector-tile { padding: 10px; gap: 6px; }
 .home-news-col .sector-compact .sector-tile > span { font-size: 11px; }
 .home-news-col .sector-compact .sector-tile strong { font-size: 18px; line-height: 1.2; }
 .home-news-col .sector-compact .sector-tile small { font-size: 9px; line-height: 1.2; }
-
-/* Fit more tiles across the desktop news column to reduce tile width. */
 .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 @media (max-width: 1100px) { .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 650px) { .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 420px) { .home-news-col .sector-compact .sector-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Keep Maps narrower than the article column on larger screens. */
+.home-news-col > .sector-compact { width: 85%; max-width: 800px; }
+@media (max-width: 860px) { .home-news-col > .sector-compact { width: 100%; } }

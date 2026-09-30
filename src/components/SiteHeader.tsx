@@ -1,3 +1,4 @@
+import MarketClocks from './MarketClocks'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import './SiteHeader.css'
@@ -12,6 +13,7 @@ export default function SiteHeader() {
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
       <StockSearch onSelect={close} />
+      <MarketClocks />
       <div className="site-contact">
         <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>
         {contactOpen && <div id="site-contact-links" className="site-contact-links">
@@ -33,3 +35,4 @@ export default function SiteHeader() {
     </nav>
   </header>
 }
+

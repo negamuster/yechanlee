@@ -31,8 +31,8 @@ export default function SectorPerformance({ compact = false }: { compact?: boole
   }, [retry])
   const rows = [...(data?.sectors || [])].sort((a, b) => (b.returns[period] ?? -Infinity) - (a.returns[period] ?? -Infinity))
   const unavailable = rows.filter(r => r.returns[period] == null).length
-  return <section className={`sector-panel ${compact ? 'sector-compact' : ''}`} aria-label="미국 업종별 성과">
-    <div className="sector-heading"><div><p>SECTOR PERFORMANCE</p><h2>미국 업종별 성과</h2></div>{compact && <Link to="/equity">전체 보기 ↗</Link>}</div>
+  return <section className={`sector-panel ${compact ? 'sector-compact' : ''}`} aria-label="Maps · 미국 업종 ETF 히트맵">
+    <div className="sector-heading"><div><h2>Maps</h2></div>{compact && <Link to="/equity">전체 보기 ↗</Link>}</div>
     <p className="sector-description">11개 업종 ETF로 보는 시장의 흐름 · 완료된 거래일 기준</p>
     <div className="sector-controls"><div className="sector-periods" aria-label="비교 기간">{periods.map(([key, label]) => <button key={key} aria-pressed={period === key} onClick={() => setPeriod(key)}>{label}</button>)}</div>
       {!compact && <label><input type="checkbox" checked={relative} onChange={e => setRelative(e.target.checked)} /> VOO 대비 초과성과</label>}
