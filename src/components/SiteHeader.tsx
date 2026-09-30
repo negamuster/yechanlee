@@ -10,6 +10,7 @@ export default function SiteHeader() {
   const [contactOpen, setContactOpen] = useState(false)
   function close() { setOpen(false); setToolsOpen(false); setContactOpen(false) }
   return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') close() }}>
+    <div className="site-header-shell">
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
       <StockSearch onSelect={close} />
@@ -33,6 +34,7 @@ export default function SiteHeader() {
         </div>}
       </div>
     </nav>
+    </div>
   </header>
 }
 
