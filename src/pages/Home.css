@@ -1,15 +1,17 @@
 .home-page { background: #fff; color: #222; font-family: var(--font-ui); }
 .home-content { max-width: 1600px; margin: auto; padding: 28px 28px 0; }
-.home-dashboard { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "maps calendar" "movers live"; gap: 28px 32px; align-items: start; }
+.home-dashboard { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(240px, 300px); grid-template-areas: "maps calendar sidebar"; gap: 24px; align-items: start; }
 .home-dashboard > div { min-width: 0; }
 .home-dashboard-maps { grid-area: maps; }
 .home-dashboard-calendar { grid-area: calendar; }
-.home-dashboard-live { grid-area: live; width: min(100%, 300px); justify-self: start; }
-.home-dashboard-movers { grid-area: movers; max-height: 320px; overflow-y: auto; scrollbar-width: thin; padding-right: 10px; }
+.home-dashboard-sidebar { grid-area: sidebar; display: grid; gap: 22px; align-content: start; }
+.home-dashboard-sidebar > div { min-width: 0; }
+.home-dashboard-live { width: min(100%, 300px); }
+.home-dashboard-movers { max-height: 260px; overflow-y: auto; scrollbar-width: thin; padding-right: 10px; }
 .home-dashboard-movers:focus-visible { outline: 2px solid #555; outline-offset: 4px; }
 .home-dashboard .market-movers, .home-dashboard .sector-panel { margin: 0; padding-top: 0; border-top: 0; }
 .home-dashboard .market-calendar { margin: 0; padding-top: 0; border-top: 0; }
-.home-dashboard .calendar-list { max-height: 220px; }
+.home-dashboard .calendar-list { max-height: 340px; }
 .home-dashboard .market-live { width: 100%; max-width: none; }
 .home-dashboard .sector-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 12px 0; }
 .home-dashboard .sector-tile { padding: 9px; gap: 6px; }
@@ -31,10 +33,15 @@
 .home-footer { max-width: 1600px; margin: 64px auto 0; padding: 28px; border-top: 1px solid #e8e8e8; color: #888; font-size: 12px; }
 @media (max-width: 1100px) {
   .home-content { padding: 22px 20px 0; }
-  .home-dashboard { gap: 24px; }
+  .home-dashboard { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) 240px; gap: 20px; }
+}
+@media (max-width: 900px) {
+  .home-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "maps calendar" "sidebar sidebar"; }
+  .home-dashboard-sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
-  .home-dashboard { grid-template-columns: minmax(0, 1fr); grid-template-areas: "maps" "calendar" "movers" "live"; }
-  .home-dashboard-movers { max-height: 320px; }
+  .home-dashboard { grid-template-columns: minmax(0, 1fr); grid-template-areas: "maps" "calendar" "sidebar"; }
+  .home-dashboard-sidebar { grid-template-columns: minmax(0, 1fr); }
+  .home-dashboard .calendar-list { max-height: 260px; }
 }
 @media (max-width: 420px) { .home-dashboard .sector-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

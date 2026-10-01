@@ -13,8 +13,10 @@ export default function Home() {
       <div className="home-dashboard">
         <div className="home-dashboard-maps"><SectorPerformance compact /></div>
         <div className="home-dashboard-calendar"><MarketCalendar /></div>
-        <div className="home-dashboard-movers" tabIndex={0} role="region" aria-label="Market Movers 목록"><MarketMovers /></div>
-        <div className="home-dashboard-live"><MarketLive /></div>
+        <div className="home-dashboard-sidebar">
+          <div className="home-dashboard-live"><MarketLive /></div>
+          <div className="home-dashboard-movers" tabIndex={0} role="region" aria-label="Market Movers 목록"><MarketMovers /></div>
+        </div>
       </div>
       <section className="home-news" aria-labelledby="home-news-title">
         <h2 id="home-news-title">Latest News</h2>
