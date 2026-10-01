@@ -49,3 +49,26 @@
   .home-dashboard-sidebar { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 420px) { .home-content .sector-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Dense ranking rows for the narrow, sticky homepage sidebar. */
+.home-dashboard-movers { padding-right: 5px; }
+.home-dashboard-movers .movers-heading { margin-bottom: 7px; gap: 4px; }
+.home-dashboard-movers .movers-heading h2 { font-size: 17px; }
+.home-dashboard-movers .movers-heading > span { font-size: 10px; }
+.home-dashboard-movers .movers-tabs { gap: 4px; }
+.home-dashboard-movers .movers-tabs button { min-height: 26px; padding: 4px 9px; font-size: 11px; }
+.home-dashboard-movers .movers-description { margin: 6px 0; font-size: 10px; line-height: 1.4; }
+.home-dashboard-movers .movers-status { gap: 3px 6px; font-size: 10px; line-height: 1.4; }
+.home-dashboard-movers .movers-list { margin-top: 5px; }
+.home-dashboard-movers .movers-list > li { flex-wrap: nowrap; gap: 4px; padding-bottom: 0; }
+.home-dashboard-movers .mover-row { grid-template-columns: 15px minmax(0, 1fr) auto; flex-basis: auto; gap: 5px; padding: 5px 0; min-height: 38px; box-sizing: border-box; }
+.home-dashboard-movers .mover-rank { font-size: 10px; }
+.home-dashboard-movers .mover-identity, .home-dashboard-movers .mover-price { gap: 2px; line-height: 1.25; }
+.home-dashboard-movers .mover-identity strong, .home-dashboard-movers .mover-price { font-size: 12px; }
+.home-dashboard-movers .mover-identity > span { font-size: 10px; }
+.home-dashboard-movers .mover-price > span:last-child { font-size: 10px; }
+.home-dashboard-movers .movers-list .save-button { min-height: 26px; width: 26px; padding: 3px; font-size: 0; border-radius: 50%; }
+.home-dashboard-movers .movers-list .save-button > span { font-size: 16px; line-height: 18px; }
+.home-dashboard-movers .movers-footnote { padding-top: 8px; font-size: 10px; line-height: 1.5; }
+.home-dashboard-movers .movers-footnote p { margin-bottom: 5px; }
+.home-dashboard-movers .movers-notice, .home-dashboard-movers .movers-empty { font-size: 11px; padding: 7px 0; }
