@@ -1,3 +1,5 @@
+// @ts-expect-error Shared calendar server handler.
+import calendarAPI from './api/calendar.js'
 // @ts-expect-error Shared JavaScript server handler.
 import sectorAPI from './api/sector-performance.js'
 import { defineConfig, loadEnv } from 'vite'
@@ -27,6 +29,7 @@ export default defineConfig({
       const env = loadEnv(server.config.mode, process.cwd(), '')
       const filingHandler = create13FHandler()
       const handlers: Record<string, (req: Request) => Promise<Response>> = {
+        '/api/calendar': calendarAPI.fetch,
         '/api/form13f': filingHandler,
         '/api/sector-performance': sectorAPI.fetch,
         '/api/stock-data': createStockHandler({ getKey: () => process.env.POLYGON_KEY || env.POLYGON_KEY || env.VITE_POLYGON_KEY }),

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
+import Calendar from './pages/Calendar'
 import Saved from './pages/Saved'
 import SavedItemsProvider from './components/SavedItemsProvider'
 import Home from './pages/00_Home'
@@ -28,6 +29,7 @@ function App() {
       <ScrollToTop />
       <SiteHeader />
       <Routes>
+        <Route path="/calendar" element={<Calendar />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/" element={<Home />} />
         <Route path="/equity" element={<StockMarket />} />

@@ -29,6 +29,7 @@ export default function SiteHeader() {
       <div className="site-tools">
         <button type="button" aria-expanded={toolsOpen} aria-controls="site-tools-links" onClick={() => setToolsOpen(!toolsOpen)}>투자 도구 {toolsOpen ? '−' : '+'}</button>
         {toolsOpen && <div id="site-tools-links" className="site-tools-links">
+          <NavLink to="/calendar" onClick={close}>경제·실적 캘린더</NavLink>
           <NavLink to="/form13f" onClick={close}>기관 포트폴리오 · 13F</NavLink>
           <NavLink to="/simulator" onClick={close}>자산 시뮬레이터</NavLink>
         </div>}

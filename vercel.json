@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/calendar", "destination": "/index.html" },
     { "source": "/saved", "destination": "/index.html" },
     { "source": "/equity", "destination": "/index.html" },
     { "source": "/rates", "destination": "/index.html" },
@@ -11,3 +12,4 @@
     { "source": "/stock/:ticker", "destination": "/index.html" }
   ]
 }
+
