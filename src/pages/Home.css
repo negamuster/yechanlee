@@ -72,3 +72,6 @@
 .home-dashboard-movers .movers-footnote { padding-top: 8px; font-size: 10px; line-height: 1.5; }
 .home-dashboard-movers .movers-footnote p { margin-bottom: 5px; }
 .home-dashboard-movers .movers-notice, .home-dashboard-movers .movers-empty { font-size: 11px; padding: 7px 0; }
+
+/* Keep square calendar cells compact on wide desktop columns. */
+.home-dashboard-calendar > .market-calendar { max-width: 420px; margin-inline: auto; }

@@ -46,9 +46,9 @@
 .calendar-month-navigation { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 12px; }
 .calendar-month-navigation strong { font-size: 16px; font-weight: 500; }
 .calendar-month-navigation button { font-size: 21px; line-height: 1; width: 30px; }
-.calendar-month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin: 12px 0 10px; }
+.calendar-month-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 16px 0 14px; }
 .calendar-weekday { font-size: 11px; color: #777d6d; text-align: center; padding: 5px 0; }
-.market-calendar .calendar-date { border: 0; background: #f7f8f4; border-radius: 4px; padding: 6px 2px 3px; height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-size: 12px; }
+.market-calendar .calendar-date { border: 0; background: #f7f8f4; border-radius: 4px; box-sizing: border-box; padding: 8px 3px 6px; width: 100%; min-height: 0; height: auto; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-size: 12px; }
 .market-calendar .calendar-date.is-today { box-shadow: inset 0 0 0 1px #7b8d69; font-weight: 600; }
 .market-calendar .calendar-date[aria-pressed="true"] { color: #fff; background: #505a46; }
 .calendar-dots { display: flex; gap: 2px; height: 5px; }
@@ -60,4 +60,12 @@
 .calendar-selected-heading { font-size: 12px; padding: 8px; background: #f0f2eb; margin-bottom: 2px; }
 .calendar-selected-heading span { color: #77856a; font-size: 10px; margin-left: 6px; }
 .calendar-original-title { display: block; color: #83877b; font-size: 10px; line-height: 1.5; margin-top: 3px; }
-.calendar-full .calendar-date { height: 70px; font-size: 15px; }
+.calendar-full .calendar-date { font-size: 15px; }
+.calendar-full .calendar-month-grid { max-width: 560px; margin-inline: auto; }
+
+.calendar-help { margin: 12px 0; font-size: 11px; color: #777a71; line-height: 1.7; }
+.calendar-help summary { cursor: pointer; padding: 5px 0; }
+.calendar-help summary:focus-visible { outline: 2px solid #69785c; outline-offset: 3px; }
+.calendar-help p { margin: 7px 0; }
+.calendar-selected-heading { margin-top: 16px; }
+.calendar-controls { margin-top: 18px; margin-bottom: 14px; }

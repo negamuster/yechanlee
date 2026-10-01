@@ -94,7 +94,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         return <button type="button" key={date} className={`calendar-date${date === today ? ' is-today' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => setSelected(date)}><span>{i + 1}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
-    <p className="calendar-time-note">달력 날짜: 미국 기준 · 발표 시간: {zoneLabel}<br />날짜별 점은 경제지표·연준·행사 일정입니다. 실적은 날짜를 눌러 조회하세요.</p>
+    <p className="calendar-time-note">날짜: 미국 기준 · 시간: {zoneLabel} · 날짜를 눌러 일정 확인</p>
     <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘' : ''}</span></div>
     <div className="calendar-list" aria-busy={loading} tabIndex={0} aria-label="선택한 날짜 일정">
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
@@ -108,7 +108,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         <div className="calendar-event-foot"><span>{event.source}</span><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
       </li>)}</ul></div>
     </div>
-    <p className="calendar-disclaimer">실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p>
+    <details className="calendar-help"><summary>일정 표시·데이터 안내</summary><p>날짜별 점은 확인된 경제지표·연준·행사 일정입니다. 실적은 선택한 날짜를 조회한 뒤 표시됩니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
     <div className="calendar-footer"><span>{schedule.data ? `조회 ${stamp(schedule.data.fetchedAt)} ${zoneLabel}` : 'BLS · BEA · 연준 · Nasdaq'}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
   </section>
 }
