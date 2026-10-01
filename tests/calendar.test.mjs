@@ -49,3 +49,22 @@ test('Handler validates ranges, caches successes and exposes stale/failing sourc
   clock += 25 * 3600000
   assert.equal((await handler(request())).status,503)
 })
+
+test('Monthly schedule avoids bulk earnings requests; selected day loads earnings separately', async () => {
+  const urls = []
+  const handler = createCalendarHandler({now:()=>Date.parse('2026-10-01T12:00:00Z'),fetchImpl:async url=>{
+    urls.push(url)
+    return new Response(url.includes('nasdaq') ? JSON.stringify({data:{rows:[]}}) : url.includes('federalreserve') ? JSON.stringify({events:[]}) : 'BEGIN:VCALENDAR\nEND:VCALENDAR')
+  }})
+  assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-31&mode=month'))).status,200)
+  assert.equal(urls.length,3)
+  assert.ok(urls.every(url=>!url.includes('nasdaq')))
+  assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-01&mode=earnings'))).status,200)
+  assert.equal(urls.length,4)
+  assert.ok(urls[3].includes('nasdaq'))
+  const weekend=await handler(new Request('https://example.com/api/calendar?from=2026-10-03&to=2026-10-03&mode=earnings'))
+  assert.equal(weekend.status,200)
+  assert.deepEqual((await weekend.json()).events,[])
+  assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-11-01&mode=month'))).status,400)
+  assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-03&mode=earnings'))).status,400)
+})
