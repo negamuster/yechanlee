@@ -4,7 +4,7 @@ import './MarketCalendar.css'
 
 type Category = 'All' | 'Economic' | 'Earnings' | 'Fed' | 'Events'
 type CalendarEvent = { id: string; title: string; description?: string; category: Exclude<Category, 'All'>; date: string; startAt: string | null; session: 'pre' | 'post' | 'unknown' | null; major: boolean; source: string; sourceUrl: string; estimated: boolean }
-type Source = { name: string; date: string | null; state: 'ok' | 'stale' | 'unavailable'; updatedAt: string | null; url: string }
+type Source = { name: string; date: string | null; state: 'ok' | 'snapshot' | 'stale' | 'unavailable'; updatedAt: string | null; url: string }
 type CalendarData = { events: CalendarEvent[]; sources: Source[]; fetchedAt: string }
 const categories: Category[] = ['All', 'Economic', 'Earnings', 'Fed', 'Events']
 const labels: Record<Category, string> = { All: '전체', Economic: '경제지표', Earnings: '실적', Fed: '연준', Events: '행사' }
@@ -69,7 +69,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   }, [])
   const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => category === 'All' || event.category === category)
   const selectedEvents = events.filter(event => event.date === selected)
-  const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.state !== 'ok').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`))]
+  const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.state === 'stale' || source.state === 'unavailable').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`))]
   const stamp = (value: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value))
   const zoneLabel = timezone === 'Asia/Seoul' ? 'KST' : 'ET'
   const loading = schedule.loading || earnings.loading
@@ -108,6 +108,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         <div className="calendar-event-foot"><span>{event.source}</span><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
       </li>)}</ul></div>
     </div>
+    {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 공식 원본 확인` : '확인 시각 없음'} · 변경 가능</p>)}
     <details className="calendar-help"><summary>일정 표시·데이터 안내</summary><p>날짜별 점은 확인된 경제지표·연준·행사 일정입니다. 실적은 선택한 날짜를 조회한 뒤 표시됩니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
     <div className="calendar-footer"><span>{schedule.data ? `조회 ${stamp(schedule.data.fetchedAt)} ${zoneLabel}` : 'BLS · BEA · 연준 · Nasdaq'}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
   </section>

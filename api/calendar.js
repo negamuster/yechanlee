@@ -1,2 +1,6 @@
 import { createCalendarHandler } from '../lib/calendar.js'
-export default { fetch: createCalendarHandler() }
+import blsSnapshot from '../data/bls-calendar.json' with { type: 'json' }
+export default { fetch: createCalendarHandler({
+  blsSnapshot,
+  snapshotUrl: 'https://raw.githubusercontent.com/negamuster/yechanlee/main/data/bls-calendar.json',
+}) }

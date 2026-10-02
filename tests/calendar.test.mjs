@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parseICS, parseFed, parseEarnings, zonedISO, createCalendarHandler } from '../lib/calendar.js'
+import { parseICS, parseFed, parseEarnings, zonedISO, createCalendarHandler, readBLSSnapshot, SOURCES } from '../lib/calendar.js'
 
 test('New York DST and Korea midnight rollover', () => {
   assert.equal(zonedISO('2026-10-01', 14, 0), '2026-10-01T18:00:00.000Z')
@@ -34,7 +34,7 @@ test('Handler validates ranges, caches successes and exposes stale/failing sourc
   const fetchImpl = async url => {
     calls++
     if (fail || url.includes('nasdaq')) throw new Error('offline')
-    return new Response(url.includes('federalreserve') ? JSON.stringify({events:[]}) : 'BEGIN:VCALENDAR\nEND:VCALENDAR')
+    return new Response(url.includes('federalreserve') ? JSON.stringify({events:[]}) : 'BEGIN:VCALENDAR\nBEGIN:VEVENT\nUID:fixture\nDTSTART:20261014T123000Z\nSUMMARY:Consumer Price Index\nEND:VEVENT\nEND:VCALENDAR')
   }
   const handler = createCalendarHandler({now:()=>clock,fetchImpl})
   const request = () => new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-01')
@@ -54,7 +54,7 @@ test('Monthly schedule avoids bulk earnings requests; selected day loads earning
   const urls = []
   const handler = createCalendarHandler({now:()=>Date.parse('2026-10-01T12:00:00Z'),fetchImpl:async url=>{
     urls.push(url)
-    return new Response(url.includes('nasdaq') ? JSON.stringify({data:{rows:[]}}) : url.includes('federalreserve') ? JSON.stringify({events:[]}) : 'BEGIN:VCALENDAR\nEND:VCALENDAR')
+    return new Response(url.includes('nasdaq') ? JSON.stringify({data:{rows:[]}}) : url.includes('federalreserve') ? JSON.stringify({events:[]}) : 'BEGIN:VCALENDAR\nBEGIN:VEVENT\nUID:fixture\nDTSTART:20261014T123000Z\nSUMMARY:Consumer Price Index\nEND:VEVENT\nEND:VCALENDAR')
   }})
   assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-31&mode=month'))).status,200)
   assert.equal(urls.length,3)
@@ -67,4 +67,53 @@ test('Monthly schedule avoids bulk earnings requests; selected day loads earning
   assert.deepEqual((await weekend.json()).events,[])
   assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-11-01&mode=month'))).status,400)
   assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-03&mode=earnings'))).status,400)
+})
+
+const officialICS = 'BEGIN:VCALENDAR\nBEGIN:VEVENT\nUID:cpi\nDTSTART:20261014T123000Z\nSUMMARY:Consumer Price Index\nEND:VEVENT\nEND:VCALENDAR'
+const snapshotAt = '2026-10-01T12:00:00.000Z'
+const snapshot = { version: 1, sourceUrl: SOURCES.bls.url, checkedAt: snapshotAt, ics: officialICS }
+const monthRequest = () => new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-31&mode=month')
+test('BLS fallback preserves verification time, caches fallback honestly, and expires', async () => {
+  let clock = Date.parse(snapshotAt) + 3600000
+  let calls = 0
+  const handler = createCalendarHandler({ now: () => clock, blsSnapshot: snapshot, fetchImpl: async () => { calls++; throw new Error('offline') } })
+  let result = await (await handler(monthRequest())).json()
+  assert.equal(result.events[0].title, 'Consumer Price Index')
+  assert.equal(result.sources[0].state, 'snapshot')
+  assert.equal(result.sources[0].updatedAt, snapshotAt)
+  result = await (await handler(monthRequest())).json()
+  assert.equal(calls, 5)
+  assert.equal(result.sources[0].state, 'snapshot')
+  clock += 16 * 60000
+  result = await (await handler(monthRequest())).json()
+  assert.equal(result.sources[0].state, 'snapshot')
+  clock += 3 * 86400000
+  result = await (await handler(monthRequest())).json()
+  assert.equal(result.sources[0].state, 'stale')
+  assert.equal(result.sources[0].updatedAt, snapshotAt)
+  clock += 5 * 86400000
+  assert.equal((await handler(monthRequest())).status, 503)
+})
+test('Latest remote snapshot replaces removed events; live source takes precedence', async () => {
+  let live = false, clock = Date.parse(snapshotAt) + 3600000
+  const replacement = { ...snapshot, checkedAt: new Date(clock).toISOString(), ics: officialICS.replace('Consumer Price Index', 'Updated Release').replace('UID:cpi', 'UID:new') }
+  const handler = createCalendarHandler({ now: () => clock, blsSnapshot: snapshot, snapshotUrl: 'https://example.com/snapshot', fetchImpl: async url => {
+    if (url.endsWith('/snapshot')) return Response.json(replacement)
+    if (live && url === SOURCES.bls.url) return new Response(officialICS)
+    throw new Error('offline')
+  } })
+  let result = await (await handler(monthRequest())).json()
+  assert.deepEqual(result.events.map(e => e.title), ['Updated Release'])
+  assert.equal(result.sources[0].updatedAt, replacement.checkedAt)
+  live = true; clock += 16 * 60000
+  result = await (await handler(monthRequest())).json()
+  assert.deepEqual(result.events.map(e => e.title), ['Consumer Price Index'])
+  assert.equal(result.sources[0].state, 'ok')
+})
+test('Snapshot validation rejects partial, empty, wrongly sourced and future-dated data', () => {
+  const now = Date.parse(snapshotAt)
+  for (const invalid of [null, { ...snapshot, sourceUrl: 'https://example.com' }, { ...snapshot, ics: 'BEGIN:VCALENDAR\nEND:VCALENDAR' }, { ...snapshot, ics: officialICS.replace('END:VCALENDAR', '') }, { ...snapshot, checkedAt: '2026-10-02T12:00:00Z' }]) {
+    assert.throws(() => readBLSSnapshot(invalid, now))
+  }
+  assert.throws(() => readBLSSnapshot(snapshot, now + 8 * 86400000))
 })
