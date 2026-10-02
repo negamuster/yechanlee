@@ -20,7 +20,7 @@ export default function MarketClocks() {
       const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value || ''
       return <div className="market-clock" key={zone}>
         <span>{label} <small>{zone === 'Asia/Seoul' ? 'KST' : part('timeZoneName')}</small></span>
-        <time dateTime={now.toISOString()}>{part('year')}.{part('month')}.{part('day')} <strong>{part('hour')}:{part('minute')}:{part('second')}</strong></time>
+        <time dateTime={now.toISOString()}><span className="clock-year">{part('year')}.</span>{part('month')}.{part('day')} <strong>{part('hour')}:{part('minute')}<span className="clock-seconds">:{part('second')}</span></strong></time>
       </div>
     })}
   </div>

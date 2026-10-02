@@ -9,8 +9,8 @@ const videoId = configuredId && /^[A-Za-z0-9_-]{11}$/.test(configuredId) ? confi
 const channelUrl = 'https://www.youtube.com/@YahooFinance/live'
 const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1&rel=0`
 
-export default function MarketLive() {
-  const [opened, setOpened] = useState(true)
+export default function MarketLive({ autoPlay = true }: { autoPlay?: boolean }) {
+  const [opened, setOpened] = useState(autoPlay)
 
   return (
     <section className="market-live" aria-labelledby="market-live-heading">
@@ -38,7 +38,8 @@ export default function MarketLive() {
         <a href={channelUrl} target="_blank" rel="noopener noreferrer">YouTube에서 보기 ↗</a>
         {opened && <button type="button" onClick={() => setOpened(false)}>영상 닫기</button>}
       </div>
-      <p className="market-live-note">음소거 상태로 자동 재생됩니다. 소리는 플레이어에서 켤 수 있습니다. 자동 재생이 차단되면 재생 버튼을 눌러 주세요.</p>
+      <p className="market-live-note">{autoPlay ? '음소거 상태로 자동 재생됩니다.' : '버튼을 누르면 방송 플레이어를 불러옵니다.'} 소리는 플레이어에서 켤 수 있습니다.</p>
     </section>
   )
 }
+

@@ -69,3 +69,15 @@
 .calendar-help p { margin: 7px 0; }
 .calendar-selected-heading { margin-top: 16px; }
 .calendar-controls { margin-top: 18px; margin-bottom: 14px; }
+
+@media (max-width: 700px) {
+  .market-calendar button, .market-calendar select { min-height: 44px; }
+  .calendar-month-navigation button { width: 44px; }
+  .calendar-month-grid { gap: 3px; }
+  .market-calendar .calendar-date { min-height: 0; padding: 6px 2px 4px; font-size: 13px; }
+  .calendar-event-title { font-size: 14px; padding-block: 4px; }
+  .calendar-event-meta, .calendar-event-foot, .calendar-time-note { font-size: 11px; }
+  .calendar-help summary { min-height: 44px; display: flex; align-items: center; }
+  .calendar-settings select { font-size: 16px; max-width: 120px; }
+  .calendar-page { padding-inline: 14px; }
+}

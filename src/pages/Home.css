@@ -77,3 +77,29 @@
 .home-dashboard-calendar > .market-calendar { max-width: 500px; margin-inline: auto; }
 
 @media (max-width: 1000px) { .home-dashboard-live { max-width: 380px; } }
+
+.home-mobile-market { min-width: 0; }
+.home-mobile-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid #dededb; }
+.home-mobile-tabs button { min-height: 44px; border: 0; border-bottom: 2px solid transparent; background: transparent; font: inherit; font-size: 14px; color: #777; cursor: pointer; }
+.home-mobile-tabs button[aria-pressed="true"] { color: #30382a; border-bottom-color: #505a46; font-weight: 600; }
+.home-mobile-panel-actions { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; }
+.home-mobile-panel-actions a, .home-mobile-panel-actions button { display: inline-flex; align-items: center; min-height: 44px; font: inherit; font-size: 12px; color: #666; background: none; border: 0; text-decoration: none; cursor: pointer; }
+.home-mobile-market :is(button, a):focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+@media (max-width: 700px) {
+  .home-content { display: block; padding: 12px 14px 0; }
+  .home-primary { display: block; }
+  .home-news { margin-top: 22px; padding-top: 20px; }
+  #home-news-title { scroll-margin-top: 16px; }
+  .home-content .sector-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home-content .sector-tile strong { font-size: 19px; }
+  .home-content .sector-tile > span { font-size: 12px; }
+  .home-content .movers-tabs button { min-height: 44px; }
+  .home-content .mover-row { min-height: 48px; }
+  .home-content .save-button { min-width: 44px; min-height: 44px; }
+  .home-content .calendar-list { max-height: 280px; }
+  .home-content .market-live { max-width: 440px; margin-inline: auto; }
+  .market-live-actions :is(a, button) { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
+.home-mobile-movers { max-height: 420px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
+.home-mobile-movers:focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }

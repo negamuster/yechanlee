@@ -76,7 +76,7 @@ export default function NewsFeed() {
   const [region, setRegion] = useState<Region>('all')
   const [topic, setTopic] = useState<TopicFilter>('all')
   const [query, setQuery] = useState('')
-  const [view, setView] = useState<'cards' | 'list'>('cards')
+  const [view, setView] = useState<'cards' | 'list'>(() => window.matchMedia('(max-width: 700px)').matches ? 'list' : 'cards')
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
@@ -192,3 +192,4 @@ export default function NewsFeed() {
     </div>
   )
 }
+
