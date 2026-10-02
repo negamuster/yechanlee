@@ -4,7 +4,7 @@ import { SOURCES, readBLSSnapshot } from '../lib/calendar.js'
 
 // Only a complete, validated official response replaces the last known schedule.
 const response = await fetch(SOURCES.bls.url, {
-  headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'text/calendar' },
+  headers: { 'User-Agent': 'AnthraciteCalendar/1.0 (+https://github.com/negamuster/yechanlee)', Accept: 'text/calendar' },
   signal: AbortSignal.timeout(45000),
 })
 if (!response.ok) throw new Error(`BLS returned HTTP ${response.status}`)
