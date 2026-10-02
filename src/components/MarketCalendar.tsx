@@ -108,8 +108,8 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         <div className="calendar-event-foot"><span>{event.source}</span><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
       </li>)}</ul></div>
     </div>
-    {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 공식 원본 확인` : '확인 시각 없음'} · 변경 가능</p>)}
-    <details className="calendar-help"><summary>일정 표시·데이터 안내</summary><p>날짜별 점은 확인된 경제지표·연준·행사 일정입니다. 실적은 선택한 날짜를 조회한 뒤 표시됩니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
+    {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
+    <details className="calendar-help"><summary>일정 표시·데이터 안내</summary><p>날짜별 점은 확인된 경제지표·연준·행사 일정입니다. 실적은 선택한 날짜를 조회한 뒤 표시됩니다.</p><p>BLS 직접 조회가 어려우면 CPI·PPI·고용보고서 등 9개 지표군은 FRED 일정으로 보완합니다. 그 외 BLS 일정은 별도 저장본의 확인 시각을 따릅니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
     <div className="calendar-footer"><span>{schedule.data ? `조회 ${stamp(schedule.data.fetchedAt)} ${zoneLabel}` : 'BLS · BEA · 연준 · Nasdaq'}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
   </section>
 }

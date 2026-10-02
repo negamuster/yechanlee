@@ -9,6 +9,7 @@ on:
       - '.github/workflows/refresh-bls-calendar.yml'
       - 'scripts/refresh-bls-calendar.mjs'
       - 'lib/calendar.js'
+      - 'lib/fred-calendar.js'
 permissions:
   contents: write
 concurrency:
@@ -24,13 +25,14 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
+      - run: node --test tests/calendar.test.mjs tests/fred-calendar.test.mjs
       - run: node scripts/refresh-bls-calendar.mjs
       - name: Save verified schedule
         run: |
-          git add data/bls-calendar.json
+          git add data/bls-calendar.json data/fred-bls-calendar.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Refresh official BLS calendar snapshot'
+          git commit -m 'Refresh verified BLS calendar sources'
           git pull --rebase origin main
           git push origin HEAD:main

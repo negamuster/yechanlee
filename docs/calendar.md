@@ -19,3 +19,9 @@ The desktop Live/Movers sidebar is sticky across the dashboard and news column. 
 ## BLS collection
 
 `node scripts/refresh-bls-calendar.mjs` fetches the official ICS and atomically replaces `data/bls-calendar.json` only after validating its format and future releases. The GitHub Actions workflow runs every six hours (at minute 23), on collector changes, or manually. A failed fetch leaves the previous snapshot untouched and fails the workflow. GitHub scheduling may be delayed. No API secret is required; repository contents write permission is scoped to the collection workflow. The API reads the raw main-branch snapshot on direct BLS failure so updates do not depend on a new Vercel build. It caches results for 15 minutes and displays the actual collection time for snapshot/stale data.
+
+## FRED fallback for BLS access restrictions
+
+GitHub runners returned HTTP 403 for the BLS ICS even with a descriptive collector User-Agent. The collector now falls back to the St. Louis Fed's public FRED release calendar, explicitly attributed as `FRED (BLS)`. It collects nine release families: CPI, PPI, Employment Situation, JOLTS, Employment Cost Index, Productivity and Costs, State Employment, Metropolitan Employment, and Import/Export Prices. The page states Central Time; IANA America/Chicago rules convert to UTC, then the UI displays KST/ET. Unknown times remain null.
+
+Every selected release page must parse completely, including its published total count, before the FRED snapshot is replaced. Failure keeps the prior snapshot and fails the workflow. FRED updates never change the BLS snapshot's checkedAt. Fresh direct BLS data has priority. When direct access fails, newer FRED schedules replace covered families throughout the collected date range (so removed dates disappear); other BLS releases retain their original verification time and expiry. Each source expires after seven days. A FRED fallback success does not mean BLS direct access is repaired.
