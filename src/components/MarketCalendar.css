@@ -81,3 +81,6 @@
   .calendar-settings select { font-size: 16px; max-width: 120px; }
   .calendar-page { padding-inline: 14px; }
 }
+
+.calendar-source-status { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 10px; overflow-wrap: anywhere; }
+.calendar-source-status strong { color: #51564a; font-weight: 500; }

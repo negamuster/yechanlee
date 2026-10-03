@@ -1,3 +1,4 @@
+import DataStatus from './DataStatus'
 import { WatchButton } from './SavedItemsProvider'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -69,7 +70,8 @@ export default function MarketMovers() {
           {loading ? '불러오는 중…' : '새로고침'}
         </button>
       </div>
-      {(failed || data?.stale) && <p className="movers-notice" role="status">
+      {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
+      {failed && !data && <p className="movers-notice" role="status">
         {data ? '최신 데이터를 받지 못해 마지막으로 수집한 순위를 표시합니다.' : '종목 순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
       </p>}
       <div aria-busy={loading} aria-live="polite">
@@ -98,8 +100,8 @@ export default function MarketMovers() {
         <p>미국 상장 종목 · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
         <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
         <p>출처: Polygon / Massive · 실시간 순위가 아닙니다.</p>
-        {data && <p>수집: {new Date(data.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} KST</p>}
       </div>
     </section>
   )
 }
+

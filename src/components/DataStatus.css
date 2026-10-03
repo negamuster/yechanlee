@@ -1,0 +1,6 @@
+.data-status { display: flex; flex-direction: column; gap: 3px; margin: 10px 0; font-size: 11px; line-height: 1.6; color: #74786d; overflow-wrap: anywhere; }
+.data-status strong { font-weight: 500; color: #51564a; margin-right: 4px; }
+.data-status-stale { border-left: 2px solid #a38b5a; padding-left: 8px; }
+.data-status-stale > [role="status"] { color: #806a3d; }
+.home-dashboard-movers .data-status { font-size: 10px; margin: 6px 0; }
+@media (max-width: 700px) { .data-status { font-size: 12px; } }
