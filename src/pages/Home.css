@@ -103,3 +103,29 @@
 
 .home-mobile-movers { max-height: 420px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
 .home-mobile-movers:focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+
+/* Compact mobile hierarchy: summary first, supporting details on demand. */
+@media (max-width: 700px) {
+  .home-content { padding-top: 4px; }
+  .home-mobile-panel-actions { margin: 0 0 4px; }
+  .home-mobile-tabs button { font-size: 13px; }
+  .home-content .sector-heading { margin-bottom: 4px; }
+  .home-content .sector-heading h2 { font-size: 17px; }
+  .home-content .sector-controls { margin: 4px 0 8px; }
+  .home-content .sector-summary { align-items: baseline; font-size: 13px; gap: 6px; }
+  .home-content .sector-grid { margin: 10px 0 2px; gap: 5px; }
+  .home-content .sector-tile { padding: 6px 7px; gap: 4px; }
+  .home-content .sector-tile > span { font-size: 11px; min-height: 2.6em; line-height: 1.3; overflow-wrap: anywhere; }
+  .home-content .sector-tile strong { font-size: 17px; }
+  .home-content .sector-tile small { font-size: 9px; }
+  .home-news { margin-top: 16px; padding-top: 16px; }
+  .home-news > h2 { margin-bottom: 12px; font-size: 18px; }
+  .home-mobile-movers .movers-description { margin: 6px 0; }
+  .home-mobile-movers .mover-row { padding-block: 7px; }
+  .home-mobile-movers .mover-identity strong, .home-mobile-movers .mover-price { font-size: 13px; }
+  .home-mobile-movers .mover-identity > span { font-size: 11px; }
+  .home-content .calendar-controls { margin: 10px 0 6px; }
+  .home-content .calendar-month-navigation { margin: 4px 0 6px; }
+  .home-content .calendar-month-grid { margin: 10px 0; }
+  .home-content .calendar-selected-heading { margin-top: 10px; }
+}

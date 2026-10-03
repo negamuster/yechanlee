@@ -19,3 +19,17 @@
 /* Keep Maps narrower than the article column on larger screens. */
 .home-news-col > .sector-compact { width: 85%; max-width: 800px; }
 @media (max-width: 860px) { .home-news-col > .sector-compact { width: 100%; } }
+
+.sector-info-toggle, .sector-mobile-date, .sector-mobile-description { display: none; }
+.sector-stale-alert { color: #806a3d; font-size: 11px; line-height: 1.6; }
+@media (max-width: 700px) {
+  .sector-description, .sector-benchmark-label, .sector-period-range { display: none; }
+  .sector-mobile-date { display: inline; font-size: 11px; color: #73776b; font-weight: 400; }
+  .sector-mobile-description { display: block; font-size: 11px; color: #73776b; line-height: 1.6; }
+  .sector-info-toggle { display: inline-flex; align-items: center; min-height: 44px; background: none; border: 0; padding: 0; color: #666; font: inherit; font-size: 11px; cursor: pointer; }
+  .sector-data-info { display: none; }
+  .sector-data-info.is-open { display: block; }
+  .sector-periods { gap: 4px; }
+  .sector-periods button { min-height: 44px; padding: 6px 10px; font-size: 12px; }
+  .sector-refresh { min-height: 44px; }
+}
