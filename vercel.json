@@ -1,15 +1,56 @@
 {
   "rewrites": [
-    { "source": "/calendar", "destination": "/index.html" },
-    { "source": "/saved", "destination": "/index.html" },
-    { "source": "/equity", "destination": "/index.html" },
-    { "source": "/rates", "destination": "/index.html" },
-    { "source": "/fed", "destination": "/index.html" },
-    { "source": "/indicators", "destination": "/index.html" },
-    { "source": "/macro", "destination": "/index.html" },
-    { "source": "/form13f", "destination": "/index.html" },
-    { "source": "/simulator", "destination": "/index.html" },
-    { "source": "/stock/:ticker", "destination": "/index.html" }
+    {
+      "source": "/markets",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/more",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/live",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/calendar",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/saved",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/equity",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/rates",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/fed",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/indicators",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/macro",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/form13f",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/simulator",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/stock/:ticker",
+      "destination": "/index.html"
+    }
   ]
 }
-

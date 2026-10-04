@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import RouteScroll from './components/RouteScroll'
 import Calendar from './pages/Calendar'
 import MobileNavigation from './components/MobileNavigation'
 import Markets from './pages/Markets'
@@ -17,19 +17,11 @@ import Stock from './pages/06_Stock'
 import Simulator from './pages/Simulator'
 import Form13F from './pages/Form13F'
 
-function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
-}
-
 function App() {
   return (
     <BrowserRouter>
       <SavedItemsProvider>
-      <ScrollToTop />
+      <RouteScroll />
       <SiteHeader />
       <Routes>
         <Route path="/markets" element={<Markets />} />

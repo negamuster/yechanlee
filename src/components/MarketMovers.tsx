@@ -1,3 +1,5 @@
+import { useResource } from '../hooks/useResource'
+import { useSessionState } from '../hooks/useSessionState'
 import DataStatus from './DataStatus'
 import { WatchButton } from './SavedItemsProvider'
 import { useEffect, useState } from 'react'
@@ -23,33 +25,20 @@ const amount = (value: number) => {
   return dollars(value)
 }
 
+function validData(value: unknown): value is MoversData {
+  const data = value as MoversData | null
+  return !!data && !!data.tradingDate && Number.isFinite(data.fetchedAt) && categories.every(tab => Array.isArray(data.rankings?.[tab.id]))
+}
+
 export default function MarketMovers() {
-  const [category, setCategory] = useState<Category>('turnover')
-  const [data, setData] = useState<MoversData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [failed, setFailed] = useState(false)
+  const [category, setCategory] = useSessionState<Category>('movers.category', 'turnover', v => categories.some(tab => tab.id === v))
   const [refresh, setRefresh] = useState(0)
 
+  const { data, loading, error: failed } = useResource('/api/market-movers', validData, 5 * 60000, refresh)
   useEffect(() => {
-    const controller = new AbortController()
-    let active = true
-    const timeout = setTimeout(() => controller.abort(), 25000)
-    setLoading(true)
-    async function load() {
-      try {
-        const response = await fetch('/api/market-movers', { signal: controller.signal })
-        if (!response.ok) throw new Error('unavailable')
-        const result = await response.json()
-        if (!result.tradingDate || !Number.isFinite(result.fetchedAt)
-          || !categories.every(tab => Array.isArray(result.rankings?.[tab.id]))) throw new Error('invalid')
-        if (active) { setData(result); setFailed(false) }
-      } catch { if (active) setFailed(true) }
-      finally { clearTimeout(timeout); if (active) setLoading(false) }
-    }
-    void load()
-    const interval = setInterval(() => setRefresh(value => value + 1), 30 * 60 * 1000)
-    return () => { active = false; controller.abort(); clearTimeout(timeout); clearInterval(interval) }
-  }, [refresh])
+    const interval = setInterval(() => setRefresh(value => value + 1), 30 * 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   const selected = categories.find(tab => tab.id === category)!
   const rows = data?.rankings[category] ?? []

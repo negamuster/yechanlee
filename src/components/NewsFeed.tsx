@@ -1,3 +1,4 @@
+import { useSessionState } from '../hooks/useSessionState'
 import { BookmarkButton } from './SavedItemsProvider'
 import { useEffect, useState } from 'react'
 import './NewsFeed.css'
@@ -32,10 +33,10 @@ function isFeed(value: unknown): value is Feed {
       && ['kr', 'global'].includes(item.region) && Number.isFinite(Date.parse(item.published_utc)))
 }
 
-function readCache(): Feed | null {
+function readCache(maxAge = TTL): Feed | null {
   try {
     const data: unknown = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null')
-    return isFeed(data) && data.items.length > 0 && Date.now() - data.fetchedAt < TTL ? data : null
+    return isFeed(data) && data.items.length > 0 && Date.now() - data.fetchedAt < maxAge ? data : null
   } catch { return null }
 }
 
@@ -72,19 +73,19 @@ function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
 }
 
 export default function NewsFeed() {
-  const [feed, setFeed] = useState<Feed | null>(readCache)
-  const [region, setRegion] = useState<Region>('all')
-  const [topic, setTopic] = useState<TopicFilter>('all')
-  const [query, setQuery] = useState('')
-  const [view, setView] = useState<'cards' | 'list'>(() => window.matchMedia('(max-width: 700px)').matches ? 'list' : 'cards')
+  const [feed, setFeed] = useState<Feed | null>(() => readCache(6 * 60 * 60 * 1000))
+  const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
+  const [topic, setTopic] = useSessionState<TopicFilter>('news.topic', 'all', v => v === 'all' || TOPICS.some(t => t.value === v))
+  const [query, setQuery] = useSessionState('news.query', '', v => typeof v === 'string' && v.length <= 120)
+  const [view, setView] = useSessionState<'cards' | 'list'>('news.view', () => window.matchMedia('(max-width: 700px)').matches ? 'list' : 'cards', v => v === 'cards' || v === 'list')
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
-  const [visibleBatches, setVisibleBatches] = useState(1)
+  const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
   const [, setClock] = useState(0)
 
   useEffect(() => {
-    const refresh = window.setInterval(() => { setRevision(value => value + 1); setVisibleBatches(1) }, TTL)
+    const refresh = window.setInterval(() => { setRevision(value => value + 1) }, TTL)
     const clock = window.setInterval(() => setClock(value => value + 1), 60000)
     return () => { window.clearInterval(refresh); window.clearInterval(clock) }
   }, [])

@@ -28,3 +28,36 @@
   .market-hub-grid > section + section { border-top: 1px solid #e8e8e8; padding-top: 18px; }
   .more-page, .live-page { padding: 8px 14px 24px; }
 }
+
+.install-help { font-size: 13px; color: #62655a; line-height: 1.7; }
+.install-help summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; color: #333; }
+.install-help p { margin: 8px 0; }
+@media (max-width: 700px) {
+  .news-feed .news-toolbar { gap: 8px; margin-bottom: 8px; }
+  .news-feed .news-topic-filters { margin-bottom: 8px; gap: 6px; }
+  .news-feed .news-scope, .news-feed .news-updated, .news-feed .news-result-count { font-size: 11px; margin-block: 6px 10px; }
+  .news-feed .news-list .news-card { padding-block: 12px; }
+  .news-feed .news-list .news-row { gap: 5px; }
+  .news-feed .news-list .news-title { font-size: 15px; line-height: 1.55; }
+  .news-feed .news-meta { font-size: 11px; }
+  .news-feed .news-card > .save-button { margin-top: 7px; min-height: 44px; }
+  .home-content.market-hub .movers-list > li { flex-wrap: nowrap; gap: 5px; padding-bottom: 0; }
+  .home-content.market-hub .movers-list .mover-row { flex-basis: auto; grid-template-columns: 17px minmax(0, 1fr) auto; gap: 6px; padding-block: 8px; }
+  .home-content.market-hub .mover-identity strong, .home-content.market-hub .mover-price { font-size: 13px; }
+  .home-content.market-hub .mover-identity > span, .home-content.market-hub .mover-price > span:last-child { font-size: 11px; }
+  .home-content.market-hub .movers-list .save-button { width: 44px; min-height: 44px; padding: 0; font-size: 0; }
+  .home-content.market-hub .movers-list .save-button > span { font-size: 18px; }
+  .home-content.market-hub .movers-status button { min-height: 44px; }
+  .calendar-page { margin-block: 12px 24px; }
+  .calendar-page .calendar-full { margin-top: 12px; padding-top: 12px; }
+  .calendar-page .calendar-heading h2 { font-size: 20px; }
+  .calendar-page .calendar-controls { margin-block: 10px 6px; }
+  .calendar-page .calendar-month-grid { margin-block: 10px; }
+  .calendar-page .calendar-full .calendar-event { padding: 12px 6px; overflow-wrap: anywhere; }
+  .calendar-page .calendar-full .calendar-event-title { font-size: 14px; }
+  .calendar-page .calendar-message, .calendar-page .calendar-warning { line-height: 1.65; overflow-wrap: anywhere; }
+}
+@media (display-mode: standalone) {
+  .site-header { padding-top: env(safe-area-inset-top, 0px); }
+  body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}

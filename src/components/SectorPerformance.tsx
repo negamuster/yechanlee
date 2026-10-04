@@ -1,6 +1,8 @@
+import { useResource } from '../hooks/useResource'
+import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import DataStatus from './DataStatus'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './SectorPerformance.css'
 const periods = [['1d', '1일'], ['1w', '1주'], ['1m', '1개월'], ['ytd', '연초 이후']] as const
@@ -9,29 +11,16 @@ type Row = { symbol: string; name: string; returns: Record<Period, number | null
 type Data = { sectors: Row[]; benchmark: Row; fetchedAt: string; stale: boolean; basis: string }
 const format = (v: number | null | undefined, unit = '%') => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(2)}${unit}`
 const tone = (v: number | null) => v == null || v === 0 ? 'flat' : v > 0 ? 'positive' : 'negative'
+function validData(value: unknown): value is Data {
+  const data = value as Data | null
+  return !!data && Array.isArray(data.sectors) && !!data.benchmark && !!data.benchmark.returns
+}
 export default function SectorPerformance({ compact = false }: { compact?: boolean }) {
-  const [data, setData] = useState<Data | null>(null)
-  const [period, setPeriod] = useState<Period>('1d')
+  const [period, setPeriod] = useSessionState<Period>('maps.period', '1d', v => periods.some(([period]) => period === v))
   const [infoOpen, setInfoOpen] = useState(false)
-  const [relative, setRelative] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [relative, setRelative] = useSessionState('maps.relative', false, v => typeof v === 'boolean')
   const [retry, setRetry] = useState(0)
-  useEffect(() => {
-    const controller = new AbortController()
-    async function load() {
-      try {
-        const response = await fetch('/api/sector-performance', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]) })
-        if (!response.ok) throw new Error()
-        const result = await response.json()
-        if (!Array.isArray(result.sectors) || !result.benchmark) throw new Error()
-        if (!controller.signal.aborted) { setData(result); setError(false) }
-      } catch { if (!controller.signal.aborted) setError(true) }
-      finally { if (!controller.signal.aborted) setLoading(false) }
-    }
-    void load()
-    return () => controller.abort()
-  }, [retry])
+  const { data, loading, error } = useResource('/api/sector-performance', validData, 5 * 60000, retry)
   const rows = [...(data?.sectors || [])].sort((a, b) => (b.returns[period] ?? -Infinity) - (a.returns[period] ?? -Infinity))
   const unavailable = rows.filter(r => r.returns[period] == null).length
   return <section className={`sector-panel ${compact ? 'sector-compact' : ''}`} aria-label="Maps · 미국 업종 ETF 히트맵">
@@ -61,6 +50,6 @@ export default function SectorPerformance({ compact = false }: { compact?: boole
       <p className="sector-note">Yahoo Finance · {data.basis}. 업종 전체 지수가 아닌 대표 ETF의 성과입니다. 1주는 7일, 1개월은 30일 전 또는 직전 거래일 대비이며, 연초 이후는 전년도 마지막 거래일 대비입니다.{!compact && ' 초과성과는 업종 ETF 수익률에서 VOO 수익률을 뺀 값입니다.'}</p>
       </div>
     </>}
-    <button className="sector-refresh" disabled={loading} onClick={() => { setLoading(true); setRetry(n => n + 1) }}>다시 조회</button>
+    <button className="sector-refresh" disabled={loading} onClick={() => { setRetry(n => n + 1) }}>다시 조회</button>
   </section>
 }

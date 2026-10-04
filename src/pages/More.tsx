@@ -12,6 +12,7 @@ export default function More() {
       <h2>{group.title}</h2>
       {group.links.map(([to, label]) => <Link key={to} to={to}>{label}<span aria-hidden="true">›</span></Link>)}
     </section>)}
+    <section aria-label="홈 화면에 추가"><h2>앱처럼 열기</h2><details className="install-help"><summary>홈 화면에 추가하는 방법 ＋</summary><p>iPhone · Safari의 공유 메뉴에서 ‘홈 화면에 추가’를 선택하세요.</p><p>Android · Chrome 메뉴에서 ‘홈 화면에 추가’ 또는 ‘앱 설치’를 선택하세요.</p><p>추가한 Anthracite 아이콘을 누르면 뉴스 화면부터 열립니다. 뉴스·시세·일정 조회에는 인터넷 연결이 필요합니다.</p></details></section>
     <section aria-label="Contact"><h2>Contact</h2>
       <a href="mailto:yechan030102@gmail.com">yechan030102@gmail.com<span aria-hidden="true">↗</span></a>
       <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer">LinkedIn<span aria-hidden="true">↗</span></a>

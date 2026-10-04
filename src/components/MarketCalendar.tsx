@@ -1,3 +1,5 @@
+import { useResource } from '../hooks/useResource'
+import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -31,30 +33,21 @@ function koreanTitle(event: CalendarEvent) {
   if (/Holiday/i.test(event.title)) return `연준 휴일 안내 · ${event.title.replace(/^Holiday\s*-\s*/i, '')}`
   return `${labels[event.category]} · ${event.title}`
 }
+function validCalendar(value: unknown): value is CalendarData {
+  const data = value as CalendarData | null
+  return !!data && Array.isArray(data.events) && Array.isArray(data.sources)
+}
 function useCalendarData(from: string, to: string, mode: 'month' | 'earnings', reload: number) {
-  const [state, setState] = useState<{ data: CalendarData | null; loading: boolean; error: boolean }>({ data: null, loading: true, error: false })
-  useEffect(() => {
-    const controller = new AbortController()
-    setState({ data: null, loading: true, error: false })
-    fetch(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, { signal: controller.signal })
-      .then(async response => {
-        if (!response.ok) throw new Error('unavailable')
-        const data: CalendarData = await response.json()
-        if (!Array.isArray(data.events) || !Array.isArray(data.sources)) throw new Error('invalid')
-        if (!controller.signal.aborted) setState({ data, loading: false, error: false })
-      }).catch(() => { if (!controller.signal.aborted) setState({ data: null, loading: false, error: true }) })
-    return () => controller.abort()
-  }, [from, to, mode, reload])
-  return state
+  return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, 5 * 60000, reload)
 }
 export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const [now, setNow] = useState(Date.now)
   const today = nyDate(now)
-  const [month, setMonth] = useState(() => today.slice(0, 7))
-  const [selected, setSelected] = useState(() => today)
-  const [category, setCategory] = useState<Category>('All')
-  const [language, setLanguage] = useState<'ko' | 'en'>('ko')
-  const [timezone, setTimezone] = useState<'Asia/Seoul' | 'America/New_York'>('Asia/Seoul')
+  const [month, setMonth] = useSessionState('calendar.month', () => today.slice(0, 7), v => typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) && v >= shiftMonth(today.slice(0, 7), -1) && v <= shiftMonth(today.slice(0, 7), 3))
+  const [selected, setSelected] = useSessionState('calendar.day', () => month === today.slice(0, 7) ? today : `${month}-01`, v => typeof v === 'string' && v.startsWith(`${month}-`) && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v)
+  const [category, setCategory] = useSessionState<Category>('calendar.category', 'All', v => categories.includes(v as Category))
+  const [language, setLanguage] = useSessionState<'ko' | 'en'>('calendar.language', 'ko', v => v === 'ko' || v === 'en')
+  const [timezone, setTimezone] = useSessionState<'Asia/Seoul' | 'America/New_York'>('calendar.timezone', 'Asia/Seoul', v => v === 'Asia/Seoul' || v === 'America/New_York')
   const [reload, setReload] = useState(0)
   const from = `${month}-01`
   const [year, monthNumber] = month.split('-').map(Number)
@@ -99,7 +92,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘' : ''}</span></div>
     <div className="calendar-list" aria-busy={loading} tabIndex={0} aria-label="선택한 날짜 일정">
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
-      {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
+      {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
       {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
       <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}`}>
         <div className="calendar-event-meta"><span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
