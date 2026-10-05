@@ -18,3 +18,10 @@ test('old news and all-missing quotes fail health checks',()=>{
  assert.ok(inspectHealth('news',{items:[{published_utc:'2026-09-01'}],fetchedAt:now,sources:[]},now).errors.length)
  assert.ok(inspectHealth('indices',{quotes:[{status:'unavailable'}],fetchedAt:now},now).errors.length)
 })
+
+test('names restricted and unconfigured feeds without calling them healthy', () => {
+ const result=inspectHealth('news',{items:[{published_utc:new Date(now).toISOString()}],fetchedAt:now,sources:[{id:'hankyung-economy',status:'unavailable',error:'http_403'},{id:'reuters',status:'not_configured'}]},now)
+ assert.equal(result.errors.length,0)
+ assert.ok(result.warnings.some(w=>w.includes('hankyung-economy (http_403)')))
+ assert.ok(result.warnings.some(w=>w.includes('reuters')))
+})
