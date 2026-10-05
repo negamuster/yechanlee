@@ -17,15 +17,15 @@
 @media (max-width: 560px) { .market-ticker-meta { padding-left: 16px; gap: 10px; } }
 
 
-.ticker-info-toggle { display: none; }
+.ticker-info-toggle { display: inline-flex; align-items: center; min-height: 28px; }
+.ticker-data-info[hidden] { display: none; }
+.ticker-data-info .market-ticker-message { margin: 0; font-size: 11px; line-height: 1.6; }
 @media (max-width: 700px) {
   .market-ticker-meta { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 2px; padding: 0 10px; }
   .market-ticker-meta strong { font-size: 12px; letter-spacing: .02em; }
   .market-ticker-meta button { min-height: 44px; min-width: 44px; padding: 0 5px; font-size: 11px; text-decoration: none; }
   .market-ticker-meta .ticker-desktop-info { display: none; }
   .ticker-info-toggle { display: block; }
-  .ticker-data-info { display: none; }
-  .ticker-data-info.is-open { display: block; }
   .market-ticker-message { margin: 0; padding: 6px 14px 10px; font-size: 11px; line-height: 1.6; }
   .market-ticker-item { padding: 4px 14px 8px; }
   .market-ticker-value { font-size: 13px; gap: 8px; }

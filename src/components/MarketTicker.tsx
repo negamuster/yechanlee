@@ -29,12 +29,11 @@ export default function MarketTicker() {
   return <section className="market-ticker" aria-label="세계 주요 시장 시세">
     <div className="market-ticker-meta">
       <strong>Market Overview</strong>
-      <span className="ticker-desktop-info">Yahoo Finance · 지연 시세 포함 · 1분마다 조회</span>
       <button type="button" className="ticker-info-toggle" aria-expanded={infoOpen} aria-controls="ticker-data-info" onClick={() => setInfoOpen(!infoOpen)}>정보 ⓘ</button>
       <button type="button" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? '재개' : '멈춤'}</button>
       <button type="button" onClick={() => setRevision(v => v + 1)}>새로고침</button>
     </div>
-    <div id="ticker-data-info" className={`ticker-data-info${infoOpen ? ' is-open' : ''}`}><p className="market-ticker-message">Yahoo Finance · 지연 시세 포함(지연 시간 미확인) · 1분마다 조회{fetchedAt !== null && <> · 서버 조회 {dataTime(fetchedAt)}</>} · 시세 기준은 각 항목에 표시 · 휴장 시 최근 시세</p></div>
+    <div id="ticker-data-info" className="ticker-data-info" hidden={!infoOpen}><p className="market-ticker-message">Yahoo Finance · 지연 시세 포함(지연 시간 미확인) · 1분마다 조회{fetchedAt !== null && <> · 서버 조회 {dataTime(fetchedAt)}</>} · 시세 기준은 각 항목에 표시 · 휴장 시 최근 시세</p></div>
     {failed && <p className="market-ticker-message" role="status">시세를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
     {!quotes.length && !failed && <p className="market-ticker-message" role="status">시장 시세를 불러오는 중…</p>}
     {!!quotes.length && <div className="market-ticker-window">
