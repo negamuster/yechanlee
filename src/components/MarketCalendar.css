@@ -84,3 +84,35 @@
 
 .calendar-source-status { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 10px; overflow-wrap: anywhere; }
 .calendar-source-status strong { color: #51564a; font-weight: 500; }
+
+/* Keep month cells square; reveal a short preview only when space permits. */
+.market-calendar { container-type: inline-size; }
+.calendar-filters button { display: inline-flex; align-items: center; gap: 5px; }
+.calendar-key { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #738963; flex: 0 0 auto; }
+.calendar-key.calendar-dot-fed { background: #7985b4; }
+.calendar-key.calendar-dot-events { background: #b48fa6; }
+.calendar-key.calendar-dot-earnings { background: #c59a66; }
+.calendar-filters button[aria-pressed="true"] .calendar-key { outline: 1px solid #ffffff99; }
+.calendar-cell-preview { display: none; width: 100%; min-width: 0; }
+.calendar-cell-title { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; line-height: 1.5; text-align: left; border-left: 2px solid #738963; padding-left: 3px; }
+.calendar-cell-title.calendar-fed { border-color: #7985b4; }
+.calendar-cell-title.calendar-earnings { border-color: #c59a66; }
+.calendar-cell-title.calendar-events { border-color: #b48fa6; }
+.calendar-cell-more { display: block; font-size: 9px; line-height: 1.4; text-align: right; }
+.calendar-original { font-size: 10px; color: #7a7e72; margin-top: 5px; }
+.calendar-original summary { cursor: pointer; width: fit-content; padding-block: 4px; }
+.calendar-original summary:focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+.calendar-event { padding: 13px 6px; }
+.calendar-event-meta { gap: 7px; line-height: 1.6; }
+.calendar-event-title { font-size: 13px; }
+.calendar-month-navigation strong { text-align: center; font-size: 14px; }
+.calendar-full .calendar-month-grid { max-width: 760px; }
+@container (min-width: 540px) {
+  .calendar-cell-preview { display: block; }
+  .market-calendar .calendar-date { padding: 7px 5px; }
+}
+@media (max-width: 700px) {
+  .calendar-original summary { min-height: 28px; padding-block: 8px; }
+  .calendar-event-title { font-size: 14px; }
+  .calendar-controls { gap: 10px; }
+}
