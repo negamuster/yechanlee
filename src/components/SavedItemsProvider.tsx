@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved } from '../lib/savedItems'
+import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
 import './SavedItems.css'
-interface SavedContext { items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
+interface SavedContext { mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
 const Context = createContext<SavedContext | null>(null)
 export function useSavedItems() { const value = useContext(Context); if (!value) throw new Error('SavedItemsProvider missing'); return value }
 export default function SavedItemsProvider({ children }: { children: ReactNode }) {
@@ -22,7 +22,11 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
   }
   function toggleStock(stock: SavedStock) { change(value => ({ ...value, stocks: value.stocks.some(row => row.ticker === stock.ticker) ? value.stocks.filter(row => row.ticker !== stock.ticker) : [stock, ...value.stocks] })) }
   function toggleArticle(article: SavedArticle) { change(value => ({ ...value, articles: value.articles.some(row => row.article_url === articleKey(article.article_url)) ? value.articles.filter(row => row.article_url !== articleKey(article.article_url)) : [article, ...value.articles] })) }
-  return <Context.Provider value={{ items, toggleStock, toggleArticle }}>{children}
+  function mergeBackup(imported: SavedItems) {
+    const next = updateSaved(localStorage, current => mergeSaved(current, imported))
+    setItems(next); setMessage('')
+  }
+  return <Context.Provider value={{ items, toggleStock, toggleArticle, mergeBackup }}>{children}
     {message && <div className="saved-error" role="alert">{message}<button type="button" onClick={() => setMessage('')} aria-label="저장 오류 알림 닫기">닫기</button></div>}
   </Context.Provider>
 }
@@ -36,3 +40,4 @@ export function BookmarkButton({ article }: { article: SavedArticle }) {
   const saved = items.articles.some(row => row.article_url === articleKey(article.article_url))
   return <button type="button" className="save-button" aria-pressed={saved} aria-label={`${article.title} 북마크 ${saved ? '해제' : '저장'}`} onClick={() => toggleArticle(article)}>{saved ? '✓ 저장됨' : '+ 기사 저장'}</button>
 }
+

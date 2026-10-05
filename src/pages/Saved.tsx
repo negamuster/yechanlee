@@ -1,3 +1,4 @@
+import SavedBackup from '../components/SavedBackup'
 import WatchlistPanel from '../components/WatchlistPanel'
 import WatchlistNews from '../components/WatchlistNews'
 import WatchlistEarnings from '../components/WatchlistEarnings'
@@ -9,6 +10,7 @@ export default function Saved() {
     <p className="saved-eyebrow">MY COLLECTION</p><h1>저장한 항목</h1>
     <p className="saved-description">다시 살펴볼 종목과 읽고 싶은 기사를 한곳에 모아보세요.</p>
     <p className="saved-note">이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며, 사이트 데이터를 삭제하면 목록도 지워집니다. 관심 종목 최대 200개 · 기사 최대 500개.</p>
+    <SavedBackup />
     <WatchlistPanel />
     {!!items.stocks.length && <><WatchlistNews /><WatchlistEarnings /></>}
     <section aria-labelledby="saved-articles"><h2 id="saved-articles">기사 북마크 <span>{items.articles.length}</span></h2>

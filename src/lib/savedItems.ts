@@ -27,3 +27,27 @@ export function updateSaved(storage: Pick<Storage, 'getItem' | 'setItem'>, chang
   storage.setItem(SAVED_KEY, JSON.stringify(next))
   return next
 }
+
+
+export function exportSaved(items: SavedItems, now = new Date()) {
+  return JSON.stringify({ app: 'Anthracite', backupVersion: 1, exportedAt: now.toISOString(), data: parseSaved(JSON.stringify(items)) }, null, 2)
+}
+export function importSaved(raw: string): SavedItems {
+  if (new TextEncoder().encode(raw).length > 5 * 1024 * 1024) throw new Error('백업 파일은 5MB 이하만 불러올 수 있습니다.')
+  let backup
+  try { backup = JSON.parse(raw.replace(/^\uFEFF/, '')) } catch { throw new Error('JSON 백업 파일을 읽을 수 없습니다.') }
+  if (backup?.app !== 'Anthracite' || backup.backupVersion !== 1 || backup.data?.version !== 1 || !Array.isArray(backup.data.stocks) || !Array.isArray(backup.data.articles)) throw new Error('지원되는 Anthracite 백업 파일이 아닙니다.')
+  const data = backup.data
+  if (data.stocks.length > 200 || data.articles.length > 500) throw new Error('백업의 항목 수가 저장 한도를 초과합니다.')
+  // Reject a damaged file as a whole rather than silently dropping records.
+  for (const stock of data.stocks) if (parseSaved(JSON.stringify({ version: 1, stocks: [stock], articles: [] })).stocks.length !== 1) throw new Error('백업에 올바르지 않은 종목이 있습니다.')
+  for (const article of data.articles) if (parseSaved(JSON.stringify({ version: 1, stocks: [], articles: [article] })).articles.length !== 1) throw new Error('백업에 올바르지 않은 기사 또는 링크가 있습니다.')
+  return parseSaved(JSON.stringify(data))
+}
+export function mergeSaved(current: SavedItems, imported: SavedItems): SavedItems {
+  const stocks = new Set(current.stocks.map(s => s.ticker))
+  const articles = new Set(current.articles.map(a => articleKey(a.article_url)))
+  const merged: SavedItems = { version: 1, stocks: [...current.stocks, ...imported.stocks.filter(s => !stocks.has(s.ticker))], articles: [...current.articles, ...imported.articles.filter(a => !articles.has(articleKey(a.article_url)))] }
+  if (merged.stocks.length > 200 || merged.articles.length > 500) throw new Error('합친 목록이 한도를 초과합니다. 관심 종목 200개·기사 500개 이내로 정리한 뒤 다시 불러와 주세요.')
+  return merged
+}
