@@ -117,3 +117,15 @@ test('Snapshot validation rejects partial, empty, wrongly sourced and future-dat
   }
   assert.throws(() => readBLSSnapshot(snapshot, now + 8 * 86400000))
 })
+
+test('watchlist earnings week is bounded and fetches only weekday Nasdaq schedules', async () => {
+  const urls=[]
+  const handler=createCalendarHandler({now:()=>Date.parse('2026-10-05T12:00:00Z'),fetchImpl:async url=>{
+    urls.push(url)
+    return new Response(JSON.stringify({data:{rows:[{symbol:'AAPL',name:'Apple',time:'time-after-hours'}]}}))
+  }})
+  const result=await(await handler(new Request('https://example.com/api/calendar?from=2026-10-05&to=2026-10-11&mode=earnings-week'))).json()
+  assert.equal(urls.length,5);assert.ok(urls.every(u=>u.includes('nasdaq')))
+  assert.equal(result.events[0].ticker,'AAPL');assert.ok(result.events.every(e=>e.estimated))
+  assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-05&to=2026-10-12&mode=earnings-week'))).status,400)
+})

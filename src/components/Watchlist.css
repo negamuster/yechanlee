@@ -1,0 +1,34 @@
+.watch-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:13px; }
+.watch-toolbar label { display:flex; align-items:center; gap:8px; }
+.watch-toolbar :is(select,button) { min-height:44px; border:1px solid #ddd; border-radius:6px; padding:8px 10px; background:white; color:#444; font:inherit; cursor:pointer; }
+.watch-toolbar button:disabled { opacity:.5; cursor:wait; }
+.watch-list, .watch-earnings-list { list-style:none; margin:16px 0; padding:0; }
+.watch-list > li { padding:12px 0; border-bottom:1px solid #e8e8e8; }
+.watch-row { display:flex; align-items:center; gap:12px; }
+.watch-stock { min-width:0; flex:1; display:flex; flex-direction:column; gap:5px; color:inherit; text-decoration:none; }
+.watch-stock strong { font-size:15px; overflow-wrap:anywhere; }
+.watch-stock > span { font-size:12px; color:#777; overflow-wrap:anywhere; }
+.watch-price { display:flex; flex-direction:column; align-items:flex-end; gap:5px; font-size:13px; font-variant-numeric:tabular-nums; }
+.watch-price strong { font-weight:500; }
+.watch-up { color:#315a3e; }.watch-down { color:#944f40; }
+.watch-time { margin:8px 0 0; font-size:10px; color:#777; }
+.watch-notice { color:#806a3d; font-size:12px; line-height:1.7; }
+.watch-earnings-list li { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; border-bottom:1px solid #eee; padding:12px 0; font-size:13px; }
+.watch-earnings-list a, .watch-calendar-link { color:#505a46; }
+.watch-calendar-link { display:inline-flex; min-height:44px; align-items:center; font-size:13px; }
+.watch-source { font-size:11px; color:#73776b; line-height:1.7; }
+.watch-source summary { display:flex; align-items:center; min-height:44px; cursor:pointer; }
+.saved-page :is(a,button,select,summary):focus-visible { outline:2px solid #69785c; outline-offset:3px; }
+.calendar-watch-badge { color:#505a46; border:1px solid #bbc7ae; padding:1px 5px; border-radius:3px; font-size:10px; }
+.calendar-event.is-watched { background:#f1f4ed; border-left:3px solid #69785c; }
+@media(max-width:700px) {
+  .saved-page { padding:16px 14px 24px; }
+  .saved-page h1 { font-size:24px; }
+  .saved-page section { margin-top:24px; }
+  .saved-page h2 { font-size:18px; padding-bottom:12px; }
+  .watch-row { gap:8px; }
+  .watch-row .save-button { font-size:0; width:44px; min-height:44px; padding:0; align-self:center; }
+  .watch-row .save-button > span { font-size:18px; }
+  .watch-price { font-size:12px; }
+  .watch-news-list .saved-content strong { font-size:15px; }
+}

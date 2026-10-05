@@ -1,3 +1,5 @@
+import { useSavedItems } from './SavedItemsProvider'
+import './Watchlist.css'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
@@ -6,7 +8,7 @@ import { Link } from 'react-router-dom'
 import './MarketCalendar.css'
 
 type Category = 'All' | 'Economic' | 'Earnings' | 'Fed' | 'Events'
-type CalendarEvent = { id: string; title: string; description?: string; category: Exclude<Category, 'All'>; date: string; startAt: string | null; session: 'pre' | 'post' | 'unknown' | null; major: boolean; source: string; sourceUrl: string; estimated: boolean }
+type CalendarEvent = { ticker?: string; id: string; title: string; description?: string; category: Exclude<Category, 'All'>; date: string; startAt: string | null; session: 'pre' | 'post' | 'unknown' | null; major: boolean; source: string; sourceUrl: string; estimated: boolean }
 type Source = { name: string; date: string | null; state: 'ok' | 'snapshot' | 'stale' | 'unavailable'; updatedAt: string | null; url: string }
 type CalendarData = { events: CalendarEvent[]; sources: Source[]; fetchedAt: string }
 const categories: Category[] = ['All', 'Economic', 'Earnings', 'Fed', 'Events']
@@ -41,6 +43,8 @@ function useCalendarData(from: string, to: string, mode: 'month' | 'earnings', r
   return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, 5 * 60000, reload)
 }
 export default function MarketCalendar({ full = false }: { full?: boolean }) {
+  const { items } = useSavedItems()
+  const watched = new Set(items.stocks.map(s => s.ticker))
   const [now, setNow] = useState(Date.now)
   const today = nyDate(now)
   const [month, setMonth] = useSessionState('calendar.month', () => today.slice(0, 7), v => typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) && v >= shiftMonth(today.slice(0, 7), -1) && v <= shiftMonth(today.slice(0, 7), 3))
@@ -94,8 +98,8 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
       {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
       {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
-      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}`}>
-        <div className="calendar-event-meta"><span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
+      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}`}>
+        <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
         {language === 'ko' && event.category !== 'Earnings' && <small className="calendar-original-title">{event.title}</small>}
         {full && event.description && <p className="calendar-event-description">{event.description}</p>}
