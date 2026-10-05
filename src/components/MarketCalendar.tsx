@@ -4,7 +4,6 @@ import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import './MarketCalendar.css'
 
@@ -45,7 +44,7 @@ function validCalendar(value: unknown): value is CalendarData {
 function useCalendarData(from: string, to: string, mode: 'month' | 'earnings' | 'earnings-week', reload: number) {
   return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, 5 * 60000, reload)
 }
-export default function MarketCalendar({ full = false, agendaTarget = null }: { full?: boolean; agendaTarget?: HTMLElement | null }) {
+export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const { items } = useSavedItems()
   const watched = new Set(items.stocks.map(s => s.ticker))
   const [now, setNow] = useState(Date.now)
@@ -120,8 +119,8 @@ export default function MarketCalendar({ full = false, agendaTarget = null }: { 
         return <button type="button" key={date} disabled={view === 'week' && date > weekTo} className={`calendar-date${date === today ? ' is-today' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span>{Number(date.slice(-2))}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 1).map(event => <span key={event.id} className={`calendar-cell-title calendar-${event.category.toLowerCase()}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more">+{dayEvents.length - 1}개</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
-    <div className="calendar-compact-status"><span>미국 날짜 기준 · 시간 {zoneLabel}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>{agendaTarget && <p className="calendar-time-note">날짜를 선택하면 Maps 아래에 상세 일정이 표시됩니다.</p>}
-    {agendaTarget ? createPortal(<section className="market-calendar calendar-agenda" aria-label="선택한 날짜의 상세 일정">{agenda}</section>, agendaTarget) : agenda}
+    <div className="calendar-compact-status"><span>미국 날짜 기준 · 시간 {zoneLabel}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
+    {agenda}
     <details className="calendar-help"><summary>정보 ⓘ · 출처·조회 범위</summary>
     {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
     {schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 나머지 BLS 일정은 별도 저장본의 확인 시각을 따르며, 저장본 만료 시 표시되지 않습니다.</p>}

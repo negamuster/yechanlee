@@ -39,3 +39,9 @@
 .sector-compact-status { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px 10px; color: #74776e; font-size: 11px; }
 .sector-compact-status .sector-refresh { border: 0; padding: 4px 0; background: none; font-size: 11px; }
 @media (max-width: 700px) { .sector-panel .sector-info-toggle { min-height: 44px; } }
+
+.sector-selectable { position: relative; }
+.sector-selectable.is-selected { border-color: currentColor; box-shadow: inset 0 0 0 1px currentColor; }
+.sector-selectable button { display: flex; flex-direction: column; gap: 6px; align-items: stretch; text-align: left; border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; width: 100%; }
+.sector-selectable button > span { font-size: 11px; line-height: 1.3; min-height: 2.6em; }
+.sector-selectable a { color: inherit; font-size: 9px; text-decoration: none; width: fit-content; padding: 3px 0; }

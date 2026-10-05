@@ -1,3 +1,4 @@
+import type { NewsSector } from './sectorNews'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
@@ -15,7 +16,7 @@ function validData(value: unknown): value is Data {
   const data = value as Data | null
   return !!data && Array.isArray(data.sectors) && !!data.benchmark && !!data.benchmark.returns
 }
-export default function SectorPerformance({ compact = false }: { compact?: boolean }) {
+export default function SectorPerformance({ compact = false, selectedSector, onSelectSector }: { compact?: boolean; selectedSector?: string; onSelectSector?: (sector: NewsSector) => void }) {
   const [period, setPeriod] = useSessionState<Period>('maps.period', '1d', v => periods.some(([period]) => period === v))
   const [infoOpen, setInfoOpen] = useState(false)
   const [relative, setRelative] = useSessionState('maps.relative', false, v => typeof v === 'boolean')
@@ -38,6 +39,10 @@ export default function SectorPerformance({ compact = false }: { compact?: boole
       {!!unavailable && <p className="sector-date">{unavailable}개 업종은 동일 기준일 데이터가 없어 표시하지 못했습니다.</p>}
       <div className="sector-grid">{rows.map(row => {
         const v = relative && !compact ? row.relative[period] : row.returns[period]
+        if (onSelectSector) return <div key={row.symbol} className={`sector-tile sector-selectable sector-${tone(v)}${selectedSector === row.symbol ? ' is-selected' : ''}`}>
+          <button type="button" aria-pressed={selectedSector === row.symbol} aria-label={`${row.name} 관련 기사 보기, ${format(v)}`} onClick={() => onSelectSector({ symbol: row.symbol, name: row.name })}><span>{row.name}</span><strong>{format(v)}</strong></button>
+          <a href={`https://finance.yahoo.com/quote/${row.symbol}/`} target="_blank" rel="noopener noreferrer" aria-label={`${row.symbol}, Yahoo Finance 새 창`}>{row.symbol} ↗</a>
+        </div>
         return <a key={row.symbol} className={`sector-tile sector-${tone(v)}`} href={`https://finance.yahoo.com/quote/${row.symbol}/`} target="_blank" rel="noopener noreferrer" aria-label={`${row.name} ${row.symbol} ${format(v, relative && !compact ? '%p' : '%')}, Yahoo Finance 새 창`}>
           <span>{row.name}</span><strong>{format(v, relative && !compact ? '%p' : '%')}</strong><small>{row.symbol} ↗</small>
         </a>
