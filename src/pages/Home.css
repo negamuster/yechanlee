@@ -129,3 +129,6 @@
   .home-content .calendar-month-grid { margin: 10px 0; }
   .home-content .calendar-selected-heading { margin-top: 10px; }
 }
+
+.home-content .calendar-agenda { margin-top: 18px; border-top: 1px solid #e8e8e1; padding-top: 14px; }
+.home-content .calendar-agenda .calendar-list { max-height: 260px; }

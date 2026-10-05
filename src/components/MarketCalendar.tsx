@@ -4,6 +4,7 @@ import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import './MarketCalendar.css'
 
@@ -44,7 +45,7 @@ function validCalendar(value: unknown): value is CalendarData {
 function useCalendarData(from: string, to: string, mode: 'month' | 'earnings' | 'earnings-week', reload: number) {
   return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, 5 * 60000, reload)
 }
-export default function MarketCalendar({ full = false }: { full?: boolean }) {
+export default function MarketCalendar({ full = false, agendaTarget = null }: { full?: boolean; agendaTarget?: HTMLElement | null }) {
   const { items } = useSavedItems()
   const watched = new Set(items.stocks.map(s => s.ticker))
   const [now, setNow] = useState(Date.now)
@@ -83,6 +84,21 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   function navigate(offset: number) {
     if (view === 'week') { const date = addDays(selected, offset * 7); setSelected(date); setMonth(date.slice(0, 7)); return }
     const next = shiftMonth(month, offset); setMonth(next); setSelected(next === today.slice(0, 7) ? today : `${next}-01`) }
+  const agenda = <>
+    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건</span></div>
+    <div className="calendar-list" aria-busy={loading} key={selected} tabIndex={0} aria-label="선택한 날짜 일정">
+      {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
+      {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
+      {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
+      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}`}>
+        <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
+        <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
+        {language === 'ko' && event.category !== 'Earnings' && <details className="calendar-original"><summary>원문 이름</summary><small className="calendar-original-title">{event.title}</small></details>}
+        {full && event.description && <p className="calendar-event-description">{event.description}</p>}
+        <div className="calendar-event-foot"><span>{event.source}</span><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
+      </li>)}</ul></div>
+    </div>
+  </>
   return <section className={`market-calendar${full ? ' calendar-full' : ''}`} aria-label="경제·실적 캘린더">
     <div className="calendar-heading"><h2>Calendar <small>경제·실적</small></h2>{!full && <Link to="/calendar">크게 보기 ↗</Link>}</div>
     <div className="calendar-controls">
@@ -104,25 +120,14 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         return <button type="button" key={date} disabled={view === 'week' && date > weekTo} className={`calendar-date${date === today ? ' is-today' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span>{Number(date.slice(-2))}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 1).map(event => <span key={event.id} className={`calendar-cell-title calendar-${event.category.toLowerCase()}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more">+{dayEvents.length - 1}개</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
-    <p className="calendar-time-note">날짜: 미국 기준 · 시간: {zoneLabel}<br />{view === 'month' ? '실적은 선택한 날짜만 조회합니다.' : '표시된 주의 실적을 함께 조회합니다.'} 날짜를 눌러 상세 일정을 확인하세요.</p>
-    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건</span></div>
-    <div className="calendar-list" aria-busy={loading} key={selected} tabIndex={0} aria-label="선택한 날짜 일정">
-      {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
-      {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
-      {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
-      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}`}>
-        <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
-        <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
-        {language === 'ko' && event.category !== 'Earnings' && <details className="calendar-original"><summary>원문 이름</summary><small className="calendar-original-title">{event.title}</small></details>}
-        {full && event.description && <p className="calendar-event-description">{event.description}</p>}
-        <div className="calendar-event-foot"><span>{event.source}</span><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
-      </li>)}</ul></div>
-    </div>
+    <div className="calendar-compact-status"><span>미국 날짜 기준 · 시간 {zoneLabel}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>{agendaTarget && <p className="calendar-time-note">날짜를 선택하면 Maps 아래에 상세 일정이 표시됩니다.</p>}
+    {agendaTarget ? createPortal(<section className="market-calendar calendar-agenda" aria-label="선택한 날짜의 상세 일정">{agenda}</section>, agendaTarget) : agenda}
+    <details className="calendar-help"><summary>정보 ⓘ · 출처·조회 범위</summary>
     {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
     {schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 나머지 BLS 일정은 별도 저장본의 확인 시각을 따르며, 저장본 만료 시 표시되지 않습니다.</p>}
-    <details className="calendar-help"><summary>출처별 확인 시각·데이터 안내</summary>
+      <p>{schedule.data ? `일정 조회 ${dataTime(schedule.data.fetchedAt, timezone)}` : 'BLS · BEA · 연준 · Nasdaq'}</p>
       <ul className="calendar-source-status">{[...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].map(source => <li key={`${source.name}:${source.date || 'month'}`}><strong>{source.name}</strong>{source.date ? ` · ${source.date} 실적` : ''}<br />원본 확인: {dataTime(source.updatedAt, timezone)}<br />{source.state === 'unavailable' ? '조회 불가' : source.state === 'stale' ? '갱신 실패 또는 저장본 노후 · 이전 데이터' : source.state === 'snapshot' ? '저장 일정 사용 · 변경 가능' : '확인된 일정'} </li>)}</ul>
       <p>일정 조회는 서버 응답 생성 시각이며, 출처별 원본 확인 시각과 다를 수 있습니다. 저장 일정은 수집 이후 변경 사항이 아직 반영되지 않았을 수 있습니다.</p><p>날짜별 점과 요약은 현재 조회한 일정만 표시합니다. 월간 보기의 실적은 선택 날짜만, 주간 보기의 실적은 해당 주를 조회합니다. 빈 날짜가 일정 없음을 보장하지는 않습니다.</p><p>BLS 직접 조회가 어려우면 CPI·PPI·고용보고서 등 9개 지표군은 FRED 일정으로 보완합니다. 그 외 BLS 일정은 별도 저장본의 확인 시각을 따릅니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
-    <div className="calendar-footer"><span>{schedule.data ? `일정 조회 ${dataTime(schedule.data.fetchedAt, timezone)}` : 'BLS · BEA · 연준 · Nasdaq'}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
+
   </section>
 }

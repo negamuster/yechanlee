@@ -43,13 +43,14 @@ export default function SectorPerformance({ compact = false }: { compact?: boole
         </a>
       })}</div>
       {!compact && <div className="sector-table-wrap"><table><caption>업종별 기간 성과{relative ? ' · VOO 대비 차이 (%p)' : ' (%)'}</caption><thead><tr><th scope="col">업종 / ETF</th>{periods.map(([key, label]) => <th scope="col" key={key}>{label}</th>)}</tr></thead><tbody>{[data.benchmark, ...rows].map(row => <tr key={row.symbol}><th scope="row">{row.name}<small>{row.symbol}</small></th>{periods.map(([key]) => <td key={key}>{format(relative ? row.relative[key] : row.returns[key], relative ? '%p' : '%')}</td>)}</tr>)}</tbody></table></div>}
-      <button type="button" className="sector-info-toggle" aria-expanded={infoOpen} aria-controls="sector-data-info" onClick={() => setInfoOpen(!infoOpen)}>데이터·산정 기준 {infoOpen ? '−' : 'ⓘ'}</button>
-      <div id="sector-data-info" className={`sector-data-info${infoOpen ? ' is-open' : ''}`}>
+      <div className="sector-compact-status"><span>{data.benchmark.asOf || '기준일 미제공'} 종가 기준 · Yahoo Finance</span><button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>새로고침</button></div>
+      <button type="button" className="sector-info-toggle" aria-expanded={infoOpen} aria-controls="sector-data-info" onClick={() => setInfoOpen(!infoOpen)}>정보 · 산정 기준 {infoOpen ? '−' : 'ⓘ'}</button>
+      <div id="sector-data-info" hidden={!infoOpen} className={`sector-data-info${infoOpen ? ' is-open' : ''}`}>
       <p className="sector-mobile-description">11개 업종 ETF의 완료된 거래일 성과 · {data.benchmark.starts[period] || '—'} → {data.benchmark.asOf || '—'}</p>
       <DataStatus basis={`${data.benchmark.asOf || '기준일 미제공'} · 미국 거래일 종가 · 장중 시세 아님`} source="Yahoo Finance" collectedAt={data.fetchedAt} stale={data.stale || error} />
       <p className="sector-note">Yahoo Finance · {data.basis}. 업종 전체 지수가 아닌 대표 ETF의 성과입니다. 1주는 7일, 1개월은 30일 전 또는 직전 거래일 대비이며, 연초 이후는 전년도 마지막 거래일 대비입니다.{!compact && ' 초과성과는 업종 ETF 수익률에서 VOO 수익률을 뺀 값입니다.'}</p>
       </div>
     </>}
-    <button className="sector-refresh" disabled={loading} onClick={() => { setRetry(n => n + 1) }}>다시 조회</button>
+    {!data && <button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>다시 조회</button>}
   </section>
 }

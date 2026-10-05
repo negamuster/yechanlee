@@ -26,3 +26,9 @@
 .market-movers button:focus-visible, .mover-row:focus-visible { outline: 2px solid #222; outline-offset: 4px; }
 @media (max-width: 400px) { .mover-row { grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; }.mover-price { font-size: 16px; } }
 
+
+.movers-info { margin: 3px 0 8px; font-size: 11px; color: #74776e; line-height: 1.6; }
+.movers-info summary { cursor: pointer; padding: 6px 0; width: fit-content; }
+.movers-info summary:focus-visible { outline: 2px solid #69785c; outline-offset: 3px; }
+.movers-info .movers-footnote { margin-top: 5px; }
+@media (max-width: 700px) { .movers-info summary { min-height: 44px; display: flex; align-items: center; } }

@@ -52,14 +52,23 @@ export default function MarketMovers() {
         {categories.map(tab => <button key={tab.id} type="button" aria-pressed={category === tab.id}
           onClick={() => setCategory(tab.id)}>{tab.label}</button>)}
       </div>
-      <p className="movers-description">{selected.description} · 상위 10개</p>
+      
       <div className="movers-status">
-        <span>{data ? `${data.tradingDate} · 일별 마감 데이터 (미 동부)` : '최근 완료된 거래일 기준'}</span>
+        <span>{data ? `${data.tradingDate} 종가 기준 · 실시간 아님` : '최근 완료된 거래일 기준'}</span>
         <button type="button" disabled={loading} onClick={() => setRefresh(value => value + 1)}>
           {loading ? '불러오는 중…' : '새로고침'}
         </button>
       </div>
+      {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
+      <details className="movers-info"><summary>정보 ⓘ · 출처·산정 기준</summary>
+      <p>{selected.description} · 상위 10개</p>
       {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
+      <div className="movers-footnote">
+        <p>미국 상장 종목 · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
+        <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
+        <p>출처: Polygon / Massive · 실시간 순위가 아닙니다.</p>
+      </div>
+      </details>
       {failed && !data && <p className="movers-notice" role="status">
         {data ? '최신 데이터를 받지 못해 마지막으로 수집한 순위를 표시합니다.' : '종목 순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
       </p>}
@@ -85,11 +94,7 @@ export default function MarketMovers() {
           </li>)}
         </ol>
       </div>
-      <div className="movers-footnote">
-        <p>미국 상장 종목 · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
-        <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
-        <p>출처: Polygon / Massive · 실시간 순위가 아닙니다.</p>
-      </div>
+
     </section>
   )
 }

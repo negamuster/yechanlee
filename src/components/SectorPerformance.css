@@ -33,3 +33,9 @@
   .sector-periods button { min-height: 44px; padding: 6px 10px; font-size: 12px; }
   .sector-refresh { min-height: 44px; }
 }
+
+.sector-panel .sector-info-toggle { display: inline-flex; align-items: center; min-height: 30px; background: none; border: 0; padding: 0; color: #6b7063; font: inherit; font-size: 11px; cursor: pointer; }
+.sector-data-info[hidden] { display: none; }
+.sector-compact-status { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px 10px; color: #74776e; font-size: 11px; }
+.sector-compact-status .sector-refresh { border: 0; padding: 4px 0; background: none; font-size: 11px; }
+@media (max-width: 700px) { .sector-panel .sector-info-toggle { min-height: 44px; } }

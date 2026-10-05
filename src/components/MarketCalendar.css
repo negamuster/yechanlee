@@ -116,3 +116,10 @@
   .calendar-event-title { font-size: 14px; }
   .calendar-controls { gap: 10px; }
 }
+
+.calendar-compact-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #74776e; font-size: 11px; }
+.calendar-compact-status button { border: 0; background: none; padding: 4px 0; font-size: 11px; }
+.calendar-help { margin: 4px 0 8px; }
+.calendar-agenda .calendar-selected-heading { margin-top: 0; font-size: 14px; padding: 10px; }
+.calendar-agenda .calendar-list { max-height: 260px; }
+.calendar-agenda .calendar-warning { padding: 7px 8px; font-size: 11px; }

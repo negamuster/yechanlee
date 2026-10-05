@@ -8,6 +8,7 @@ import MarketLive from '../components/MarketLive'
 import './Home.css'
 
 export default function Home() {
+  const [agendaTarget, setAgendaTarget] = useState<HTMLDivElement | null>(null)
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 700px)').matches)
   useEffect(() => {
     const query = window.matchMedia('(max-width: 700px)')
@@ -30,8 +31,8 @@ export default function Home() {
     <main className="home-content" ref={content}>
       <div className="home-primary">
       {!mobile && <div className="home-dashboard">
-        <div className="home-dashboard-maps"><SectorPerformance compact /></div>
-        <div className="home-dashboard-calendar"><MarketCalendar /></div>
+        <div className="home-dashboard-maps"><SectorPerformance compact /><div ref={setAgendaTarget} /></div>
+        <div className="home-dashboard-calendar"><MarketCalendar agendaTarget={agendaTarget} /></div>
 
       </div>}
       <section className="home-news" aria-labelledby="home-news-title">
