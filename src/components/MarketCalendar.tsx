@@ -74,7 +74,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => category === 'All' || event.category === category)
   const selectedEvents = events.filter(event => event.date === selected).sort((a, b) => {
     const order = (event: CalendarEvent) => event.startAt ? Date.parse(event.startAt) : Date.parse(`${event.date}T00:00:00Z`) + (event.session === 'pre' ? 0 : event.session === 'post' ? 30 : 48) * 3600000
-    return order(a) - order(b) || a.title.localeCompare(b.title)
+    return Number(b.major) - Number(a.major) || order(a) - order(b) || a.title.localeCompare(b.title)
   })
   const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.state === 'stale' || source.state === 'unavailable').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`))]
   const stamp = (value: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value))
@@ -84,7 +84,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     if (view === 'week') { const date = addDays(selected, offset * 7); setSelected(date); setMonth(date.slice(0, 7)); return }
     const next = shiftMonth(month, offset); setMonth(next); setSelected(next === today.slice(0, 7) ? today : `${next}-01`) }
   const agenda = <>
-    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건</span></div>
+    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건 · 주요 일정 우선</span></div>
     <div className="calendar-list" aria-busy={loading} key={selected} tabIndex={0} aria-label="선택한 날짜 일정">
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
       {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
