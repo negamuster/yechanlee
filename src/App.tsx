@@ -1,21 +1,24 @@
+import RouteLoadBoundary from './components/RouteLoadBoundary'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import RouteScroll from './components/RouteScroll'
-import Calendar from './pages/Calendar'
+const Calendar = lazy(() => import('./pages/Calendar'))
 import MobileNavigation from './components/MobileNavigation'
-import Markets from './pages/Markets'
-import More, { LivePage } from './pages/More'
-import Saved from './pages/Saved'
+const Markets = lazy(() => import('./pages/Markets'))
+const More = lazy(() => import('./pages/More'))
+const LivePage = lazy(() => import('./pages/More').then(module => ({ default: module.LivePage })))
+const Saved = lazy(() => import('./pages/Saved'))
 import SavedItemsProvider from './components/SavedItemsProvider'
 import Home from './pages/00_Home'
 import SiteHeader from './components/SiteHeader'
-import StockMarket from './pages/01_StockMarket'
-import BondMarket from './pages/02_BondMarket'
-import Fed from './pages/03_Fed'
-import EconomicIndicators from './pages/04_EconomicIndicators'
-import GlobalMacro from './pages/05_GlobalMacro'
-import Stock from './pages/06_Stock'
-import Simulator from './pages/Simulator'
-import Form13F from './pages/Form13F'
+const StockMarket = lazy(() => import('./pages/01_StockMarket'))
+const BondMarket = lazy(() => import('./pages/02_BondMarket'))
+const Fed = lazy(() => import('./pages/03_Fed'))
+const EconomicIndicators = lazy(() => import('./pages/04_EconomicIndicators'))
+const GlobalMacro = lazy(() => import('./pages/05_GlobalMacro'))
+const Stock = lazy(() => import('./pages/06_Stock'))
+const Simulator = lazy(() => import('./pages/Simulator'))
+const Form13F = lazy(() => import('./pages/Form13F'))
 
 function App() {
   return (
@@ -23,6 +26,7 @@ function App() {
       <SavedItemsProvider>
       <RouteScroll />
       <SiteHeader />
+      <RouteLoadBoundary><Suspense fallback={<main className="route-loading" role="status">페이지를 불러오는 중…</main>}>
       <Routes>
         <Route path="/markets" element={<Markets />} />
         <Route path="/more" element={<More />} />
@@ -39,6 +43,7 @@ function App() {
         <Route path="/simulator" element={<Simulator />} />
         <Route path="/form13f" element={<Form13F />} />
       </Routes>
+      </Suspense></RouteLoadBoundary>
       <MobileNavigation />
     </SavedItemsProvider>
     </BrowserRouter>

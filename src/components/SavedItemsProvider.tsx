@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved } from '../lib/savedItems'
+import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved, removeSaved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
 import './SavedItems.css'
-interface SavedContext { mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
+interface SavedContext { removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
 const Context = createContext<SavedContext | null>(null)
 export function useSavedItems() { const value = useContext(Context); if (!value) throw new Error('SavedItemsProvider missing'); return value }
 export default function SavedItemsProvider({ children }: { children: ReactNode }) {
@@ -17,8 +17,11 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     return () => window.removeEventListener('storage', sync)
   }, [])
   function change(transform: (value: SavedItems) => SavedItems) {
-    try { setItems(updateSaved(localStorage, transform)); setMessage('') }
-    catch { setMessage('변경 사항을 저장하지 못했습니다. 브라우저 저장 공간·설정 또는 저장 한도를 확인해 주세요.') }
+    try { setItems(updateSaved(localStorage, transform)); setMessage(''); return true }
+    catch { setMessage('변경 사항을 저장하지 못했습니다. 브라우저 저장 공간·설정 또는 저장 한도를 확인해 주세요.'); return false }
+  }
+  function removeSelected(kind: 'stocks' | 'articles', ids: string[]) {
+    return change(value => removeSaved(value, kind, ids))
   }
   function toggleStock(stock: SavedStock) { change(value => ({ ...value, stocks: value.stocks.some(row => row.ticker === stock.ticker) ? value.stocks.filter(row => row.ticker !== stock.ticker) : [stock, ...value.stocks] })) }
   function toggleArticle(article: SavedArticle) { change(value => ({ ...value, articles: value.articles.some(row => row.article_url === articleKey(article.article_url)) ? value.articles.filter(row => row.article_url !== articleKey(article.article_url)) : [article, ...value.articles] })) }
@@ -26,7 +29,7 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     const next = updateSaved(localStorage, current => mergeSaved(current, imported))
     setItems(next); setMessage('')
   }
-  return <Context.Provider value={{ items, toggleStock, toggleArticle, mergeBackup }}>{children}
+  return <Context.Provider value={{ removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
     {message && <div className="saved-error" role="alert">{message}<button type="button" onClick={() => setMessage('')} aria-label="저장 오류 알림 닫기">닫기</button></div>}
   </Context.Provider>
 }

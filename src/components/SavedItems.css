@@ -27,3 +27,19 @@
 .saved-error { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:min(540px,90vw); padding:16px; box-sizing:border-box; background:#222; color:#fff; box-shadow:0 4px 20px #0003; z-index:200; font-size:14px; line-height:1.7; }
 .saved-error button { background:transparent; color:white; border:1px solid #888; padding:5px 10px; margin-left:12px; cursor:pointer; }
 @media(max-width:560px) { .saved-page { padding:32px 20px 60px; }.saved-list li { flex-wrap:wrap; gap:12px; }.saved-list .saved-content { flex-basis:100%; }.movers-list > li { flex-wrap:wrap; gap:0; padding-bottom:12px; }.movers-list .mover-row { flex-basis:100%; } }
+
+
+.saved-manage-toolbar, .saved-selection-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 12px 0; font-size: 12px; }
+.saved-manage-toolbar label { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.saved-manage-toolbar :is(input,select), .watch-toolbar input, .saved-selection-tools button { font: inherit; color: #505849; padding: 7px 9px; border: 1px solid #d9ddd2; border-radius: 4px; background: white; min-height: 36px; box-sizing: border-box; max-width: 100%; }
+.saved-selection-tools button { cursor: pointer; }
+.saved-selection-tools button:disabled { opacity: .5; cursor: default; }
+.saved-delete-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; background: #f6f1e8; width: 100%; }
+.saved-checkbox { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; min-height: 36px; flex: 0 0 auto; }
+.saved-checkbox input { width: 16px; height: 16px; accent-color: #505a46; }
+.saved-page :is(input,select,button):focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+.saved-page .watch-row { display: grid; grid-template-columns: 30px minmax(0,1fr) auto auto; }
+.route-loading { min-height: 50vh; padding: 36px 24px; color: #72776b; font-size: 14px; }
+@media (max-width:700px) { .saved-selection-tools button, .saved-checkbox, .saved-manage-toolbar :is(input,select), .watch-toolbar input { min-height: 44px; } .saved-checkbox { min-width: 36px; } .saved-page .watch-row { grid-template-columns: 36px minmax(0,1fr) auto auto; gap: 5px; } }
+
+@media (max-width:560px) { .saved-list li:has(.saved-checkbox) { display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 8px; } .saved-list li:has(.saved-checkbox) > .save-button { grid-column: 2; justify-self: start; } .watch-toolbar label { flex-wrap: wrap; max-width: 100%; } }

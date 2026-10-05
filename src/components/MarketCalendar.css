@@ -123,3 +123,10 @@
 .calendar-agenda .calendar-selected-heading { margin-top: 0; font-size: 14px; padding: 10px; }
 .calendar-agenda .calendar-list { max-height: 260px; }
 .calendar-agenda .calendar-warning { padding: 7px 8px; font-size: 11px; }
+
+.market-calendar .calendar-date.has-major { box-shadow: inset 0 0 0 1px #af8944; }
+.calendar-important-mark { color: #9a6c20; font-size: 9px; margin-left: 3px; }
+.calendar-date[aria-pressed="true"] .calendar-important-mark { color: #ffe4a4; }
+.calendar-date.has-major.is-today { box-shadow: inset 0 0 0 2px #8c752e; }
+.calendar-event.is-major { border-left: 3px solid #ac8540; padding-left: 10px; background: #fbf8f0; }
+.calendar-event.is-major .calendar-major { background: #f0e0b7; color: #715018; font-weight: 600; }

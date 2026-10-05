@@ -26,7 +26,7 @@ const translations: [RegExp, string][] = [
   [/U.S. International Trade in Goods and Services/i, '미국 무역수지'], [/Import and Export Price/i, '수출입 물가지수'],
   [/Metropolitan Area Employment/i, '대도시권 고용·실업'], [/State Employment and Unemployment/i, '주별 고용·실업'],
   [/Real Earnings/i, '실질임금'], [/FOMC Press Conference/i, 'FOMC 기자회견'], [/FOMC Minutes/i, 'FOMC 의사록'],
-  [/FOMC Meeting/i, 'FOMC 회의'], [/Beige Book/i, '베이지북'],
+  [/FOMC Meeting/i, 'FOMC 회의 · 금리 결정 일정'], [/Beige Book/i, '베이지북'],
 ]
 function koreanTitle(event: CalendarEvent) {
   if (event.category === 'Earnings') return `${event.title} · 실적 발표`
@@ -89,7 +89,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
       {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
       {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
-      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}`}>
+      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
         <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
         {language === 'ko' && event.category !== 'Earnings' && <details className="calendar-original"><summary>원문 이름</summary><small className="calendar-original-title">{event.title}</small></details>}
@@ -115,11 +115,12 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       {Array.from({ length: view === 'week' ? 7 : days }, (_, i) => {
         const date = view === 'week' ? addDays(weekFrom, i) : `${month}-${String(i + 1).padStart(2, '0')}`
         const dayEvents = events.filter(event => event.date === date).sort((a, b) => Number(b.major) - Number(a.major))
+        const hasMajor = dayEvents.some(event => event.major)
         const types = [...new Set(dayEvents.map(event => event.category))]
-        return <button type="button" key={date} disabled={view === 'week' && date > weekTo} className={`calendar-date${date === today ? ' is-today' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span>{Number(date.slice(-2))}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 1).map(event => <span key={event.id} className={`calendar-cell-title calendar-${event.category.toLowerCase()}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more">+{dayEvents.length - 1}개</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
+        return <button type="button" key={date} disabled={view === 'week' && date > weekTo} className={`calendar-date${date === today ? ' is-today' : ''}${hasMajor ? ' has-major' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${hasMajor ? ", 주요 일정 있음" : ""}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span>{Number(date.slice(-2))}{hasMajor && <b className="calendar-important-mark" aria-hidden="true">★</b>}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 1).map(event => <span key={event.id} className={`calendar-cell-title calendar-${event.category.toLowerCase()}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more">+{dayEvents.length - 1}개</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
-    <div className="calendar-compact-status"><span>미국 날짜 기준 · 시간 {zoneLabel}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
+    <div className="calendar-compact-status"><span>미국 날짜 기준 · 시간 {zoneLabel} · ★ 주요 일정</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
     {agenda}
     <details className="calendar-help"><summary>정보 ⓘ · 출처·조회 범위</summary>
     {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}

@@ -51,3 +51,8 @@ export function mergeSaved(current: SavedItems, imported: SavedItems): SavedItem
   if (merged.stocks.length > 200 || merged.articles.length > 500) throw new Error('합친 목록이 한도를 초과합니다. 관심 종목 200개·기사 500개 이내로 정리한 뒤 다시 불러와 주세요.')
   return merged
 }
+
+export function removeSaved(items: SavedItems, kind: 'stocks' | 'articles', ids: string[]): SavedItems {
+  const selected = new Set(ids)
+  return kind === 'stocks' ? { ...items, stocks: items.stocks.filter(row => !selected.has(row.ticker)) } : { ...items, articles: items.articles.filter(row => !selected.has(row.article_url)) }
+}

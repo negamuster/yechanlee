@@ -21,6 +21,7 @@ export default function MarketLive({ autoPlay = true }: { autoPlay?: boolean }) 
       <p className="market-live-description">24/7 Stream · Daily Market Coverage &amp; more</p>
       <div className="market-live-frame" id="market-live-player">
         {opened ? <iframe
+          loading="lazy"
           src={embedUrl}
           title="Yahoo Finance 24/7 Stream: Daily Market Coverage & more"
           width="640" height="360"
