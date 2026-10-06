@@ -154,3 +154,12 @@
  .home-dashboard-movers { max-height:380px; }
 }
 @media(max-width:700px) { .home-dashboard { display:block; } }
+
+/* Match the main section labels to the Daily Market Briefing heading. */
+.home-page .home-content :is(.briefing-kicker, .sector-heading, .calendar-heading, .market-live-heading, .movers-heading) h2,
+.home-page .home-news > h2,
+.home-page .market-ticker-meta > strong {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: 0;
+}
