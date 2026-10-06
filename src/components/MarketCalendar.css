@@ -146,3 +146,29 @@
 .calendar-event-foot .calendar-export { padding: 2px 5px; border: 0; background: none; font-size: 11px; color: #5b6651; }
 .calendar-time-note, .calendar-help, .calendar-event-foot, .calendar-original-title { color: #656b5e; font-size: 11px; }
 @media(max-width:700px) { .calendar-settings-menu summary { min-height: 44px; display: flex; align-items: center; } .calendar-event-foot .calendar-export { min-height: 44px; } }
+
+/* A fixed top origin keeps every event row aligned, regardless of event count. */
+.market-calendar .calendar-date {
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 4px 2px;
+  overflow: hidden;
+  font-weight: 400;
+}
+.calendar-date-number { display: block; flex: 0 0 15px; line-height: 15px; font-size: 11px; }
+.calendar-date .calendar-dots { margin-top: auto; flex-shrink: 0; }
+.calendar-cell-preview { flex: 1 1 auto; overflow: hidden; text-align: left; }
+.calendar-cell-title { box-sizing: border-box; font-size: 9px; line-height: 12px; padding-left: 2px; font-weight: 400; }
+.calendar-cell-more { font-size: 9px; line-height: 10px; font-weight: 400; }
+.calendar-cell-secondary, .calendar-cell-more-wide { display: none; }
+@container (min-width: 320px) {
+  .calendar-cell-preview { display: block; }
+  .calendar-date .calendar-dots { display: none; }
+}
+@container (min-width: 540px) {
+  .market-calendar .calendar-date { padding: 5px 4px; gap: 3px; }
+  .calendar-date-number { flex-basis: 16px; line-height: 16px; font-size: 12px; }
+  .calendar-cell-title { font-size: 10px; line-height: 14px; }
+  .calendar-cell-secondary, .calendar-cell-more-wide { display: block; }
+  .calendar-cell-more-compact { display: none; }
+}
