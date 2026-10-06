@@ -1,1 +1,340 @@
-[]
+[
+  {
+    "id": "2026-10-06",
+    "reviewMode": "manual",
+    "title": "나스닥 최고 종가, 미국 10년물 금리는 5.31%",
+    "sessionDate": "2026-10-05",
+    "cutoffAt": "2026-10-06T16:16:00+09:00",
+    "publishedAt": "2026-10-06T13:00:25.302Z",
+    "summary": [
+      "10월 5일 미국 증시는 업종 전반의 상승으로 마감했다. S&P 500은 0.66%, 나스닥 종합지수는 1.05% 올랐다. 로이터는 유가 하락과 실적 기대를 상승 배경으로 짚었다.[1]",
+      "10월 추가 인상 확률은 일주일 전보다 낮아졌지만, 미국 10년물의 10월 5일 재무부 파 수익률은 5.31%였다. 9월 ISM 서비스업 가격지수도 전월보다 높아졌다. 다음 관찰 지점은 물가 압력에 대한 연준의 판단과 기업의 이익 전망이다.[1][2][13]",
+      "기업 뉴스에서는 슈나이더의 PTC 인수 계약과 C.H. 로빈슨의 RXO 인수 계약이 발표됐다.[4][5]",
+      "다음 주요 일정은 10월 7일 23:30 KST EIA 주간 석유 통계, 10월 8일 03:00 KST FOMC 의사록이다.[8][9]"
+    ],
+    "blocks": [
+      {
+        "kind": "paragraph",
+        "text": "뉴스 수집 범위: 10월 5일 16:16~10월 6일 16:16 KST. 직전 미국 정규장 거래일은 10월 5일이며 마감 시각은 10월 6일 05:00 KST입니다. 날짜를 명시한 이전 발표는 배경 자료로 포함했습니다."
+      },
+      {
+        "kind": "heading",
+        "text": "1. 시장을 읽는 배경"
+      },
+      {
+        "kind": "paragraph",
+        "text": "연준은 9월 16일 물가가 여전히 높다고 평가하며 정책금리 목표 범위를 0.25%포인트 올려 3.75~4.00%로 조정했다.[10] BLS가 10월 2일 08:30 EDT(21:30 KST) 발표한 9월 비농업 고용은 전월 대비 2만9천 명 증가했고 실업률은 4.2%였다.[14] 로이터의 10월 5일 마감 보도는 이 고용 증가가 예상보다 약했다고 평가하며 추가 인상 기대가 낮아진 배경으로 설명했다. CME를 인용한 인상 확률은 일주일 전 70%에서 24%로 하락했다.[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "미국 재무부의 일별 파 수익률 곡선에서 10년물은 9월 28일 5.24%에서 10월 5일 5.31%로 7bp 상승했다.[13] 같은 주간의 변화이지만 확률은 보도 시점, 금리는 일별 산출값이므로 정확히 동시 관측한 수치는 아니다. 정책 기대와 장기금리를 함께 보되 인과관계로 해석하지 않는다."
+      },
+      {
+        "kind": "heading",
+        "text": "2. 주요 기사"
+      },
+      {
+        "kind": "subheading",
+        "text": "거시경제 흐름"
+      },
+      {
+        "kind": "subheading",
+        "text": "① 미국 증시 상승, 나스닥 종합지수 최고 종가"
+      },
+      {
+        "kind": "metadata",
+        "text": "Reuters · Schwab 마감 업데이트판 / The Business Times 재배포 본문 대조 · 10월 5일 16:26 EDT, 10월 6일 05:26 KST · 사실보도 · 정규장 결산"
+      },
+      {
+        "kind": "paragraph",
+        "text": "S&P 500은 7,773.95, 나스닥 종합지수는 27,477.31, 다우는 51,267.90에 마감했다. 로이터는 나스닥 종합지수가 이전 최고 종가인 9월 22일 기록을 넘어섰다고 보도했다. 엔비디아도 2.1% 상승했다. 여기서 나스닥은 나스닥100이 아닌 종합지수다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: 대형 기술주가 강세를 보인 가운데 11개 업종 중 10개가 올라 상승의 폭도 넓었다. 앞으로는 실적 발표에서 기대했던 이익 증가가 확인되는지가 관건이다. [1]"
+      },
+      {
+        "kind": "subheading",
+        "text": "② 서비스업 확장은 유지, 가격 압력은 상승"
+      },
+      {
+        "kind": "metadata",
+        "text": "ISM 공식 발표 · 10월 5일 10:00 EDT, 23:00 KST · 사실보도 · 정규장 중 발표"
+      },
+      {
+        "kind": "paragraph",
+        "text": "9월 서비스업 PMI는 54.9로 전월 55.4보다 낮아졌지만, 확장 기준인 50을 웃돌았다. 가격지수는 72.6에서 74로 높아졌다. ISM에 따르면 가격지수는 2022년 7월 이후 가장 높았다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: 서비스업의 확장 속도는 소폭 완만해졌지만 비용 압력은 높아졌다. 추가 인상의 필요성과 시기를 판단할 때 가격 흐름이 중요한 관찰 대상이다. [2]"
+      },
+      {
+        "kind": "subheading",
+        "text": "③ 장기 국채 수익률 상승"
+      },
+      {
+        "kind": "metadata",
+        "text": "WSJ · 10월 5일 15:52 EDT 업데이트, 10월 6일 04:52 KST · 사실보도 · 주식시장 마감 직전 보도"
+      },
+      {
+        "kind": "paragraph",
+        "text": "WSJ는 10년물 수익률을 5.310%, 30년물을 5.664%로 전했다. 각각 전일 대비 3.4bp, 3.5bp 상승한 수준이다. 15:52 EDT 보도 기준이며 해당 페이지는 이후 갱신될 수 있다. WSJ는 각각 2002년 4월·5월 이후 가장 높은 수준이라고 보도했다. 미국 재무부의 10월 5일 일별 파 수익률은 10년 5.31%, 30년 5.66%다. 이는 수익률 곡선에서 산출한 값으로 WSJ의 시장 수익률과 정의가 다르다.[13]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: 높은 장기금리가 이어지면 신규 차입과 차환 비용이 기업 이익의 제약 요인이 될 수 있다. [3]"
+      },
+      {
+        "kind": "subheading",
+        "text": "산업·기업 동향"
+      },
+      {
+        "kind": "subheading",
+        "text": "④ 슈나이더, PTC 인수로 산업 소프트웨어 확대"
+      },
+      {
+        "kind": "metadata",
+        "text": "Schneider Electric·PTC 공동 발표 · 10월 5일, 발표 시각 미표기 · 사실보도 / 회사 전망 · 당일 공시"
+      },
+      {
+        "kind": "paragraph",
+        "text": "회사는 PTC 주식 전부를 주당 205달러 현금으로 인수하기로 계약했다. 지분가치는 약 226억 달러, 기업가치는 237억 달러다. 제품 설계·엔지니어링 데이터와 운영·에너지 데이터를 연결하는 산업 AI 사업 확대를 목표로 제시했다. 제시 가격은 직전 종가 대비 42.3% 프리미엄이다. 회사는 약 50억~60억 유로의 신주 발행과 160억~170억 유로의 신규 차입으로 자금을 조달할 계획이다. 거래 종결 목표는 2027년 3분기까지이며 주주·규제 승인 등이 필요하다.[4]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "주가 반응: PTC는 미국 정규장 종가 192.26달러로 33.49% 상승했다.[1][12] 슈나이더는 Breakingviews의 10월 5일 11:04 UTC 기사에서 약 10% 하락한 것으로 보도됐다. 유럽 장중 보도 기준이다.[6]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "외부 평가: Reuters Breakingviews의 Liam Proud는 10월 5일 11:04 UTC(20:04 KST) 칼럼에서 긴 투자 회수 기간을 경계 요인으로 해석했다. Anthracite 반론: 고객 결합 효과가 예상보다 크면 평가가 달라질 수 있지만, 이는 아직 확인되지 않은 가능성이다.[6]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: PTC의 종가 대비 인수 제시가까지의 차이는 약 6.63%다(205 ÷ 192.26 − 1). 종결까지의 시간과 승인 조건을 살펴볼 지표이며, 확정 수익률이나 거래 성사 확률은 아니다.[4][12]"
+      },
+      {
+        "kind": "subheading",
+        "text": "⑤ C.H. 로빈슨, RXO 인수 계약"
+      },
+      {
+        "kind": "metadata",
+        "text": "C.H. Robinson·RXO 공동 발표 · 10월 5일, 발표 시각 미표기 · 사실보도 / 회사 전망 · 당일 공시"
+      },
+      {
+        "kind": "paragraph",
+        "text": "현금과 주식을 결합한 거래로, 발표된 내재 거래가치는 58억 달러다. 회사는 종결 후 2년 안에 연간 실행 기준 약 3억 달러의 순비용 시너지를 기대했다. 현금 대가는 신규 차입으로 조달할 계획이다. 예상 종결 시점은 2027년 상반기이며 규제·주주 승인 등 조건이 남아 있다.[5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "주가 반응: 미국 정규장 종가 기준 RXO는 22.54% 상승했고, C.H. 로빈슨은 10.85% 하락했다.[1][12]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: 통합의 핵심은 규모 자체보다 실제 서비스 비용과 마진 개선이다. 시너지는 회사의 전망이며, 실현된 순이익이나 누적 현금 유입액이 아니다. [5]"
+      },
+      {
+        "kind": "subheading",
+        "text": "오피니언 & 분석"
+      },
+      {
+        "kind": "subheading",
+        "text": "⑥ 마감 이후 읽을거리: 전력 수요 증가와 발전원별 수혜"
+      },
+      {
+        "kind": "metadata",
+        "text": "Reuters Open Interest / Gavin Maguire · 10월 6일 06:01 UTC, 15:01 KST · 의견·분석 · 마감 이후 발행"
+      },
+      {
+        "kind": "paragraph",
+        "text": "필자는 2026년 1~9월 텍사스 ERCOT의 전력 수요가 전년 동기 대비 약 4% 늘어난 반면 청정 발전은 11% 넘게 증가했다고 제시하며, 추가 수요의 상당 부분을 재생에너지가 흡수했다고 분석했다. 당일 사건이 아닌 과거 여름 흐름을 다룬 새 칼럼이다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 의미: 데이터센터 수요 증가를 특정 발전원의 수혜로 바로 연결하지 말고 지역별 전원 구성·저장·송전 여건을 확인해야 한다. 반론·불확실성 — 여름철 결과만으로 겨울이나 야간의 공급 안정성을 일반화할 수 없다. [7]"
+      },
+      {
+        "kind": "heading",
+        "text": "3. 핵심 변화 해석"
+      },
+      {
+        "kind": "paragraph",
+        "text": "추가 인상 기대 하락과 함께 살펴볼 물가 압력·장기금리"
+      },
+      {
+        "kind": "paragraph",
+        "text": "아래는 Anthracite의 해석이다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "1. 원인과 의도: 로이터는 예상보다 약한 고용 증가를 인상 기대 하락의 배경으로 짚었다. 반면 연준의 9월 결정과 ISM 가격지수는 물가 부담을 보여준다. 고용과 가격 신호에 대한 연준의 판단이 중요하다.[1][2][10]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2. 반복성: 한 주간 정책 확률과 장기금리가 반대로 움직였다는 관측만으로 지속적인 관계를 정할 수는 없다. 추세 판단은 보류한다.[1][13]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "3. 확산성: 높은 금리가 차입·차환 비용으로 이어질 가능성은 있으나 기업별 부담은 고정·변동금리 비중과 만기에 달려 있다. 이번 자료에서 실제 이자비용 증가까지 확인한 것은 아니다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "4. 지속성: 가격지수 상승이 이후 물가 지표에서도 이어지는지, 기업이 비용을 판매가격이나 생산성 개선으로 흡수하는지 확인해야 한다.[2]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "5. 관점: 기업의 성장 전망과 그 성장을 유지하는 비용을 함께 봐야 한다. 산업 AI 확대와 물류 통합의 성과도 계약 규모보다 후속 현금흐름으로 평가할 과제다.[4][5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "종합 판단: 판단 보류. 주가 상승과 높은 장기금리가 함께 관측됐으나 기존 성장 전망이 달라졌다고 판단할 이익 자료는 아직 부족하다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "다음 확인 신호: 후속 물가 지표의 둔화와 마진 개선이 확인되면 비용 압력에 대한 우려를 낮춰 볼 수 있다. 반대로 가격 압력이 이어지고 기업의 이익 전망이 약해지면 성장 기대를 재검토해야 한다. 9월 의사록은 당시 판단을 확인하는 자료이며, 10월 2일 고용·5일 ISM 이후의 반응은 후속 발언에서 확인한다."
+      },
+      {
+        "kind": "heading",
+        "text": "4. 오늘의 마켓 펄스"
+      },
+      {
+        "kind": "paragraph",
+        "text": "시장 상태: 미국 주식은 강세, 장기 국채 수익률은 전일보다 상승했다. 자산별 움직임을 종합해 시장 전체의 위험 선호가 일률적으로 강화됐다고 보기는 어렵다.[1][3]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "원유: 10월 5일 Reuters 결산 보도 기준 브렌트 선물은 배럴당 100.32달러(-1.89%), WTI 선물은 89.43달러(-1.84%). 보도 기준(월물 미표기).[11]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "핵심 리스크: 높은 조달 비용이 기업의 이익 성장과 현금흐름을 압박하는 경우, 비용 상승을 판매가격에 반영하지 못하는 경우."
+      },
+      {
+        "kind": "paragraph",
+        "text": "향후 72시간의 공식 일정은 다음과 같다. 모두 한국시간이며 시간순이다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "EIA 주간 석유 통계 · 10월 7일 23:30 · 원유·정제제품 재고와 수급. 공식 정례 일정 및 휴일 예외표 기준."
+      },
+      {
+        "kind": "paragraph",
+        "text": "9월 15~16일 FOMC 의사록 · 10월 8일 03:00 · 0.25%포인트 인상을 결정한 회의의 판단 근거. 이후 10월 지표에 대한 반응은 포함하지 않는다."
+      },
+      {
+        "kind": "paragraph",
+        "text": "월러 연준 이사 경제전망 연설 · 10월 8일 17:30 · 경제·정책 전망의 표현 변화. 공식 달력의 04:30 미국 동부시간을 변환."
+      },
+      {
+        "kind": "paragraph",
+        "text": "일정 근거: [8][9]. 발표 일정은 변경될 수 있다."
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "Reuters 원출처 — 마감 업데이트판",
+        "url": "https://www.reuters.com/world/europe/wall-st-futures-dip-tech-stocks-take-breather-2026-10-05/",
+        "links": [
+          {
+            "label": "확인한 Reuters 재배포 본문 · The Business Times",
+            "url": "https://www.businesstimes.com.sg/companies-markets/capital-markets-currencies/nasdaq-notches-record-high-close-investors-focus-earnings/"
+          }
+        ],
+        "accessNote": "구독·로그인 필요 가능"
+      },
+      {
+        "id": 2,
+        "label": "ISM 공식 9월 서비스업 발표 — PR Newswire",
+        "url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-9-september-2026-ism-services-pmi-report-302898421.html"
+      },
+      {
+        "id": 3,
+        "label": "WSJ — Long-Term Treasury Yields Settle at New Multidecade Highs",
+        "url": "https://www.wsj.com/finance/jgbs-mixed-ahead-of-expected-extraordinary-diet-session-in-japan-91edd376",
+        "accessNote": "구독·로그인 필요 가능"
+      },
+      {
+        "id": 4,
+        "label": "Schneider Electric·PTC 공동 공식 발표 PDF",
+        "url": "https://www.se.com/ww/en/assets/pdf/Schneider-Electric-to-acquire-PTC"
+      },
+      {
+        "id": 5,
+        "label": "C.H. Robinson·RXO 공동 공식 발표",
+        "url": "https://investor.chrobinson.com/news/press-releases/news-details/2026/C-H--Robinson-to-Acquire-RXO-Redefining-the-Future-of-Third-Party-Logistics-While-Unlocking-Significant-Shareholder-Value/default.aspx"
+      },
+      {
+        "id": 6,
+        "label": "Reuters Breakingviews — Schneider Electric boldly disrupts own AI story",
+        "url": "https://www.reuters.com/commentary/breakingviews/schneider-electric-boldly-disrupts-own-ai-story-2026-10-05/",
+        "accessNote": "구독·로그인 필요 가능"
+      },
+      {
+        "id": 7,
+        "label": "Reuters Open Interest — Renewables help US power system survive summer stress test",
+        "url": "https://www.reuters.com/commentary/reuters-open-interest/renewables-help-us-power-system-survive-summer-stress-test-2026-10-06/",
+        "accessNote": "구독·로그인 필요 가능"
+      },
+      {
+        "id": 8,
+        "label": "Federal Reserve — 2026년 10월 공식 달력",
+        "url": "https://www.federalreserve.gov/newsevents/2026-october.htm"
+      },
+      {
+        "id": 9,
+        "label": "EIA — 주간 석유 통계 공식 발표 일정",
+        "url": "https://www.eia.gov/petroleum/supply/weekly/schedule.php"
+      },
+      {
+        "id": 10,
+        "label": "연준 — 2026년 9월 16일 FOMC 공식 성명",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+      },
+      {
+        "id": 11,
+        "label": "Reuters 원유 결산 — MarketScreener 재배포, 10월 5일 19:56 BST 수정판",
+        "url": "https://uk.marketscreener.com/news/oil-slips-as-middle-east-crude-exports-rise-g7-to-release-stocks-ce785ddbdf8bf724"
+      },
+      {
+        "id": 12,
+        "label": "Yahoo Finance — 일별 지수 데이터",
+        "url": "https://finance.yahoo.com/quote/%5EGSPC/history/",
+        "links": [
+          {
+            "label": "Nasdaq Composite",
+            "url": "https://finance.yahoo.com/quote/%5EIXIC/history/"
+          },
+          {
+            "label": "DJIA",
+            "url": "https://finance.yahoo.com/quote/%5EDJI/history/"
+          },
+          {
+            "label": "PTC",
+            "url": "https://finance.yahoo.com/quote/PTC/history/"
+          },
+          {
+            "label": "RXO",
+            "url": "https://finance.yahoo.com/quote/RXO/history/"
+          },
+          {
+            "label": "CHRW",
+            "url": "https://finance.yahoo.com/quote/CHRW/history/"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "label": "미국 재무부 — 2026년 일별 파 수익률 곡선",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
+      },
+      {
+        "id": 14,
+        "label": "BLS — 2026년 9월 고용동향, 10월 2일 발표",
+        "url": "https://www.bls.gov/news.release/archives/empsit_10022026.htm"
+      }
+    ],
+    "dataNote": "AI가 작성·검토했으며 사용자의 게시 요청에 따라 발행했습니다. 정책·BLS 고용·ISM·인수 조건과 재무부 파 수익률은 공식 자료 기준입니다. 미국 지수·PTC·RXO·CHRW 종가는 Yahoo 일별 데이터와 대조했습니다. WSJ 국채 시장 수익률·원유·정책확률은 보도 기준이며 슈나이더 주가는 유럽 장중 기준입니다.",
+    "corrections": []
+  }
+]
