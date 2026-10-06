@@ -1,0 +1,353 @@
+{
+  "id": "2026-10-07",
+  "status": "published",
+  "title": "S&P 500·나스닥 최고 종가, 미국 10년물 파 수익률은 5.27%",
+  "sessionDate": "2026-10-06",
+  "cutoffAt": "2026-10-07T07:03:00+09:00",
+  "publishedAt": "2026-10-06T22:08:09.686Z",
+  "summary": [
+    "10월 6일 미국 정규장에서 S&P 500은 0.58%, 나스닥 종합은 0.45%, 다우는 0.49% 상승했다. S&P 500과 나스닥은 최고 종가를 경신했다.[1]",
+    "미국 10년물 재무부 파 수익률은 전일 5.31%에서 5.27%로 내려갔다. Anthracite는 금리 부담의 단기 완화로 해석하며, 지속 여부는 후속 거래일에서 확인한다.[2]",
+    "구글의 신규 원전 출력 확보 계약과 반도체 공급 확대 계획이 나왔다. 장기 수요가 실제 생산과 현금흐름으로 이어지는 속도가 다음 관찰 지점이다.[4][6]"
+  ],
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "작성 정보 기준: 2026년 10월 7일 07:03 KST. 수집 범위는 10월 6일 07:03~10월 7일 07:03 KST다. 직전 미국 정규장은 10월 6일이며, NYSE 공식 휴장·조기폐장 일정과 정규 거래시간을 확인했다. 해당 장은 한국시간 10월 7일 05:00에 종료됐다.[9]"
+    },
+    {
+      "kind": "heading",
+      "text": "1. 시장을 읽는 배경"
+    },
+    {
+      "kind": "paragraph",
+      "text": "전날과 달라진 것은 주식과 장기금리의 방향이다. 미국 대형주 지수는 최고 종가를 높였고, 재무부 10년물 파 수익률은 전일보다 내려갔다.[1][2] Anthracite는 이를 단기적인 금리 부담 완화로 읽는다. 물가 문제의 해소나 기업 이익의 상향을 확정하는 신호로 보려면 후속 자료가 필요하다."
+    },
+    {
+      "kind": "heading",
+      "text": "2. 주요 뉴스"
+    },
+    {
+      "kind": "subheading",
+      "text": "① 최고 종가에도 시장 내부는 고르지 않았다"
+    },
+    {
+      "kind": "metadata",
+      "text": "Reuters · 10월 6일 미국장 마감 업데이트 본문 · 사실보도 / 외부 해석 · 최초 발행 19:27 KST, 최종 수정 시각 미표기"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P 500과 나스닥 종합지수가 최고 종가를 기록했다. S&P 500의 11개 업종 중 헬스케어를 제외한 10개가 올랐고 유틸리티가 선두였다. 반면 나스닥의 상승·하락 종목 수는 거의 같았다. Reuters가 인용한 Wealthspire의 올리버 퍼시는 유가 안정이 에너지발 물가 우려를 덜어 금리와 주가에 도움을 줬다고 해석했다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 지수의 기록과 보유 종목의 체감은 다를 수 있다. 다음 관찰 신호는 지수 상승이 이어질 때 상승 종목의 비중도 함께 높아지는지다. 하루의 업종 확산만으로 지속적인 시장 전체 강세를 판단하지 않는다."
+    },
+    {
+      "kind": "subheading",
+      "text": "② 미국 10년물 파 수익률, 4bp 하락"
+    },
+    {
+      "kind": "metadata",
+      "text": "미국 재무부 · 10월 6일 일별 데이터 · 공식 통계 · 장중 호가와 구분"
+    },
+    {
+      "kind": "paragraph",
+      "text": "재무부 일별 파 수익률 기준 10년물은 10월 5일 5.31%에서 6일 5.27%로 4bp 낮아졌다. 2년물은 4.84%에서 4.79%, 30년물은 5.66%에서 5.64%로 내려갔다. 같은 자료의 같은 만기를 비교했으며, 특정 국채의 시장 종가와 동일한 수치라는 뜻은 아니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 조달 여건을 압박하던 금리가 하루 쉬어 간 것은 주식 평가에 우호적일 수 있다. 다만 실제 기업 이자비용은 차환 시점과 계약 구조에 따라 달라진다. 후속 거래일의 금리와 기업의 차입 조건을 확인하기 전에는 비용 부담이 추세적으로 줄었다고 단정하기 어렵다."
+    },
+    {
+      "kind": "subheading",
+      "text": "③ 8월 미국 무역적자 확대, 수입 구성에 주목"
+    },
+    {
+      "kind": "metadata",
+      "text": "BEA·Census · 10월 6일 21:30 KST 발표 · 공식 통계 · 미국장 개장 전"
+    },
+    {
+      "kind": "paragraph",
+      "text": "8월 상품·서비스 무역적자는 1,056억 달러로 전월 수정치보다 13.7% 늘었다. 수출은 3,152억 달러, 수입은 4,208억 달러였다. 계절조정 명목 기준이며 물가 변동을 제거한 금액이 아니다. 상품 수입 중 자본재는 전월보다 62억 달러, 반도체는 24억 달러 증가했다.[3]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 적자 확대를 소비 둔화나 경기 악화 하나로 설명하기 어렵다. 투자에 쓰이는 자본재도 함께 늘었기 때문이다. 반도체 수입 전체를 AI용으로 분류할 근거는 없으며, 명목 무역적자 증가분을 그대로 실질 GDP 감소분으로 바꿀 수도 없다. 다음에는 투자 지표와 실질 수출입을 함께 확인한다."
+    },
+    {
+      "kind": "subheading",
+      "text": "④ 구글·Constellation Energy, 신규 원전 출력 확대 계약"
+    },
+    {
+      "kind": "metadata",
+      "text": "Constellation Energy 공식 발표 · 10월 6일 19:30 KST · 계약 사실 / 회사 계획 · 미국장 개장 전"
+    },
+    {
+      "kind": "paragraph",
+      "text": "20년 전력구매계약은 기존 원전 11개 호기의 설비 개선을 통해 신규 용량 890MW를 확보하는 구조다. Constellation은 43억 달러가 넘는 신규 투자를 제시했고 첫 출력 증강분은 2028년 공급을 예상했다. 이와 별도로 기존 발전자산에 기반한 2,700MW 규모의 15년 공급계약도 체결했다. 합계 3,590MW 전부가 새 원전 용량인 것은 아니다.[4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 장기 구매 약정은 공급자의 투자 판단에 수요 근거를 제공한다. 실제 성과는 증설 일정, 투입 비용과 계약 수익성이 좌우한다. 계약 발표와 전력 공급 개시는 시간적으로 떨어져 있으므로, 다음 확인 항목은 첫 증설분의 진행 상황이다."
+    },
+    {
+      "kind": "subheading",
+      "text": "⑤ Marvell 전망 상향과 AMD 공급 확대 계획"
+    },
+    {
+      "kind": "metadata",
+      "text": "Reuters · Marvell 10월 6일 23:11 KST 최초 발행 / AMD 16:20 KST · 경영진 전망 보도 · 미국장 전·중"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Reuters에 따르면 Marvell은 회계연도 2028년 매출 전망을 약 200억 달러로 높였다. 이는 회사 전망이며 확정 매출이나 수주잔고가 아니다.[5] AMD의 리사 수 CEO는 2027년 칩 공급을 크게 확대할 계획이라고 밝혔다. 대만 방문에서는 CPU·GPU 생산 확대를, 메모리 업체들과는 공급 확보를 협의하고 있다고 설명했다.[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 두 소식은 수요 전망과 공급 준비를 각각 보여준다. 매출 목표가 높아져도 생산·패키징·메모리 확보와 고객 인도가 뒤따라야 실적으로 연결된다. 다음 실적 발표에서 실제 출하와 매출 전환이 확인되는지를 추적한다."
+    },
+    {
+      "kind": "subheading",
+      "text": "⑥ Option Care Health, 기업가치 58억 달러 인수 계약"
+    },
+    {
+      "kind": "metadata",
+      "text": "Option Care Health·CD&R·McKesson 공동 발표 · 10월 6일 21:00 KST · 계약 사실 / 회사 계획 · 미국장 개장 전"
+    },
+    {
+      "kind": "paragraph",
+      "text": "CD&R과 McKesson은 Option Care Health를 주당 32.05달러에 인수하기로 했다. 발표된 기업가치는 약 58억 달러다. 거래 종결 시 CD&R은 약 51%, McKesson은 약 49%를 보유하며, McKesson의 투자금은 약 14억 달러다. 종결 목표는 2027년 상반기로 주주·규제 승인 등이 남아 있다.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 병원 밖 주입치료 서비스 확대라는 전략을 확인할 거래다. 인수 발표를 산업 전체 수익성 개선의 증거로 쓰지는 않는다. 후속 공시에서 승인 절차와 운영 계획을 확인해야 한다."
+    },
+    {
+      "kind": "subheading",
+      "text": "⑦ 마감 이후: Constellation Brands, 실적과 전망을 분리해 볼 사례"
+    },
+    {
+      "kind": "metadata",
+      "text": "Reuters · 10월 7일 06:31 KST · 실적 / 회사 전망 보도 · 미국 정규장 마감 이후"
+    },
+    {
+      "kind": "paragraph",
+      "text": "주류 회사 Constellation Brands의 8월 말 종료 분기 순매출은 26.3억 달러, 조정 EPS는 3.74달러였다. Reuters가 전한 LSEG 예상치는 각각 25.4억 달러와 3.56달러다. 회사는 연간 영업이익률 전망을 종전 32~33%에서 31~32%로 낮췄다고 보도됐다. EPS는 GAAP가 아닌 조정 수치이며 위의 전력 회사와는 다른 기업이다.[8]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Anthracite 해석: 이번 분기의 예상치 상회와 앞으로의 마진 전망은 서로 다른 질문에 답한다. 다음 회사 설명에서 비용과 제품 구성의 영향을 확인해야 하며, 정규장 종료 후 발표를 당일 지수 상승의 원인으로 연결하지 않는다."
+    },
+    {
+      "kind": "heading",
+      "text": "3. 핵심 변화: 금리 부담 완화와 공급 확대 기대의 결합"
+    },
+    {
+      "kind": "paragraph",
+      "text": "아래는 Anthracite의 해석이다. 원인: 금리 하락과 기업별 새 계약·공급 계획이 같은 날 나왔다. 다만 각 요인이 주가 상승에 기여한 비중은 이번 자료로 분리할 수 없다.[2][4][5][6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "반복성: 금리 하루 하락은 추세 전환을 증명하지 않는다. 확산성: 칩 공급 계획과 전력 계약은 AI 투자의 서로 다른 생산 제약을 다룬다. 한 분야의 확장만으로 전체 데이터센터의 가동 시점을 판단해서는 안 된다."
+    },
+    {
+      "kind": "paragraph",
+      "text": "지속성: 장기 계약과 경영진 목표가 실제 공급·현금흐름으로 전환되는 기간을 봐야 한다. 관점: 수요의 크기뿐 아니라 이를 충족하는 투자 비용과 시간을 함께 평가할 필요가 있다. 납기 개선과 매출 전환이 이어지면 공급 확대 기대를 뒷받침하지만, 일정 지연이나 비용 증가는 같은 성장 목표의 경제성을 낮출 수 있다."
+    },
+    {
+      "kind": "heading",
+      "text": "4. 시장 상태와 다음 확인 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "시장 상태는 대형주 강세와 국채 파 수익률 하락의 조합이다.[1][2] 핵심 리스크는 금리 반등, 공급 확대 지연, 매출 성장에 못 미치는 마진이다. 시장 전체의 이익 개선 여부는 개별 회사의 목표 발표보다 실제 실적과 후속 가이던스에서 확인한다."
+    },
+    {
+      "kind": "paragraph",
+      "text": "향후 주요 공식 일정은 다음 세 가지다. 모두 KST 시간순이며 변경될 수 있다."
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 7일 23:30 · EIA 주간 석유 통계. 정례 수요일 10:30 미국 동부시간이며 이번 주는 공식 예외표의 변경 대상이 아니다. 재고와 공급 흐름을 확인한다.[10]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 8일 03:00 · 9월 15~16일 FOMC 회의 의사록. 당시 정책 판단을 살피는 자료이며 이후 발표된 10월 지표에 대한 반응으로 해석하지 않는다.[11]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 8일 17:30 · 월러 연준 이사 경제전망 연설. 최신 경제 상황과 정책 위험의 평가가 어떻게 달라졌는지 확인한다.[11]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters — 10월 6일 미국 증시 마감",
+      "url": "https://www.reuters.com/business/wall-st-futures-rise-yields-oil-dip-2026-10-06/"
+    },
+    {
+      "id": 2,
+      "label": "미국 재무부 — 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve"
+    },
+    {
+      "id": 3,
+      "label": "BEA·Census — 2026년 8월 무역",
+      "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026"
+    },
+    {
+      "id": 4,
+      "label": "Constellation Energy — 구글 전력 계약 공식 발표",
+      "url": "https://www.constellationenergy.com/news/2026/10/google-and-constellation-announce-landmark-agreement-to-bring-890-mw-of-new-nuclear-capacity-to-pjm-grid.html"
+    },
+    {
+      "id": 5,
+      "label": "Reuters — Marvell FY2028 매출 전망",
+      "url": "https://www.reuters.com/business/marvell-raises-2028-revenue-forecast-strong-ai-data-center-demand-2026-10-06/"
+    },
+    {
+      "id": 6,
+      "label": "Reuters — AMD 2027년 공급 확대 계획",
+      "url": "https://www.reuters.com/world/asia-pacific/amd-plans-substantially-increase-supply-2027-ceo-says-2026-10-06/"
+    },
+    {
+      "id": 7,
+      "label": "Option Care Health — 인수 계약 공동 발표",
+      "url": "https://investors.optioncarehealth.com/news-releases/news-release-details/cdr-and-mckesson-corporation-sign-agreement-acquire-option-0"
+    },
+    {
+      "id": 8,
+      "label": "Reuters — Constellation Brands 분기 실적·전망",
+      "url": "https://www.reuters.com/business/retail-consumer/corona-beer-maker-constellation-brands-tops-second-quarter-estimates-resilient-2026-10-06/"
+    },
+    {
+      "id": 9,
+      "label": "NYSE — 공식 거래시간·휴장 일정",
+      "url": "https://www.nyse.com/trade/hours-calendars"
+    },
+    {
+      "id": 10,
+      "label": "EIA — 주간 석유 통계 공식 일정",
+      "url": "https://www.eia.gov/petroleum/supply/weekly/schedule.php"
+    },
+    {
+      "id": 11,
+      "label": "연준 — 2026년 10월 공식 달력",
+      "url": "https://www.federalreserve.gov/newsevents/2026-october.htm"
+    }
+  ],
+  "dataNote": "AI 작성·자동 검토. 금리·무역·전력 및 인수 계약은 공식 자료를 확인했다. 지수 등락률과 Marvell·AMD 전망, Constellation Brands 실적·전망은 읽은 Reuters 본문 기준이다. 통신사 간 소수점 차이가 있는 지수 종가 수준은 제외했다. Reuters 갱신형 페이지의 최초 발행과 최종 수정 시각은 다를 수 있다. 정보 기준 이후 소식은 반영하지 않았다.",
+  "corrections": [],
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-10-06T22:08:09.686Z",
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/wall-st-futures-rise-yields-oil-dip-2026-10-06/",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T10:27:00Z",
+        "basis": "reported",
+        "claimSummary": "마감 업데이트 본문: S&P +0.58%, Nasdaq Composite +0.45%, Dow +0.49%; S&P·Nasdaq 최고 종가, 10개 업종 상승, 나스닥 상승·하락 수 거의 동일. 최초 발행 시각만 표시됨. 소수점 종가 수준은 AP와 차이가 있어 제외."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "10월 5일→6일 2년 4.84→4.79%, 10년 5.31→5.27%, 30년 5.66→5.64%. 표 머리글과 열 대조; 10년 변화 -4bp. 일별 자료 페이지, 발행 시각 미표기."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T12:30:00Z",
+        "basis": "primary",
+        "claimSummary": "8월 계절조정 명목 적자 105.6bn USD, +13.7%; 수출 315.2bn, 수입 420.8bn. Census 상품 자본재 수입 +6.2bn, 반도체 +2.4bn 전월비."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.constellationenergy.com/news/2026/10/google-and-constellation-announce-landmark-agreement-to-bring-890-mw-of-new-nuclear-capacity-to-pjm-grid.html",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T06:30:00-04:00",
+        "basis": "primary",
+        "claimSummary": "20년 계약 신규 원전 출력 890MW, 11개 호기, 투자 >4.3bn USD, 첫 공급 2028 예상. 별도 2700MW 15년 기존 자산 계약. HTML datePublished 06:30 EDT 확인."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.reuters.com/business/marvell-raises-2028-revenue-forecast-strong-ai-data-center-demand-2026-10-06/",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T14:11:00Z",
+        "basis": "reported",
+        "claimSummary": "FY2028 매출 약 20bn USD로 상향했다는 경영진 전망 보도. 확정 매출·수주잔고로 사용하지 않음. 회사 원자료 수치 직접 확인은 못해 보도 기준으로 한정."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.reuters.com/world/asia-pacific/amd-plans-substantially-increase-supply-2027-ceo-says-2026-10-06/",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T07:20:00Z",
+        "basis": "reported",
+        "claimSummary": "Lisa Su 대만 기자 문답: 2027 칩 공급 크게 확대 계획, CPU/GPU 생산 협의 및 메모리 공급 확보 협력. 계획과 실제 공급 구분."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://investors.optioncarehealth.com/news-releases/news-release-details/cdr-and-mckesson-corporation-sign-agreement-acquire-option-0",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T08:00:00-04:00",
+        "basis": "primary",
+        "claimSummary": "주당 32.05 USD, 기업가치 약 5.8bn USD; CD&R 51%, McKesson 49% 및 약 1.4bn 투자. 2027 상반기 종결 예상, 주주·규제 승인 조건."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.reuters.com/business/retail-consumer/corona-beer-maker-constellation-brands-tops-second-quarter-estimates-resilient-2026-10-06/",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": "2026-10-06T21:31:00Z",
+        "basis": "reported",
+        "claimSummary": "8월31일 종료 분기 순매출 2.63bn USD, 조정 EPS 3.74 USD; LSEG 예상 2.54bn 및 3.56. 연간 영업이익률 전망 32–33%→31–32%, 보도 기준. 마감 이후, cutoff 전."
+      },
+      {
+        "sourceId": 9,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "2026년 휴장·조기폐장 표에 10월6일 없음. 정규장 09:30–16:00 ET; EDT→KST +13시간으로 10월7일05:00 종료."
+      },
+      {
+        "sourceId": 10,
+        "verifiedUrl": "https://www.eia.gov/petroleum/supply/weekly/schedule.php",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "수요일10:30 ET 정례 발표, 2026 예외표 10월7일 변경 없음. KST 10월7일23:30."
+      },
+      {
+        "sourceId": 11,
+        "verifiedUrl": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+        "checkedAt": "2026-10-06T22:08:09.686Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "10월7일14:00 ET 9월15–16일 회의 의사록; 10월8일04:30 ET Waller Economic Outlook. KST 각각 10월8일03:00,17:30."
+      }
+    ],
+    "contentHash": "a22d223545f6305ea6cbc31c6e7642388f7122fa7c63c69fea06262575956525"
+  }
+}
