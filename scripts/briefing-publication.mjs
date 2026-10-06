@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { validateAutoReview } from './briefing-auto-review.mjs'
 export function contentHash(item) {
   const { status, review, ...content } = item
   void status; void review
@@ -21,6 +22,7 @@ export function publishable(items, now = Date.now()) {
       sourceIds.add(source.id)
       if (!r.checkedSources?.includes(source.id)) throw Error(`Unchecked source: ${item.id}`)
     }
+    validateAutoReview(item)
     return true
-  }).map(item => ({ id:item.id, title:item.title, sessionDate:item.sessionDate, cutoffAt:item.cutoffAt, publishedAt:item.publishedAt, summary:item.summary, blocks:item.blocks, sources:item.sources, dataNote:item.dataNote, corrections:item.corrections })).sort((a,b) => b.id.localeCompare(a.id))
+  }).map(item => ({ id:item.id, reviewMode:item.review?.mode === 'automated' ? 'automated' : 'manual', title:item.title, sessionDate:item.sessionDate, cutoffAt:item.cutoffAt, publishedAt:item.publishedAt, summary:item.summary, blocks:item.blocks, sources:item.sources, dataNote:item.dataNote, corrections:item.corrections })).sort((a,b) => b.id.localeCompare(a.id))
 }

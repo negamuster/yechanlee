@@ -1,5 +1,6 @@
 import items from '../data/published-briefings.json'
 export type Briefing = {
+  reviewMode?: 'manual' | 'automated'
   id: string; title: string; cutoffAt: string; publishedAt: string; sessionDate: string
   summary: string[]; blocks: { kind: string; text: string }[]
   sources: { id: number; label: string; url: string; accessNote?: string; links?: { label: string; url: string }[] }[]

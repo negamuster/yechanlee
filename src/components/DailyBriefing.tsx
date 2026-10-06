@@ -10,7 +10,7 @@ export default function DailyBriefing() {
       <h3><Link to={`/briefings/${item.id}`}>{item.title}</Link></h3>
       {item.summary.map((text,i)=><p key={i}>{text}</p>)}
       <Link className="briefing-read" to={`/briefings/${item.id}`}>전체 브리핑 읽기 →</Link>
-      <p className="briefing-meta">가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>
+      <p className="briefing-meta">{item.reviewMode === 'automated' && <>AI 작성·자동 검토 · </>}가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>
     </> : <div className="briefing-empty">
       <span className="briefing-edition">ANTHRACITE / DAILY</span>
       <h3>시장의 흐름과<br />다음 확인할 변화를 한곳에.</h3>
