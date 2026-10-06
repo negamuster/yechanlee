@@ -23,3 +23,9 @@
 .briefing-preview-banner { padding:14px; background:#fff5dd; border:1px solid #cfb779; }
 .briefing-archive li { padding:20px 0; border-bottom:1px solid #ddd; }
 @media(max-width:700px) { .daily-briefing { padding-top:12px; } .briefing-kicker { flex-wrap:wrap; } .briefing-kicker h2 { font-size:17px; } .briefing-empty { padding-top:18px; } .briefing-empty h3 { font-size:26px; } }
+
+.briefing-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+.briefing-tags span { background: #f2f3ee; color: #555e50; padding: 4px 7px; border-radius: 4px; font-size: 11px; line-height: 1.6; }
+.briefing-access { display: inline-block; margin-left: 8px; color: #6e7169; font-size: 11px; }
+.briefing-source-alternate { display: block; width: fit-content; font-size: 12px; margin-top: 4px; }
+.briefing-sources li { scroll-margin-top: calc(var(--header-height, 100px) + 16px); }
