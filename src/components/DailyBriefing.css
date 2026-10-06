@@ -1,5 +1,5 @@
 .daily-briefing { min-width:0; color:#282c27; }
-.briefing-kicker { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px; border-bottom:2px solid #414b3c; }
+.briefing-kicker { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px;  }
 .briefing-kicker h2 { font-size:18px; font-weight:600; margin:0; }
 .briefing-kicker a,.briefing-meta { font-size:12px; color:#62685e; line-height:1.6; }
 .daily-briefing h3 { font-family:Georgia,'Noto Serif KR',serif; font-size:clamp(23px,2.1vw,34px); line-height:1.45; letter-spacing:-.035em; margin:22px 0 18px; }
