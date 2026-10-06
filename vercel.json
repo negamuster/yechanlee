@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/briefings",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/briefings/:date",
+      "destination": "/index.html"
+    },
+    {
       "source": "/saved/thesis/:ticker",
       "destination": "/index.html"
     },

@@ -6,6 +6,7 @@ import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
+import DailyBriefing from '../components/DailyBriefing'
 import './Home.css'
 
 export default function Home() {
@@ -32,11 +33,14 @@ export default function Home() {
     {!mobile && <MarketTicker />}
     <main className="home-content" ref={content}>
       <div className="home-primary">
-      {!mobile && <div className="home-dashboard">
-        <div className="home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /><div ref={setNewsTarget} /></div>
-        <div className="home-dashboard-calendar"><MarketCalendar /></div>
-
-      </div>}
+      <div className="home-dashboard">
+        {!mobile && <div className="home-dashboard-left">
+          <div className="home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></div>
+          <div className="home-dashboard-calendar"><MarketCalendar /></div>
+          <details className="home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
+        </div>}
+        <DailyBriefing />
+      </div>
       <section className="home-news" aria-labelledby="home-news-title">
         <h2 id="home-news-title" tabIndex={-1}>Latest News</h2>
         <NewsFeed previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />

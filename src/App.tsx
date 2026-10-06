@@ -2,6 +2,7 @@ import RouteLoadBoundary from './components/RouteLoadBoundary'
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import RouteScroll from './components/RouteScroll'
+const Briefings = lazy(() => import('./pages/Briefings'))
 const Calendar = lazy(() => import('./pages/Calendar'))
 import MobileNavigation from './components/MobileNavigation'
 const Markets = lazy(() => import('./pages/Markets'))
@@ -29,6 +30,8 @@ function App() {
       <SiteHeader />
       <RouteLoadBoundary><Suspense fallback={<main className="route-loading" role="status">페이지를 불러오는 중…</main>}>
       <Routes>
+        <Route path="/briefings" element={<Briefings />} />
+        <Route path="/briefings/:date" element={<Briefings />} />
         <Route path="/markets" element={<Markets />} />
         <Route path="/more" element={<More />} />
         <Route path="/live" element={<LivePage />} />

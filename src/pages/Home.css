@@ -132,3 +132,25 @@
 
 .home-content .calendar-agenda { margin-top: 18px; border-top: 1px solid #e8e8e1; padding-top: 14px; }
 .home-content .calendar-agenda .calendar-list { max-height: 260px; }
+
+/* Briefing-led desktop layout; calendar remains attached to its agenda. */
+.home-content { grid-template-columns:minmax(0,1fr) clamp(260px,20vw,310px); gap:24px; }
+.home-dashboard { grid-template-columns:minmax(310px,.72fr) minmax(0,1fr); grid-template-areas:none; gap:28px; }
+.home-dashboard-left { display:grid; gap:24px; min-width:0; }
+.home-dashboard-maps,.home-dashboard-calendar { grid-area:auto; }
+.home-dashboard-calendar > .market-calendar { max-width:none; }
+.home-sector-news { font-size:13px; color:#5b6453; }
+.home-sector-news summary { cursor:pointer; padding:10px 0; }
+.home-content .sector-tile { padding:7px; gap:4px; }
+.home-content .sector-tile strong { font-size:16px; }
+.home-dashboard-sidebar { gap:16px; }
+.home-dashboard-movers { max-height:calc(100dvh - var(--header-height,100px) - 230px); }
+@media(max-width:1250px) and (min-width:701px) {
+ .home-content { grid-template-columns:minmax(0,1fr); }
+ .home-primary { display:block; }
+ .home-dashboard { grid-template-columns:minmax(310px,.72fr) minmax(0,1fr); }
+ .home-dashboard-sidebar { position:static; max-height:none; overflow:visible; grid-row:auto; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+ .home-news { grid-row:auto; }
+ .home-dashboard-movers { max-height:380px; }
+}
+@media(max-width:700px) { .home-dashboard { display:block; } }
