@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/saved/thesis/:ticker",
+      "destination": "/index.html"
+    },
+    {
       "source": "/markets",
       "destination": "/index.html"
     },

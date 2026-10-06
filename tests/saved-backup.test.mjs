@@ -14,7 +14,7 @@ test('merge preserves existing data and ignores duplicate identities including U
  assert.deepEqual(merged.stocks,[a,{ticker:'MSFT',name:'Microsoft'}]);assert.deepEqual(merged.articles,[article]);assert.equal(saved.stocks.length,1)
 })
 test('malformed, unsafe, oversized and unsupported imports reject the whole file',()=>{
- for(const text of ['bad','{}',exportSaved(saved).replace('"backupVersion": 1','"backupVersion": 2'),exportSaved(saved).replace('https://example.com/news','javascript:alert(1)'),exportSaved(saved).replace('AAPL','../oops'),' '.repeat(5*1024*1024+1)]) assert.throws(()=>importSaved(text))
+ for(const text of ['bad','{}',exportSaved(saved).replace('"backupVersion": 2','"backupVersion": 999'),exportSaved(saved).replace('https://example.com/news','javascript:alert(1)'),exportSaved(saved).replace('AAPL','../oops'),' '.repeat(5*1024*1024+1)]) assert.throws(()=>importSaved(text))
 })
 test('merged capacity overflow does not write or discard existing entries',()=>{
  const current={version:1,stocks:Array.from({length:200},(_,i)=>({ticker:'T'+i,name:'Test'})),articles:[]};let writes=0

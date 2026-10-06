@@ -7,6 +7,7 @@ import MobileNavigation from './components/MobileNavigation'
 const Markets = lazy(() => import('./pages/Markets'))
 const More = lazy(() => import('./pages/More'))
 const LivePage = lazy(() => import('./pages/More').then(module => ({ default: module.LivePage })))
+const Thesis = lazy(() => import('./pages/Thesis'))
 const Saved = lazy(() => import('./pages/Saved'))
 import SavedItemsProvider from './components/SavedItemsProvider'
 import Home from './pages/00_Home'
@@ -32,6 +33,7 @@ function App() {
         <Route path="/more" element={<More />} />
         <Route path="/live" element={<LivePage />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/saved/thesis/:ticker" element={<Thesis />} />
         <Route path="/saved" element={<Saved />} />
         <Route path="/" element={<Home />} />
         <Route path="/equity" element={<StockMarket />} />

@@ -1,0 +1,32 @@
+.thesis-page { max-width: 860px; margin: 0 auto; padding: 32px 24px 90px; color: #30362c; font-family: var(--font-ui); }
+.thesis-page a, .thesis-overview a { color: #566849; }
+.thesis-eyebrow { margin: 28px 0 8px; font-size: 11px; letter-spacing: .15em; color: #687260; }
+.thesis-page h1 { font-size: 30px; font-weight: 500; margin: 8px 0; }
+.thesis-page h1 span { font-size: 20px; color: #697061; margin-left: 8px; }
+.thesis-page h2 { font-size: 18px; font-weight: 500; }
+.thesis-help, .thesis-status { font-size: 12px; color: #67705f; line-height: 1.8; }
+.thesis-page label { display: flex; flex-direction: column; gap: 7px; margin: 16px 0; font-size: 13px; }
+.thesis-page :is(textarea,input,select), .thesis-overview select { font: inherit; color: inherit; background: #fff; border: 1px solid #d4dacf; border-radius: 4px; padding: 10px; max-width: 100%; box-sizing: border-box; }
+.thesis-page textarea { width: 100%; resize: vertical; font-size: 14px; line-height: 1.7; }
+.thesis-page input, .thesis-page select { width: fit-content; min-height: 44px; }
+.thesis-page fieldset { border: 0; padding: 0; margin: 24px 0; }
+.thesis-page legend { font-size: 16px; }
+.thesis-page small { font-size: 11px; color: #727b68; }
+.thesis-page button { border: 1px solid #c8d0be; border-radius: 4px; background: #f5f7f0; color: #44503a; min-height: 44px; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+.thesis-page button:disabled { opacity: .5; cursor: default; }
+.thesis-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.thesis-actions button[type=submit] { background: #505a46; color: white; }
+.thesis-page section { margin-top: 32px; border-top: 1px solid #e0e4db; padding-top: 18px; }
+.thesis-error { color: #984c32; font-size: 13px; line-height: 1.7; }
+.thesis-confirm { margin: 10px 0; padding: 12px; background: #f6f0e3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+.thesis-history, .thesis-note-list { list-style: none; margin: 12px 0; padding: 0; }
+.thesis-history li { border-bottom: 1px solid #e0e4db; padding: 16px 0; }
+.thesis-history strong { font-size: 13px; padding: 4px 8px; background: #eef1e8; }
+.thesis-history time { font-size: 11px; color: #687260; margin-left: 12px; }
+.thesis-history p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; font-size: 14px; }
+.thesis-note-list a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; padding: 14px 0; text-decoration: none; border-bottom: 1px solid #e0e4db; }
+.thesis-note-list small { flex-basis: 100%; color: #687260; }
+.thesis-overview label { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; }
+.thesis-overview select { min-height: 44px; }
+.thesis-page :is(a,button,input,textarea,select):focus-visible, .thesis-overview :is(a,select):focus-visible { outline: 2px solid #69785c; outline-offset: 3px; }
+@media(max-width:700px) { .thesis-page { padding: 20px 14px 100px; } .thesis-page :is(textarea,input,select) { font-size: 16px; } .thesis-page h1 { font-size: 25px; } }

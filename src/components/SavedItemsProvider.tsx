@@ -1,13 +1,14 @@
+import { saveThesis } from '../lib/thesis'
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
+import { SAVED_KEY, LEGACY_SAVED_KEY, articleKey, emptySaved, readSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
 import './SavedItems.css'
-interface SavedContext { removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
+interface SavedContext { saveNote: (input: Parameters<typeof saveThesis>[1]) => string; removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
 const Context = createContext<SavedContext | null>(null)
 export function useSavedItems() { const value = useContext(Context); if (!value) throw new Error('SavedItemsProvider missing'); return value }
 export default function SavedItemsProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<SavedItems>(emptySaved)
+  const [items, setItems] = useState<SavedItems>(() => { try { return readSaved(localStorage) } catch { return emptySaved() } })
   const [message, setMessage] = useState('')
   const [undo, setUndo] = useState<{ before: SavedItems; removed: SavedItems; expires: number } | null>(null)
   useEffect(() => {
@@ -16,9 +17,9 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     return () => window.clearTimeout(timer)
   }, [undo])
   useEffect(() => {
-    function read() { try { setItems(parseSaved(localStorage.getItem(SAVED_KEY))) } catch { setMessage('저장 목록을 읽을 수 없습니다. 브라우저 저장 설정을 확인해 주세요.') } }
+    function read() { try { setItems(readSaved(localStorage)) } catch { setMessage('저장 목록을 읽을 수 없습니다. 브라우저 저장 설정을 확인해 주세요.') } }
     read()
-    function sync(event: StorageEvent) { if (event.key === SAVED_KEY || event.key === null) read() }
+    function sync(event: StorageEvent) { if (event.key === SAVED_KEY || event.key === LEGACY_SAVED_KEY || event.key === null) read() }
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [])
@@ -42,11 +43,15 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
   }
   function toggleStock(stock: SavedStock) { change(value => ({ ...value, stocks: value.stocks.some(row => row.ticker === stock.ticker) ? value.stocks.filter(row => row.ticker !== stock.ticker) : [stock, ...value.stocks] })) }
   function toggleArticle(article: SavedArticle) { change(value => ({ ...value, articles: value.articles.some(row => row.article_url === articleKey(article.article_url)) ? value.articles.filter(row => row.article_url !== articleKey(article.article_url)) : [article, ...value.articles] })) }
+  function saveNote(input: Parameters<typeof saveThesis>[1]) {
+    const next = updateSaved(localStorage, current => ({ ...current, theses: saveThesis(current.theses || [], input, crypto.randomUUID(), new Date().toISOString()) }))
+    setItems(next); setMessage(''); return next.theses!.find(n => n.ticker === input.ticker)!.revision
+  }
   function mergeBackup(imported: SavedItems) {
     const next = updateSaved(localStorage, current => mergeSaved(current, imported))
     setItems(next); setMessage('')
   }
-  return <Context.Provider value={{ removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
+  return <Context.Provider value={{ saveNote, removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
     {undo && <div className="saved-undo" role="status"><span>최근 삭제 {undo.removed.stocks.length + undo.removed.articles.length}개 · 30초간 복원 가능</span><button type="button" onClick={undoDeletion}>실행 취소</button><button type="button" aria-label="삭제 안내 닫기" onClick={() => setUndo(null)}>닫기</button></div>}
     {message && <div className="saved-error" role="alert">{message}<button type="button" onClick={() => setMessage('')} aria-label="저장 오류 알림 닫기">닫기</button></div>}
   </Context.Provider>
