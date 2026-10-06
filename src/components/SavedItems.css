@@ -43,3 +43,9 @@
 @media (max-width:700px) { .saved-selection-tools button, .saved-checkbox, .saved-manage-toolbar :is(input,select), .watch-toolbar input { min-height: 44px; } .saved-checkbox { min-width: 36px; } .saved-page .watch-row { grid-template-columns: 36px minmax(0,1fr) auto auto; gap: 5px; } }
 
 @media (max-width:560px) { .saved-list li:has(.saved-checkbox) { display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 8px; } .saved-list li:has(.saved-checkbox) > .save-button { grid-column: 2; justify-self: start; } .watch-toolbar label { flex-wrap: wrap; max-width: 100%; } }
+
+.saved-content.is-read strong { color: #74796f; }
+.saved-undo { position: fixed; z-index: 190; bottom: calc(22px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; width: max-content; max-width: calc(100vw - 28px); box-sizing: border-box; padding: 10px 14px; background: #30382a; color: white; border-radius: 8px; box-shadow: 0 3px 18px #0002; font-size: 12px; }
+.saved-undo button { min-height: 36px; background: transparent; color: white; border: 1px solid #9aa98c; border-radius: 4px; padding: 5px 9px; font: inherit; cursor: pointer; }
+.saved-undo button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+@media(max-width:700px) { .saved-undo { bottom: calc(88px + env(safe-area-inset-bottom)); } .saved-undo button { min-height: 44px; } }

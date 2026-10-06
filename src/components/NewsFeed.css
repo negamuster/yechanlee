@@ -112,3 +112,10 @@
   .news-grid .news-card > .save-button { min-height: 44px; font-size: 12px; }
   .news-grid .news-title { font-size: 18px; }
 }
+
+.news-card.is-read .news-title, .news-row.is-read :is(h3,h4), .sector-news li.is-read a { color: #74796f; }
+.news-read-toggle { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; font-size: 12px; color: #50594b; min-height: 36px; margin: 6px 0; }
+.news-read-toggle input { accent-color: #505a46; width: 16px; height: 16px; }
+.news-read-toggle small { font-size: 11px; color: #666d60; }
+.news-feed .news-meta, .sector-news .sector-news-note, .sector-news li p { color: #666d60; font-size: 11px; }
+@media(max-width:700px) { .news-read-toggle { min-height: 44px; } }

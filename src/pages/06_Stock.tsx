@@ -1,3 +1,4 @@
+import { useReadArticles } from '../hooks/useReadArticles'
 import { WatchButton } from '../components/SavedItemsProvider'
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -74,6 +75,7 @@ function PriceChart({ candles, isPositive }: { candles: Candle[]; isPositive: bo
 
 // ── Main Component ───────────────────────────────────────────
 export default function Stock() {
+  const { isRead, mark } = useReadArticles()
   const { ticker } = useParams<{ ticker: string }>()
   const navigate = useNavigate()
   const symbol = ticker?.toUpperCase() || ''
@@ -400,7 +402,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                   <>
                     <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Recent News</p>
                     {news.map((n, i) => (
-                      <a key={i} href={n.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
+                      <a key={i} onClick={() => mark(n.article_url)} onAuxClick={e => { if (e.button === 1) mark(n.article_url) }} href={n.article_url} target="_blank" rel="noopener noreferrer" className={`news-row${isRead(n.article_url) ? ' is-read' : ''}`}>
                         <div style={{ padding: '16px 0', borderBottom: '1px solid #f4f4f4', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                           {n.image_url && (
                             <img src={n.image_url} alt="" style={{ width: '68px', height: '48px', objectFit: 'cover', borderRadius: '2px', flexShrink: 0 }}

@@ -1,3 +1,4 @@
+import { useReadArticles } from '../hooks/useReadArticles'
 import { useState } from 'react'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
@@ -10,6 +11,7 @@ function validNews(value: unknown): value is { results: Article[] } {
   return !!value && typeof value === 'object' && Array.isArray((value as { results?: unknown }).results)
 }
 export default function WatchlistNews() {
+  const { isRead, mark } = useReadArticles()
   const { items } = useSavedItems()
   const [choice, setChoice] = useSessionState('watch.news', '', v => typeof v === 'string' && v.length <= 20)
   const ticker = items.stocks.some(s => s.ticker === choice) ? choice : items.stocks[0].ticker
@@ -23,6 +25,6 @@ export default function WatchlistNews() {
     {loading && <p role="status" className="saved-note">{ticker} 뉴스를 조회하고 있습니다.</p>}
     {error && <p role="status" className="watch-notice">뉴스 조회 실패{articles.length ? ' · 이전에 조회한 기사를 표시합니다.' : ' · 잠시 후 다시 시도해 주세요.'}</p>}
     {!loading && !error && !articles.length && <div className="saved-empty">제공된 기사 중 {ticker}에 연결된 기사가 없습니다.</div>}
-    <ul className="saved-list watch-news-list">{articles.map(a => <li key={a.id || a.article_url}><a className="saved-content" href={a.article_url} target="_blank" rel="noopener noreferrer"><small>{a.publisher.name} · {dataTime(a.published_utc)}</small><strong>{a.title}</strong><span>원문 읽기 ↗</span></a><BookmarkButton article={{ ...a, publisher: a.publisher.name }} /></li>)}</ul>
+    <ul className="saved-list watch-news-list">{articles.map(a => <li key={a.id || a.article_url}><a className={`saved-content${isRead(a.article_url) ? ' is-read' : ''}`} onClick={() => mark(a.article_url)} onAuxClick={e => { if (e.button === 1) mark(a.article_url) }} href={a.article_url} target="_blank" rel="noopener noreferrer"><small>{a.publisher.name} · {dataTime(a.published_utc)}</small><strong>{a.title}</strong><span>{isRead(a.article_url) ? '읽음 · ' : ''}원문 읽기 ↗</span></a><BookmarkButton article={{ ...a, publisher: a.publisher.name }} /></li>)}</ul>
   </section>
 }

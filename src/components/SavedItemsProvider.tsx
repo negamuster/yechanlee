@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved, removeSaved } from '../lib/savedItems'
+import { SAVED_KEY, articleKey, emptySaved, parseSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
 import './SavedItems.css'
 interface SavedContext { removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => void }
@@ -9,6 +9,12 @@ export function useSavedItems() { const value = useContext(Context); if (!value)
 export default function SavedItemsProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<SavedItems>(emptySaved)
   const [message, setMessage] = useState('')
+  const [undo, setUndo] = useState<{ before: SavedItems; removed: SavedItems; expires: number } | null>(null)
+  useEffect(() => {
+    if (!undo) return
+    const timer = window.setTimeout(() => setUndo(null), Math.max(0, undo.expires - Date.now()))
+    return () => window.clearTimeout(timer)
+  }, [undo])
   useEffect(() => {
     function read() { try { setItems(parseSaved(localStorage.getItem(SAVED_KEY))) } catch { setMessage('저장 목록을 읽을 수 없습니다. 브라우저 저장 설정을 확인해 주세요.') } }
     read()
@@ -17,8 +23,19 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     return () => window.removeEventListener('storage', sync)
   }, [])
   function change(transform: (value: SavedItems) => SavedItems) {
-    try { setItems(updateSaved(localStorage, transform)); setMessage(''); return true }
+    try {
+      let before = emptySaved(), removed = emptySaved()
+      const next = updateSaved(localStorage, value => { before = value; const after = transform(value); removed = removedItems(value, after); return after })
+      setItems(next); setMessage('')
+      if (removed.stocks.length || removed.articles.length) setUndo({ before, removed, expires: Date.now() + 30000 })
+      return true
+    }
     catch { setMessage('변경 사항을 저장하지 못했습니다. 브라우저 저장 공간·설정 또는 저장 한도를 확인해 주세요.'); return false }
+  }
+  function undoDeletion() {
+    if (!undo || Date.now() > undo.expires) { setUndo(null); return }
+    try { setItems(updateSaved(localStorage, current => restoreRemoved(current, undo.before, undo.removed))); setUndo(null); setMessage('') }
+    catch { setMessage('복원하지 못했습니다. 저장 공간과 항목 한도를 확인해 주세요.') }
   }
   function removeSelected(kind: 'stocks' | 'articles', ids: string[]) {
     return change(value => removeSaved(value, kind, ids))
@@ -30,6 +47,7 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     setItems(next); setMessage('')
   }
   return <Context.Provider value={{ removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
+    {undo && <div className="saved-undo" role="status"><span>최근 삭제 {undo.removed.stocks.length + undo.removed.articles.length}개 · 30초간 복원 가능</span><button type="button" onClick={undoDeletion}>실행 취소</button><button type="button" aria-label="삭제 안내 닫기" onClick={() => setUndo(null)}>닫기</button></div>}
     {message && <div className="saved-error" role="alert">{message}<button type="button" onClick={() => setMessage('')} aria-label="저장 오류 알림 닫기">닫기</button></div>}
   </Context.Provider>
 }

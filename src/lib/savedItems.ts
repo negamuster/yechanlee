@@ -56,3 +56,17 @@ export function removeSaved(items: SavedItems, kind: 'stocks' | 'articles', ids:
   const selected = new Set(ids)
   return kind === 'stocks' ? { ...items, stocks: items.stocks.filter(row => !selected.has(row.ticker)) } : { ...items, articles: items.articles.filter(row => !selected.has(row.article_url)) }
 }
+
+export function removedItems(before: SavedItems, after: SavedItems): SavedItems {
+  return { version: 1, stocks: before.stocks.filter(s => !after.stocks.some(row => row.ticker === s.ticker)), articles: before.articles.filter(a => !after.articles.some(row => row.article_url === a.article_url)) }
+}
+export function restoreRemoved(current: SavedItems, before: SavedItems, removed: SavedItems): SavedItems {
+  function restore<T>(rows: T[], original: T[], deleted: T[], key: (row: T) => string) {
+    const result = [...rows]
+    for (const row of deleted) if (!result.some(value => key(value) === key(row))) result.splice(Math.min(original.findIndex(value => key(value) === key(row)), result.length), 0, row)
+    return result
+  }
+  const result: SavedItems = { version: 1, stocks: restore(current.stocks, before.stocks, removed.stocks, s => s.ticker), articles: restore(current.articles, before.articles, removed.articles, a => a.article_url) }
+  if (result.stocks.length > 200 || result.articles.length > 500) throw new Error('limit')
+  return result
+}

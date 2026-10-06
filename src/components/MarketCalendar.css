@@ -133,3 +133,16 @@
 
 .calendar-focus-filters { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0; }
 .calendar-focus-filters button { font-size: 11px; border-radius: 14px; padding-inline: 10px; }
+
+.calendar-controls { align-items: flex-start; gap: 8px; }
+.calendar-tabs, .calendar-jump { display: inline-flex; gap: 0; }
+.calendar-tabs button, .calendar-jump button { border-radius: 0; }
+.calendar-tabs button:first-child, .calendar-jump button:first-child { border-radius: 4px 0 0 4px; }
+.calendar-tabs button:last-child, .calendar-jump button:last-child { border-radius: 0 4px 4px 0; }
+.calendar-settings-menu { margin-left: auto; font-size: 12px; }
+.calendar-settings-menu summary { cursor: pointer; min-height: 30px; box-sizing: border-box; padding: 6px 9px; border: 1px solid #d9dcd3; border-radius: 4px; color: #55594e; }
+.calendar-settings-menu .calendar-settings { flex-wrap: wrap; gap: 6px; padding: 8px 0; }
+.calendar-settings-menu summary:focus-visible { outline: 2px solid #69785c; outline-offset: 3px; }
+.calendar-event-foot .calendar-export { padding: 2px 5px; border: 0; background: none; font-size: 11px; color: #5b6651; }
+.calendar-time-note, .calendar-help, .calendar-event-foot, .calendar-original-title { color: #656b5e; font-size: 11px; }
+@media(max-width:700px) { .calendar-settings-menu summary { min-height: 44px; display: flex; align-items: center; } .calendar-event-foot .calendar-export { min-height: 44px; } }

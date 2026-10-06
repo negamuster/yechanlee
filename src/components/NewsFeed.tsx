@@ -1,3 +1,4 @@
+import { useReadArticles } from '../hooks/useReadArticles'
 import { createPortal } from 'react-dom'
 import { matchesSector } from './sectorNews'
 import type { NewsSector } from './sectorNews'
@@ -78,6 +79,8 @@ function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
 }
 
 export default function NewsFeed({ previewTarget = null, previewSector = null, onClearSector }: { previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
+  const { isRead, mark } = useReadArticles()
+  const [hideRead, setHideRead] = useSessionState('news.hideRead', false, v => typeof v === 'boolean')
   const [sectorFilter, setSectorFilter] = useState<NewsSector | null>(null)
   const [feed, setFeed] = useState<Feed | null>(() => readCache(6 * 60 * 60 * 1000))
   const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
@@ -123,8 +126,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
     return () => { active = false; controller.abort(); window.clearTimeout(timeout) }
   }, [revision])
 
-  const matching = filterNews(feed?.items || [], region, topic, query).filter(item => matchesSector(item.title, sectorFilter?.symbol ?? null))
-  const previewItems = filterNews(feed?.items || [], 'all', 'all').filter(item => matchesSector(item.title, previewSector?.symbol ?? null)).sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc)).slice(0, 3)
+  const matching = filterNews(feed?.items || [], region, topic, query).filter(item => matchesSector(item.title, sectorFilter?.symbol ?? null) && (!hideRead || !isRead(item.article_url)))
+  const previewItems = filterNews(feed?.items || [], 'all', 'all').filter(item => matchesSector(item.title, previewSector?.symbol ?? null) && (!hideRead || !isRead(item.article_url))).sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc)).slice(0, 3)
   function showRelated() {
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(previewSector); setVisibleBatches(1)
     requestAnimationFrame(() => { const heading = document.getElementById('home-news-title'); heading?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); heading?.focus({ preventScroll: true }) })
@@ -136,8 +139,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const publishers = [...new Set(news.map(item => item.publisher))]
   function article(item: NewsItem, index: number) {
     return (
-      <article key={item.id} className="news-card">
-        <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row">
+      <article key={item.id} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
+        <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
           {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} eager={index < 2} />}
           <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
           <div className="news-topic-tags" aria-label="기사 주제">
@@ -147,7 +150,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <p className="news-meta news-card-footer">
             <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
               {relativeTime(Date.parse(item.published_utc))}
-            </time>
+            </time>{isRead(item.article_url) && <span>읽음</span>}
             <span className="news-original">원문 읽기 ↗</span>
           </p>
         </a>
@@ -162,8 +165,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
       <p className="sector-news-note">{previewSector ? '제목 키워드 기준 관련 기사' : 'Maps 업종을 선택하면 관련 기사를 표시합니다.'}</p>
       {failed && <p role="status" className="sector-news-note">{feed ? '갱신 실패 · 이전 수집 기사' : '뉴스를 불러오지 못했습니다.'}</p>}
       {!failed && feed?.sources.some(source => source.status === 'unavailable') && <p className="sector-news-note">일부 매체 수집 불가</p>}
-      {loading && !feed ? <p role="status">기사를 불러오는 중…</p> : <ul>{previewItems.map(item => <li key={item.id}><a href={item.article_url} target="_blank" rel="noopener noreferrer" title={item.title}>{item.title}</a><p>{item.publisher} · <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>{relativeTime(Date.parse(item.published_utc))}</time></p></li>)}</ul>}
-      {!loading && !failed && !previewItems.length && <p className="sector-news-note">최근 72시간 내 관련 기사가 없습니다.</p>}
+      {loading && !feed ? <p role="status">기사를 불러오는 중…</p> : <ul>{previewItems.map(item => <li key={item.id} className={isRead(item.article_url) ? 'is-read' : undefined}><a onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }} href={item.article_url} target="_blank" rel="noopener noreferrer" title={item.title}>{item.title}</a><p>{isRead(item.article_url) ? '읽음 · ' : ''}{item.publisher} · <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>{relativeTime(Date.parse(item.published_utc))}</time></p></li>)}</ul>}
+      {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
     <div className="news-feed">
@@ -192,6 +195,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
         </div>
       </div>
+      <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
       <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
       {feed && <p className="news-updated">최근 수집: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
@@ -216,8 +220,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <div className={view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
-        </> : !failed ? <div className="news-notice" role="status"><p>최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.</p>
-          {(topic !== 'all' || region !== 'all' || query || sectorFilter) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery(''); setSectorFilter(null); setVisibleBatches(1) }}>필터 초기화</button>}
+        </> : !failed ? <div className="news-notice" role="status"><p>{hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
+          {(topic !== 'all' || region !== 'all' || query || sectorFilter || hideRead) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1) }}>필터 초기화</button>}
         </div> : null}
       </div>
     </div>
