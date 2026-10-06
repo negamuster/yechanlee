@@ -39,7 +39,7 @@ export default function Home() {
           <div className="home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></div>
           <details className="home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
         </div>}
-        <DailyBriefing inlineCalendar={!mobile} />
+        <DailyBriefing />
       </div>
       <section className="home-news" aria-labelledby="home-news-title">
         <h2 id="home-news-title" tabIndex={-1}>Latest News</h2>
