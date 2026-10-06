@@ -1,3 +1,5 @@
+import { matchesCalendarFocus } from '../lib/calendarFilters'
+import type { CalendarFocus } from '../lib/calendarFilters'
 import { useSavedItems } from './SavedItemsProvider'
 import './Watchlist.css'
 import { useResource } from '../hooks/useResource'
@@ -52,6 +54,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const [month, setMonth] = useSessionState('calendar.month', () => today.slice(0, 7), v => typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) && v >= shiftMonth(today.slice(0, 7), -1) && v <= shiftMonth(today.slice(0, 7), 3))
   const [selected, setSelected] = useSessionState('calendar.day', () => month === today.slice(0, 7) ? today : `${month}-01`, v => typeof v === 'string' && v.startsWith(`${month}-`) && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v)
   const [category, setCategory] = useSessionState<Category>('calendar.category', 'All', v => categories.includes(v as Category))
+  const [focus, setFocus] = useSessionState<CalendarFocus>('calendar.focus', 'all', v => ['all', 'major', 'watched'].includes(String(v)))
   const [language, setLanguage] = useSessionState<'ko' | 'en'>('calendar.language', 'ko', v => v === 'ko' || v === 'en')
   const [timezone, setTimezone] = useSessionState<'Asia/Seoul' | 'America/New_York'>('calendar.timezone', 'Asia/Seoul', v => v === 'Asia/Seoul' || v === 'America/New_York')
   const [view, setView] = useSessionState<'month' | 'week'>('calendar.view', 'month', v => v === 'month' || v === 'week')
@@ -71,7 +74,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     const refresh = window.setInterval(() => setReload(n => n + 1), 15 * 60000)
     return () => { clearInterval(clock); clearInterval(refresh) }
   }, [])
-  const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => category === 'All' || event.category === category)
+  const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => (category === 'All' || event.category === category) && matchesCalendarFocus(event, focus, watched))
   const selectedEvents = events.filter(event => event.date === selected).sort((a, b) => {
     const order = (event: CalendarEvent) => event.startAt ? Date.parse(event.startAt) : Date.parse(`${event.date}T00:00:00Z`) + (event.session === 'pre' ? 0 : event.session === 'post' ? 30 : 48) * 3600000
     return Number(b.major) - Number(a.major) || order(a) - order(b) || a.title.localeCompare(b.title)
@@ -84,11 +87,11 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     if (view === 'week') { const date = addDays(selected, offset * 7); setSelected(date); setMonth(date.slice(0, 7)); return }
     const next = shiftMonth(month, offset); setMonth(next); setSelected(next === today.slice(0, 7) ? today : `${next}-01`) }
   const agenda = <>
-    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건 · 주요 일정 우선</span></div>
-    <div className="calendar-list" aria-busy={loading} key={selected} tabIndex={0} aria-label="선택한 날짜 일정">
+    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건 · {focus === 'major' ? '주요 일정만' : focus === 'watched' ? '관심 종목 실적만' : '주요 일정 우선'}</span></div>
+    <div className="calendar-list" aria-busy={loading} key={`${selected}:${category}:${focus}`} tabIndex={0} aria-label="선택한 날짜 일정">
       {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
       {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
-      {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : '선택한 날짜에 등록된 일정이 없어요.'}</p>}
+      {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : focus === 'all' ? '선택한 날짜에 등록된 일정이 없어요.' : '선택한 날짜에 이 필터에 맞는 일정이 없어요.'}</p>}
       <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
         <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
@@ -108,7 +111,11 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       </div>
     </div>
     <div className="calendar-month-navigation"><button type="button" aria-label={view === 'week' ? '이전 주' : '이전 달'} disabled={view === 'week' ? addDays(selected, -7) < `${shiftMonth(today.slice(0, 7), -1)}-01` : month <= shiftMonth(today.slice(0, 7), -1)} onClick={() => navigate(-1)}>‹</button><strong aria-live="polite">{view === 'week' ? `${prettyDate(weekFrom)} – ${prettyDate(weekTo)}` : `${year}년 ${monthNumber}월`}</strong><button type="button" aria-label={view === 'week' ? '다음 주' : '다음 달'} disabled={view === 'week' ? addDays(selected, 7).slice(0, 7) > shiftMonth(today.slice(0, 7), 3) : month >= shiftMonth(today.slice(0, 7), 3)} onClick={() => navigate(1)}>›</button></div>
-    <div className="calendar-filters" role="group" aria-label="일정 종류">{categories.map(item => <button type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item !== 'All' && <i aria-hidden="true" className={`calendar-key calendar-dot-${item.toLowerCase()}`} />}{labels[item]}</button>)}</div>
+    <div className="calendar-filters" role="group" aria-label="일정 종류">{categories.map(item => <button type="button" key={item} aria-pressed={category === item} onClick={() => { setCategory(item); setFocus('all') }}>{item !== 'All' && <i aria-hidden="true" className={`calendar-key calendar-dot-${item.toLowerCase()}`} />}{labels[item]}</button>)}</div>
+    <div className="calendar-focus-filters" role="group" aria-label="일정 빠른 필터">
+      {([['all', '전체 일정'], ['major', '★ 주요 일정만'], ['watched', '관심 종목 실적만']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={focus === value} onClick={() => { setFocus(value); setCategory(value === 'watched' ? 'Earnings' : 'All') }}>{label}</button>)}
+    </div>
+    {focus === 'watched' && <p className="calendar-time-note">{items.stocks.length ? (view === 'month' ? '관심 종목 실적은 선택한 날짜를 조회합니다. 주간 보기에서는 해당 주를 확인할 수 있습니다.' : '현재 표시된 주의 관심 종목 실적입니다.') : <>저장한 관심 종목이 없습니다. <Link to="/saved">관심 종목 추가 안내 ↗</Link></>}</p>}
     <div className={`calendar-month-grid${view === 'week' ? ' calendar-week-grid' : ''}`} aria-label={view === 'week' ? '주간 날짜 선택' : `${year}년 ${monthNumber}월 날짜 선택`}>
       {['일', '월', '화', '수', '목', '금', '토'].map(day => <span className="calendar-weekday" key={day}>{day}</span>)}
       {Array.from({ length: view === 'week' ? 0 : firstWeekday }, (_, i) => <span key={`empty-${i}`} aria-hidden="true" />)}
