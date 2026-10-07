@@ -13,8 +13,16 @@ To publish after editorial review:
 
 Any content change invalidates the approval hash. Invalid published entries stop the build; drafts cannot be requested through a guessed date URL. Existing published entries remain unchanged when a new draft is added. Archive dates are permanent and are not updated to today's date.
 
-The owner authorized scheduled AI-reviewed publication on 2026-10-06. See `docs/briefing-automation.md` for the 07:00 Asia/Seoul task and evidence requirements. Manual reviews remain supported. Automated editions must identify their reviewer honestly and pass the extra source-evidence gate. No user-entered HTML is rendered. Scheduling is managed in ChatGPT, not by a repository cron. The gate checks structure and evidence records, not factual truth.
+## Historical AI-reviewed editions
+
+The owner authorized scheduled AI-reviewed publication on 2026-10-06; the October 7 morning edition used that method. On 2026-10-07, the owner replaced it with the rules-only workflow below and stopped the previous ChatGPT schedule. Do not recreate that schedule or introduce paid AI API calls for daily publication.
+
+Manual reviews remain supported. Existing `automated` editions must identify their reviewer honestly and pass the extra source-evidence gate. The gate checks structure and evidence records, not factual truth. No user-entered HTML is rendered.
 
 ## Rules-only publication (2026-10-07 migration)
 
 The owner approved a non-AI digest workflow. `review.mode=rules` uses `validateRules` with input provenance and deterministic data checks, not `factualReviewPassed`. It does not claim human or AI editorial approval. Old `manual` and `automated` gates remain intact. See `docs/briefing-automation.md`. No historical edition should be changed to the new mode.
+
+Daily scheduling is managed by `.github/workflows/daily-digest.yml`, using `0 22 * * *` (07:00 Asia/Seoul). The first scheduled rules-only edition is expected on 2026-10-08. GitHub may delay execution, and collection, build, and deployment take additional time; 07:00 is not a guaranteed site publication time. Push-triggered runs only test collection and build without publishing. Scheduled or manually triggered runs generate a new edition, validate and build it, push the publication files, and check Vercel deployment status. Existing same-date editions are preserved.
+
+The digest uses original RSS titles and links, official Treasury yields, and Fed/BLS/BEA schedules without AI analysis or translation. It is displayed as `규칙 기반 자동 정리 · AI 미사용`. See `docs/briefing-automation.md` for source-selection rules, safeguards, and failure handling.
