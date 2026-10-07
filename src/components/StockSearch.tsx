@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-interface Match { ticker: string; name: string; primary_exchange?: string }
+import { cachedSearch, searchStocks } from '../lib/stockSearch'
+import type { StockMatch as Match } from '../lib/stockSearch'
 const aliases: Record<string, string> = { '애플':'AAPL', '엔비디아':'NVDA', '테슬라':'TSLA', '마이크로소프트':'MSFT', '아마존':'AMZN', '알파벳':'GOOGL', '구글':'GOOGL', '인텔':'INTC', '팔란티어':'PLTR' }
 export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const [query, setQuery] = useState('')
@@ -8,7 +9,6 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const [opened, setOpened] = useState(false)
   const [active, setActive] = useState(-1)
   const [status, setStatus] = useState('')
-  const cache = useRef(new Map<string, Match[]>())
   const input = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const search = aliases[query.trim()] || query.trim()
@@ -16,31 +16,28 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
     const controller = new AbortController()
     let live = true
     setMatches([]); setActive(-1)
-    if (search.length < 1) { setStatus(''); return }
+    if (!opened || search.length < 1) { setStatus(''); return }
+    const cached = cachedSearch(search)
+    const display = (results: Match[]) => { setMatches(results); setStatus(results.length ? '' : '검색 결과가 없습니다. 영문 회사명이나 티커를 입력해 주세요.') }
+    if (cached) { display(cached); return }
     setStatus('검색 중…')
+    let timeout: number | undefined
     const timer = window.setTimeout(async () => {
+      timeout = window.setTimeout(() => controller.abort(), 10000)
       try {
-        let results = cache.current.get(search.toLowerCase())
-        if (!results) {
-          const response = await fetch(`/api/stock-data?search=${encodeURIComponent(search)}`, { signal: controller.signal })
-          if (!response.ok) throw new Error('search unavailable')
-          const data = await response.json()
-          results = (Array.isArray(data.results) ? data.results : []).filter((row: Match) => typeof row.ticker === 'string' && typeof row.name === 'string')
-          results = results!.sort((a, b) => Number(b.ticker === search.toUpperCase()) - Number(a.ticker === search.toUpperCase())).slice(0, 8)
-          if (cache.current.size > 50) cache.current.clear()
-          cache.current.set(search.toLowerCase(), results)
-        }
-        if (live) { setMatches(results); setStatus(results.length ? '' : '검색 결과가 없습니다. 영문 회사명이나 티커를 입력해 주세요.') }
+        const results = await searchStocks(search, controller.signal)
+        if (live) display(results)
       } catch { if (live) setStatus('검색을 불러오지 못했습니다. 정확한 티커를 입력하고 Enter를 눌러 주세요.') }
+      finally { window.clearTimeout(timeout) }
     }, 350)
-    return () => { live = false; controller.abort(); clearTimeout(timer) }
-  }, [search, query])
+    return () => { live = false; controller.abort(); window.clearTimeout(timer); window.clearTimeout(timeout) }
+  }, [search, opened])
   function select(ticker: string) { setQuery(ticker); setOpened(false); input.current?.blur(); navigate(`/stock/${encodeURIComponent(ticker)}`); onSelect() }
   return <form className="site-search" onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setOpened(false) }} onSubmit={e => {
     e.preventDefault()
     const selected = matches[active] || matches.find(row => row.ticker === search.toUpperCase())
     if (selected) select(selected.ticker)
-    else if (/^[A-Z][A-Z0-9.-]{0,5}$/.test(search)) select(search.toUpperCase())
+    else if (/^[A-Z][A-Z0-9.-]{0,5}$/i.test(search)) select(search.toUpperCase())
     else { setOpened(true); setStatus('검색 결과에서 원하는 종목을 선택해 주세요.') }
   }}>
     <label className="news-sr-only" htmlFor="site-stock-search">미국 종목명 또는 티커 검색</label>

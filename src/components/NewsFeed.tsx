@@ -16,7 +16,7 @@ import type { NewsItem, Region, TopicFilter } from './newsSelection'
 interface Feed {
   items: NewsItem[]
   fetchedAt: number
-  sources: { id: string; publisher: string; region: string; status: string; error?: string; checkedAt?: number | null; eligibleItems?: number; latestPublishedAt?: string | null }[]
+  sources: { id: string; publisher: string; region: string; status: string; error?: string; checkedAt?: number | null; lastSuccessAt?: number; nextRetryAt?: number; eligibleItems?: number; latestPublishedAt?: string | null }[]
 }
 const CACHE_KEY = 'anthracite_curated_news_v6'
 const TTL = 10 * 60 * 1000
@@ -54,7 +54,7 @@ function relativeTime(timestamp: number) {
   return hours < 24 ? `${hours}시간 전` : `${Math.floor(hours / 24)}일 전`
 }
 
-function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
+function NewsImage({ item }: { item: NewsItem }) {
   const [failed, setFailed] = useState(false)
   const [logoFailed, setLogoFailed] = useState(false)
   const logo = PUBLISHER_LOGOS[item.publisher]
@@ -62,7 +62,7 @@ function NewsImage({ item, eager }: { item: NewsItem; eager: boolean }) {
   return <figure className="news-image-wrap">
     <div className="news-image-frame">
       {available ? <img className="news-image" src={item.image_url} alt=""
-        loading={eager ? 'eager' : 'lazy'} decoding="async" referrerPolicy="no-referrer"
+        loading="lazy" decoding="async" referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
         onLoad={event => {
           const img = event.currentTarget
@@ -135,14 +135,14 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const batches = newsBatches(matching, region)
   const news = batches.slice(0, visibleBatches).flat()
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
-  const partial = relevantSources.some(source => source.status === 'unavailable')
+  const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
   const publishers = [...new Set(news.map(item => item.publisher))]
-  function article(item: NewsItem, index: number) {
+  function article(item: NewsItem) {
     return (
       <article key={item.id} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
         <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
-          {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} eager={index < 2} />}
-          <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}</p>
+          {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} />}
+          <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}{item.feedStale ? ' · 이전 수집 기사' : ''}</p>
           <div className="news-topic-tags" aria-label="기사 주제">
             {TOPICS.filter(t => item.topics?.includes(t.value)).map(t => <span key={t.value}>{t.label}</span>)}
           </div>
@@ -164,7 +164,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
       <div className="sector-news-heading"><h3>{previewSector ? `${previewSector.name} News` : 'Market News'}</h3>{previewSector && <button type="button" onClick={onClearSector}>선택 해제</button>}</div>
       <p className="sector-news-note">{previewSector ? '제목 키워드 기준 관련 기사' : 'Maps 업종을 선택하면 관련 기사를 표시합니다.'}</p>
       {failed && <p role="status" className="sector-news-note">{feed ? '갱신 실패 · 이전 수집 기사' : '뉴스를 불러오지 못했습니다.'}</p>}
-      {!failed && feed?.sources.some(source => source.status === 'unavailable') && <p className="sector-news-note">일부 매체 수집 불가</p>}
+      {!failed && feed?.sources.some(source => ['unavailable', 'stale'].includes(source.status)) && <p className="sector-news-note">일부 매체 수집 불가</p>}
       {loading && !feed ? <p role="status">기사를 불러오는 중…</p> : <ul>{previewItems.map(item => <li key={item.id} className={isRead(item.article_url) ? 'is-read' : undefined}><a onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }} href={item.article_url} target="_blank" rel="noopener noreferrer" title={item.title}>{item.title}</a><p>{isRead(item.article_url) ? '읽음 · ' : ''}{item.publisher} · <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>{relativeTime(Date.parse(item.published_utc))}</time></p></li>)}</ul>}
       {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
@@ -197,7 +197,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
       </div>
       <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
       <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
-      {feed && <p className="news-updated">최근 수집: <time dateTime={new Date(feed.fetchedAt).toISOString()}
+      {feed && <p className="news-updated">최근 확인: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
       <div role="status" aria-live="polite">
         {failed ? <p className="news-notice">{news.length ? '업데이트하지 못해 이전 수집 기사를 표시합니다.' : '뉴스를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.'}</p>
@@ -207,10 +207,12 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
         <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 설정 피드 기사 확인</summary>
         <ul>{relevantSources.map(source => <li key={source.id}>
           <div><strong>{source.publisher}</strong><small>{source.id}</small></div>
-          <span>{source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_404' ? '출처 피드 주소를 찾을 수 없음 (404)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 다음 갱신 때 재시도'}</span>
+          <span>{source.status === 'stale' ? '갱신 실패 · 이전 수집 기사 표시' : source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_404' ? '출처 피드 주소를 찾을 수 없음 (404)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 대기 후 재시도'}</span>
           <small>조회 시각: {source.checkedAt ? dataTime(source.checkedAt) : source.status === 'not_configured' ? '조회하지 않음' : '시각 미제공'}{source.latestPublishedAt ? ` · 최근 기사: ${dataTime(source.latestPublishedAt)}` : ''}</small>
+          {source.lastSuccessAt && source.status === 'stale' && <small>마지막 정상 수집: {dataTime(source.lastSuccessAt)} · 최대 6시간 유지</small>}
+          {source.nextRetryAt && <small>재시도 가능 시각: {dataTime(source.nextRetryAt)}</small>}
         </li>)}</ul>
-        <p>상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
+        <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
       </details>}
       <div aria-busy={loading}>
         {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">

@@ -32,3 +32,10 @@ test('more batches expose all matching articles once and preserve earlier batche
   assert.equal(newsBatches(items,'kr',now).flat().length,20)
   assert.deepEqual(newsBatches([item('Old','kr',5000)],'all',now),[])
 })
+
+test('browser cached fallback articles disappear after six hours even if the response was recently refreshed', async () => {
+  const { filterNews } = await import('../src/components/newsSelection.ts')
+  const fresh = item('A', 'global', 10)
+  const fallback = { ...item('B', 'global', 20), feedStale: true, feedCollectedAt: now - 6 * 3600000 - 1 }
+  assert.deepEqual(filterNews([fresh, fallback], 'all', 'all', '', now), [fresh])
+})

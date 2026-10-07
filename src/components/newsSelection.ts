@@ -14,12 +14,15 @@ export interface NewsItem {
   region: Exclude<Region, 'all'>
   image_url?: string
   image_credit?: string
+  feedStale?: boolean
+  feedCollectedAt?: number
   topics?: Topic[]
 }
 
 export function filterNews(items: NewsItem[], region: Region, topic: TopicFilter, query = '', now = Date.now()): NewsItem[] {
   const terms = query.normalize('NFKC').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean)
-  return items.filter(item => Number.isFinite(Date.parse(item.published_utc))
+  return items.filter(item => (!item.feedStale || (Number.isFinite(item.feedCollectedAt) && now >= item.feedCollectedAt! && now - item.feedCollectedAt! <= 6 * 3600000))
+    && Number.isFinite(Date.parse(item.published_utc))
     && now - Date.parse(item.published_utc) <= 72 * 60 * 60 * 1000
     && Date.parse(item.published_utc) <= now + 300000
     && (region === 'all' || item.region === region)

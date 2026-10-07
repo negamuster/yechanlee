@@ -61,14 +61,16 @@ test('oversized feeds are rejected', async () => {
 test('API rejects writes, does not cache outages, and coalesces concurrent refreshes', async () => {
   const originalFetch = globalThis.fetch
   try {
-    const { default: api } = await import('../api/news.js')
-    const handler = api.fetch
+    const { createNewsHandler } = await import('../lib/news-handler.js')
+    let clock = Date.now()
+    const handler = createNewsHandler({ now: () => clock })
     const post = await handler(new Request('https://example.com/api/news', { method: 'POST' }))
     assert.equal(post.status, 405)
     globalThis.fetch = async () => new Response('Unavailable', { status: 503 })
     const unavailable = await handler(new Request('https://example.com/api/news'))
     assert.equal(unavailable.status, 503)
     assert.equal(unavailable.headers.get('cache-control'), 'no-store')
+    clock += 61000 // Retry backoff has elapsed; outages are never a successful cache hit.
     let count = 0
     globalThis.fetch = async () => {
       count++
