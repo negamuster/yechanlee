@@ -57,7 +57,7 @@ test('cache coalesces callers, preserves timestamp on failure, and expires stale
   const cached = await (await handler(request())).json()
   assert.equal(cached.stale, true)
   assert.equal(cached.fetchedAt, at)
-  await handler(request()); assert.equal(calls, 3)
+  await handler(request()); assert.equal(calls, 4)
   clock += 8 * 86400000
   assert.equal((await handler(request())).status, 503)
 })
@@ -87,11 +87,13 @@ test('same-day ranking is eligible after 21 ET only with broad coverage', async 
   assert.equal(partial.rankings.gainers[0].changePct, 100)
 })
 
-test('same-day access unavailable retains consecutive historical sessions with a notice', async () => {
+test('latest access unavailable retains consecutive historical sessions before and after NY midnight', async () => {
+  for (const time of ['2026-10-07T03:00:00Z', '2026-10-07T04:01:00Z']) {
   let calls = 0
-  const result = await collectMovers({ key: 'test', now: Date.parse('2026-10-07T03:00:00Z'), fetchImpl: async () => ++calls === 1 ? new Response(null, { status: 403 }) : payload([row('AAA', calls === 2 ? 20 : 10)]) })
+  const result = await collectMovers({ key: 'test', now: Date.parse(time), fetchImpl: async () => ++calls === 1 ? new Response(null, { status: 403 }) : payload([row('AAA', calls === 2 ? 20 : 10)]) })
   assert.equal(result.tradingDate, '2026-10-05')
   assert.equal(result.previousTradingDate, '2026-10-02')
   assert.equal(result.pendingLatest, true)
   assert.equal(result.rankings.gainers[0].changePct, 100)
+  }
 })

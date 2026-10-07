@@ -60,7 +60,7 @@ export default function MarketMovers() {
         </button>
       </div>
       {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
-      {data?.pendingLatest && <p className="movers-notice" role="status">당일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
+      {data?.pendingLatest && <p className="movers-notice" role="status">최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
       <details className="movers-info"><summary>정보 ⓘ · 출처·산정 기준</summary>
       <p>{selected.description} · 상위 10개</p>
       {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}

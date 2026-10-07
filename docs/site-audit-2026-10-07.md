@@ -7,7 +7,7 @@
 - Cache is fresh for five minutes; manual refresh and visible-tab refresh are available. Failed refreshes retain explicitly marked same-symbol data for at most 24 hours. Optional news/financial/related failures are visible and retried. Aborted or superseded requests cannot replace another ticker's result.
 - Daily bars exclude the current New York day until 21:00 ET. This is a conservative application cutoff, not a provider publication guarantee. Provider availability can delay the displayed date.
 - 52-week extrema use daily highs/lows. Financial reporting dates are shown. ROE uses ending equity, and total liabilities/equity is labeled accurately. P/E uses the latest annual diluted EPS, not TTM. Nonpositive denominators yield unavailable ratios.
-- Market Movers can use the current NY day after 21:00 ET. Same-day coverage must contain at least 1,000 valid distinct symbols and 90% of the preceding available day's coverage. If same-day access is unavailable (403/404/not authorized), or coverage is insufficient, it falls back to the preceding two sessions with a visible notice. Coverage is a safeguard, not proof of provider finalization.
+- Market Movers can use the current NY day after 21:00 ET. Same-day coverage must contain at least 1,000 valid distinct symbols and 90% of the preceding available day's coverage. If the newest candidate is unavailable (403/404/not authorized, including after NY midnight), or coverage is insufficient, it falls back to the preceding two sessions with a visible notice. Coverage is a safeguard, not proof of provider finalization.
 
 ## Presentation and operating limits
 
