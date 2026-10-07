@@ -1,7 +1,8 @@
 name: Daily briefing without AI
 on:
   schedule:
-    - cron: '0 22 * * *' # 07:00 Asia/Seoul; GitHub may delay delivery
+    - cron: '0 22 * * *' # Primary: 07:00 Asia/Seoul; GitHub may delay delivery
+    - cron: '17,37 22 * * *' # Recovery: 07:17 / 07:37 KST; existing edition is preserved
   workflow_dispatch:
   push:
     branches: [main]

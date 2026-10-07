@@ -1,0 +1,219 @@
+{
+  "id": "2026-10-08",
+  "status": "published",
+  "title": "2026-10-08 경제·기업 뉴스와 공식 지표",
+  "sessionDate": null,
+  "cutoffAt": "2026-10-07T22:56:19.130Z",
+  "publishedAt": "2026-10-07T22:56:27.452Z",
+  "summary": [
+    "최근 24시간 경제·기업 뉴스 6건을 매체별 최대 2건씩 정리했습니다. 한국어 제목을 우선하고 같은 언어 안에서는 최신순으로 표시합니다.",
+    "미국 재무부 2026-10-07 자료에서 10년물 파 수익률은 5.28%입니다.[1]",
+    "뉴스 제목의 원문 링크와 시간순 공식 일정은 전체 브리핑에서 확인할 수 있습니다. 별도의 시장 해석이나 투자 의견은 포함하지 않습니다."
+  ],
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "수집 범위: 10. 07. 07:56 KST~10. 08. 07:56 KST. 기사 제목과 발표 데이터를 정해진 규칙으로 정리한 브리핑입니다. 기사 본문을 읽거나 사실관계·시장 원인을 별도로 분석한 결과는 아닙니다."
+    },
+    {
+      "kind": "heading",
+      "text": "1. 공식 금리 데이터"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-07 기준: 2년물 4.77% (2bp 하락) · 10년물 5.28% (1bp 상승) · 30년물 5.67% (3bp 상승).[1]"
+    },
+    {
+      "kind": "metadata",
+      "text": "미국 재무부 파 수익률 · 비교일 2026-10-06 → 2026-10-07 · 주식 거래일·시장 호가와 구분"
+    },
+    {
+      "kind": "heading",
+      "text": "2. 경제·기업 뉴스 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "삼전닉스 3년뒤 주가 하느님도 몰라…유행 따라갔다 원금 녹는다는 ELS [이슈플러스] [2]"
+    },
+    {
+      "kind": "metadata",
+      "text": "매일경제 · 10. 08. 06:11 KST · 시장·투자 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "“떨어질 만큼 떨어졌죠? 주워보겠습니다”…14조 팔고 돌아온 개미들 [3]"
+    },
+    {
+      "kind": "metadata",
+      "text": "매일경제 · 10. 08. 06:09 KST · 시장·투자 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "\"폭락 예측말고 대비하라\"…'블랙스완'탈레브 美증시 경고 [4]"
+    },
+    {
+      "kind": "metadata",
+      "text": "한국경제 · 10. 08. 00:45 KST · 시장·투자 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "월가분석가 \"마이크론 PER19배 간다\"…4배인 삼전·SK하이닉스는? [5]"
+    },
+    {
+      "kind": "metadata",
+      "text": "한국경제 · 10. 07. 23:46 KST · 기술·반도체 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "OpenAI says teen ChatGPT use limited but research finds it an 'unacceptable risk' [6]"
+    },
+    {
+      "kind": "metadata",
+      "text": "BBC Business · 10. 08. 05:34 KST · 기술·반도체 · 영문 원문 제목 · 번역 없음"
+    },
+    {
+      "kind": "subheading",
+      "text": "Badenoch says Tories would scrap inheritance tax on family homes [7]"
+    },
+    {
+      "kind": "metadata",
+      "text": "BBC Business · 10. 07. 23:33 KST · 경제 · 영문 원문 제목 · 번역 없음"
+    },
+    {
+      "kind": "heading",
+      "text": "3. 향후 72시간 공식 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10. 08. 17:30 KST · Speech - Governor Christopher J. Waller [8]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "미국 재무부 · 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
+    },
+    {
+      "id": 2,
+      "label": "매일경제 · 삼전닉스 3년뒤 주가 하느님도 몰라…유행 따라갔다 원금 녹는다는 ELS [이슈플러스]",
+      "url": "https://www.mk.co.kr/news/stock/12171049"
+    },
+    {
+      "id": 3,
+      "label": "매일경제 · “떨어질 만큼 떨어졌죠? 주워보겠습니다”…14조 팔고 돌아온 개미들",
+      "url": "https://www.mk.co.kr/news/stock/12171046"
+    },
+    {
+      "id": 4,
+      "label": "한국경제 · \"폭락 예측말고 대비하라\"…'블랙스완'탈레브 美증시 경고",
+      "url": "https://www.hankyung.com/article/202610089559i"
+    },
+    {
+      "id": 5,
+      "label": "한국경제 · 월가분석가 \"마이크론 PER19배 간다\"…4배인 삼전·SK하이닉스는?",
+      "url": "https://www.hankyung.com/article/202610079546i"
+    },
+    {
+      "id": 6,
+      "label": "BBC Business · OpenAI says teen ChatGPT use limited but research finds it an 'unacceptable risk'",
+      "url": "https://www.bbc.co.uk/news/articles/cwz0vrmxkvy4o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "id": 7,
+      "label": "BBC Business · Badenoch says Tories would scrap inheritance tax on family homes",
+      "url": "https://www.bbc.co.uk/news/articles/cmn5vw05l0q3o?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "id": 8,
+      "label": "Federal Reserve · 공식 일정",
+      "url": "https://www.federalreserve.gov/json/calendar.json"
+    }
+  ],
+  "dataNote": "규칙 기반 자동 정리 · AI 미사용. 뉴스는 RSS 원문 제목·링크만 제공하며 별도 본문 검증·번역·요약을 하지 않습니다. 공식 데이터는 날짜·형식·수치 범위를 검사합니다. 일부 출처 수집 실패로 누락될 수 있습니다. 실시간 시황이나 포괄적인 시장 결산이 아닙니다.",
+  "corrections": [],
+  "review": {
+    "mode": "rules",
+    "approvedBy": "Anthracite deterministic publisher",
+    "approvedAt": "2026-10-07T22:56:27.452Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "inputChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": null,
+        "kind": "data",
+        "claimSummary": "2026-10-07 2·10·30년 파 수익률 및 직전 관측일 비교"
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.mk.co.kr/news/stock/12171049",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T21:11:01.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.mk.co.kr/news/stock/12171046",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T21:09:33.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.hankyung.com/article/202610089559i",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T15:45:34.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.hankyung.com/article/202610079546i",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T14:46:16.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.bbc.co.uk/news/articles/cwz0vrmxkvy4o?at_medium=RSS&at_campaign=rss",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T20:34:17.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.bbc.co.uk/news/articles/cmn5vw05l0q3o?at_medium=RSS&at_campaign=rss",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": "2026-10-07T14:33:11.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.federalreserve.gov/json/calendar.json",
+        "checkedAt": "2026-10-07T22:56:27.296Z",
+        "publishedAt": null,
+        "kind": "calendar",
+        "claimSummary": "공식 피드의 예정시각을 KST로 변환; 일정은 변경 가능"
+      }
+    ],
+    "inputHash": "8e656d40af26b59c7fb3b43ca406ad8eecd9b60bb4a3f15e8e6c93563aa55b7f",
+    "generatorVersion": 1,
+    "contentHash": "6b39243497d9f8f49b7e0461a5a4c76f98e8f8dd45ebb68a39208ed05bce195c"
+  }
+}

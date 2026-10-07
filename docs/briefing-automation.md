@@ -2,7 +2,7 @@
 
 ## Current operation (owner approved 2026-10-07)
 
-The owner requested removal of ChatGPT/API usage from daily publication. Starting with the next new KST date, `.github/workflows/daily-digest.yml` runs ordinary Node.js code at 22:00 UTC (07:00 Asia/Seoul). GitHub can delay schedules; this is not an exact publication-time guarantee. No model, translation, paid news API, or new secret is used. Standard public-repository GitHub-hosted runners are used. Existing Vercel hosting limits still apply.
+The owner requested removal of ChatGPT/API usage from daily publication. Starting with the next new KST date, `.github/workflows/daily-digest.yml` runs ordinary Node.js code at 22:00 UTC (07:00 Asia/Seoul), with recovery attempts at 22:17 and 22:37 UTC (07:17 / 07:37 KST). Existing same-date editions are preserved; recovery attempts do not collect new inputs or replace them. GitHub can delay schedules; this is not an exact publication-time guarantee. No model, translation, paid news API, or new secret is used. Standard public-repository GitHub-hosted runners are used. Existing Vercel hosting limits still apply.
 
 The workflow has a manual trigger. Pushes affecting the generator run collection in dry-run mode and build without publishing. The previous ChatGPT schedule must be paused after successful migration checks. Do not create another ChatGPT automation.
 
@@ -34,3 +34,9 @@ Set `DIGEST_PREVIEW_PATH` to a scratch path to inspect a non-published preview. 
 ## History
 
 2026-10-06: owner authorized AI-authored, AI-reviewed automatic publication without daily human approval. The October 7 morning edition used that method. On October 7 the owner requested this non-AI replacement to eliminate recurring model usage/API cost.
+
+## 2026-10-08 recovery
+
+At approximately 07:56 KST, the workflow was active on main but no October 8 scheduled run was present in the Actions run history. The cause of the absent run is not exposed; delay versus dropped scheduling cannot be distinguished. GitHub documents that scheduled events may be delayed or dropped under load, especially at the start of the hour: https://docs.github.com/en/actions/how-tos/troubleshoot-workflows.
+
+The October 8 edition was generated as an on-demand recovery using the unchanged deterministic generator and live inputs, with its actual collection/publication timestamps. It is not evidence that the first scheduled run succeeded. Recovery cron entries reduce dependence on one trigger, but share GitHub's scheduler and do not guarantee an exact publication time. No AI calls or ChatGPT automation were added.
