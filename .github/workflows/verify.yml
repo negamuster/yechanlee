@@ -1,0 +1,30 @@
+name: Verify site changes
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'api/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package*.json'
+      - 'vite.config.ts'
+      - 'tsconfig*.json'
+      - '.github/workflows/verify.yml'
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: node --test tests/*.test.mjs
+      - run: npm run build

@@ -33,32 +33,14 @@ test('logo cannot fetch an arbitrary branding host; upstream errors never leak c
   const response = await failed(stockReq('/v3/reference/tickers/AAPL')); assert.equal(response.status, 503); assert.ok(!(await response.text()).includes('secret-key'))
 })
 
-test('analysis fixes the model and output budget, caches identical prompts and enforces rate limit', async () => {
-  let count = 0
-  const handler = createAnalysisHandler({ getKey: () => 'secret-key', fetchImpl: async (_, options) => {
-    count++; const body = JSON.parse(options.body)
-    assert.equal(body.max_tokens, 800); assert.equal(body.model, 'claude-sonnet-4-20250514'); assert.ok(body.system); assert.equal(body.tools, undefined)
-    return Response.json({ content: [{ type: 'text', text: '분석 결과' }], usage: { input_tokens: 100 } })
-  } })
-  assert.equal((await handler(aiReq({ prompt }))).status, 200)
-  assert.equal((await handler(aiReq({ prompt }))).status, 200); assert.equal(count, 1)
-  await handler(aiReq({ prompt }))
-  assert.equal((await handler(aiReq({ prompt }))).status, 429)
-})
-
-test('analysis rejects arbitrary payloads, cross-site calls and oversized bodies without spending tokens', async () => {
-  let count = 0
-  const make = () => createAnalysisHandler({ getKey: () => 'secret-key', fetchImpl: async () => { count++; throw new Error('not called') } })
-  for (const body of [{ model: 'other', messages: [] }, { prompt, max_tokens: 100000 }, { prompt: 'a'.repeat(6001) }, { prompt: '가'.repeat(6000) }]) assert.equal((await make()(aiReq(body))).status, 400)
-  assert.equal((await make()(aiReq({ prompt }, { Origin: 'https://evil.test' }))).status, 403)
-  assert.equal((await make()(new Request(`${base}/api/claude-proxy`))).status, 405)
-  assert.equal(count, 0)
-})
-
-test('concurrent upstream analysis failures both return controlled errors', async () => {
-  const handler = createAnalysisHandler({ getKey: () => 'secret', fetchImpl: async () => { await new Promise(r => setTimeout(r, 10)); throw new Error('secret') } })
-  const responses = await Promise.all([handler(aiReq({ prompt })), handler(aiReq({ prompt }))])
-  for (const response of responses) { assert.equal(response.status, 503); assert.ok(!(await response.text()).includes('secret')) }
+test('retired analysis rejects old clients without reading credentials or calling providers', async () => {
+  let calls = 0
+  const handler = createAnalysisHandler({ getKey: () => { calls++; return 'secret' }, fetchImpl: async () => { calls++; throw new Error('must not call') } })
+  const responses = await Promise.all([handler(aiReq({ prompt })), handler(aiReq({ prompt: 'a'.repeat(20000) }))])
+  for (const response of responses) assert.equal(response.status, 410)
+  assert.equal((await handler(aiReq({ prompt }, { Origin: 'https://evil.test' }))).status, 403)
+  assert.equal((await handler(new Request(`${base}/api/claude-proxy`))).status, 405)
+  assert.equal(calls, 0)
 })
 
 test('ticker search fixes scope and limits, rejects mixed proxy parameters', async () => {

@@ -70,3 +70,19 @@ test('missing key, timeout and method errors are bounded and do not expose crede
     fetchImpl: () => new Promise(() => {}) })
   assert.deepEqual(await (await timeout(request())).json(), { error: 'timeout' })
 })
+
+test('same-day ranking is eligible after 21 ET only with broad coverage', async () => {
+  const clock = Date.parse('2026-10-07T01:00:00Z')
+  assert.equal(candidateDates(clock)[0], '2026-10-06')
+  const broad = price => Array.from({ length: 1100 }, (_, i) => row(`S${i}`, price))
+  let calls = 0
+  const complete = await collectMovers({ key: 'test', now: clock, fetchImpl: async () => payload(broad(++calls === 1 ? 20 : 10)) })
+  assert.equal(complete.tradingDate, '2026-10-06')
+  assert.equal(complete.pendingLatest, false)
+  calls = 0
+  const partial = await collectMovers({ key: 'test', now: clock, fetchImpl: async () => payload(++calls === 1 ? [row('AAA', 99)] : broad(calls === 2 ? 20 : 10)) })
+  assert.equal(partial.tradingDate, '2026-10-05')
+  assert.equal(partial.previousTradingDate, '2026-10-02')
+  assert.equal(partial.pendingLatest, true)
+  assert.equal(partial.rankings.gainers[0].changePct, 100)
+})

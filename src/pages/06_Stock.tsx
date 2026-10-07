@@ -1,17 +1,13 @@
 import { useReadArticles } from '../hooks/useReadArticles'
 import { WatchButton } from '../components/SavedItemsProvider'
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
+import { useStockSnapshot } from '../hooks/useStockSnapshot'
+import { quoteFromBars } from '../lib/stockSnapshot'
+import './Stock.css'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const stockCache = new Map<string, any>()
-const poly = (path: string) => `/api/stock-data?path=${encodeURIComponent(path)}`
-
-function dateStr(daysAgo = 0): string {
-  const d = new Date(); d.setDate(d.getDate() - daysAgo)
-  return d.toISOString().split('T')[0]
-}
 function fmtCap(v: number | null | undefined): string {
-  if (!v) return 'N/A'
+  if (v == null || !Number.isFinite(v)) return 'N/A'
   if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T'
   if (v >= 1e9)  return '$' + (v / 1e9).toFixed(1) + 'B'
   if (v >= 1e6)  return '$' + (v / 1e6).toFixed(1) + 'M'
@@ -23,7 +19,7 @@ function fmtNum(v: any, prefix = '', suffix = '', digits = 2): string {
   return prefix + n.toFixed(digits) + suffix
 }
 function fmtLarge(v: number | null | undefined): string {
-  if (!v) return 'N/A'
+  if (v == null || !Number.isFinite(v)) return 'N/A'
   if (v >= 1e9)  return '$' + (v / 1e9).toFixed(1) + 'B'
   if (v >= 1e6)  return '$' + (v / 1e6).toFixed(1) + 'M'
   return '$' + v.toFixed(0)
@@ -65,7 +61,7 @@ function PriceChart({ candles, isPositive }: { candles: Candle[]; isPositive: bo
       <polyline points={pts} fill="none" stroke={color} strokeWidth="1.8" strokeLinejoin="round" />
       {xIdx.map(i => (
         <text key={i} x={sx(candles[i].t)} y={H - 8} textAnchor="middle" fontSize="10" fill="#bbb">
-          {new Date(candles[i].t * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          {new Date(candles[i].t * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })}
         </text>
       ))}
       <circle cx={sx(candles[candles.length - 1].t)} cy={sy(candles[candles.length - 1].c)} r="3" fill={color} />
@@ -80,100 +76,18 @@ export default function Stock() {
   const navigate = useNavigate()
   const symbol = ticker?.toUpperCase() || ''
 
-  const [details, setDetails] = useState<any>(null)
-  const [prevDay, setPrevDay] = useState<any>(null)
-  const [candles, setCandles] = useState<Candle[]>([])
-  const [yearCandles, setYearCandles] = useState<Candle[]>([])
-  const [news, setNews] = useState<any[]>([])
-  const [related, setRelated] = useState<string[]>([])
-  const [financials, setFinancials] = useState<any[]>([])
+  const { snapshot, loading, error, refresh } = useStockSnapshot(symbol)
+  const details = snapshot?.details
+  const news = snapshot?.news || []
+  const related = snapshot?.related || []
+  const financials = snapshot?.financials || []
+  const bars = snapshot?.bars || []
+  const quote = quoteFromBars(bars)
+  const prevDay = quote.latest
   const [period, setPeriod] = useState<'1M' | '3M' | '6M' | '1Y'>('3M')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [aiAnalysis, setAiAnalysis] = useState('')
-  const [aiLoading, setAiLoading] = useState(false)
-  const [aiDone, setAiDone] = useState(false)
-
-  const periodDays: Record<string, number> = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 }
-
-  const fetchCandles = useCallback(async (sym: string, days: number) => {
-    try {
-      const from = dateStr(days), to = dateStr(0)
-      const res = await fetch(poly(`/v2/aggs/ticker/${sym}/range/1/day/${from}/${to}?adjusted=true&sort=asc&limit=500`))
-      const data = await res.json()
-      if (data.results) setCandles(data.results.map((b: any) => ({ t: Math.floor(b.t / 1000), c: b.c })))
-    } catch {}
-  }, [])
-
-  useEffect(() => { if (symbol) loadData() }, [symbol])
-
-  useEffect(() => { if (symbol) fetchCandles(symbol, periodDays[period]) }, [period, symbol])
-
-  const loadData = async () => {
-  setLoading(true); setError('')
-  setAiAnalysis(''); setAiDone(false)
-
-  // 캐시 있으면 바로 사용
-  if (stockCache.has(symbol)) {
-    const c = stockCache.get(symbol)
-    setDetails(c.details); setPrevDay(c.prevDay); setNews(c.news)
-    setRelated(c.related); setFinancials(c.financials); setYearCandles(c.yearCandles)
-    setLoading(false)
-    fetchCandles(symbol, periodDays[period])
-    return
-  }
-
-  setDetails(null); setPrevDay(null); setCandles([]); setYearCandles([])
-  setNews([]); setRelated([]); setFinancials([])
-
-  try {
-    // 1단계: 핵심 3개
-    const [detRes, prevRes, newsRes] = await Promise.allSettled([
-      fetch(poly(`/v3/reference/tickers/${symbol}`)).then(r => r.json()),
-      fetch(poly(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`)).then(r => r.json()),
-      fetch(poly(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`)).then(r => r.json()),
-    ])
-
-    if (detRes.status === 'fulfilled' && detRes.value?.results) {
-      setDetails(detRes.value.results)
-    } else {
-      setError('찾을 수 없는 종목입니다. 티커를 확인해주세요.')
-      setLoading(false); return
-    }
-
-    const pd = prevRes.status === 'fulfilled' ? prevRes.value?.results?.[0] : null
-    const nw = newsRes.status === 'fulfilled' ? newsRes.value?.results || [] : []
-    if (pd) setPrevDay(pd)
-    setNews(nw)
-    setLoading(false)
-
-    // 2단계: 나머지 — 2초 딜레이
-    await new Promise(r => setTimeout(r, 2000))
-
-    const [relRes, finRes, yrRes] = await Promise.allSettled([
-      fetch(poly(`/v1/related-companies/${symbol}`)).then(r => r.json()),
-      fetch(poly(`/vX/reference/financials?ticker=${symbol}&timeframe=annual&limit=2&order=desc`)).then(r => r.json()),
-      fetch(poly(`/v2/aggs/ticker/${symbol}/range/1/day/${dateStr(365)}/${dateStr(0)}?adjusted=true&sort=asc&limit=365`)).then(r => r.json()),
-    ])
-
-    const rel = relRes.status === 'fulfilled' ? (relRes.value?.results || []).map((r: any) => r.ticker).slice(0, 8) : []
-    const fin = finRes.status === 'fulfilled' ? finRes.value?.results || [] : []
-    const yr  = yrRes.status === 'fulfilled' && yrRes.value?.results
-      ? yrRes.value.results.map((b: any) => ({ t: Math.floor(b.t / 1000), c: b.c })) : []
-
-    setRelated(rel); setFinancials(fin); setYearCandles(yr)
-
-    // 캐시에 저장
-    stockCache.set(symbol, {
-      details: detRes.status === 'fulfilled' ? detRes.value.results : null,
-      prevDay: pd, news: nw, related: rel, financials: fin, yearCandles: yr,
-    })
-
-    await fetchCandles(symbol, periodDays[period])
-
-  } catch { setError('데이터를 불러오지 못했습니다.') }
-  finally { setLoading(false) }
-}
+  const periodDays = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 }
+  const chartStart = (prevDay?.t || 0) - periodDays[period] * 86400000
+  const candles = bars.filter(b => b.t >= chartStart).map(b => ({ t: b.t / 1000, c: b.c }))
 
   // Derived financials
   const fin0 = financials[0]?.financials
@@ -184,98 +98,41 @@ export default function Stock() {
   const netIncome = fin0?.income_statement?.net_income_loss?.value ?? null
   const equity = fin0?.balance_sheet?.equity?.value ?? null
   const liabilities = fin0?.balance_sheet?.liabilities?.value ?? null
-  const currentPrice = prevDay?.c ?? 0
-  const pe = eps && currentPrice ? currentPrice / eps : null
-  const roe = netIncome && equity ? (netIncome / equity) * 100 : null
-  const debtEquity = liabilities && equity ? liabilities / equity : null
-  const revenueGrowth = revenue && revenue1 ? ((revenue - revenue1) / Math.abs(revenue1)) * 100 : null
-  const week52High = yearCandles.length ? Math.max(...yearCandles.map(c => c.c)) : null
-  const week52Low  = yearCandles.length ? Math.min(...yearCandles.map(c => c.c)) : null
-
-  const change = prevDay ? (prevDay.c - prevDay.o) : 0
-  const changePct = prevDay && prevDay.o ? ((prevDay.c - prevDay.o) / prevDay.o) * 100 : 0
-  const isPositive = change >= 0
-  const priceColor = isPositive ? '#16a34a' : '#ff3b30'
-
-  const generateAnalysis = async () => {
-    if (!details || aiLoading) return
-    setAiLoading(true); setAiAnalysis(''); setAiDone(false)
-    const prompt = `다음은 ${details.name}(${symbol})의 최신 재무 데이터입니다.
-
-현재가: $${currentPrice.toFixed(2)} (전일 대비 ${isPositive ? '+' : ''}${changePct.toFixed(2)}%)
-시가총액: ${fmtCap(details.market_cap)}
-섹터/산업: ${details.sic_description || 'N/A'}
-P/E Ratio: ${pe ? pe.toFixed(1) : 'N/A'}
-EPS (Annual): ${eps ? '$' + eps.toFixed(2) : 'N/A'}
-매출 (Annual): ${fmtLarge(revenue)}
-순이익 (Annual): ${fmtLarge(netIncome)}
-ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
-매출성장률 YoY: ${revenueGrowth ? revenueGrowth.toFixed(1) + '%' : 'N/A'}
-52주 고/저: ${week52High ? '$' + week52High.toFixed(2) : 'N/A'} / ${week52Low ? '$' + week52Low.toFixed(2) : 'N/A'}
-회사 설명: ${details.description?.slice(0, 300) || 'N/A'}
-
-위 데이터를 바탕으로 이 종목에 대해 한국어로 분석해주세요. 아래 구조를 따르되, 각 항목은 자연스러운 문장으로 작성하세요:
-
-**현재 상황**
-(현재 주가 위치, 최근 주가 흐름 2~3문장)
-
-**핵심 강점**
-(재무 지표 기반 강점 2가지, 각 1~2문장)
-
-**주요 리스크**
-(주의해야 할 리스크 2가지, 각 1~2문장)
-
-**투자자 관점에서 주목할 점**
-(밸류에이션, 성장성, 수익성 등 종합 시각 2~3문장)
-
-분석은 객관적이고 교육적인 톤으로 작성하며, 특정 투자 결정을 권유하지 마세요.`
-
-    try {
-      const res = await fetch('/api/claude-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      })
-      const data = await res.json()
-      setAiAnalysis(res.ok ? (data.content?.[0]?.text || '분석 결과를 가져오지 못했습니다.') : (data.error || '분석을 불러오지 못했습니다.'))
-      setAiDone(true)
-    } catch { setAiAnalysis('분석을 불러오지 못했습니다.'); setAiDone(true) }
-    finally { setAiLoading(false) }
-  }
-
+  const currentPrice = prevDay?.c ?? null
+  const pe = eps > 0 && currentPrice !== null ? currentPrice / eps : null
+  const roe = netIncome != null && equity > 0 ? (netIncome / equity) * 100 : null
+  const debtEquity = liabilities != null && equity > 0 ? liabilities / equity : null
+  const revenueGrowth = revenue != null && revenue1 > 0 ? ((revenue - revenue1) / revenue1) * 100 : null
+  const week52High = quote.high
+  const week52Low = quote.low
+  const change = quote.change
+  const changePct = quote.changePct
+  const isPositive = (change ?? 0) >= 0
+  const priceColor = change === null ? '#666' : isPositive ? '#16a34a' : '#ff3b30'
 
   const fundamentals = [
-    { label: 'P/E Ratio',       value: pe ? pe.toFixed(1) : 'N/A' },
-    { label: 'EPS (Annual)',    value: eps ? '$' + eps.toFixed(2) : 'N/A' },
+    { label: 'P/E Ratio',       value: pe != null ? pe.toFixed(1) : 'N/A' },
+    { label: 'EPS (Annual)',    value: eps != null ? '$' + eps.toFixed(2) : 'N/A' },
     { label: 'Revenue',         value: fmtLarge(revenue) },
     { label: 'Net Income',      value: fmtLarge(netIncome) },
-    { label: 'ROE',             value: roe ? roe.toFixed(1) + '%' : 'N/A' },
-    { label: 'Revenue Growth',  value: revenueGrowth ? revenueGrowth.toFixed(1) + '%' : 'N/A' },
-    { label: 'Debt / Equity',   value: debtEquity ? debtEquity.toFixed(2) + 'x' : 'N/A' },
-    { label: '52W High',        value: week52High ? '$' + week52High.toFixed(2) : 'N/A' },
-    { label: '52W Low',         value: week52Low ? '$' + week52Low.toFixed(2) : 'N/A' },
+    { label: 'ROE (기말 자본 기준)',             value: roe != null ? roe.toFixed(1) + '%' : 'N/A' },
+    { label: 'Revenue Growth',  value: revenueGrowth != null ? revenueGrowth.toFixed(1) + '%' : 'N/A' },
+    { label: '총부채 / 자기자본',   value: debtEquity != null ? debtEquity.toFixed(2) + 'x' : 'N/A' },
+    { label: '52주 고가 (조정)',        value: week52High != null ? '$' + week52High.toFixed(2) : 'N/A' },
+    { label: '52주 저가 (조정)',         value: week52Low != null ? '$' + week52Low.toFixed(2) : 'N/A' },
     { label: 'Market Cap',      value: fmtCap(details?.market_cap) },
   ]
 
   const quickSummary = [
     { label: 'Market Cap',     value: fmtCap(details?.market_cap) },
-    { label: 'P/E Ratio',      value: pe ? pe.toFixed(1) : 'N/A' },
-    { label: 'EPS (Annual)',   value: eps ? '$' + eps.toFixed(2) : 'N/A' },
-    { label: 'ROE',            value: roe ? roe.toFixed(1) + '%' : 'N/A' },
-    { label: 'Revenue Growth', value: revenueGrowth ? revenueGrowth.toFixed(1) + '%' : 'N/A' },
+    { label: 'P/E Ratio',      value: pe != null ? pe.toFixed(1) : 'N/A' },
+    { label: 'EPS (Annual)',   value: eps != null ? '$' + eps.toFixed(2) : 'N/A' },
+    { label: 'ROE (기말 자본 기준)',            value: roe != null ? roe.toFixed(1) + '%' : 'N/A' },
+    { label: 'Revenue Growth', value: revenueGrowth != null ? revenueGrowth.toFixed(1) + '%' : 'N/A' },
     { label: 'Net Income',     value: fmtLarge(netIncome) },
-    { label: '52W High',       value: week52High ? '$' + week52High.toFixed(2) : 'N/A' },
-    { label: '52W Position',   value: week52High && week52Low ? Math.round(((currentPrice - week52Low) / (week52High - week52Low)) * 100) + '%' : 'N/A' },
+    { label: '52주 고가 (조정)',       value: week52High != null ? '$' + week52High.toFixed(2) : 'N/A' },
+    { label: '52주 범위 내 위치',   value: currentPrice !== null && week52High !== null && week52Low !== null && week52High > week52Low ? Math.round(((currentPrice - week52Low) / (week52High - week52Low)) * 100) + '%' : 'N/A' },
   ]
-
-  const renderAiText = (text: string) =>
-    text.split('\n').map((line, i) => {
-      if (!line.trim()) return <div key={i} style={{ height: '10px' }} />
-      const isBold = line.startsWith('**')
-      const html = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      return <p key={i} dangerouslySetInnerHTML={{ __html: html }}
-        style={{ fontSize: '14px', lineHeight: '1.85', color: isBold ? '#000' : '#444', margin: '0 0 4px', fontWeight: isBold ? '600' : '400' }} />
-    })
 
   const logoUrl = details?.branding?.icon_url ? `/api/stock-data?logo=${encodeURIComponent(symbol)}` : null
 
@@ -295,25 +152,31 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
         .srch:focus{outline:none;}
         .srch::placeholder{color:#bbb;}
         .period-btn{cursor:pointer;border:none;background:none;font-family:inherit;transition:all 0.1s;}
-        .ai-btn{transition:opacity 0.15s;cursor:pointer;font-family:inherit;}
-        .ai-btn:hover{opacity:0.7;}
       `}</style>
 
       <div style={{ backgroundColor: '#fff', minHeight: '100vh', fontFamily: 'var(--font-ui)', color: '#000' }}>
 
         {/* NAV */}
 
-        {loading ? (
+        {loading && !snapshot ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '20px' }}>
             <Spinner size={28} /><p style={{ fontSize: '14px', color: '#aaa' }}>{symbol} 데이터를 불러오는 중...</p>
           </div>
-        ) : error ? (
+        ) : error && !snapshot ? (
           <div style={{ textAlign: 'center', padding: '100px 48px' }}>
             <p style={{ fontSize: '20px', marginBottom: '12px' }}>{error}</p>
-            <p style={{ fontSize: '14px', color: '#aaa' }}>티커 예시: AAPL, NVDA, MSFT, GOOGL, TSLA</p>
+            <p style={{ fontSize: '14px', color: '#aaa' }}>티커 예시: AAPL, NVDA, MSFT, GOOGL, TSLA</p><button type="button" onClick={refresh}>다시 조회</button>
           </div>
         ) : details && (
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 48px 120px' }}>
+          <div className="stock-page-content">
+            <div className="stock-data-status">
+              <button type="button" onClick={refresh} disabled={loading}>{loading ? '조회 중…' : '새로고침'}</button>
+              <p>{quote.tradingDate} 미국 거래일 · 일별 집계 종가 · 실시간 아님 · USD · Polygon / Massive</p>
+              <p>비교 기준: {quote.previousDate || '미확인'} 종가 · 주식분할 조정 데이터</p>
+              {snapshot && <p>조회 시각: {new Date(snapshot.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })} KST · 5분마다 확인</p>}
+              {error && <p role="status">{error}</p>}
+              {!!snapshot?.issues.length && <p role="status">일부 자료 조회 실패: {snapshot.issues.join(', ')} · 해당 항목은 미확인으로 표시합니다.</p>}
+            </div>
 
             {/* HEADER */}
             <div className="s1" style={{ marginBottom: '36px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
@@ -333,18 +196,18 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px' }}>
-                  <span style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '-0.02em' }}>${currentPrice.toFixed(2)}</span>
+                  <span style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '-0.02em' }}>{currentPrice === null ? 'N/A' : '$' + currentPrice.toFixed(2)}</span>
                   <span style={{ fontSize: '18px', color: priceColor }}>
-                    {isPositive ? '+' : ''}{change.toFixed(2)} ({isPositive ? '+' : ''}{changePct.toFixed(2)}%)
+                    {change === null || changePct === null ? '전 거래일 대비 미확인' : `${isPositive ? '+' : ''}${change.toFixed(2)} (${isPositive ? '+' : ''}${changePct.toFixed(2)}%)`}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', gap: '0', marginTop: '14px', flexWrap: 'wrap', borderTop: '1px solid #f0f0f0', paddingTop: '14px' }}>
                   {[
-                    { label: 'Open',       value: `$${fmtNum(prevDay?.o)}` },
-                    { label: 'High',       value: `$${fmtNum(prevDay?.h)}` },
-                    { label: 'Low',        value: `$${fmtNum(prevDay?.l)}` },
-                    { label: 'Prev Close', value: `$${fmtNum(prevDay?.c)}` },
+                    { label: 'Open',       value: fmtNum(prevDay?.o, '$') },
+                    { label: 'High',       value: fmtNum(prevDay?.h, '$') },
+                    { label: 'Low',        value: fmtNum(prevDay?.l, '$') },
+                    { label: 'Prev Close', value: fmtNum(quote.previous?.c, '$') },
                     { label: 'Market Cap', value: fmtCap(details.market_cap) },
                   ].map((s, i) => (
                     <div key={i} style={{ paddingRight: '28px', marginRight: '28px', borderRight: i < 4 ? '1px solid #f0f0f0' : 'none' }}>
@@ -366,7 +229,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
             </div>
 
             {/* CHART */}
-            <div className="s2" style={{ marginBottom: '48px', border: '1px solid #e8e8e8', padding: '20px 24px 12px' }}>
+            <div className="s2 stock-chart" style={{ marginBottom: '48px', border: '1px solid #e8e8e8', padding: '20px 24px 12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>Price Chart</p>
                 <div style={{ display: 'flex', gap: '2px' }}>
@@ -380,15 +243,17 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
               </div>
               {candles.length > 0
                 ? <PriceChart candles={candles} isPositive={isPositive} />
-                : <div style={{ height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Spinner /></div>}
+                : <p role="status">이 기간의 차트 자료가 없습니다.</p>}
             </div>
 
             {/* TWO COLUMN */}
-            <div className="s3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start', marginBottom: '64px' }}>
+            <div className="s3 stock-columns">
 
               {/* LEFT: Fundamentals + News */}
               <div>
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Fundamentals</p>
+                <p className="stock-data-note">연간 재무 기간: {financials[0]?.start_date || '미확인'} ~ {financials[0]?.end_date || '미확인'} · 제출일: {financials[0]?.filing_date || '미확인'}</p>
+                <p className="stock-data-note">P/E는 위 종가 ÷ 최근 연간 희석 EPS입니다. ROE는 기말 자기자본 기준이며, 총부채 비율에는 이자부 차입금 외 부채도 포함합니다. 52주 고가·저가는 수집 기간의 일별 고가·저가 기준입니다. 신규 상장 등으로 52주 전체가 아닐 수 있습니다.</p>
                 <div style={{ marginBottom: '48px' }}>
                   {fundamentals.map((f, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '13px 0', borderBottom: '1px solid #f4f4f4' }}>
@@ -411,7 +276,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                           <div style={{ flex: 1 }}>
                             <p style={{ fontSize: '14px', lineHeight: '1.5', marginBottom: '5px' }}>{n.title}</p>
                             <p style={{ fontSize: '11px', color: '#aaa' }}>
-                              {n.publisher?.name} · {new Date(n.published_utc).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                              {n.publisher?.name} · {new Date(n.published_utc).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })}
                             </p>
                           </div>
                         </div>
@@ -421,7 +286,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                 )}
               </div>
 
-              {/* RIGHT: Quick Summary + AI */}
+              {/* RIGHT: Quick Summary */}
               <div>
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>Quick Summary</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '36px' }}>
@@ -443,27 +308,7 @@ ROE: ${roe ? roe.toFixed(1) + '%' : 'N/A'}
                   </div>
                 )}
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa' }}>AI Analysis</p>
-                  {!aiDone && (
-                    <button className="ai-btn" onClick={generateAnalysis} disabled={aiLoading}
-                      style={{ fontSize: '13px', padding: '8px 18px', background: aiLoading ? '#f5f5f5' : '#000', color: aiLoading ? '#aaa' : '#fff', border: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {aiLoading ? <><Spinner size={14} />분석 중...</> : 'Claude로 분석 생성'}
-                    </button>
-                  )}
-                </div>
-                {aiAnalysis ? (
-                  <div style={{ padding: '24px 28px', border: '1px solid #e8e8e8', borderLeft: '3px solid #000' }}>
-                    {renderAiText(aiAnalysis)}
-                    <p style={{ fontSize: '11px', color: '#ccc', marginTop: '16px' }}>* AI 분석은 참고용이며, 투자 권유가 아닙니다.</p>
-                  </div>
-                ) : (
-                  <div style={{ padding: '24px 28px', border: '1px solid #e8e8e8', borderLeft: '3px solid #f0f0f0', minHeight: '100px', display: 'flex', alignItems: 'center' }}>
-                    {aiLoading
-                      ? <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}><Spinner /><span style={{ fontSize: '14px', color: '#aaa' }}>Claude가 분석 중입니다...</span></div>
-                      : <p style={{ fontSize: '14px', color: '#bbb' }}>위 버튼을 눌러 AI 종목 분석을 확인하세요.</p>}
-                  </div>
-                )}
+
               </div>
             </div>
           </div>

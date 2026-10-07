@@ -18,7 +18,7 @@ interface Feed {
   fetchedAt: number
   sources: { id: string; publisher: string; region: string; status: string; error?: string; checkedAt?: number | null; eligibleItems?: number; latestPublishedAt?: string | null }[]
 }
-const CACHE_KEY = 'anthracite_curated_news_v5'
+const CACHE_KEY = 'anthracite_curated_news_v6'
 const TTL = 10 * 60 * 1000
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
@@ -204,10 +204,10 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           : partial ? <p className="news-notice">일부 매체의 뉴스를 불러오지 못했습니다. 수집된 기사를 표시합니다.</p> : null}
       </div>
       {!!relevantSources.length && <details className="news-source-status">
-        <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.length}개 피드 기사 확인</summary>
+        <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 설정 피드 기사 확인</summary>
         <ul>{relevantSources.map(source => <li key={source.id}>
           <div><strong>{source.publisher}</strong><small>{source.id}</small></div>
-          <span>{source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 다음 갱신 때 재시도'}</span>
+          <span>{source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_404' ? '출처 피드 주소를 찾을 수 없음 (404)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 다음 갱신 때 재시도'}</span>
           <small>조회 시각: {source.checkedAt ? dataTime(source.checkedAt) : source.status === 'not_configured' ? '조회하지 않음' : '시각 미제공'}{source.latestPublishedAt ? ` · 최근 기사: ${dataTime(source.latestPublishedAt)}` : ''}</small>
         </li>)}</ul>
         <p>상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>

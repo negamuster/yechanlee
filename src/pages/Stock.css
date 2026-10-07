@@ -1,0 +1,16 @@
+.stock-page-content { max-width:1200px; margin:0 auto; padding:32px 48px 100px; }
+.stock-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:48px; align-items:start; margin-bottom:64px; }
+.stock-columns > div { min-width:0; }
+.stock-data-status { margin-bottom:24px; font-size:12px; line-height:1.7; color:#666; }
+.stock-data-status button { min-height:44px; padding:8px 16px; border:1px solid #ddd; background:white; cursor:pointer; }
+.stock-data-status [role=status] { color:#a43a14; }
+.stock-data-note { font-size:12px; line-height:1.8; color:#666; margin:0 0 12px; }
+@media(max-width:700px) {
+  .stock-page-content { padding:20px 16px 40px; }
+  .stock-columns { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .stock-chart { padding:12px 8px !important; }
+  .stock-chart > div { flex-wrap:wrap; gap:8px; }
+  .stock-page-content .period-btn { min-height:44px; }
+  .stock-page-content .s1 > div { min-width:0; max-width:100%; }
+  .stock-page-content .s1 > div > div { flex-wrap:wrap; }
+}

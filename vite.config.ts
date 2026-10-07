@@ -33,7 +33,7 @@ export default defineConfig({
         '/api/form13f': filingHandler,
         '/api/sector-performance': sectorAPI.fetch,
         '/api/stock-data': createStockHandler({ getKey: () => process.env.POLYGON_KEY || env.POLYGON_KEY || env.VITE_POLYGON_KEY }),
-        '/api/claude-proxy': createAnalysisHandler({ getKey: () => process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY }),
+        '/api/claude-proxy': createAnalysisHandler(),
       }
       server.middlewares.use(async (req, res, next) => {
         const path = req.url?.split('?')[0] || ''
