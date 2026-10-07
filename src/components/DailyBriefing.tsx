@@ -6,11 +6,11 @@ export default function DailyBriefing() {
   return <section className="daily-briefing" aria-labelledby="daily-briefing-title">
     <div className="briefing-kicker"><h2 id="daily-briefing-title">Daily Market Briefing</h2><Link to="/briefings">지난 브리핑 ↗</Link></div>
     {item ? <>
-      <p className="briefing-meta">미국 거래일 {item.sessionDate} · 기준 {kstTime(item.cutoffAt)}</p>
+      <p className="briefing-meta">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 {kstTime(item.cutoffAt)}</p>
       <h3><Link to={`/briefings/${item.id}`}>{item.title}</Link></h3>
       {item.summary.map((text,i)=><p key={i}>{text}</p>)}
       <Link className="briefing-read" to={`/briefings/${item.id}`}>전체 브리핑 읽기 →</Link>
-      <p className="briefing-meta">{item.reviewMode === 'automated' && <>AI 작성·자동 검토 · </>}가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>
+      <p className="briefing-meta">{item.reviewMode === 'automated' && <>AI 작성·자동 검토 · </>}{item.reviewMode === 'rules' && <>규칙 기반 자동 정리 · AI 미사용 · </>}가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>
     </> : <div className="briefing-empty">
       <span className="briefing-edition">ANTHRACITE / DAILY</span>
       <h3>시장의 흐름과<br />다음 확인할 변화를 한곳에.</h3>

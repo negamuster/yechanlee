@@ -1,50 +1,36 @@
-# Daily automated briefing
+# Daily briefing: deterministic, no AI
 
-## Authorization and runtime
+## Current operation (owner approved 2026-10-07)
 
-The owner authorized automatic publication in this conversation on 2026-10-06, replacing the initial requirement for daily human approval. Publish only after the evidence review below. Never attribute an automated review to the owner or invent human approval.
+The owner requested removal of ChatGPT/API usage from daily publication. Starting with the next new KST date, `.github/workflows/daily-digest.yml` runs ordinary Node.js code at 22:00 UTC (07:00 Asia/Seoul). GitHub can delay schedules; this is not an exact publication-time guarantee. No model, translation, paid news API, or new secret is used. Standard public-repository GitHub-hosted runners are used. Existing Vercel hosting limits still apply.
 
-A ChatGPT scheduled task starts every day at 07:00 Asia/Seoul. Research, checking and Vercel deployment finish afterwards; 07:00 is not a guaranteed live-publication deadline. This is not a Vercel cron or GitHub Actions generator and requires no newly configured model API key. Connected GitHub access, web research, account usage and automatic action review must remain available. If unavailable, stop and report the reason. Do not bypass platform approval controls.
+The workflow has a manual trigger. Pushes affecting the generator run collection in dry-run mode and build without publishing. The previous ChatGPT schedule must be paused after successful migration checks. Do not create another ChatGPT automation.
 
-Do not depend on persistent scratch files. Read current main, this document, `scripts/briefing-publication.mjs`, `scripts/briefing-auto-review.mjs` and current content from GitHub on every run. Preserve unrelated commits and use an expected-SHA branch update. Do not create a second scheduler.
+## Reader contract
 
-## Edition and time
+- `review.mode=rules`, displayed as `규칙 기반 자동 정리 · AI 미사용`.
+- Reuse publisher RSS headline URLs and original titles, not article bodies, images, or invented summaries. Prefer Korean titles; English titles are not translated.
+- Select at most two per publisher, eight overall, with exact URL/title deduplication and a strict prior-24-hour window. Previously included rules-edition links are excluded. This is topic/freshness selection, not a claim to identify all major market events.
+- Use Treasury daily par yields for 2/10/30 years with explicit observation dates and prior-observation differences. Do not substitute index estimates or Yahoo chart calls. Rows are used only after 18:00 New York on their date, a conservative availability rule; old/missing/invalid data is omitted. These dates are NOT equity session dates.
+- Fetch Fed/BLS/BEA schedules directly and show up to three timed events in the next 72 hours. IANA timezone rules handle DST. Missing feeds and no eligible timed events are not assertions that no events exist.
+- No causal market commentary, investment recommendation, AI factual review or human approval is claimed. Existing AI/manual editions retain their labels and content.
 
-Use the actual run's KST date for the edition ID. At run start fix cutoffAt; report the previous 24 hours and the most recent completed US regular session. Confirm trading holidays and early closes from exchange sources; do not calculate the last session by subtracting a calendar day. Distinguish session news from after-close news and date old background explicitly. No information published after cutoffAt belongs in this edition. Use actual approval and publication timestamps, never a backdated 07:00 publication time.
+## Publication safeguards
 
-Weekends/holidays may have a shorter new-news edition with the last session date retained. Do not reissue an unchanged report with a new date. If the current date is already published, do not overwrite it. Read actual published history before making comparisons.
+`scripts/generate-daily-digest.mjs` fixes an actual cutoff, refuses an existing same-date file, requires at least three fresh headlines from two publishers, records feed/data checks, and writes one new edition exclusively. Rules checks are a separate gate, not a bypass of the previous AI editorial-review gate. `contentHash` still protects reviewed payload integrity.
 
-## Editorial process
+Workflow: install locked dependencies → tests → collect/generate → build public payload → commit only content/briefings and src/data/published-briefings.json → normal push → observe Vercel status. A competing main update fails the push instead of force-pushing; rerun from latest main. Collection/build failures keep old content. A deployment failure is reported as a failed workflow; no automatic rollback or success claim. GitHub may disable schedules after 60 days of repository inactivity.
 
-1. Collect candidate events from Reuters, Bloomberg, WSJ, FT; complement with CNBC, Yahoo, reliable Korean reporting. Prefer central banks, BLS/BEA, ISM releases, Treasury, official exchange data and company IR for numerical facts. Keep wire republication relationships explicit. Do not infer article details from snippets or inaccessible pages.
-2. Rank by market impact, novelty and changed expectations. Deduplicate events. Target 6–9 stories (fewer when evidence is scarce) and 1–2 external analyses only when actually read. Do not add AI/semiconductor content just to fill a quota; include relevant AI infrastructure developments when material.
-3. Read the actual source text. Check reported values, units, period, publication/event times and quote conventions. Estimates vs actuals, GAAP vs adjusted, spot vs futures and daily vs weekly comparisons must stay separate. Employment actuals need BLS; consensus needs its survey source. A current FedWatch snapshot cannot verify yesterday's probability. Treasury par yields are not identical to a quoted benchmark Treasury yield. Never use a missing price as zero.
-4. Compose Korean main summary (3–4 concise paragraphs) and detailed body (roughly 3,000–4,500 Korean characters, shorter when warranted). Structure: 30-second context, macro/company/analysis stories, one main change examined through cause/repetition/transmission/persistence/perspective, then market state/risks and at most three official 24–72-hour events in KST chronological order. Distinguish source opinion, company outlook and Anthracite interpretation. Avoid triple repetition and generic disclaimers after every item. Titles must be supported by the body.
-5. Run a separate factual review pass against the retrieved sources, not just a re-read of the prose. Recheck all main-summary claims, calculations and links, date alignment, quote precision, source labels and numeric comparisons. Record each retained source and its supported claims in review.sourceChecks. A second AI pass is not independent human verification. Delete unsupported details or replace their sources; do not patch gaps by guessing. If a material unresolved issue remains, do not publish.
+## Validation
 
-## Public payload and evidence
+`node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs`
 
-Create `content/briefings/YYYY-MM-DD.json` with existing fields: id, status, title, sessionDate, cutoffAt, publishedAt, summary, blocks, sources, dataNote, corrections, review. Body kinds: heading, subheading, metadata, paragraph. Use metadata blocks for publisher/time/type/session tags. Strip Markdown heading markers from summary strings. Paragraphs cite numeric IDs such as [1]. Source objects: id, label, url, optional accessNote and links[{label,url}]. Put original source first and actually read republication as a secondary link where necessary. Do not make up URLs. Explain genuine limitations briefly in dataNote; no private working notes.
+`node scripts/generate-daily-digest.mjs --dry-run`
 
-For an automated edition review contains:
+`npm run build`
 
-- mode: `automated`
-- approvedBy: `Anthracite automated editorial review`
-- approvedAt: actual completion time
-- factualReviewPassed: true ONLY after the factual pass
-- unresolvedIssues: [] ONLY if no material unresolved issues remain
-- checkedSources: every retained source ID
-- sourceChecks: one record per source `{sourceId, verifiedUrl, checkedAt, publishedAt, basis, claimSummary}`. verifiedUrl must match that source's primary or secondary link. basis is primary/reported/analysis. publishedAt is the actual source publication time, or null for an undated official data page; never use null to hide a known post-cutoff publication. checkedAt is actual retrieval time. claimSummary is a concise original description of verified claims with units/periods. Do not copy full copyrighted pages into the public repository.
-- contentHash: calculate with contentHash(item) AFTER content, timestamps and source records are finalized. Review fields are excluded from that hash as in the existing publisher.
+Set `DIGEST_PREVIEW_PATH` to a scratch path to inspect a non-published preview. Never commit previews as a substitute for a real scheduled edition. No unchanged previous article is relabeled with a new date.
 
-The website labels automated editions `AI 작성·자동 검토`. The deterministic gate checks evidence completeness, dates and hash; it does NOT prove financial claims. Remain honest about reported-only figures. Do not scrape Yahoo's undocumented chart endpoint as the default daily source until reuse terms have been assessed; use accessible official sources or clearly attributed verified news reports.
+## History
 
-## Publish transaction
-
-Work in an isolated current-main snapshot. Do not alter layout, publication guards, secrets, dependencies or old articles during a scheduled run. Do not publish the old October 6 draft simply because it exists.
-
-Only after factual checks, set status to published, compute the hash, run `node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs` and `npm run build`. Verify the generated payload includes exactly the intended new edition and all previous published entries. If tools, install or build fail, stop without changing main. Successful local checks are not successful deployment.
-
-Commit the new edition and matching `src/data/published-briefings.json` using GitHub. If main moved, refresh and regenerate against latest main; never force-push or overwrite other content. Monitor the commit's Vercel status. On failure preserve existing live content, report the deployment failure, and do not claim publication. Do not delete a failed commit automatically. A same-date rerun should inspect and resume deployment status rather than create a duplicate edition.
-
-Respond in this conversation with the edition URL, information cutoff, actual outcome and any meaningful limitation. For a blocked run report a short reason and say the previous edition remains; do not send email or Slack messages. Never change the old edition's date to imply a refresh.
+2026-10-06: owner authorized AI-authored, AI-reviewed automatic publication without daily human approval. The October 7 morning edition used that method. On October 7 the owner requested this non-AI replacement to eliminate recurring model usage/API cost.

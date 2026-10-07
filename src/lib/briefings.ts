@@ -1,7 +1,7 @@
 import items from '../data/published-briefings.json'
 export type Briefing = {
-  reviewMode?: 'manual' | 'automated'
-  id: string; title: string; cutoffAt: string; publishedAt: string; sessionDate: string
+  reviewMode?: 'manual' | 'automated' | 'rules'
+  id: string; title: string; cutoffAt: string; publishedAt: string; sessionDate: string | null
   summary: string[]; blocks: { kind: string; text: string }[]
   sources: { id: number; label: string; url: string; accessNote?: string; links?: { label: string; url: string }[] }[]
   dataNote: string; corrections: { at: string; text: string }[]
