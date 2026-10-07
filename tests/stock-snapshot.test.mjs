@@ -45,3 +45,14 @@ test('optional data failure is visible while failed prices never become zero or 
   await assert.rejects(fetchStockSnapshot('MSFT', new AbortController().signal, mock(), now))
   await assert.rejects(fetchStockSnapshot('AAPL', AbortSignal.abort(), mock(), now), { name: 'AbortError' })
 })
+
+test('previous-day response supplements a lagging range only for the requested ticker and completed date', async () => {
+  const fetcher = ticker => async url => new URL(url, 'https://example.com').searchParams.get('path').includes('/prev?')
+    ? Response.json({ results: [{ ...bar('2026-10-06', 110), T: ticker }, { ...bar('2026-10-07', 999), T: ticker }] })
+    : mock()(url)
+  const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher('AAPL'), now)
+  assert.equal(quoteFromBars(snapshot.bars).changePct, 10)
+  assert.equal(snapshot.bars.length, 2)
+  const mismatch = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher('MSFT'), now)
+  assert.equal(quoteFromBars(mismatch.bars).latest.c, 105)
+})

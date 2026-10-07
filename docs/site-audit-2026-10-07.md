@@ -3,11 +3,11 @@
 ## Correctness and freshness
 
 - Stock daily change now compares two consecutive available, split-adjusted daily closes. Open is not used as the change baseline; Prev Close displays the prior close. Missing comparisons are unavailable, not zero.
-- Show the US trading date, comparison date, collection timestamp in KST, source and non-realtime basis. A single snapshot supplies the quote and chart.
+- Show the US trading date, comparison date, collection timestamp in KST, source and non-realtime basis. A single snapshot supplies the quote and chart. Validated same-ticker previous-day data supplements range data when the provider publishes them at different times.
 - Cache is fresh for five minutes; manual refresh and visible-tab refresh are available. Failed refreshes retain explicitly marked same-symbol data for at most 24 hours. Optional news/financial/related failures are visible and retried. Aborted or superseded requests cannot replace another ticker's result.
 - Daily bars exclude the current New York day until 21:00 ET. This is a conservative application cutoff, not a provider publication guarantee. Provider availability can delay the displayed date.
 - 52-week extrema use daily highs/lows. Financial reporting dates are shown. ROE uses ending equity, and total liabilities/equity is labeled accurately. P/E uses the latest annual diluted EPS, not TTM. Nonpositive denominators yield unavailable ratios.
-- Market Movers can use the current NY day after 21:00 ET. Same-day coverage must contain at least 1,000 valid distinct symbols and 90% of the preceding available day's coverage. Otherwise it falls back to the preceding two sessions with a visible notice. Coverage is a safeguard, not proof of provider finalization.
+- Market Movers can use the current NY day after 21:00 ET. Same-day coverage must contain at least 1,000 valid distinct symbols and 90% of the preceding available day's coverage. If same-day access is unavailable (403/404/not authorized), or coverage is insufficient, it falls back to the preceding two sessions with a visible notice. Coverage is a safeguard, not proof of provider finalization.
 
 ## Presentation and operating limits
 
@@ -20,7 +20,7 @@
 
 ## Validation
 
-- `node --test tests/*.test.mjs`: 126 passed, including price baseline/extrema, invalid bars, DST cutoff, cache expiry, partial failure, cancelled requests, title decoding, same-day ranking coverage and no-spend API tests.
+- `node --test tests/*.test.mjs`: 128 passed, including price baseline/extrema, invalid bars, DST cutoff, cache expiry, partial failure, cancelled requests, title decoding, same-day ranking coverage and no-spend API tests.
 - `npm run build`: passed. Existing Tailwind unknown-at-rule warnings remain; this change does not alter the site's global styling pipeline.
 - CI now runs the full test suite and build on source changes and pull requests.
 - Mobile layout changes are code-reviewed; a real mobile viewport visual pass is still outstanding.

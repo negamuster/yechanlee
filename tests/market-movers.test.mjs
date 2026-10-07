@@ -86,3 +86,12 @@ test('same-day ranking is eligible after 21 ET only with broad coverage', async 
   assert.equal(partial.pendingLatest, true)
   assert.equal(partial.rankings.gainers[0].changePct, 100)
 })
+
+test('same-day access unavailable retains consecutive historical sessions with a notice', async () => {
+  let calls = 0
+  const result = await collectMovers({ key: 'test', now: Date.parse('2026-10-07T03:00:00Z'), fetchImpl: async () => ++calls === 1 ? new Response(null, { status: 403 }) : payload([row('AAA', calls === 2 ? 20 : 10)]) })
+  assert.equal(result.tradingDate, '2026-10-05')
+  assert.equal(result.previousTradingDate, '2026-10-02')
+  assert.equal(result.pendingLatest, true)
+  assert.equal(result.rankings.gainers[0].changePct, 100)
+})

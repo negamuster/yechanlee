@@ -46,13 +46,17 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
     get(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`),
     get(`/vX/reference/financials?ticker=${symbol}&timeframe=annual&limit=2&order=desc`),
     get(`/v1/related-companies/${symbol}`),
+    get(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`),
   ])
   signal.throwIfAborted()
   const value = (i: number) => jobs[i].status === 'fulfilled' ? jobs[i].value : undefined
   if (!value(0)?.name || value(0).ticker !== symbol || !Array.isArray(value(1))) throw new Error('종목 데이터를 확인하지 못했습니다. 잠시 후 다시 조회해 주세요.')
-  const bars = completedBars(value(1), now)
+  // The range endpoint can lag the previous-day endpoint. Merge only validated,
+  // completed, same-ticker bars; a missing latest bar never becomes a zero quote.
+  const previousDay = Array.isArray(value(5)) ? value(5).filter((row: DailyBar & { T?: string }) => row.T === symbol) : []
+  const bars = completedBars([...value(1), ...previousDay], now)
   if (!bars.length) throw new Error('확인된 일별 시세가 없습니다. 잠시 후 다시 조회해 주세요.')
-  const issues = [2, 3, 4].filter(i => !Array.isArray(value(i))).map(i => ['','','뉴스','연간 재무','관련 종목'][i])
+  const issues = [2, 3, 4, 5].filter(i => !Array.isArray(value(i))).map(i => ['','','뉴스','연간 재무','관련 종목','최근 종가'][i])
   return { symbol, fetchedAt: now, details: value(0), bars, issues,
     news: Array.isArray(value(2)) ? value(2) : [], financials: Array.isArray(value(3)) ? value(3) : [],
     related: Array.isArray(value(4)) ? value(4).map((r: { ticker: string }) => r.ticker).filter((s: string) => /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(s)).slice(0, 8) : [] }
