@@ -106,3 +106,8 @@ Current research model switches from 3.7 Flash to the stable `gemini-3.5-flash-l
 
 
 Flash-Lite's first live trial returned successfully in about four seconds. Validation exposed a date-translation false rejection: August/July and zero-padded 06 became Korean 8월/7월/6일. Evidence tokens now explicitly include deterministic English month names, named quarter/estimate ordinals, and zero-unpadded integers. Decimal financial figures remain exact; no currency scaling, arithmetic or unsupported values are permitted. The independent evidence comparison still checks meaning and attribution.
+
+
+The recovery pipeline permits one bounded correction of a structurally/numerically rejected draft or a failed evidence comparison, using the original documents and explicit feedback. A corrected draft must pass the same numeric/citation checks and a new evidence comparison. Audit feedback is bounded and recorded; credentials, original bodies and HTTP error responses are not logged. Transport/auth/quota failures are not semantic corrections. Maximum four logical model calls (generation, review, optional correction, re-review), each with the existing three-attempt transient limit: at most 12 physical requests. A second rejection always retains rules. This supersedes the earlier two-logical-call ceiling, without adding a paid model or relaxing publication criteria.
+
+The workflow ceiling is now 30 minutes to include the optional correction round, early preparation and deployment verification; each individual API call retains its shorter deadline.

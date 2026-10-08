@@ -80,3 +80,22 @@ test('date translation permits English months and zero padding, without financia
  o.sections[0].facts.text='매출은 1056억 달러였다.'
  assert.throws(()=>validateResearchOutput(o,evidenceCatalog(ds)),/research_number/)
 })
+
+test('one rejected audit can be corrected, but corrected draft requires a new passing audit',async()=>{
+ const b=base(),ds=docs(b),o=output(ds),diagnostics={};let calls=0
+ const item=await researchDigest(b,{apiKey:'test',diagnostics,collector:async()=>({documents:ds,unavailable:[]}),report:()=>{},fetcher:async(url,opts)=>{
+  const data=JSON.parse(JSON.parse(opts.body).contents[0].parts[0].text)
+  calls++
+  if(calls===3){assert.ok(data.previousDraft);assert.equal(data.feedback.reason,'research_review')}
+  const answer=calls===1||calls===3?o:calls===2?{approved:false,issues:['Check attribution.'],checkedParagraphIds:verdict(o).checkedParagraphIds}:verdict(o)
+  return new Response(JSON.stringify({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify(answer)}]}}]}))
+ }})
+ assert.equal(calls,4);assert.equal(item.review.mode,'gemini-research');assert.equal(diagnostics.corrections,1)
+ assert.equal(diagnostics.comparisons[0].approved,false);assert.equal(diagnostics.comparisons[1].approved,true)
+ calls=0
+ const rejected=await researchDigest(b,{apiKey:'test',collector:async()=>({documents:ds,unavailable:[]}),report:()=>{},fetcher:async()=>{
+  const answer=++calls%2?o:{approved:false,issues:['Unsupported attribution.'],checkedParagraphIds:verdict(o).checkedParagraphIds}
+  return new Response(JSON.stringify({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify(answer)}]}}]}))
+ }})
+ assert.equal(calls,4);assert.equal(rejected,b)
+})
