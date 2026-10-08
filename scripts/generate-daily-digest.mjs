@@ -1,6 +1,7 @@
 import { readFile, readdir, writeFile, access } from 'node:fs/promises'
 import { collectInputs, makeDigest, kstDate } from './briefing-rules.mjs'
 import { contentHash, publishable } from './briefing-publication.mjs'
+import { enhanceDigest } from './briefing-gemini.mjs'
 const cutoff=Date.now(), id=kstDate(cutoff), dry=process.argv.includes('--dry-run')
 const path=new URL(`../content/briefings/${id}.json`,import.meta.url)
 const exists=await access(path).then(()=>true,()=>false)
@@ -9,7 +10,9 @@ const dir=new URL('../content/briefings/',import.meta.url)
 const old=await Promise.all((await readdir(dir)).filter(n=>n.endsWith('.json')).map(async n=>JSON.parse(await readFile(new URL(n,dir),'utf8'))))
 const input=await collectInputs(cutoff)
 console.log(JSON.stringify({news:input.news.sources,rates:input.rateRows.map(r=>r.date),rateError:input.rateError,calendars:input.calendars.map(c=>({source:c.key,error:c.error||null,events:c.events.length}))},null,2))
-const item=makeDigest(input,cutoff,old)
+const base=makeDigest(input,cutoff,dry ? old.filter(x=>x.id!==id) : old)
+const item=process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+if(process.argv.includes('--require-ai') && item.review.mode !== 'gemini')throw Error('Gemini live check failed; no publication files changed')
 item.review.contentHash=contentHash(item)
 publishable([item])
 if(dry){

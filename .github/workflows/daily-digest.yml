@@ -1,4 +1,4 @@
-name: Daily briefing without AI
+name: Daily briefing with optional Gemini
 on:
   schedule:
     - cron: '0 22 * * *' # Primary: 07:00 Asia/Seoul; GitHub may delay delivery
@@ -9,8 +9,8 @@ on:
     paths:
       - '.github/workflows/daily-digest.yml'
       - 'scripts/*digest*'
-      - 'scripts/briefing-rules.mjs'
-      - 'tests/briefing-rules.test.mjs'
+      - 'scripts/briefing-*.mjs'
+      - 'tests/briefing-*.test.mjs'
 permissions:
   contents: write
   statuses: read
@@ -31,12 +31,21 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
-      - run: node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs
+      - run: node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs tests/briefing-gemini.test.mjs
       - name: Live collection check on code changes
         if: github.event_name == 'push'
-        run: node scripts/generate-daily-digest.mjs --dry-run
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BRIEFING_AI: gemini
+          DIGEST_PREVIEW_PATH: /tmp/briefing-preview.json
+        run: |
+          node scripts/generate-daily-digest.mjs --dry-run --require-ai
+          node -e "const p=JSON.parse(require('fs').readFileSync('/tmp/briefing-preview.json')); console.log(JSON.stringify({mode:p.review.mode,summary:p.summary},null,2))"
       - name: Publish new date after validation
         if: github.event_name != 'push'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BRIEFING_AI: gemini
         run: |
           node scripts/generate-daily-digest.mjs
           npm run build
@@ -44,7 +53,7 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Publish daily news digest without AI'
+          git commit -m 'Publish daily news digest'
           # No force/rebase: fail safely on a competing update; rerun against latest main.
           git push origin HEAD:main
       - name: Build code changes

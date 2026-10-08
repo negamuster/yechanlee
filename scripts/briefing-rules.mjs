@@ -67,7 +67,7 @@ export async function collectInputs(cutoff, fetcher=fetch) {
   return {news,rateRows,treasuryUrl,rateError,calendars,checkedAt}
 }
 export function makeDigest(input, cutoff, previous=[], published=Date.now()) {
-  const seen=new Set(previous.filter(x=>x.review?.mode==='rules').flatMap(x=>x.sources.map(s=>s.url)))
+  const seen=new Set(previous.filter(x=>['rules','gemini'].includes(x.review?.mode)).flatMap(x=>x.sources.map(s=>s.url)))
   const news=selectNews(input.news.items,cutoff,seen)
   if(news.length<3 || new Set(news.map(n=>n.publisher)).size<2)throw Error('Withheld: fewer than 3 fresh headlines from 2 publishers')
   const sources=[],checks=[],blocks=[]

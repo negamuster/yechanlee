@@ -40,3 +40,17 @@ Set `DIGEST_PREVIEW_PATH` to a scratch path to inspect a non-published preview. 
 At approximately 07:56 KST, the workflow was active on main but no October 8 scheduled run was present in the Actions run history. The cause of the absent run is not exposed; delay versus dropped scheduling cannot be distinguished. GitHub documents that scheduled events may be delayed or dropped under load, especially at the start of the hour: https://docs.github.com/en/actions/how-tos/troubleshoot-workflows.
 
 The October 8 edition was generated as an on-demand recovery using the unchanged deterministic generator and live inputs, with its actual collection/publication timestamps. It is not evidence that the first scheduled run succeeded. Recovery cron entries reduce dependence on one trigger, but share GitHub's scheduler and do not guarantee an exact publication time. No AI calls or ChatGPT automation were added.
+
+## 2026-10-08 Gemini free-tier extension (supersedes rules-only operation)
+
+The owner created a Free Tier Gemini project and registered `GEMINI_API_KEY` in GitHub Actions. `BRIEFING_AI=gemini` enables an optional headline-summary stage with pinned `gemini-3.8-flash` (official free-tier pricing checked 2026-10-08). No billing setup, paid model fallback, Search grounding or ChatGPT automation is used. API keys do not encode billing status: keep this Google project on Free Tier; enabling billing outside this repository could incur charges. The code cannot verify billing status from the key.
+
+The stage sends only selected public RSS titles and source IDs, at most 16,000 characters. One bounded request creates Korean headline summaries and a second request checks faithfulness against those same titles. Each request times out after 60 seconds and caps output at 4,096 tokens; no retries. Original titles, source URLs, official yield numbers and calendar timestamps remain untouched. News body reading, broad market analysis and verified investment conclusions are NOT provided. This is a first step towards richer briefings, not a restoration of full researched AI analysis.
+
+`review.mode=gemini` and the reader disclosure distinguish AI headline summaries from deterministic and historical AI editorial editions. A deterministic base record, summaries and comparison result are retained for reproducibility. Publication validates evidence, source IDs, duplicate/missing outputs, newly introduced digit tokens, output bounds and unchanged official-data blocks. These checks and the model comparison cannot guarantee factual accuracy or detect every mistranslation.
+
+Missing key, HTTP failure (including quota exhaustion), malformed response, numeric/structural rejection or failed model comparison keeps the unmodified rules digest. Same-date editions are still preserved before any network/model call. Pushes make a non-publishing live check with `--require-ai`: a fallback is treated as a failed integration check, not a Gemini success. Push previews print only public summaries and never keys/API error bodies. Scheduled/manual runs allow rules fallback.
+
+Validation: `node --test tests/briefing-*.test.mjs`; `npm run build`. A local dry run without the secret cannot verify real Gemini access. Successful GitHub live checks are required to claim API verification. Existing October 8 publication is preserved; new-date editions use the optional stage.
+
+Official references: https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/api/generate-content.
