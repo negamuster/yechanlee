@@ -74,9 +74,10 @@ export async function enhanceDigest(base, { apiKey = process.env.GEMINI_API_KEY,
     const item = attachSummaries(base, output.summaries, verdict)
     report(`Gemini passed: ${MODEL}; ${output.summaries.length} headline summaries; two bounded calls.`)
     return item
-  } catch {
+  } catch (error) {
     // Fixed text prevents errors (including untrusted API output) leaking secrets into logs.
-    report('Gemini unavailable or validation rejected; rules edition retained. No retries or paid fallback.')
+    const safe = /^(Gemini HTTP [0-9]{3}|Gemini incomplete response|Invalid summary count|Invalid summary text or source|Unsupported summary number|AI comparison rejected|Input limit exceeded)$/.test(error?.message) ? error.message : 'network or response format error'
+    report(`Gemini fallback: ${safe}; rules edition retained. No retries or paid fallback.`)
     return base
   }
 }
