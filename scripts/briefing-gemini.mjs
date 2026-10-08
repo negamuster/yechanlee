@@ -51,17 +51,46 @@ export function validateGemini(item) {
 }
 const schema = { type: 'OBJECT', properties: { summaries: { type: 'ARRAY', items: { type: 'OBJECT', properties: { sourceId: { type: 'INTEGER' }, text: { type: 'STRING' } }, required: ['sourceId','text'] } } }, required: ['summaries'] }
 const reviewSchema = { type: 'OBJECT', properties: { approved: { type: 'BOOLEAN' }, issues: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['approved','issues'] }
-export async function request(apiKey, instruction, data, responseSchema, fetcher, maxOutputTokens = 4096, model = MODEL) {
-  const response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents: [{ role: 'user', parts: [{ text: JSON.stringify(data) }] }], generationConfig: { maxOutputTokens, responseMimeType: 'application/json', responseSchema } })
-  })
-  // Never log API response bodies or request headers, including on authentication errors.
-  if (!response.ok) throw Error(`Gemini HTTP ${response.status}`)
-  const body = await response.json(), candidate = body.candidates?.[0]
-  if (candidate?.finishReason !== 'STOP') throw Error('Gemini incomplete response')
-  return JSON.parse(candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join(''))
+// Retry only transport failures and temporary 503/504 responses. Never retry quota,
+// authentication, malformed output or a rejected evidence review.
+export async function request(apiKey, instruction, data, responseSchema, fetcher, maxOutputTokens = 4096, model = MODEL, options = {}) {
+  const { sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = Date.now, random = Math.random, onAttempt = () => {} } = options
+  const deadline = now() + 150000
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    let retryable = false, category
+    try {
+      const remaining = deadline - now()
+      if (remaining <= 0) throw Error('Gemini retry deadline')
+      const response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(Math.min(45000, remaining)),
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents: [{ role: 'user', parts: [{ text: JSON.stringify(data) }] }], generationConfig: { maxOutputTokens, responseMimeType: 'application/json', responseSchema } })
+      })
+      if (!response.ok) {
+        category = `Gemini HTTP ${response.status}`
+        retryable = [503, 504].includes(response.status)
+        await response.body?.cancel().catch(() => {})
+        throw Error(category)
+      }
+      const body = await response.json(), candidate = body.candidates?.[0]
+      if (candidate?.finishReason !== 'STOP') throw Error('Gemini incomplete response')
+      const output = JSON.parse(candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join(''))
+      onAttempt({ attempt, result: 'success' })
+      return output
+    } catch (error) {
+      if (!category) {
+        retryable = error?.name === 'TimeoutError' || error?.name === 'AbortError' ||
+          (error instanceof TypeError && /fetch failed|network|terminated/i.test(error.message))
+        category = retryable ? 'Gemini transport error' :
+          /^(Gemini incomplete response|Gemini retry deadline)$/.test(error?.message) ? error.message : 'Gemini response format error'
+      }
+      const delayMs = 2000 * 2 ** (attempt - 1) + Math.floor(random() * 500)
+      const retry = retryable && attempt < 3 && now() + delayMs < deadline
+      onAttempt({ attempt, result: category, retry, delayMs: retry ? delayMs : 0 })
+      if (!retry) throw Error(category)
+      await sleep(delayMs)
+    }
+  }
 }
 export async function enhanceDigest(base, { apiKey = process.env.GEMINI_API_KEY, fetcher = fetch, report = console.log } = {}) {
   if (!apiKey) { report('Gemini skipped: key unavailable; rules edition retained.'); return base }
@@ -77,7 +106,7 @@ export async function enhanceDigest(base, { apiKey = process.env.GEMINI_API_KEY,
   } catch (error) {
     // Fixed text prevents errors (including untrusted API output) leaking secrets into logs.
     const safe = /^(Gemini HTTP [0-9]{3}|Gemini incomplete response|Invalid summary count|Invalid summary text or source|Unsupported summary number|AI comparison rejected|Input limit exceeded)$/.test(error?.message) ? error.message : 'network or response format error'
-    report(`Gemini fallback: ${safe}; rules edition retained. No retries or paid fallback.`)
+    report(`Gemini fallback: ${safe}; rules edition retained. Bounded transient retries only; no paid fallback.`)
     return base
   }
 }

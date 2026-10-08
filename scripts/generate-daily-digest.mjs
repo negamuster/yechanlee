@@ -12,7 +12,11 @@ const old=await Promise.all((await readdir(dir)).filter(n=>n.endsWith('.json')).
 const input=await collectInputs(cutoff)
 console.log(JSON.stringify({news:input.news.sources,rates:input.rateRows.map(r=>r.date),rateError:input.rateError,calendars:input.calendars.map(c=>({source:c.key,error:c.error||null,events:c.events.length}))},null,2))
 const base=makeDigest(input,cutoff,dry ? old.filter(x=>x.id!==id) : old)
-const item=process.env.BRIEFING_AI === 'research' ? await researchDigest(base) : process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+const diagnostics={mode:'rules',stage:'deterministic',attempts:[]}
+const item=process.env.BRIEFING_AI === 'research' ? await researchDigest(base,{diagnostics}) : process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+item.review.execution=diagnostics
+console.log('Briefing execution: '+JSON.stringify(diagnostics))
+if(process.env.BRIEFING_REPORT_PATH)await writeFile(process.env.BRIEFING_REPORT_PATH,JSON.stringify({id,...diagnostics},null,2)+'\n')
 if(process.argv.includes('--require-ai') && !['gemini','gemini-research'].includes(item.review.mode))throw Error('Gemini live check failed; no publication files changed')
 if(process.argv.includes('--require-research') && item.review.mode !== 'gemini-research')throw Error('Body-based research live check failed; no publication files changed')
 item.review.contentHash=contentHash(item)

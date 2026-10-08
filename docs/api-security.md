@@ -23,3 +23,5 @@
 `npm run build`
 
 Security tests cover route/parameter bypasses, secret redaction, branding host restrictions, caching, retired AI endpoint behavior with zero credential/provider calls, and cross-site rejection. No paid AI call is needed for the tests.
+
+2026-10-08 cleanup: removed the unused `api/yahoo-proxy.js` route. The Claude HTTP 410 tombstone remains intentionally, without provider calls or credential access. External Polygon rotation/firewall follow-ups remain unverified; no account settings were changed in this cleanup.

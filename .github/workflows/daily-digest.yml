@@ -1,7 +1,7 @@
 name: Daily briefing with optional Gemini
 on:
   schedule:
-    - cron: '0 22 * * *' # Primary: 07:00 Asia/Seoul; GitHub may delay delivery
+    - cron: '53 21 * * *' # Prepare at 06:53 KST; collection waits until 07:00
     - cron: '17,37 22 * * *' # Recovery: 07:17 / 07:37 KST; existing edition is preserved
   workflow_dispatch:
   push:
@@ -20,7 +20,9 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
+    env:
+      BRIEFING_REPORT_PATH: /tmp/briefing-execution.json
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,7 +33,16 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
-      - run: node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs tests/briefing-gemini.test.mjs tests/briefing-research.test.mjs
+      - run: node --test tests/briefing-*.test.mjs
+      - name: Hold early preparation until 07:00 KST
+        if: github.event_name == 'schedule'
+        run: |
+          node --input-type=module - <<'JS'
+          const now=Date.now(), target=new Date(now)
+          target.setUTCHours(22,0,0,0)
+          const delay=target.getTime()-now
+          if(delay>0 && delay<=7*60000)await new Promise(resolve=>setTimeout(resolve,delay))
+          JS
       - name: Live collection check on code changes
         if: github.event_name == 'push'
         env:
@@ -73,3 +84,12 @@ jobs:
           done
           echo 'Deployment not confirmed; check Vercel. No automatic rollback.'
           exit 1
+      - name: Record execution diagnostics
+        if: always()
+        run: |
+          node --input-type=module - <<'JS'
+          import {existsSync,readFileSync,appendFileSync} from 'node:fs'
+          const path=process.env.BRIEFING_REPORT_PATH
+          const report=existsSync(path)?readFileSync(path,'utf8'):'No generation report: existing edition preserved, or failure before optional AI stage.'
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,'## Briefing execution\n\n```json\n'+report+'\n```\n')
+          JS

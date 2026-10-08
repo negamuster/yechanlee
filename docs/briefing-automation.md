@@ -1,5 +1,7 @@
 # Daily briefing: source-grounded Gemini with deterministic fallback
 
+**Current operation is described in the final reliability/source-policy section below. Earlier sections are migration history.**
+
 ## Historical rules-only operation (owner approved 2026-10-07)
 
 The owner requested removal of ChatGPT/API usage from daily publication. Starting with the next new KST date, `.github/workflows/daily-digest.yml` runs ordinary Node.js code at 22:00 UTC (07:00 Asia/Seoul), with recovery attempts at 22:17 and 22:37 UTC (07:17 / 07:37 KST). Existing same-date editions are preserved; recovery attempts do not collect new inputs or replace them. GitHub can delay schedules; this is not an exact publication-time guarantee. No model, translation, paid news API, or new secret is used. Standard public-repository GitHub-hosted runners are used. Existing Vercel hosting limits still apply.
@@ -56,7 +58,7 @@ Validation: `node --test tests/briefing-*.test.mjs`; `npm run build`. A local dr
 Official references: https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/api/generate-content.
 
 
-## Current: body-grounded briefing (owner approved 2026-10-08 afternoon)
+## Historical: initial body-grounded briefing (owner approved 2026-10-08 afternoon)
 
 `BRIEFING_AI=research` replaces headline-only summarization for new dates. Research pins `gemini-3.7-flash`, whose standard input/output have a Free Tier on the official pricing page checked October 8. The initial 3.8 Flash research trials repeatedly returned HTTP 503; historical headline-mode records retain their original 3.8 model. There is no automatic paid or cross-model fallback. Each run selects up to eight recent RSS items, excludes obvious stock-signal promotions, and fetches the public HTML article body with two concurrent requests. BBC, CNBC, 매일경제 and 한국경제 have explicit host/DOM adapters. Each redirect is checked against the HTTPS host allowlist; no login, paywall bypass, third-party extraction service or paid search is used. Each page has a 15-second request deadline, 2 MB response cap, canonical-path check and publication/update-time checks. Unknown timestamps, post-cutoff revisions, paywall flags, video pages and insufficient bodies are excluded. Only the main article paragraphs are extracted, at most 9,000 characters per article; excerpt scope is disclosed. Parser changes can reduce coverage rather than silently substituting navigation text or titles.
 
@@ -67,3 +69,24 @@ Per run: at most 85,000 input JSON characters, two Gemini calls, 8,192/4,096 out
 `review.mode=gemini-research` is distinct from historical headline and AI editorial modes. Public labels explicitly describe body-based AI summaries/inferences. Evidence metadata stores URLs, retrieval/publication/modification times, scope, document/paragraph hashes and numeric tokens. Full article bodies are used in memory only and are NOT committed or included in the public payload. Published output is paraphrased; source links allow readers to inspect originals. Unavailable sources remain labeled as links only, excluded from analysis. The build reconstructs published content and validates references, numeric tokens, coverage and unchanged official blocks. These checks cannot prove semantic truth or detect every wrong inference.
 
 `--dry-run --require-research` is the push-triggered live integration gate: fallback is a failure of the research trial and never changes published content. `DIGEST_PREVIEW_PATH` can hold the generated preview outside the repository. Scheduled/manual publication permits fallback. Tests: `node --test tests/briefing-*.test.mjs`; build: `npm run build`.
+
+
+## Current: reliability and source policy (2026-10-08 evening)
+
+The unpaid Gemini terms allow Google to use submitted content to improve products and machine-learning technologies. Public availability and robots permission alone do not grant reuse rights. Commercial publisher body transmission is therefore disabled pending permission review, including BBC, CNBC, 매일경제 and 한국경제. News remains original RSS titles/links on the site and is not sent to the research model. This narrows AI coverage to official economic releases; it does not restore broad daily market/news analysis.
+
+The collector now uses the BEA **current-releases HTML index**, at most three releases published within the previous 14 days, and at least two successfully collected bodies. BEA states that its information is public domain unless otherwise marked. Only release text is collected, excluding images/tables/third-party copyright-marked material. The release page's embargo date must match the index timestamp. HTTPS host/path and canonical identity are checked; redirects are refused. The collector checks robots.txt before the index and releases and fails closed on unavailable/disallowed robots. The apps.bea.gov RSS path was found robots-disallowed and is not used. Each request has a 20-second timeout and 2 MB streaming cap; robots is capped at 512 KB. Each body excerpt is capped at 9,000 characters, and original text is not persisted. Official excerpts are retrieved snapshots, not an archive proof that no later revision occurred.
+
+The reader sees “recent 14-day BEA releases”, release dates, reporting periods, source links and retrieval timestamps. Older releases are context, never relabeled as today's news. Up to eight fresh commercial headlines remain in a separate original-title/link section. Official rates and calendars remain deterministic. Paragraph IDs, hashes and number-token checks plus a separate Gemini comparison gate remain required. Fewer than two recent official bodies, or any model/validation failure, retains rules publication. This deliberately makes official-release gaps visible instead of feeding uncleared commercial bodies to a free model.
+
+Each logical Gemini generation/comparison call now has **at most three attempts**, a 45-second per-attempt timeout, a 150-second overall budget, and exponential 2/4-second backoff with up to 499 ms jitter. Only HTTP 503/504 and transport/timeouts retry. Quota 429, authentication, malformed output, numeric errors and rejected comparison do not retry. At most six physical model requests per run, no automatic cross-model or paid fallback. Keep the API project unbilled; code cannot verify billing configuration from a key.
+
+`review.execution` stores the actual mode, model, stage, sanitized fallback reason, body coverage, source failures and per-stage request attempts. A separate `BRIEFING_REPORT_PATH` JSON is written before the strict dry-run gate; the workflow publishes it to its job summary even when Gemini fails. It contains no keys, raw error responses or article text and is excluded from the reader payload. Failures before optional AI processing may have no report; Actions reports that explicitly. An existing edition is still preserved, including a rules fallback: recovery crons are not silent rewriting jobs.
+
+Primary cron is `53 21 * * *` (**06:53 KST preparation**). After setup/tests, a bounded wait prevents collection before 07:00 KST. Late starts proceed immediately. Recovery crons remain `17,37 22 * * *` (07:17/07:37 KST). Workflow timeout is 25 minutes, including preparation, bounded model calls and deployment observation. GitHub may delay/drop runs; this remains a target around 07:00, not an exact publication guarantee. No ChatGPT scheduling was added.
+
+The unused Yahoo proxy is removed. The Claude route stays a tested HTTP 410 tombstone with no key access/provider calls; it is not a paid AI endpoint. Polygon key rotation and Vercel firewall account settings cannot be verified from repository content and were not changed.
+
+Validation: `node --test tests/*.test.mjs`; `npm run build`; non-publishing live `--dry-run --require-research` in GitHub Actions. Local source collection on October 8 succeeded for three BEA releases (October 6 trade; September 30 GDP and personal income). A successful collector or mocked unit test does not establish real Gemini output quality; inspect the live run separately. The October 8 published article remains unchanged.
+
+References checked October 8: https://ai.google.dev/gemini-api/terms ; https://www.bea.gov/help/faq/145 ; https://www.bea.gov/robots.txt ; https://apps.bea.gov/robots.txt ; https://docs.github.com/en/actions/how-tos/troubleshoot-workflows .

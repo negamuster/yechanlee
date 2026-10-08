@@ -35,3 +35,10 @@ The owner now authorizes the free-tier Gemini API for headline summaries. This s
 ## Body-grounded Gemini publication (2026-10-08 afternoon)
 
 The owner requested article-body collection, summaries and evidence-based interpretation. The current `research` workflow and `gemini-research` mode supersede the headline-only stage for future dates. Reader sections distinguish reported facts, documented changes, conditional Gemini interpretation and next checks. A missing before/after comparison is explicitly marked unavailable. Unavailable/paywalled bodies cannot ground any claim. Treasury and official calendar blocks remain unchanged. Original bodies are not republished or stored in the public repository; provenance uses paragraph hashes and IDs. Automatic evidence comparison is not independent factual verification. See the current section of `docs/briefing-automation.md` for the exact limits, fallbacks and validation commands. Historical editions, including October 8, remain unchanged.
+
+
+## Current source policy and reliability (2026-10-08 evening)
+
+The current research stage summarizes up to three public-domain BEA release excerpts from the previous 14 days, requiring at least two, and labels their actual dates and reporting periods. Commercial news is original RSS titles/links only and is excluded from AI inputs pending reuse/transmission permission. See the current section of `briefing-automation.md`; its policy supersedes the initial commercial-body implementation described above. A rules fallback remains publishable, with its reason in private-to-reader review metadata and Actions diagnostics (the repository itself is public).
+
+Transient 503/504/transport failures retry at most three times per logical request; other failures do not. Primary scheduling prepares at 06:53 KST and waits until 07:00 for collection, with the existing 07:17/07:37 recovery triggers. Existing editions are preserved. GitHub delays and generation/deployment time still prevent an exact 07:00 publication guarantee. Push-triggered trials remain non-publishing and fail visibly if research does not pass.
