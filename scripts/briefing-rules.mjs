@@ -33,7 +33,7 @@ export function parseRates(html, cutoff) {
 }
 export function selectNews(items, cutoff, seen = new Set()) {
   const urls = new Set(seen), titles = new Set(), counts = new Map()
-  return items.filter(x => Date.parse(x.published_utc) <= cutoff && Date.parse(x.published_utc) > cutoff-DAY && /^https:\/\//.test(x.article_url))
+  return items.filter(x => !/MK시그널|골든크로스|급등주|추천주|수익률 인증/.test(x.title)).filter(x => Date.parse(x.published_utc) <= cutoff && Date.parse(x.published_utc) > cutoff-DAY && /^https:\/\//.test(x.article_url))
     .sort((a,b)=>Number(b.region==='kr')-Number(a.region==='kr') || Date.parse(b.published_utc)-Date.parse(a.published_utc))
     .filter(x=>{
       const key=x.title.toLowerCase().replace(/[\p{P}\p{S}\s]/gu,'')
@@ -67,7 +67,7 @@ export async function collectInputs(cutoff, fetcher=fetch) {
   return {news,rateRows,treasuryUrl,rateError,calendars,checkedAt}
 }
 export function makeDigest(input, cutoff, previous=[], published=Date.now()) {
-  const seen=new Set(previous.filter(x=>['rules','gemini'].includes(x.review?.mode)).flatMap(x=>x.sources.map(s=>s.url)))
+  const seen=new Set(previous.filter(x=>['rules','gemini','gemini-research'].includes(x.review?.mode)).flatMap(x=>x.sources.map(s=>s.url)))
   const news=selectNews(input.news.items,cutoff,seen)
   if(news.length<3 || new Set(news.map(n=>n.publisher)).size<2)throw Error('Withheld: fewer than 3 fresh headlines from 2 publishers')
   const sources=[],checks=[],blocks=[]

@@ -1,6 +1,6 @@
-# Daily briefing: deterministic, no AI
+# Daily briefing: source-grounded Gemini with deterministic fallback
 
-## Current operation (owner approved 2026-10-07)
+## Historical rules-only operation (owner approved 2026-10-07)
 
 The owner requested removal of ChatGPT/API usage from daily publication. Starting with the next new KST date, `.github/workflows/daily-digest.yml` runs ordinary Node.js code at 22:00 UTC (07:00 Asia/Seoul), with recovery attempts at 22:17 and 22:37 UTC (07:17 / 07:37 KST). Existing same-date editions are preserved; recovery attempts do not collect new inputs or replace them. GitHub can delay schedules; this is not an exact publication-time guarantee. No model, translation, paid news API, or new secret is used. Standard public-repository GitHub-hosted runners are used. Existing Vercel hosting limits still apply.
 
@@ -54,3 +54,16 @@ Missing key, HTTP failure (including quota exhaustion), malformed response, nume
 Validation: `node --test tests/briefing-*.test.mjs`; `npm run build`. A local dry run without the secret cannot verify real Gemini access. Successful GitHub live checks are required to claim API verification. Existing October 8 publication is preserved; new-date editions use the optional stage.
 
 Official references: https://ai.google.dev/gemini-api/docs/pricing and https://ai.google.dev/api/generate-content.
+
+
+## Current: body-grounded briefing (owner approved 2026-10-08 afternoon)
+
+`BRIEFING_AI=research` replaces headline-only summarization for new dates. Each run selects up to eight recent RSS items, excludes obvious stock-signal promotions, and fetches the public HTML article body with two concurrent requests. BBC, CNBC, 매일경제 and 한국경제 have explicit host/DOM adapters. Each redirect is checked against the HTTPS host allowlist; no login, paywall bypass, third-party extraction service or paid search is used. Each page has a 15-second request deadline, 2 MB response cap, canonical-path check and publication/update-time checks. Unknown timestamps, post-cutoff revisions, paywall flags, video pages and insufficient bodies are excluded. Only the main article paragraphs are extracted, at most 9,000 characters per article; excerpt scope is disclosed. Parser changes can reduce coverage rather than silently substituting navigation text or titles.
+
+At least two article bodies are required. Official Treasury and calendar records become separately identified model evidence while their published number/date blocks stay byte-for-byte unchanged. One model call produces 2–6 issues with reported facts, documented change (or explicitly unavailable), conditional interpretation and next verification questions. Each claim cites paragraph IDs. A second call checks all claims, attribution, units, comparisons and inferences against those paragraphs. This is evidence consistency checking, not independent confirmation of publisher claims. The current workflow does not fetch a complete US stock closing dataset or guarantee Bloomberg/Reuters/WSJ/FT coverage.
+
+Per run: at most 85,000 input JSON characters, two Gemini calls, 8,192/4,096 output-token caps and a 60-second timeout per call. There are no automatic model retries or paid fallbacks. A Free Tier project must remain unbilled; API keys cannot prove the current billing tier. Error, quota exhaustion, inadequate bodies or rejected evidence produce the unchanged non-AI digest. An existing same-date edition returns before collection or model use. Recovery schedules remain 07:17/07:37 KST after the primary 07:00 trigger.
+
+`review.mode=gemini-research` is distinct from historical headline and AI editorial modes. Public labels explicitly describe body-based AI summaries/inferences. Evidence metadata stores URLs, retrieval/publication/modification times, scope, document/paragraph hashes and numeric tokens. Full article bodies are used in memory only and are NOT committed or included in the public payload. Published output is paraphrased; source links allow readers to inspect originals. Unavailable sources remain labeled as links only, excluded from analysis. The build reconstructs published content and validates references, numeric tokens, coverage and unchanged official blocks. These checks cannot prove semantic truth or detect every wrong inference.
+
+`--dry-run --require-research` is the push-triggered live integration gate: fallback is a failure of the research trial and never changes published content. `DIGEST_PREVIEW_PATH` can hold the generated preview outside the repository. Scheduled/manual publication permits fallback. Tests: `node --test tests/briefing-*.test.mjs`; build: `npm run build`.

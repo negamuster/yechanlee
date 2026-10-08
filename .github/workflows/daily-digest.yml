@@ -31,21 +31,21 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
-      - run: node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs tests/briefing-gemini.test.mjs
+      - run: node --test tests/briefing-publication.test.mjs tests/briefing-auto-review.test.mjs tests/briefing-rules.test.mjs tests/briefing-gemini.test.mjs tests/briefing-research.test.mjs
       - name: Live collection check on code changes
         if: github.event_name == 'push'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          BRIEFING_AI: gemini
+          BRIEFING_AI: research
           DIGEST_PREVIEW_PATH: /tmp/briefing-preview.json
         run: |
-          node scripts/generate-daily-digest.mjs --dry-run --require-ai
-          node -e "const p=JSON.parse(require('fs').readFileSync('/tmp/briefing-preview.json')); console.log(JSON.stringify({mode:p.review.mode,summary:p.summary},null,2))"
+          node scripts/generate-daily-digest.mjs --dry-run --require-research
+          node -e "const p=JSON.parse(require('fs').readFileSync('/tmp/briefing-preview.json')); console.log(JSON.stringify({mode:p.review.mode,summary:p.summary,blocks:p.blocks,sources:p.sources},null,2))"
       - name: Publish new date after validation
         if: github.event_name != 'push'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          BRIEFING_AI: gemini
+          BRIEFING_AI: research
         run: |
           node scripts/generate-daily-digest.mjs
           npm run build

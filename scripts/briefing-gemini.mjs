@@ -51,11 +51,11 @@ export function validateGemini(item) {
 }
 const schema = { type: 'OBJECT', properties: { summaries: { type: 'ARRAY', items: { type: 'OBJECT', properties: { sourceId: { type: 'INTEGER' }, text: { type: 'STRING' } }, required: ['sourceId','text'] } } }, required: ['summaries'] }
 const reviewSchema = { type: 'OBJECT', properties: { approved: { type: 'BOOLEAN' }, issues: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['approved','issues'] }
-async function request(apiKey, instruction, data, responseSchema, fetcher) {
+export async function request(apiKey, instruction, data, responseSchema, fetcher, maxOutputTokens = 4096) {
   const response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
     method: 'POST', redirect: 'error', signal: AbortSignal.timeout(60000),
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents: [{ role: 'user', parts: [{ text: JSON.stringify(data) }] }], generationConfig: { maxOutputTokens: 4096, responseMimeType: 'application/json', responseSchema } })
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents: [{ role: 'user', parts: [{ text: JSON.stringify(data) }] }], generationConfig: { maxOutputTokens, responseMimeType: 'application/json', responseSchema } })
   })
   // Never log API response bodies or request headers, including on authentication errors.
   if (!response.ok) throw Error(`Gemini HTTP ${response.status}`)

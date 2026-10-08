@@ -1,3 +1,4 @@
+import { validateResearch } from './briefing-research.mjs'
 import { validateGemini } from './briefing-gemini.mjs'
 import { validateRules } from './briefing-rules.mjs'
 import { createHash } from 'node:crypto'
@@ -24,10 +25,11 @@ export function publishable(items, now = Date.now()) {
       sourceIds.add(source.id)
       if (!r.checkedSources?.includes(source.id)) throw Error(`Unchecked source: ${item.id}`)
     }
-    if (r.mode && !['manual','automated','rules','gemini'].includes(r.mode)) throw Error('Unknown review mode')
+    if (r.mode && !['manual','automated','rules','gemini','gemini-research'].includes(r.mode)) throw Error('Unknown review mode')
     validateAutoReview(item)
     validateRules(item)
     validateGemini(item)
+    validateResearch(item)
     return true
-  }).map(item => ({ id:item.id, reviewMode:item.review?.mode === 'gemini' ? 'gemini' : item.review?.mode === 'rules' ? 'rules' : item.review?.mode === 'automated' ? 'automated' : 'manual', title:item.title, sessionDate:item.sessionDate, cutoffAt:item.cutoffAt, publishedAt:item.publishedAt, summary:item.summary, blocks:item.blocks, sources:item.sources, dataNote:item.dataNote, corrections:item.corrections })).sort((a,b) => b.id.localeCompare(a.id))
+  }).map(item => ({ id:item.id, reviewMode:item.review?.mode === 'gemini-research' ? 'gemini-research' : item.review?.mode === 'gemini' ? 'gemini' : item.review?.mode === 'rules' ? 'rules' : item.review?.mode === 'automated' ? 'automated' : 'manual', title:item.title, sessionDate:item.sessionDate, cutoffAt:item.cutoffAt, publishedAt:item.publishedAt, summary:item.summary, blocks:item.blocks, sources:item.sources, dataNote:item.dataNote, corrections:item.corrections })).sort((a,b) => b.id.localeCompare(a.id))
 }

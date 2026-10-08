@@ -1,3 +1,4 @@
+import { researchDigest } from './briefing-research.mjs'
 import { readFile, readdir, writeFile, access } from 'node:fs/promises'
 import { collectInputs, makeDigest, kstDate } from './briefing-rules.mjs'
 import { contentHash, publishable } from './briefing-publication.mjs'
@@ -11,8 +12,9 @@ const old=await Promise.all((await readdir(dir)).filter(n=>n.endsWith('.json')).
 const input=await collectInputs(cutoff)
 console.log(JSON.stringify({news:input.news.sources,rates:input.rateRows.map(r=>r.date),rateError:input.rateError,calendars:input.calendars.map(c=>({source:c.key,error:c.error||null,events:c.events.length}))},null,2))
 const base=makeDigest(input,cutoff,dry ? old.filter(x=>x.id!==id) : old)
-const item=process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
-if(process.argv.includes('--require-ai') && item.review.mode !== 'gemini')throw Error('Gemini live check failed; no publication files changed')
+const item=process.env.BRIEFING_AI === 'research' ? await researchDigest(base) : process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+if(process.argv.includes('--require-ai') && !['gemini','gemini-research'].includes(item.review.mode))throw Error('Gemini live check failed; no publication files changed')
+if(process.argv.includes('--require-research') && item.review.mode !== 'gemini-research')throw Error('Body-based research live check failed; no publication files changed')
 item.review.contentHash=contentHash(item)
 publishable([item])
 if(dry){

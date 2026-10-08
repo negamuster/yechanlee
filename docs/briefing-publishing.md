@@ -30,3 +30,8 @@ The digest uses original RSS titles and links, official Treasury yields, and Fed
 ## Gemini headline summaries (2026-10-08 update)
 
 The owner now authorizes the free-tier Gemini API for headline summaries. This supersedes the rules-only restriction above; paid APIs and ChatGPT schedules remain excluded. See the Gemini extension in `docs/briefing-automation.md` for limits and billing caveat. `gemini` editions retain original headlines and official data, add Korean summaries based only on those headlines, and honestly display `Gemini 제목 요약 · 자동 대조`. They do not claim article-body verification or use the historical automated editorial gate. The publication gate reconstructs their reader content from the stored deterministic base and checked summaries. Any failure before publication falls back to a rules edition. Historical editions are unchanged.
+
+
+## Body-grounded Gemini publication (2026-10-08 afternoon)
+
+The owner requested article-body collection, summaries and evidence-based interpretation. The current `research` workflow and `gemini-research` mode supersede the headline-only stage for future dates. Reader sections distinguish reported facts, documented changes, conditional Gemini interpretation and next checks. A missing before/after comparison is explicitly marked unavailable. Unavailable/paywalled bodies cannot ground any claim. Treasury and official calendar blocks remain unchanged. Original bodies are not republished or stored in the public repository; provenance uses paragraph hashes and IDs. Automatic evidence comparison is not independent factual verification. See the current section of `docs/briefing-automation.md` for the exact limits, fallbacks and validation commands. Historical editions, including October 8, remain unchanged.
