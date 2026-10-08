@@ -90,3 +90,11 @@ The unused Yahoo proxy is removed. The Claude route stays a tested HTTP 410 tomb
 Validation: `node --test tests/*.test.mjs`; `npm run build`; non-publishing live `--dry-run --require-research` in GitHub Actions. Local source collection on October 8 succeeded for three BEA releases (October 6 trade; September 30 GDP and personal income). A successful collector or mocked unit test does not establish real Gemini output quality; inspect the live run separately. The October 8 published article remains unchanged.
 
 References checked October 8: https://ai.google.dev/gemini-api/terms ; https://www.bea.gov/help/faq/145 ; https://www.bea.gov/robots.txt ; https://apps.bea.gov/robots.txt ; https://docs.github.com/en/actions/how-tos/troubleshoot-workflows .
+
+
+### Live verification result, 2026-10-08 evening
+
+- Code commit `8d3f6c2`: site verification/build and Vercel deployment passed. Production `/briefings` served the updated methodology; removed `/api/yahoo-proxy` returned 404. Three official release bodies collected. First real model response was rejected by the existing numeric-evidence gate (`research_number`); no draft was published.
+- Follow-up `ab39d3d4`: inputs now expose exact allowed number tokens and failures record sanitized mismatching numbers/field/citation IDs. The numeric gate was not relaxed. Site verification/build and Vercel deployment passed.
+- Live research run https://github.com/negamuster/yechanlee/actions/runs/37771676818 failed in both attempts: three BEA bodies collected each time; all three bounded Gemini generation attempts returned HTTP 503. Retry backoff and persisted fallback diagnostics worked. No successful grounded output was available for quality comparison with October 7. Do not describe this as a verified Gemini briefing or a successful scheduled publication.
+- Remaining check: after the provider is available, obtain a passing non-publishing research preview and inspect its facts, dates, units, attribution and conditional interpretations. Its scope is recent BEA macro releases plus unprocessed news links, narrower than October 7's researched market/company coverage. The October 8 article remains unchanged. October 9 scheduling can only be verified after its trigger; no additional ChatGPT automation was created.
