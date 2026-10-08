@@ -103,3 +103,6 @@ References checked October 8: https://ai.google.dev/gemini-api/terms ; https://w
 ### Free-tier model recovery trial (2026-10-08)
 
 Current research model switches from 3.7 Flash to the stable `gemini-3.5-flash-lite`, whose Standard input/output Free Tier and structured output support were checked in Google's official model/pricing documentation on October 8. The same secret, source permissions, retry limits, separate evidence review and numeric validation remain. Historical 3.7 provenance is still validated using its recorded model. This is a real non-publishing trial; changing the model alone is not proof of successful research. No billing change, paid tier, search grounding or ChatGPT scheduling is introduced.
+
+
+Flash-Lite's first live trial returned successfully in about four seconds. Validation exposed a date-translation false rejection: August/July and zero-padded 06 became Korean 8월/7월/6일. Evidence tokens now explicitly include deterministic English month names, named quarter/estimate ordinals, and zero-unpadded integers. Decimal financial figures remain exact; no currency scaling, arithmetic or unsupported values are permitted. The independent evidence comparison still checks meaning and attribution.

@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {makeDigest,selectNews} from '../scripts/briefing-rules.mjs'
 import {extractArticle,collectArticles,officialDocuments,digestHash} from '../scripts/briefing-articles.mjs'
-import {attachResearch,evidenceCatalog,validateResearchOutput,researchDigest} from '../scripts/briefing-research.mjs'
+import {attachResearch,evidenceNumbers,evidenceCatalog,validateResearchOutput,researchDigest} from '../scripts/briefing-research.mjs'
 import {contentHash,publishable} from '../scripts/briefing-publication.mjs'
 const now=Date.parse('2026-10-08T05:00:00Z')
 const base=()=>makeDigest({news:{items:[1,2,3].map(n=>({article_url:`https://www.mk.co.kr/news/economy/${n}`,title:`기업 ${n} 실적 발표`,publisher:n===3?'B':'A',region:'kr',topics:['economy'],published_utc:new Date(now-1000).toISOString()}))},rateRows:[{date:'2026-10-07',rates:{2:4,10:5,30:6}}],treasuryUrl:'https://home.treasury.gov/',calendars:[],checkedAt:new Date(now).toISOString()},now,[],now)
@@ -65,4 +65,18 @@ test('two-call research flow includes body paragraphs and pins no external tools
 })
 test('stock promotion headlines are excluded from briefing selection',()=>{
  assert.equal(selectNews([{title:'MK시그널 추천주',article_url:'https://www.mk.co.kr/a',published_utc:new Date(now).toISOString(),publisher:'MK'}],now).length,0)
+})
+
+test('date translation permits English months and zero padding, without financial number conversion',()=>{
+ assert.ok(evidenceNumbers('Released 2026-10-06. August rose from July.').includes('6'))
+ assert.ok(evidenceNumbers('August rose from July.').includes('8'))
+ assert.ok(evidenceNumbers('August rose from July.').includes('7'))
+ assert.ok(evidenceNumbers('the second quarter, third estimate').includes('2'))
+ assert.ok(!evidenceNumbers('Revenue was $105.6 billion.').includes('1056'))
+ assert.ok(!evidenceNumbers('Revenue was $105.6 billion.').includes('8'))
+ const ds=docs(base());ds.forEach(d=>d.paragraphs[0].text='In August 2026, revenue increased 10% from July. Release date 2026-10-06.')
+ const o=output(ds);o.sections.forEach(s=>s.facts.text='8월 매출이 7월보다 10% 증가했다. 발표일은 10월 6일이다.')
+ assert.doesNotThrow(()=>validateResearchOutput(o,evidenceCatalog(ds)))
+ o.sections[0].facts.text='매출은 1056억 달러였다.'
+ assert.throws(()=>validateResearchOutput(o,evidenceCatalog(ds)),/research_number/)
 })
