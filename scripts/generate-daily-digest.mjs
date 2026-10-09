@@ -14,7 +14,8 @@ const input=await collectInputs(cutoff)
 console.log(JSON.stringify({news:input.news.sources,rates:input.rateRows.map(r=>r.date),rateError:input.rateError,calendars:input.calendars.map(c=>({source:c.key,error:c.error||null,events:c.events.length}))},null,2))
 const base=makeDigest(input,cutoff,dry ? old.filter(x=>x.id!==id) : old)
 const diagnostics={mode:'rules',stage:'deterministic',attempts:[]}
-const item=process.env.BRIEFING_AI === 'research' ? await researchDigest(base,{diagnostics}) : process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+let item=process.env.BRIEFING_AI === 'research' ? await researchDigest(base,{diagnostics}) : process.env.BRIEFING_AI === 'gemini' ? await enhanceDigest(base) : base
+if(!dry && item.review.mode==='gemini-research' && process.env.BRIEFING_RESEARCH_PUBLISH_APPROVED!=='1'){diagnostics.publicationHold='owner_preview_review_pending';diagnostics.publicationMode='rules';item=base}
 item.review.execution=diagnostics
 console.log('Briefing execution: '+JSON.stringify(diagnostics))
 if(process.env.BRIEFING_REPORT_PATH)await writeFile(process.env.BRIEFING_REPORT_PATH,JSON.stringify({id,...diagnostics},null,2)+'\n')

@@ -126,3 +126,10 @@ The workflow ceiling is now 30 minutes to include the optional correction round,
 ### Actual recorded rejection, October 8 21:02 KST
 
 Run https://github.com/negamuster/yechanlee/actions/runs/37773771761 ended `research_review`. Its same-model audit reported two concrete unit errors: source `$105.6 billion` appeared as `105.6억 달러`; source `$92.8 billion` appeared as `92.8억 달러`. Each Korean amount is one tenth of the source value. Both rejections are justified, not excessive scrutiny. That older run stored the feedback but not the full rejected draft or per-claim mapping; full original sentences and exact claim IDs cannot be reconstructed honestly from its log. The new claim-level diagnostics address that gap. The earlier August→8월 and 06→6 issue was a legitimate date-format false positive, fixed separately; it does not justify relaxing financial units.
+
+
+### October 9 verification result and publication hold
+
+Code and rules recovery commit d64ae8f passed site verification/build/Vercel deployment. The non-publishing AI run https://github.com/negamuster/yechanlee/actions/runs/37866808103 also passed: three BEA bodies, four topics, one rejected-claim-only correction, three successful physical API calls, no retries. The changed claim was section-3.change; an uncited digit 7 (July) was removed by setting the change to null. Every other claim stayed unchanged. The current full draft and rejection record are retained in the Actions diagnostics.
+
+`docs/briefing-preview-2026-10-09.md` reproduces the passing preview and flags remaining editorial concerns: GDP recovery persistence, household spending capacity, and inferring traded bond prices from Treasury par yields. Same-model review missed these concerns. This is NOT declared restored or independently verified. Until the owner reviews a suitable preview and authorizes activation, non-dry-run research editions require `BRIEFING_RESEARCH_PUBLISH_APPROVED=1`; otherwise the existing deterministic base publishes with `publicationHold=owner_preview_review_pending` diagnostics. No approval is implied by this commit or by a green AI test. The October 9 recovery remains explicitly non-AI.
