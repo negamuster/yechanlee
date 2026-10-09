@@ -1,0 +1,210 @@
+{
+  "id": "2026-10-09",
+  "status": "published",
+  "title": "2026-10-09 경제·기업 뉴스와 공식 지표",
+  "sessionDate": null,
+  "cutoffAt": "2026-10-09T00:48:32.182Z",
+  "publishedAt": "2026-10-09T00:48:40.509Z",
+  "summary": [
+    "최근 24시간 경제·기업 뉴스 6건을 매체별 최대 2건씩 정리했습니다. 한국어 제목을 우선하고 같은 언어 안에서는 최신순으로 표시합니다.",
+    "미국 재무부 2026-10-08 자료에서 10년물 파 수익률은 5.22%입니다.[1]",
+    "뉴스 제목의 원문 링크와 시간순 공식 일정은 전체 브리핑에서 확인할 수 있습니다. 별도의 시장 해석이나 투자 의견은 포함하지 않습니다."
+  ],
+  "blocks": [
+    {
+      "kind": "paragraph",
+      "text": "수집 범위: 10. 08. 09:48 KST~10. 09. 09:48 KST. 기사 제목과 발표 데이터를 정해진 규칙으로 정리한 브리핑입니다. 기사 본문을 읽거나 사실관계·시장 원인을 별도로 분석한 결과는 아닙니다."
+    },
+    {
+      "kind": "heading",
+      "text": "1. 공식 금리 데이터"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-08 기준: 2년물 4.75% (2bp 하락) · 10년물 5.22% (6bp 하락) · 30년물 5.60% (7bp 하락).[1]"
+    },
+    {
+      "kind": "metadata",
+      "text": "미국 재무부 파 수익률 · 비교일 2026-10-07 → 2026-10-08 · 주식 거래일·시장 호가와 구분"
+    },
+    {
+      "kind": "heading",
+      "text": "2. 경제·기업 뉴스 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "해외발 금융권 해킹 10건 중 9건 “공격 주체 파악 못해” [2]"
+    },
+    {
+      "kind": "metadata",
+      "text": "매일경제 · 10. 09. 09:32 KST · 기업 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "브라질증시 폭등 예상한 전설의 ‘투자 기계’…함께 매수한 종목은? [3]"
+    },
+    {
+      "kind": "metadata",
+      "text": "매일경제 · 10. 09. 09:05 KST · 시장·투자 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "\"대기업만 싼 전기 쓰게 할 순 없다\"…정부가 제동 건 이유 [4]"
+    },
+    {
+      "kind": "metadata",
+      "text": "한국경제 · 10. 09. 08:30 KST · 기업 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "美정부,\"마이크로소프트등 일부 기업에 영주권발급제도 중단\"발표 [5]"
+    },
+    {
+      "kind": "metadata",
+      "text": "한국경제 · 10. 09. 00:28 KST · 기술·반도체 · 원문 제목"
+    },
+    {
+      "kind": "subheading",
+      "text": "Mark Zuckerberg has an image problem - so why is Meta's business booming? [6]"
+    },
+    {
+      "kind": "metadata",
+      "text": "BBC Business · 10. 09. 08:14 KST · 기업 · 영문 원문 제목 · 번역 없음"
+    },
+    {
+      "kind": "subheading",
+      "text": "White House blocks Microsoft from foreign worker hiring program [7]"
+    },
+    {
+      "kind": "metadata",
+      "text": "BBC Business · 10. 09. 06:37 KST · 기술·반도체 · 영문 원문 제목 · 번역 없음"
+    },
+    {
+      "kind": "heading",
+      "text": "3. 향후 72시간 공식 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "조회에 성공한 공식 달력에서 향후 72시간 내 시각이 명시된 일정을 확보하지 못했습니다. 일정이 없다는 뜻은 아닙니다."
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "미국 재무부 · 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026"
+    },
+    {
+      "id": 2,
+      "label": "매일경제 · 해외발 금융권 해킹 10건 중 9건 “공격 주체 파악 못해”",
+      "url": "https://www.mk.co.kr/news/economy/12172199"
+    },
+    {
+      "id": 3,
+      "label": "매일경제 · 브라질증시 폭등 예상한 전설의 ‘투자 기계’…함께 매수한 종목은?",
+      "url": "https://www.mk.co.kr/news/stock/12172188"
+    },
+    {
+      "id": 4,
+      "label": "한국경제 · \"대기업만 싼 전기 쓰게 할 순 없다\"…정부가 제동 건 이유",
+      "url": "https://www.hankyung.com/article/202610080012i"
+    },
+    {
+      "id": 5,
+      "label": "한국경제 · 美정부,\"마이크로소프트등 일부 기업에 영주권발급제도 중단\"발표",
+      "url": "https://www.hankyung.com/article/202610092216i"
+    },
+    {
+      "id": 6,
+      "label": "BBC Business · Mark Zuckerberg has an image problem - so why is Meta's business booming?",
+      "url": "https://www.bbc.co.uk/news/articles/cq8rzjv8g7ejo?at_medium=RSS&at_campaign=rss"
+    },
+    {
+      "id": 7,
+      "label": "BBC Business · White House blocks Microsoft from foreign worker hiring program",
+      "url": "https://www.bbc.co.uk/news/articles/ck5yngl2y4gpo?at_medium=RSS&at_campaign=rss"
+    }
+  ],
+  "dataNote": "규칙 기반 자동 정리 · AI 미사용. 뉴스는 RSS 원문 제목·링크만 제공하며 별도 본문 검증·번역·요약을 하지 않습니다. 공식 데이터는 날짜·형식·수치 범위를 검사합니다. 일부 출처 수집 실패로 누락될 수 있습니다. 실시간 시황이나 포괄적인 시장 결산이 아닙니다.",
+  "corrections": [],
+  "review": {
+    "mode": "rules",
+    "approvedBy": "Anthracite deterministic publisher",
+    "approvedAt": "2026-10-09T00:48:40.509Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "inputChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": null,
+        "kind": "data",
+        "claimSummary": "2026-10-08 2·10·30년 파 수익률 및 직전 관측일 비교"
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.mk.co.kr/news/economy/12172199",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-09T00:32:20.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.mk.co.kr/news/stock/12172188",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-09T00:05:51.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.hankyung.com/article/202610080012i",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-08T23:30:07.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.hankyung.com/article/202610092216i",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-08T15:28:22.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.bbc.co.uk/news/articles/cq8rzjv8g7ejo?at_medium=RSS&at_campaign=rss",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-08T23:14:02.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.bbc.co.uk/news/articles/ck5yngl2y4gpo?at_medium=RSS&at_campaign=rss",
+        "checkedAt": "2026-10-09T00:48:40.333Z",
+        "publishedAt": "2026-10-08T21:37:35.000Z",
+        "kind": "feed",
+        "claimSummary": "발행사 RSS의 제목·링크·발행시각만 수집; 본문 사실검증 아님"
+      }
+    ],
+    "inputHash": "f9e446c80145a75458c21c28399aea29000ff32e7b92445a580b9d7bafc1ab05",
+    "generatorVersion": 1,
+    "execution": {
+      "mode": "rules",
+      "stage": "deterministic",
+      "attempts": []
+    },
+    "contentHash": "6cbe057223073a5c643aa9c0de63f3be0460015391c8e3aa8c3a12571ad3c989"
+  }
+}

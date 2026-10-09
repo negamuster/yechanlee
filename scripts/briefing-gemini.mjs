@@ -54,8 +54,8 @@ const reviewSchema = { type: 'OBJECT', properties: { approved: { type: 'BOOLEAN'
 // Retry only transport failures and temporary 503/504 responses. Never retry quota,
 // authentication, malformed output or a rejected evidence review.
 export async function request(apiKey, instruction, data, responseSchema, fetcher, maxOutputTokens = 4096, model = MODEL, options = {}) {
-  const { sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = Date.now, random = Math.random, onAttempt = () => {} } = options
-  const deadline = now() + 150000
+  const { sleep = ms => new Promise(resolve => setTimeout(resolve, ms)), now = Date.now, random = Math.random, onAttempt = () => {}, retryDelays = [2000,4000], totalTimeoutMs = 150000 } = options
+  const deadline = now() + totalTimeoutMs
   for (let attempt = 1; attempt <= 3; attempt++) {
     let retryable = false, category
     try {
@@ -84,7 +84,7 @@ export async function request(apiKey, instruction, data, responseSchema, fetcher
         category = retryable ? 'Gemini transport error' :
           /^(Gemini incomplete response|Gemini retry deadline)$/.test(error?.message) ? error.message : 'Gemini response format error'
       }
-      const delayMs = 2000 * 2 ** (attempt - 1) + Math.floor(random() * 500)
+      const delayMs = (retryDelays[attempt - 1] ?? 0) + Math.floor(random() * 500)
       const retry = retryable && attempt < 3 && now() + delayMs < deadline
       onAttempt({ attempt, result: category, retry, delayMs: retry ? delayMs : 0 })
       if (!retry) throw Error(category)

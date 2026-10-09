@@ -22,3 +22,8 @@ test('retry deadline prevents another request after budget exhausted',async()=>{
  await assert.rejects(call(async()=>{calls++;clock=149000;return new Response('',{status:503})},{now:()=>clock}),/503/)
  assert.equal(calls,1)
 })
+test('scheduled request budget permits 15/30 second backoff but still only three attempts',async()=>{
+ let calls=0,clock=0;const delays=[]
+ await call(async()=>++calls<3?new Response('',{status:503}):ok(),{retryDelays:[15000,30000],totalTimeoutMs:210000,now:()=>clock,sleep:async ms=>{delays.push(ms);clock+=ms}})
+ assert.equal(calls,3);assert.deepEqual(delays,[15000,30000])
+})

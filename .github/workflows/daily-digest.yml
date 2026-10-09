@@ -4,6 +4,10 @@ on:
     - cron: '53 21 * * *' # Prepare at 06:53 KST; collection waits until 07:00
     - cron: '17,37 22 * * *' # Recovery: 07:17 / 07:37 KST; existing edition is preserved
   workflow_dispatch:
+  workflow_run:
+    workflows: [Check production data health]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -19,6 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -58,7 +63,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BRIEFING_AI: research
         run: |
-          node scripts/generate-daily-digest.mjs
+          node scripts/generate-daily-digest.mjs --scheduled
           npm run build
           git add content/briefings src/data/published-briefings.json
           if git diff --cached --quiet; then exit 0; fi

@@ -4,6 +4,7 @@ import { collectInputs, makeDigest, kstDate } from './briefing-rules.mjs'
 import { contentHash, publishable } from './briefing-publication.mjs'
 import { enhanceDigest } from './briefing-gemini.mjs'
 const cutoff=Date.now(), id=kstDate(cutoff), dry=process.argv.includes('--dry-run')
+if(process.argv.includes('--scheduled') && Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Seoul',hour:'2-digit',hourCycle:'h23'}).format(new Date(cutoff)))<7){console.log('Before 07:00 KST; publication deferred.');process.exit(0)}
 const path=new URL(`../content/briefings/${id}.json`,import.meta.url)
 const exists=await access(path).then(()=>true,()=>false)
 if(exists&&!dry){console.log(`${id} already exists; preserved.`);process.exit(0)}

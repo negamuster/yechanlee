@@ -86,16 +86,24 @@ test('one rejected audit can be corrected, but corrected draft requires a new pa
  const item=await researchDigest(b,{apiKey:'test',diagnostics,collector:async()=>({documents:ds,unavailable:[]}),report:()=>{},fetcher:async(url,opts)=>{
   const data=JSON.parse(JSON.parse(opts.body).contents[0].parts[0].text)
   calls++
-  if(calls===3){assert.ok(data.previousDraft);assert.equal(data.feedback.reason,'research_review')}
-  const answer=calls===1||calls===3?o:calls===2?{approved:false,issues:['Check attribution.'],checkedParagraphIds:verdict(o).checkedParagraphIds}:verdict(o)
+  if(calls===3){assert.equal(data.rejectedClaims[0].claimId,'section-1.facts')}
+  const answer=calls===1?o:calls===3?{patches:[{claimId:'section-1.facts',replacement:o.sections[0].facts}]}:calls===2?{approved:false,issues:[{claimId:'section-1.facts',category:'attribution',reason:'Check attribution.',evidence:o.sections[0].facts.evidence}],checkedParagraphIds:verdict(o).checkedParagraphIds}:verdict(o)
   return new Response(JSON.stringify({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify(answer)}]}}]}))
  }})
  assert.equal(calls,4);assert.equal(item.review.mode,'gemini-research');assert.equal(diagnostics.corrections,1)
  assert.equal(diagnostics.comparisons[0].approved,false);assert.equal(diagnostics.comparisons[1].approved,true)
  calls=0
  const rejected=await researchDigest(b,{apiKey:'test',collector:async()=>({documents:ds,unavailable:[]}),report:()=>{},fetcher:async()=>{
-  const answer=++calls%2?o:{approved:false,issues:['Unsupported attribution.'],checkedParagraphIds:verdict(o).checkedParagraphIds}
+  calls++;const answer=calls===1?o:calls===3?{patches:[{claimId:'section-1.facts',replacement:o.sections[0].facts}]}:{approved:false,issues:[{claimId:'section-1.facts',category:'attribution',reason:'Unsupported attribution.',evidence:o.sections[0].facts.evidence}],checkedParagraphIds:verdict(o).checkedParagraphIds}
   return new Response(JSON.stringify({candidates:[{finishReason:'STOP',content:{parts:[{text:JSON.stringify(answer)}]}}]}))
  }})
  assert.equal(calls,4);assert.equal(rejected,b)
+})
+
+test('billion and trillion dollar mistranslations fail the deterministic unit gate',()=>{
+ const ds=docs(base());ds[0].paragraphs[0].text='Revenue increased 10% to $105.6 billion. The prior amount was $92.8 billion.'
+ const o=output(ds);o.sections[0].facts.text='매출은 105.6억 달러였다.'
+ assert.throws(()=>validateResearchOutput(o,evidenceCatalog(ds)),/research_unit/)
+ o.sections[0].facts.text='매출은 105.6 billion USD였다.'
+ assert.doesNotThrow(()=>validateResearchOutput(o,evidenceCatalog(ds)))
 })
