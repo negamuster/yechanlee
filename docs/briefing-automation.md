@@ -1,6 +1,18 @@
-# Daily briefing: source-grounded Gemini with deterministic fallback
+# Daily briefing: ChatGPT research with manual rules fallback
 
-**Current operation is described in the final reliability/source-policy section below. Earlier sections are migration history.**
+## Current operation: ChatGPT scheduled briefing (2026-10-12)
+
+The owner authorized resuming researched Korean market briefings through ChatGPT scheduled tasks using the scheduler's **default model**. GPT-6.1 Sol cannot be pinned through the available automation tool; do not claim that it is selected. This supersedes earlier prohibitions on ChatGPT scheduling in the historical sections below. Paid AI APIs remain excluded. The Gemini research publication hold remains in place.
+
+One ChatGPT task starts daily at **07:00 Asia/Seoul**, beginning October 13. This is the start time, not a guaranteed publication-completion time. Each run researches recent news and the last completed US session, writes three short homepage highlights (300–450 Korean characters overall) and a concise narrative (about 900–1,300 characters), then checks important claims against actually read sources. Verified market numbers and at most three upcoming events supplement the narrative. Same-model self-checking is not independent verification or human approval. Original source links and the existing automated publication/evidence/hash gates remain required.
+
+Usage is limited by one agent, a focused source set (target 5–8), one draft and one factual check, without subagents or repeated full rewrites. This is a scope limit, not a guaranteed token budget. Missing evidence is omitted; unresolved material errors, connection, approval, build or deployment failures hold publication and preserve the live edition. Existing same-date publications are never overwritten.
+
+To avoid competing same-date editions and recurring Gemini trials, `.github/workflows/daily-digest.yml` is now **workflow_dispatch only**. Its schedules, data-health completion trigger and push-triggered Gemini live trial are removed. It retains a manually invoked non-AI rules fallback; invoking it first on a date will preserve that rules edition against later ChatGPT replacement. No secret or historical edition is removed. Independent data-health/BLS schedules remain separate.
+
+The task retrieves current main over the GitHub connection each run; it does not depend on persistent scratch files. Only a new `content/briefings/YYYY-MM-DD.json` and the rebuilt `src/data/published-briefings.json` may be committed during normal publication. Content is labeled `automated`, and Vercel success must be confirmed. Activation is not proof that the first future run succeeds.
+
+**The sections below are migration history. The October 12 operation above takes precedence.**
 
 ## Historical rules-only operation (owner approved 2026-10-07)
 
