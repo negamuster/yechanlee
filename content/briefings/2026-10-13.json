@@ -1,0 +1,223 @@
+{
+  "id": "2026-10-13",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026년 10월 12일",
+  "sessionDate": "2026-10-12",
+  "cutoffAt": "2026-10-13T00:52:41Z",
+  "summary": [
+    "미국장은 혼조였습니다. S&P500은 소폭 하락하고 다우는 올랐으며, 나스닥 종합과 소형주는 약세였습니다. 대형 은행 실적과 물가 발표를 앞둔 가운데 반도체 업종이 특히 부진했습니다.[1][2]",
+    "사우디 공항 공격에 따른 공급 우려로 유가가 올랐지만, 미국장 종료 뒤에는 상승폭을 일부 반납했습니다. 국채시장은 콜럼버스 데이로 휴장해 오늘 금리 변화로 비교할 새 관측값이 없습니다.[3][4]",
+    "기술주 안에서도 흐름이 갈렸습니다. 자체 AI 칩 확대 계획을 발표한 마이크로소프트는 상승했습니다. 한국시간 10월 14일 밤에는 9월 소비자물가가 발표되며, 회사의 공급 계획과 실제 성과는 구분해 읽어야 합니다.[1][5][6]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-10-13 09:52:41 KST · 최근 24시간: 10월 12일 09:52:41~13일 09:52:41 · 직전 미국 정규장: 10월 12일 · 마감: 10월 13일 05:00 KST[7]"
+    },
+    {
+      "kind": "heading",
+      "text": "미국장 흐름"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 12일 미국 증시는 방향이 엇갈렸습니다. 다우는 상승했지만 S&P500은 소폭 밀렸고, 나스닥 종합과 러셀2000은 하락했습니다. 주요 은행의 분기 실적과 이번 주 물가·소매판매 발표를 앞둔 거래였습니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "반도체가 약세를 이끌었습니다. 필라델피아 반도체 지수는 2.7% 떨어졌고, 에너지는 1.5% 올랐습니다. 마이크로소프트는 1.1% 상승해 기술주 전체와 다른 흐름을 보였습니다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "마이크로소프트는 Maia 300을 공개하고 2027년부터 자체 AI 시스템을 여러 기가와트 규모로 확대하겠다고 밝혔습니다. 기존 Maia 200은 코파일럿 등 실제 서비스에 투입돼 있습니다. 회사는 새 시스템이 주요 GPU 기반 시스템보다 메가와트당 토큰 처리량을 40% 높일 것으로 기대한다고 설명했습니다. 이는 회사가 제시한 성능 전망이며, 독립 시험 결과나 이미 실현된 비용 절감액은 아닙니다.[5]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "에너지 시장에서는 사우디아라비아 공항 공격에 따른 공급 차질 우려와 러시아산 디젤 공급 확대 가능성이 맞섰습니다. 원유 가격은 전일 배럴당 약 2달러 올랐습니다. 이후 한국시간 10월 13일 09:00에는 WTI 선물이 전일 대비 0.5% 하락해, 미국장 때의 상승폭을 일부 반납했습니다. 이 움직임은 정규장 마감 이후 정보로 구분했습니다.[4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "한편 달러지수는 10월 12일 Reuters 장중 보도에서 0.4% 상승했고 금 현물은 0.62% 하락했습니다. 해당 보도는 장중 가격이므로 주식 종가와 같은 시각의 자산별 성과로 비교하지 않았습니다.[8]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "국채시장은 콜럼버스 데이로 쉬었습니다. 최신 재무부 자료는 10월 9일 관측치이며, 아래 변화는 8일과 9일 사이의 차이입니다. 이를 12일 주식시장의 움직임에 맞춘 당일 금리 등락으로 읽으면 안 됩니다.[3]"
+    },
+    {
+      "kind": "heading",
+      "text": "시장 수치"
+    },
+    {
+      "kind": "metadata",
+      "text": "주가지수 · 2026-10-12 미국 정규장 종가 · 단위: 포인트 · 등락률: 전 거래일 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,807.24 (-0.06%) · 다우 51,850.55 (+0.38%) · 나스닥 종합 27,245.90 (-0.44%). Reuters와 AP의 종가·등락 포인트가 일치하며, AP는 등락률을 소수점 첫째 자리로 반올림합니다.[1][2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "러셀2000 2,794.48 (-0.4%, AP의 반올림 표기).[2]"
+    },
+    {
+      "kind": "metadata",
+      "text": "국채 · 재무부 일별 파 수익률 · 관측: 2026-10-09 미국 동부시간 약 15:30 / 10월 10일 04:30 KST · 10월 8일 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2년물 4.80% (+5bp) · 10년물 5.24% (+2bp). 실거래 수익률이 아닌 호가 기반 곡선의 고정 만기 수익률이며, 10월 12일 휴장으로 새 값은 없습니다.[3]"
+    },
+    {
+      "kind": "metadata",
+      "text": "달러·금 · 2026-10-12 Reuters 장중 관측 · 정확한 호가 시각 미표기 · 미국장 종가 아님"
+    },
+    {
+      "kind": "paragraph",
+      "text": "달러지수 102.59 (+0.4%) · 금 현물 4,167.98 미국달러/트로이온스 (-0.62%).[8]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "WTI: 10월 13일 09:00 KST 선물 -0.5%(전일 대비). 읽은 원문에 계약월이 없어 가격 수준은 생략했습니다.[4]"
+    },
+    {
+      "kind": "heading",
+      "text": "향후 공식 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-14 21:30 KST · 미국 9월 소비자물가지수(CPI) 및 실질임금. 실제치·예상치·이전치는 이번 원고에 넣지 않았습니다.[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-15 21:30 KST · 미국 9월 생산자물가지수(PPI). 두 일정 모두 BLS의 미국 동부시간 08:30을 한국시간으로 변환했습니다.[6]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters · 10월 12일 미국장 마감",
+      "url": "https://www.reuters.com/business/us-stock-futures-muted-oil-stays-above-100-ahead-earnings-2026-10-12/"
+    },
+    {
+      "id": 2,
+      "label": "AP · 10월 12일 지수 종가",
+      "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-f07713e8b2e438ac5903b50f5ce97235"
+    },
+    {
+      "id": 3,
+      "label": "미국 재무부 · 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve"
+    },
+    {
+      "id": 4,
+      "label": "Reuters · 미국장 이후 유가",
+      "url": "https://www.reuters.com/business/energy/oil-ticks-lower-russia-diesel-supply-prospects-counter-gulf-supply-risks-2026-10-13/"
+    },
+    {
+      "id": 5,
+      "label": "Microsoft · Maia 공식 발표",
+      "url": "https://blogs.microsoft.com/blog/2026/10/12/microsoft-to-expand-azure-maia-system-to-multi-gigawatt-deployments/"
+    },
+    {
+      "id": 6,
+      "label": "BLS · 2026년 10월 발표 일정",
+      "url": "https://www.bls.gov/schedule/2026/10_sched.htm"
+    },
+    {
+      "id": 7,
+      "label": "NYSE · 거래시간 및 휴장일",
+      "url": "https://www.nyse.com/trade/hours-calendars"
+    },
+    {
+      "id": 8,
+      "label": "Reuters · 10월 12일 글로벌 자산 장중 보도",
+      "url": "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-10-12/"
+    }
+  ],
+  "dataNote": "AI 작성·동일 모델 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 정보 기준 이후 소식은 제외했습니다. 금리는 10월 9일 공식 관측치, 달러·금은 12일 장중 보도이며 정확한 호가 시각이 없습니다. WTI는 계약월 미확인으로 가격 수준을 생략했습니다. 갱신형 Reuters 페이지의 표시 시각은 최초 발행 시각이며 최종 수정 시각은 확인되지 않았습니다. 경제지표 실적 수치와 실적발표의 정확한 시각은 미확인으로 제외했습니다.",
+  "corrections": [],
+  "publishedAt": "2026-10-13T00:55:32Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-10-13T00:55:32Z",
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/us-stock-futures-muted-oil-stays-above-100-ahead-earnings-2026-10-12/",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": "2026-10-12T10:09:00Z",
+        "basis": "reported",
+        "claimSummary": "마감 본문: S&P 7807.24 -4.30 -0.06%; Dow 51850.55 +195.60 +0.38%; Nasdaq Composite 27245.90 -120.27 -0.44%; SOX -2.7%, 에너지 +1.5%, MSFT +1.1%. AP와 종가·포인트 교차 대조. 표시 시각은 최초 발행이며 마감 업데이트 본문을 읽음."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-f07713e8b2e438ac5903b50f5ce97235",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "10월12일 종가와 포인트 변화가 Reuters와 일치. Russell2000 2794.48 -12.50 -0.4%는 AP 반올림 그대로. 주요 은행 실적, 물가·소매판매 발표 대기."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "표 머리글과 10월8일·9일 행 대조: 2년4.75→4.80 +5bp,10년5.22→5.24 +2bp. 관측 약15:30 ET의 indicative bid quote 기반 파곡선. 최신 행 10월9일. 10월12일 휴장은 읽은 Reuters/AP 및 SIFMA 휴장 권고로 확인."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.reuters.com/business/energy/oil-ticks-lower-russia-diesel-supply-prospects-counter-gulf-supply-risks-2026-10-13/",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": "2026-10-13T00:25:00Z",
+        "basis": "reported",
+        "claimSummary": "10월13일00:00 GMT WTI선물93.27 -0.5%, 전일 약2달러 상승 이후 하락. 가격 계약월 없어서 수준 제외. 사우디 공항 공격과 러시아 디젤 공급 가능성 보도. 정규장 이후 구분. 발행00:25 GMT는 cutoff 이전."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://blogs.microsoft.com/blog/2026/10/12/microsoft-to-expand-azure-maia-system-to-multi-gigawatt-deployments/",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "공식10월12일 발표: Maia200 서비스 운영,Maia300 2027년 생산 배치 및 멀티기가와트 확대 계획.40% 더 많은 토큰/MW는 회사 기대치로 한정. 날짜만 표시되어 발행 시각은 null."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.bls.gov/schedule/2026/10_sched.htm",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "BLS10월 달력:9월CPI/실질임금10월14일08:30 ET,PPI10월15일08:30 ET.EDT→KST +13시간 검산. 실제/예상/이전 수치 사용 안 함."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "NYSE2026휴장표에10월12일 없음. 정규장09:30–16:00 ET, EDT→KST+13시간:10월13일05:00 마감. 최근24시간 기간 산술 확인."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-10-12/",
+        "checkedAt": "2026-10-13T00:55:32Z",
+        "publishedAt": "2026-10-12T00:42:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters10월12일 장중 본문:달러지수102.59 +0.4%,금현물4167.98 USD/oz -0.62%. 정확한 quote시각 없어서 장중·시각 미표기 명시. 최초 발행 표시는00:42 UTC지만 읽은 본문은 미국 월요일 오후 업데이트; 최종수정 시각 미표기. 주식종가 대용으로 사용 안 함."
+      }
+    ],
+    "contentHash": "fbbf8df8069ecb1d4f6fe21406abb40bae76f677a85757d6d06f848c40ae917d"
+  }
+}
