@@ -1,0 +1,229 @@
+{
+  "id": "2026-10-14",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026년 10월 13일",
+  "sessionDate": "2026-10-13",
+  "cutoffAt": "2026-10-13T22:02:04Z",
+  "summary": [
+    "미국 증시는 소폭 하락했습니다. 은행 실적 발표가 시작됐지만 종목별 반응이 엇갈렸고, 중국 메모리 업체의 기술 진전에 대한 경쟁 우려로 반도체 약세가 이어졌습니다. 지수의 작은 낙폭 안에서도 기업별 주가 차이는 컸습니다.[1][2]",
+    "국채시장이 휴장 뒤 다시 열리면서 재무부 10년물 파 수익률은 직전 관측보다 3bp 낮아졌습니다. 유가는 한 방향으로 움직이지 않았습니다. 브렌트는 하락했지만 WTI는 소폭 올라 공급 확대 기대와 중동의 공급 차질 우려가 함께 남았습니다.[3][4]",
+    "달러는 약세였고, 미국장 종료 뒤 확인한 금 현물도 당일 하락했습니다. 다음 주요 재료는 한국시간 오늘 10월 14일 밤 9시 30분 발표되는 미국 9월 CPI입니다. 이튿날 같은 시각에는 PPI가 예정돼 있습니다.[5][6][7]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-10-14 07:02:04 KST · 최근 24시간: 10월 13일 07:02:04~14일 07:02:04 · 직전 미국 정규장: 10월 13일 · 마감: 10월 14일 05:00 KST. NYSE 공식 휴장표상 정상 거래일입니다.[8]"
+    },
+    {
+      "kind": "heading",
+      "text": "미국장 흐름"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 13일 미국 증시는 하락 마감했습니다. S&P500은 거의 보합이었지만 다우와 나스닥 종합은 모두 밀렸고, 소형주도 약세였습니다. 본격적인 분기 실적 발표가 시작되면서 시장의 관심은 기업들이 높은 기대에 부응할 수 있는지에 모였습니다. 지수의 움직임은 작았지만 실적 발표 기업의 주가는 장중 크게 흔들렸습니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "반도체에서는 중국 메모리 업체 CXMT의 기술 진전 보도가 경쟁 우려를 키웠습니다. 필라델피아 반도체 지수는 5거래일 연속 하락했고 마이크론은 3.6%, 어플라이드 머티리얼즈는 약 7% 떨어졌습니다. 다만 브로드컴은 0.7% 올라 업종 내 반응이 같지는 않았습니다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "은행 실적도 주가 상승으로 곧바로 이어지지는 않았습니다. 골드만삭스는 이익이 예상을 웃돌아 장 초반 4% 넘게 올랐지만 결국 0.2% 하락했습니다. 웰스파고는 이익 호조에도 매출이 기대에 못 미쳐 3.1% 내렸습니다. JP모건은 이익이 예상에 미달한 반면 다음 분기 순이자이익 전망은 예상을 웃돌았고, 주가는 0.9% 하락했습니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "원유시장은 엇갈렸습니다. 러시아산 디젤 공급 확대 가능성과 사우디아라비아·예멘의 공격에 따른 추가 공급 차질 우려가 맞섰습니다. 브렌트 선물은 0.9% 내렸지만 WTI 선물은 0.4% 상승했습니다. 따라서 이날 에너지 가격 전체가 하락했다고 정리하면 부정확합니다. Reuters 결제 보도에 계약월이 명시되지 않아 아래에는 등락률만 담았습니다.[3]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "국채와 외환에서는 금리와 달러가 낮아졌습니다. 재무부 일별 파 수익률은 2년물 4.79%, 10년물 5.21%로, 휴장 전인 10월 9일보다 각각 1bp와 3bp 하락했습니다. 달러지수는 Reuters의 미국 오후 보도에서 0.37% 내렸습니다. 금 현물은 미국 주식시장 마감 뒤에도 약세였습니다. 자산별 관측 시각이 달라 주식 종가와 동시에 측정한 성과로 비교하지 않았습니다.[4][5][6]"
+    },
+    {
+      "kind": "heading",
+      "text": "시장 수치"
+    },
+    {
+      "kind": "metadata",
+      "text": "주가지수 · 2026-10-13 미국 정규장 종가 · 단위: 포인트 · 전 거래일 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,805.45 (-0.02%) · 다우 51,670.10 (-0.35%) · 나스닥 종합 27,204.38 (-0.15%). Reuters 최종 마감 수치와 AP 종가·포인트 변화를 대조했습니다.[1][2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "러셀2000 2,783.37 (-0.4%, AP 반올림 표기).[2]"
+    },
+    {
+      "kind": "metadata",
+      "text": "국채 · 재무부 일별 파 수익률 · 관측: 2026-10-13 미국 동부시간 약 15:30 / 10월 14일 04:30 KST · 직전 관측 10월 9일 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2년물 4.79% (-1bp) · 10년물 5.21% (-3bp). 실거래 수익률이 아닌 호가 기반 파곡선 관측치입니다. 10월 12일은 미국 채권시장 휴장이었습니다.[2][4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "달러지수 102.18 (-0.37%) · 10월 13일 Reuters 미국 오후 보도 · 정확한 호가 시각 미표기 · 종가 아님.[5]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "금 현물 매수호가 4,160.10 미국달러/트로이온스 · 당일 -10.70달러(Kitco 표기) · 2026-10-13 17:52 EDT / 10월 14일 06:52 KST · 미국 정규장 종료 이후.[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "WTI 선물 +0.4% · 브렌트 선물 -0.9% · 10월 13일 Reuters 결제 보도 · 계약월 미표기로 가격 수준 제외.[3]"
+    },
+    {
+      "kind": "heading",
+      "text": "향후 공식 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-14 21:30 KST · 미국 9월 소비자물가지수(CPI) 및 실질임금.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-15 21:30 KST · 미국 9월 생산자물가지수(PPI) · 익일.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-16 21:30 KST · 미국 9월 수출입물가지수. 모두 BLS의 08:30 EDT를 한국시간으로 변환했습니다.[7]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters · 10월 13일 미국장 최종 마감",
+      "url": "https://www.reuters.com/business/sp-500-futures-muted-investors-await-big-bank-earnings-chip-weakness-weighs-2026-10-13/"
+    },
+    {
+      "id": 2,
+      "label": "AP · 미국장 마감 및 지수 종가",
+      "url": "https://apnews.com/article/stocks-markets-us-tech-oil-mideast-a2edaf9ec297fb75ff2a4e245063ec08",
+      "links": [
+        {
+          "label": "AP · 지수별 최종 종가",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-a0a577dfd12f63ee6780a56ab02b55c4"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Reuters · 원유 결제 보도",
+      "url": "https://www.reuters.com/business/energy/oil-ticks-lower-russia-diesel-supply-prospects-counter-gulf-supply-risks-2026-10-13/"
+    },
+    {
+      "id": 4,
+      "label": "미국 재무부 · 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve"
+    },
+    {
+      "id": 5,
+      "label": "Reuters · 달러 장중 보도",
+      "url": "https://www.reuters.com/world/africa/dollar-holds-near-18-month-high-geopolitical-risks-rise-2026-10-13/"
+    },
+    {
+      "id": 6,
+      "label": "Kitco · 금 현물 시각별 호가",
+      "url": "https://www.kitco.com/charts/gold"
+    },
+    {
+      "id": 7,
+      "label": "BLS · 2026년 10월 발표 일정",
+      "url": "https://www.bls.gov/schedule/2026/10_sched.htm"
+    },
+    {
+      "id": 8,
+      "label": "NYSE · 거래시간 및 휴장일",
+      "url": "https://www.nyse.com/trade/hours-calendars"
+    }
+  ],
+  "dataNote": "AI 작성·동일 모델 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 기준 시각 이후 정보는 제외했습니다. 주식은 최종 종가, 국채는 공식 파곡선 관측치, 달러는 정확한 호가 시각이 없는 미국 오후 보도, 금은 미국장 종료 이후 호가입니다. 원유는 계약월 미확인으로 가격 수준을 제외했습니다. 갱신형 뉴스의 표시 시각은 최초 발행이며 최종 수정 시각은 확인되지 않았습니다. 경제지표의 실제·예상·이전 수치와 확인되지 않은 실적 일정은 제외했습니다.",
+  "corrections": [],
+  "publishedAt": "2026-10-13T22:05:34Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-10-13T22:05:34Z",
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/sp-500-futures-muted-investors-await-big-bank-earnings-chip-weakness-weighs-2026-10-13/",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": "2026-10-13T10:19:00Z",
+        "basis": "reported",
+        "claimSummary": "최종 마감 본문 Reuters L188–190: SPX7805.45 -0.02%, Dow51670.10 -0.35%, Nasdaq Composite27204.38 -0.15%. 검색의 잠정치 대신 최종 본문 사용; AP 종가와 일치. SOX5거래일 하락, MU-3.6%, AMAT약-7%, AVGO+0.7%; CXMT 경쟁 우려. 초안의 기업반응과 인과를 이 범위로 제한."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://apnews.com/article/stocks-markets-us-tech-oil-mideast-a2edaf9ec297fb75ff2a4e245063ec08",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "AP 마감 본문과 연결된 AP 최종 지수 기사 모두 읽음. GS 장초반4%넘게 상승 후 -0.2%; WFC매출 미달·이익호조 -3.1%; JPM이익미달·다음분기NII전망상회 -0.9%. 종가와 포인트: SPX7805.45 -1.79,Dow51670.10 -180.45,Nasdaq27204.38 -41.52,Russell2783.37 -11.11(-0.4%반올림). GS장중상승을 종가로 오인하지 않음.10월12일 채권휴장,13일 재개."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.reuters.com/business/energy/oil-ticks-lower-russia-diesel-supply-prospects-counter-gulf-supply-risks-2026-10-13/",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": "2026-10-13T00:25:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 결제 본문: Brent-0.9%, WTI+0.4%. 러시아 디젤공급 기대와 사우디·예멘 공격 공급위험 상충.94.14/105.69는 계약월 미표기여서 원고에서 제외. 유가전체 하락이라는 일반화 배제. 표시 최초발행시각과 갱신본문 구분."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "Treasury 표머리글·10/9·10/13행:2YR4.80→4.79 =-1bp;10YR5.24→5.21=-3bp;직전관측10/9.방법론은 indicative bid-side prices 약15:30ET;실거래 금리/당일 장중호가와 혼합하지 않음. 2026-10-13 15:30EDT→14일04:30KST."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.reuters.com/world/africa/dollar-holds-near-18-month-high-geopolitical-risks-rise-2026-10-13/",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": "2026-10-13T01:44:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 미국 오후 갱신본문 L172: DXY102.18 -0.37%. 정확한 호가시각 미표기라 장중으로 라벨. 근거부족한 연준전망·AI자금유입 인과는 채택하지 않음."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.kitco.com/charts/gold",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": "2026-10-13T21:52:00Z",
+        "basis": "primary",
+        "claimSummary": "Kitco 화면 Updated Oct13 5:52PM NY Time와 현재 금현물4160.10 USD/troy ounce, 당일-10.70 대조. purity설명은 spot bid임 확인. 17:52EDT→14일06:52KST는 cutoff07:02:04전·주식정규장 마감후. 선물 또는 종가로 표현하지 않음."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.bls.gov/schedule/2026/10_sched.htm",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "BLS10월 달력:CPI/RealEarnings9월분10/14 08:30ET,PPI9월분10/15 08:30ET,Import/Export9월분10/16 08:30ET. EDT(+13h)로 KST21:30변환. 세 일정은 기준시각 이후72h내. 실제/예상/이전치 미사용."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-10-13T22:05:34Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "NYSE2026휴장표에10/13없고09:30–16:00ET정규장. 10/13 16:00EDT→10/14 05:00KST. cutOff전 마지막완료정규장10/13,최근24h기간10/13 07:02:04~10/14 07:02:04검산."
+      }
+    ],
+    "contentHash": "4e37d14558423ce1c638c38107cd7e997fdd0509ce5659e95a8feb37c4d19dfc"
+  }
+}
