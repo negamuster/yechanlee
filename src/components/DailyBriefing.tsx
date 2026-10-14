@@ -1,8 +1,19 @@
 import { Link } from 'react-router-dom'
 import { latestBriefing, kstTime } from '../lib/briefings'
+import type { Briefing } from '../lib/briefings'
 import './DailyBriefing.css'
+function SourceRefs({ item, ids }: { item: Briefing; ids: number[] }) {
+  return <sup className="briefing-citations">{ids.map(id => <Link key={id} to={`/briefings/${item.id}#source-${id}`} aria-label={`출처 ${id}: ${item.sources.find(s => s.id === id)?.label ?? ''}`}>[{id}]</Link>)}</sup>
+}
+function CitedText({ item, text }: { item: Briefing; text: string }) {
+  return <>{text.split(/(\[\d+\])/g).map((part, i) => /^\[\d+\]$/.test(part) ? <SourceRefs key={i} item={item} ids={[Number(part.slice(1, -1))]} /> : part)}</>
+}
+const trendClass = (change: string) => /[-−](?:US\$|\$)?\s*\d/.test(change) ? 'briefing-down' : /\+(?:US\$|\$)?\s*\d/.test(change) ? 'briefing-up' : ''
+const eventTime = (at: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(at))
+
 export default function DailyBriefing() {
   const item = latestBriefing
+  const home = item?.homepage
   const withoutCitations = (text: string) => text.replace(/\[(\d+)\]/g, '').trim()
   const rate = item?.blocks.find(b => b.kind === 'paragraph' && /2년물.*10년물.*30년물/.test(b.text))
   const news = item?.blocks.filter(b => b.kind === 'subheading').flatMap(b => {
@@ -18,7 +29,7 @@ export default function DailyBriefing() {
     <div className="briefing-kicker"><h2 id="daily-briefing-title">Daily Market Briefing</h2><Link to="/briefings">지난 브리핑 ↗</Link></div>
     {item ? <>
       <p className="briefing-meta">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 {kstTime(item.cutoffAt)}</p>
-      <h3><Link to={`/briefings/${item.id}`}>{item.title}</Link></h3>
+      <h3><Link to={`/briefings/${item.id}`}>{withoutCitations(home?.headline ?? item.title)}</Link></h3>
       {item.reviewMode === 'rules' ? <div className="briefing-at-a-glance">
         <div className="briefing-highlight">
           <h4>금리 변화</h4>
@@ -33,7 +44,38 @@ export default function DailyBriefing() {
           <h4>다음 일정</h4>
           <p>{calendar ? withoutCitations(calendar.text) : '확인된 공식 일정은 전체 브리핑에서 확인해 주세요.'}</p>
         </div>
-      </div> : <ul className="briefing-summary-list">{item.summary.map((text,i)=><li key={i}>{text}</li>)}</ul>}
+      </div> : <ul className="briefing-summary-list">{item.summary.map((text,i)=><li key={i}><CitedText item={item} text={text} /></li>)}</ul>}
+
+      {home && <div className="briefing-expanded">
+        {!!home.stocks.length && <section className="briefing-section" aria-labelledby="briefing-stocks-title">
+          <div className="briefing-section-heading"><h4 id="briefing-stocks-title">주요 종목</h4><span>움직임과 배경</span></div>
+          <ul className="briefing-stocks">{home.stocks.map(stock => <li key={stock.ticker}>
+            <div className="briefing-stock-heading"><strong>{stock.name} <span>{stock.ticker}</span></strong><b className={trendClass(stock.change)}>{stock.change}</b></div>
+            <p>{stock.reason}<SourceRefs item={item} ids={stock.sourceIds} /></p>
+            <small>{stock.basis}</small>
+          </li>)}</ul>
+        </section>}
+        <div className="briefing-support">
+          {!!home.assets.length && <section className="briefing-section" aria-labelledby="briefing-assets-title">
+            <div className="briefing-section-heading"><h4 id="briefing-assets-title">자산 흐름</h4><span>아침 브리핑 기준</span></div>
+            <table className="briefing-assets"><caption>자산별 관측 시각과 비교 기준이 다릅니다.</caption>
+              <thead><tr><th scope="col">자산 · 관측 기준</th><th scope="col">수치</th><th scope="col">변화</th></tr></thead>
+              <tbody>{home.assets.map(asset => <tr key={asset.label}>
+                <th scope="row">{asset.label}<SourceRefs item={item} ids={asset.sourceIds} /><span>{asset.basis}</span></th>
+                <td>{asset.value}</td><td className={trendClass(asset.change)}>{asset.change}</td>
+              </tr>)}</tbody>
+            </table>
+          </section>}
+          {!!home.events.length && <section className="briefing-section" aria-labelledby="briefing-events-title">
+            <div className="briefing-section-heading"><h4 id="briefing-events-title">오늘·다음 일정</h4><span>발행일 기준 · KST</span></div>
+            <ol className="briefing-events">{home.events.map(event => <li key={`${event.at}-${event.label}`}>
+              <time dateTime={event.at}>{eventTime(event.at)}</time>
+              <p>{event.label}<SourceRefs item={item} ids={event.sourceIds} /></p>
+              {event.detail && <small>{event.detail}</small>}
+            </li>)}</ol>
+          </section>}
+        </div>
+      </div>}
 
       <Link className="briefing-read" to={`/briefings/${item.id}`}>전체 브리핑 읽기 →</Link>
       <p className="briefing-meta">{item.reviewMode === 'automated' && <>AI 작성·자동 검토 · </>}{item.reviewMode === 'gemini-research' && <>Gemini 본문 요약·해석 · 자동 근거 대조 · </>}{item.reviewMode === 'gemini' && <>Gemini 제목 요약 · 자동 대조 · </>}{item.reviewMode === 'rules' && <>규칙 기반 자동 정리 · AI 미사용 · </>}가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>

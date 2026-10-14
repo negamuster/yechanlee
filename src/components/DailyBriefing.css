@@ -1,4 +1,4 @@
-.daily-briefing { min-width:0; color:#282c27; }
+.daily-briefing { min-width:0; color:#282c27; container-type:inline-size; container-name:briefing; }
 .briefing-kicker { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px;  }
 .briefing-kicker h2 { font-size:18px; font-weight:600; margin:0; }
 .briefing-kicker a,.briefing-meta { font-size:12px; color:#62685e; line-height:1.6; }
@@ -43,3 +43,38 @@
 .briefing-next p { font-size:12px; color:#62685e; }
 .briefing-summary-list { margin:18px 0; padding-left:19px; }
 .briefing-summary-list li { padding-left:3px; margin:10px 0; font-size:15px; line-height:1.8; overflow-wrap:anywhere; }
+
+.briefing-citations { font-size:10px; line-height:0; vertical-align:super; white-space:nowrap; margin-left:2px; }
+.briefing-citations a { color:#626f58; text-decoration:none; }
+.briefing-citations a:hover { text-decoration:underline; }
+.briefing-citations a:focus-visible { outline:2px solid #69785c; outline-offset:3px; }
+.briefing-expanded { margin-top:24px; }
+.briefing-section { border-top:1px solid #e2e5dd; padding-top:15px; min-width:0; }
+.briefing-section-heading { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:5px 12px; margin-bottom:12px; }
+.briefing-section-heading h4 { margin:0; font-size:14px; font-weight:600; }
+.briefing-section-heading > span { font-size:11px; color:#74796f; }
+.briefing-stocks { list-style:none; padding:0; margin:0 0 20px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 24px; }
+.briefing-stocks > li { min-width:0; }
+.briefing-stock-heading { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.briefing-stock-heading strong { font-size:13px; font-weight:600; overflow-wrap:anywhere; }
+.briefing-stock-heading strong > span { margin-left:4px; font-size:10px; font-weight:400; color:#6d7466; }
+.briefing-stock-heading > b { flex-shrink:0; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
+.briefing-stocks p { margin:7px 0 4px; font-size:13px; line-height:1.65; word-break:keep-all; overflow-wrap:anywhere; }
+.briefing-stocks small { font-size:10px; color:#73786e; line-height:1.5; display:block; }
+.briefing-support { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:24px; margin-bottom:18px; }
+.briefing-assets { width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px; }
+.briefing-assets caption { text-align:left; font-size:10px; color:#74796f; line-height:1.5; margin-bottom:8px; }
+.briefing-assets th,.briefing-assets td { text-align:right; padding:10px 5px; border-bottom:1px solid #edf0e8; vertical-align:top; font-weight:400; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.briefing-assets th:first-child { text-align:left; width:44%; padding-left:0; }
+.briefing-assets thead th { font-size:10px; color:#71776b; padding-top:0; }
+.briefing-assets tbody th { font-weight:500; }
+.briefing-assets tbody th > span { display:block; font-size:10px; color:#74796f; font-weight:400; line-height:1.5; margin-top:4px; }
+.briefing-assets td:last-child { padding-right:0; }
+.briefing-down { color:#ba3930; }
+.briefing-up { color:#07803e; }
+.briefing-events { list-style:none; padding:0; margin:0; display:grid; gap:14px; }
+.briefing-events time { font-size:11px; color:#5c6950; font-weight:500; font-variant-numeric:tabular-nums; }
+.briefing-events p { font-size:13px; line-height:1.65; margin:4px 0; overflow-wrap:anywhere; }
+.briefing-events small { display:block; font-size:11px; line-height:1.6; color:#73786e; }
+@container briefing (max-width:650px) { .briefing-support { grid-template-columns:minmax(0,1fr); gap:20px; } }
+@container briefing (max-width:400px) { .briefing-stocks { grid-template-columns:minmax(0,1fr); gap:16px; } }

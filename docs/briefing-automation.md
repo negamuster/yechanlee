@@ -6,6 +6,21 @@ The owner authorized resuming researched Korean market briefings through ChatGPT
 
 One ChatGPT task starts daily at **07:00 Asia/Seoul**, beginning October 13. This is the start time, not a guaranteed publication-completion time. Each run researches recent news and the last completed US session, writes three short homepage highlights (300–450 Korean characters overall) and a concise narrative (about 900–1,300 characters), then checks important claims against actually read sources. Verified market numbers and at most three upcoming events supplement the narrative. Same-model self-checking is not independent verification or human approval. Original source links and the existing automated publication/evidence/hash gates remain required.
 
+## Homepage presentation (owner approved 2026-10-14)
+
+From October 15, new automated editions include a reviewed `homepage` object, generated from the same research as the summary and narrative. It contains a short factual `headline` with inline source IDs, up to four `stocks`, up to four `assets`, and up to three `events`. No extra AI request is needed. Omit unavailable rows rather than padding them. The October 14 edition was explicitly expanded at the owner's request using its existing checked claims, with its original cutoff retained and a dated revision note.
+
+Schema (all source IDs refer to the edition's checked `sources`):
+
+- `headline`: concise Korean theme, e.g. `은행 실적 반응 엇갈림…반도체 약세 지속[1][2]`. Keep the original `title`/session date for archive identity.
+- `stocks`: `{ name, ticker, change, reason, basis, sourceIds }`. At most four important companies; use a signed change string, a short supported explanation and the trading/observation basis. Clearly separate intraday moves from closing changes. Do not infer causality merely from concurrent events.
+- `assets`: `{ label, value, change, basis, sourceIds }`. Prefer 10-year yields, dollar, spot gold and WTI; distinguish Treasury par yields, intraday quotes, spot/futures, currency/units, contract month and comparison date. Preserve approximate source precision. If contract month is unknown, exclude price level and state that in `value`/`basis`. Changes retain their own units (percent, bp or dollars).
+- `events`: `{ at, label, detail?, sourceIds }`. `at` is an ISO timestamp with explicit timezone, after the fixed cutoff and within 72 hours. Display absolute KST date/time and label the list as of the edition. Add `detail` only when supported; do not invent consensus estimates.
+
+Homepage fields are part of the content hash and public projection. `scripts/briefing-homepage.mjs` checks limits, attribution and event timing; it is not a fact-checking engine. Source evidence must cover the homepage as well as the narrative. Missing `homepage` on new automated editions (October 15 onward) prevents publication. Earlier editions and manual rules fallback remain compatible. The scheduled job still commits only its new edition and rebuilt public payload.
+
+On important economic-release days, include actual/consensus/prior values (each only if verified) and reported market reaction in the narrative using the existing focused source budget. No daily requirement to fill every field. The main display reuses this content; it does not introduce a second research or rewrite pass.
+
 Usage is limited by one agent, a focused source set (target 5–8), one draft and one factual check, without subagents or repeated full rewrites. This is a scope limit, not a guaranteed token budget. Missing evidence is omitted; unresolved material errors, connection, approval, build or deployment failures hold publication and preserve the live edition. Existing same-date publications are never overwritten.
 
 To avoid competing same-date editions and recurring Gemini trials, `.github/workflows/daily-digest.yml` is now **workflow_dispatch only**. Its schedules, data-health completion trigger and push-triggered Gemini live trial are removed. It retains a manually invoked non-AI rules fallback; invoking it first on a date will preserve that rules edition against later ChatGPT replacement. No secret or historical edition is removed. Independent data-health/BLS schedules remain separate.

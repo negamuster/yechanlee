@@ -1,10 +1,17 @@
 import items from '../data/published-briefings.json'
+export type BriefingHomepage = {
+  headline: string
+  stocks: { name: string; ticker: string; change: string; reason: string; basis: string; sourceIds: number[] }[]
+  assets: { label: string; value: string; change: string; basis: string; sourceIds: number[] }[]
+  events: { at: string; label: string; detail?: string; sourceIds: number[] }[]
+}
 export type Briefing = {
   reviewMode?: 'manual' | 'automated' | 'rules' | 'gemini' | 'gemini-research'
   id: string; title: string; cutoffAt: string; publishedAt: string; sessionDate: string | null
   summary: string[]; blocks: { kind: string; text: string }[]
   sources: { id: number; label: string; url: string; accessNote?: string; links?: { label: string; url: string }[] }[]
   dataNote: string; corrections: { at: string; text: string }[]
+  homepage?: BriefingHomepage
 }
 export const briefings = items as Briefing[]
 export const latestBriefing = briefings[0]
