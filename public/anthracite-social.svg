@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#20251e"/>
+  <rect x="34" y="34" width="1132" height="562" fill="none" stroke="#66735a" stroke-opacity=".45"/>
+  <rect x="34" y="34" width="1132" height="5" fill="#a4b18f"/>
+  <text x="88" y="134" font-family="DejaVu Sans,sans-serif" font-size="17" letter-spacing="3" fill="#b5bea9">MARKETS / MACRO / DAILY BRIEFING</text>
+  <text x="78" y="300" font-family="Nimbus Roman,Times New Roman,serif" font-size="116" fill="#f7f6ef">Anthracite</text>
+  <line x1="88" y1="346" x2="660" y2="346" stroke="#788568" stroke-opacity=".7"/>
+  <text x="88" y="405" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#edece2">Daily Market Briefing</text>
+  <text x="88" y="449" font-family="DejaVu Sans,sans-serif" font-size="19" fill="#b5bea9">Market indicators &amp; economic calendar</text>
+  <rect x="870" y="202" width="222" height="222" fill="#30382a" stroke="#788568" stroke-opacity=".45"/>
+  <text x="981" y="357" text-anchor="middle" font-family="Nimbus Roman,Times New Roman,serif" font-size="140" fill="#f7f6ef">A</text>
+  <text x="88" y="548" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#c4cdb7">yechanlee.vercel.app</text>
+  <text x="1092" y="548" text-anchor="end" font-family="DejaVu Sans,sans-serif" font-size="13" letter-spacing="2" fill="#a7b199">BY YECHAN LEE</text>
+</svg>
