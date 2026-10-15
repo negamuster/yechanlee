@@ -1,3 +1,4 @@
+import './Tools.css'
 import { portfolioSlices } from '../lib/financialMath'
 import { useState, useEffect } from 'react'
 
@@ -128,7 +129,7 @@ function DonutChart({ holdings, total }: { holdings: Holding[]; total: number })
   const slices = portfolioSlices(holdings, total)
   let offset = 0
   return (
-    <div style={{ display:'flex', flexWrap:'wrap', gap:'24px', alignItems:'center', marginBottom:'32px' }}>
+    <div className="portfolio-donut" style={{ display:'flex', flexWrap:'wrap', gap:'24px', alignItems:'center', marginBottom:'32px' }}>
       <svg viewBox="0 0 200 200" role="img" aria-label="수집된 13F 보유금액 기준 상위 10개와 기타 종목 비중" style={{ width:180, flexShrink:0 }}>
         {slices.map((slice, i) => {
           const start = offset; offset += slice.fraction * 100
@@ -203,9 +204,9 @@ export default function Form13F() {
         .edgar-link:hover{opacity:0.4;}
       `}</style>
 
-      <div style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'var(--font-ui)', color:'#000' }}>
+      <div className="financial-tool-page portfolio-page" style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'var(--font-ui)', color:'#000' }}>
 
-        <div style={{ maxWidth:'1100px', margin:'0 auto', padding:'40px 24px 80px' }}>
+        <div className="financial-tool-content" style={{ maxWidth:'1100px', margin:'0 auto', padding:'40px 24px 80px' }}>
           <h1 className="page-title" style={{ fontSize:'52px', fontWeight:'400', letterSpacing:'-0.02em', marginBottom:'20px', lineHeight:'1.1' }}>기관 포트폴리오 · 13F</h1>
           <p className="page-desc" style={{ fontSize:'18px', lineHeight:'1.85', color:'#444', maxWidth:'720px', marginBottom:'32px', textAlign:'justify', wordBreak:'keep-all' }}>
             기관의 분기별 공시에서 보유 종목과 수량 변화를 확인합니다. 현재 보유나 실제 거래 시점과는 차이가 있습니다.
@@ -309,7 +310,7 @@ export default function Form13F() {
                   <DonutChart holdings={current.holdings} total={current.totalValue} />
                   <p style={{ fontSize:12, color:'#666', lineHeight:1.7, marginBottom:20 }}>차트와 표의 비중은 옵션·원금 단위 항목을 제외한 보유종목 전체 합계를 기준으로 합니다. 차트는 상위 10개와 기타, 표는 상위 30개를 표시합니다. 기타에는 표에 없는 종목도 포함됩니다. 옵션 등 제외 항목이 있어 기관의 전체 운용자산(AUM)과 다르며, 반올림으로 비중 합계가 100%와 다를 수 있습니다.</p>
 
-                  <div style={{ overflowX:'auto' }}><table style={{ width:'100%', minWidth:620, borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
+                  <p className="tool-scroll-hint">좌우로 밀어 보유 종목 표 전체 보기 ↔</p><div className="tool-table-scroll" tabIndex={0} role="region" aria-label="기관 보유 종목 표, 좌우로 스크롤"><table style={{ width:'100%', minWidth:620, borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
                     <colgroup>
                       <col style={{ width:'32px' }} />
                       <col />

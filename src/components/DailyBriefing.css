@@ -85,3 +85,14 @@
 .briefing-events small { display:block; font-size:var(--ui-font-meta); line-height:1.6; color:#73786e; }
 @media(max-width:700px) { .daily-briefing { padding-top:0; } }
 @container briefing (max-width:400px) { .briefing-stocks { grid-template-columns:minmax(0,1fr); gap:16px; } }
+
+@media (max-width: 700px) {
+  .briefing-detail-tabs { flex-wrap: nowrap; overflow-x: auto; padding-inline: 5px; padding-bottom: 6px; margin-inline: -5px; scrollbar-width: thin; }
+  .briefing-detail-tabs button { flex-shrink: 0; min-height: 44px; }
+  .briefing-kicker a { display: inline-flex; align-items: center; min-height: 44px; }
+  .briefing-article, .briefing-archive { padding: 20px 14px 32px; }
+  .briefing-article > a, .briefing-archive > a { display: inline-flex; align-items: center; min-height: 44px; }
+  .briefing-article ol, .briefing-archive ol { padding-left: 20px; }
+  .briefing-archive li a { display: inline-block; line-height: 1.7; }
+  .briefing-sources li { scroll-margin-top: 16px; }
+}

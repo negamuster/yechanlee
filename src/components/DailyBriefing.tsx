@@ -57,7 +57,7 @@ export default function DailyBriefing() {
       </div> : <ul className="briefing-summary-list">{item.summary.map((text,i)=><li key={i}><CitedText item={item} text={text} /></li>)}</ul>}
 
       {home && <div className="briefing-expanded">
-        {!!sections.length && <div className="briefing-detail-tabs" role="group" aria-label="브리핑 상세 보기">
+        {!!sections.length && <div className="briefing-detail-tabs" data-scroll-key="briefing-tabs" role="group" aria-label="브리핑 상세 보기">
           {sections.map(section => <button type="button" key={section.key} aria-pressed={activeDetail === section.key} aria-controls={detailId} onClick={() => setDetail(section.key)}>{section.label} <span>{section.count}</span></button>)}
         </div>}
         <div id={detailId} className="briefing-detail-panel">

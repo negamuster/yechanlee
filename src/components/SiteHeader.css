@@ -63,11 +63,6 @@
   .site-tools-links { position: static; width: 100%; box-shadow: none; }
   .clock-year { display: none; }
 }
-@media (max-width: 760px) {
-  .portfolio-layout { grid-template-columns: 1fr !important; gap: 24px !important; }
-  .portfolio-layout > div { min-width: 0; overflow-x: auto; }
-  .portfolio-layout > div:first-child { border-right: 0 !important; padding-right: 0 !important; }
-}
 @media (max-width: 700px) {
   .site-header { position: relative; }
   .site-header-top { grid-template-columns: auto minmax(0, 1fr); gap: 4px 8px; }
@@ -81,4 +76,11 @@
   .site-search input { font-size: 16px; }
   .site-menu a, .site-tools > button { min-height: 44px; }
   .stock-search-option { min-height: 44px; }
+}
+
+@media (max-width: 700px) {
+  .stock-search-dropdown { width: 100%; max-width: 100%; }
+  .market-clocks { min-width: 0; }
+  .market-clock time { white-space: normal; }
+  .market-clock strong { white-space: nowrap; }
 }

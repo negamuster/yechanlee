@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { hideMobileNavigation, isTextEntry, mobileSection } from '../lib/mobileUI'
 import { Link, useLocation } from 'react-router-dom'
 import './MobileNavigation.css'
 
@@ -13,22 +14,38 @@ const items = [
 export default function MobileNavigation() {
   const { pathname } = useLocation()
   const [editing, setEditing] = useState(false)
+  const bar = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const measure = () => {
+      const height = bar.current?.getBoundingClientRect().height
+      if (height) document.documentElement.style.setProperty('--mobile-nav-height', `${Math.ceil(height)}px`)
+    }
+    const observer = new ResizeObserver(measure)
+    if (bar.current) observer.observe(bar.current)
+    measure()
+    return () => { observer.disconnect(); document.documentElement.style.removeProperty('--mobile-nav-height') }
+  }, [])
   useEffect(() => {
     const update = () => {
       const active = document.activeElement
-      setEditing(active instanceof HTMLElement && active.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="range"]), textarea, [contenteditable="true"]'))
+      setEditing(hideMobileNavigation(active instanceof HTMLElement && isTextEntry(active), window.innerHeight, window.visualViewport))
     }
     // Run after focus has moved, so moving between inputs does not flash the bar.
     const onFocus = () => queueMicrotask(update)
     document.addEventListener('focusin', onFocus)
     document.addEventListener('focusout', onFocus)
+    window.visualViewport?.addEventListener('resize', update)
+    window.addEventListener('resize', update)
+    update()
     return () => {
       document.removeEventListener('focusin', onFocus)
       document.removeEventListener('focusout', onFocus)
+      window.visualViewport?.removeEventListener('resize', update)
+      window.removeEventListener('resize', update)
     }
-  }, [])
-  const selected = pathname === '/' ? '/' : pathname === '/calendar' ? '/calendar' : pathname === '/saved' ? '/saved' : pathname === '/markets' || pathname === '/equity' || pathname.startsWith('/stock/') ? '/markets' : '/more'
-  return <nav className={`mobile-navigation${editing ? ' is-editing' : ''}`} aria-label="모바일 주요 메뉴">
+  }, [pathname])
+  const selected = mobileSection(pathname)
+  return <nav ref={bar} className={`mobile-navigation${editing ? ' is-editing' : ''}`} aria-label="모바일 주요 메뉴">
     {items.map(item => <Link key={item.to} to={item.to} aria-current={selected === item.to ? 'page' : undefined}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={item.icon} /></svg>
       <span>{item.label}</span>

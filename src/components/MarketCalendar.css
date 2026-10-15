@@ -170,3 +170,13 @@
   .calendar-cell-secondary, .calendar-cell-more-wide { display: block; }
   .calendar-cell-more-compact { display: none; }
 }
+
+@media (max-width: 700px) {
+  .market-calendar .calendar-date { min-height: 44px; }
+  .calendar-heading, .calendar-footer, .calendar-compact-status { flex-wrap: wrap; }
+  .calendar-month-navigation { gap: 8px; }
+  .calendar-month-navigation strong { min-width: 0; flex: 1; line-height: 1.6; }
+  .calendar-month-navigation button { flex-shrink: 0; }
+  .calendar-original summary { min-height: 44px; }
+  .calendar-full .calendar-list { overflow-wrap: anywhere; }
+}
