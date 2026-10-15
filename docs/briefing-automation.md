@@ -6,6 +6,10 @@ The owner authorized resuming researched Korean market briefings through ChatGPT
 
 One ChatGPT task starts daily at **07:00 Asia/Seoul**, beginning October 13. This is the start time, not a guaranteed publication-completion time. Each run researches recent news and the last completed US session, writes three short homepage highlights (300–450 Korean characters overall) and a concise narrative (about 900–1,300 characters), then checks important claims against actually read sources. Verified market numbers and at most three upcoming events supplement the narrative. Same-model self-checking is not independent verification or human approval. Original source links and the existing automated publication/evidence/hash gates remain required.
 
+## Editorial format (owner approved 2026-10-15)
+
+Use [briefing-editorial.md](briefing-editorial.md) for direct issue discovery, market-flow paragraph order, one supported session-character sentence, earnings figure selection, concise provenance notes and calendar check items. It applies within the existing research/length limits and does not relax any publication gate. This explicit owner-requested October 15 revision retains its original cutoff and records the revision separately; normal scheduled runs still preserve existing same-date editions.
+
 ## Homepage presentation (owner approved 2026-10-14)
 
 From October 15, new automated editions include a reviewed `homepage` object, generated from the same research as the summary and narrative. It contains a short factual `headline` with inline source IDs, up to four `stocks`, up to four `assets`, and up to three `events`. No extra AI request is needed. Omit unavailable rows rather than padding them. The October 14 edition was explicitly expanded at the owner's request using its existing checked claims, with its original cutoff retained and a dated revision note.
