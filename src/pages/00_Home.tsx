@@ -35,9 +35,9 @@ export default function Home() {
     {!mobile && <MarketTicker />}
     <main className="home-content home-overview" ref={content}>
       <div className="home-primary">
-        <div className="home-widget home-briefing"><DailyBriefing /></div>
+        <div className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></div>
         <section className="home-news" aria-labelledby="home-news-title">
-          <h2 id="home-news-title" tabIndex={-1}>Latest News</h2>
+          <h2 id="home-news-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
           <NewsFeed previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
         </section>
       </div>

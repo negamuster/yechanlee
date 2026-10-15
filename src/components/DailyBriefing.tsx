@@ -2,29 +2,21 @@ import { Link } from 'react-router-dom'
 import { useId } from 'react'
 import { useSessionState } from '../hooks/useSessionState'
 import { latestBriefing, kstTime } from '../lib/briefings'
-import type { Briefing } from '../lib/briefings'
+import { briefingSections, withoutCitations } from '../lib/briefingPresentation'
+import { CitedText } from './BriefingReferences'
+import BriefingDetails from './BriefingDetails'
+import MobileDailyBriefing from './MobileDailyBriefing'
 import './DailyBriefing.css'
-function SourceRefs({ item, ids }: { item: Briefing; ids: number[] }) {
-  return <sup className="briefing-citations">{ids.map(id => <Link key={id} to={`/briefings/${item.id}#source-${id}`} aria-label={`출처 ${id}: ${item.sources.find(s => s.id === id)?.label ?? ''}`}>[{id}]</Link>)}</sup>
+export default function DailyBriefing({ mobile = false }: { mobile?: boolean }) {
+  return mobile ? <MobileDailyBriefing key={latestBriefing?.id ?? 'empty'} item={latestBriefing} /> : <DesktopDailyBriefing />
 }
-function CitedText({ item, text }: { item: Briefing; text: string }) {
-  return <>{text.split(/(\[\d+\])/g).map((part, i) => /^\[\d+\]$/.test(part) ? <SourceRefs key={i} item={item} ids={[Number(part.slice(1, -1))]} /> : part)}</>
-}
-const trendClass = (change: string) => /[-−](?:US\$|\$)?\s*\d/.test(change) ? 'briefing-down' : /\+(?:US\$|\$)?\s*\d/.test(change) ? 'briefing-up' : ''
-const eventTime = (at: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(at))
-
-export default function DailyBriefing() {
+function DesktopDailyBriefing() {
   const [detail, setDetail] = useSessionState<'stocks' | 'assets' | 'events'>('briefing.detail', 'stocks', v => ['stocks', 'assets', 'events'].includes(String(v)))
   const detailId = useId()
   const item = latestBriefing
   const home = item?.homepage
-  const sections = [
-    { key: 'stocks' as const, label: '주요 종목', count: home?.stocks.length ?? 0 },
-    { key: 'assets' as const, label: '자산 흐름', count: home?.assets.length ?? 0 },
-    { key: 'events' as const, label: '오늘·다음 일정', count: home?.events.length ?? 0 },
-  ].filter(section => section.count > 0)
+  const sections = briefingSections(item)
   const activeDetail = sections.some(section => section.key === detail) ? detail : sections[0]?.key
-  const withoutCitations = (text: string) => text.replace(/\[(\d+)\]/g, '').trim()
   const rate = item?.blocks.find(b => b.kind === 'paragraph' && /2년물.*10년물.*30년물/.test(b.text))
   const news = item?.blocks.filter(b => b.kind === 'subheading').flatMap(b => {
     const id = Number(b.text.match(/\[(\d+)\]$/)?.[1])
@@ -61,32 +53,7 @@ export default function DailyBriefing() {
           {sections.map(section => <button type="button" key={section.key} aria-pressed={activeDetail === section.key} aria-controls={detailId} onClick={() => setDetail(section.key)}>{section.label} <span>{section.count}</span></button>)}
         </div>}
         <div id={detailId} className="briefing-detail-panel">
-        {activeDetail === 'stocks' && <section className="briefing-section" aria-labelledby="briefing-stocks-title">
-          <div className="briefing-section-heading"><h4 id="briefing-stocks-title">주요 종목</h4><span>움직임과 배경</span></div>
-          <ul className="briefing-stocks">{home.stocks.map(stock => <li key={stock.ticker}>
-            <div className="briefing-stock-heading"><strong>{stock.name} <span>{stock.ticker}</span></strong><b className={trendClass(stock.change)}>{stock.change}</b></div>
-            <p>{stock.reason}<SourceRefs item={item} ids={stock.sourceIds} /></p>
-            <small>{stock.basis}</small>
-          </li>)}</ul>
-        </section>}
-          {activeDetail === 'assets' && <section className="briefing-section" aria-labelledby="briefing-assets-title">
-            <div className="briefing-section-heading"><h4 id="briefing-assets-title">자산 흐름</h4><span>아침 브리핑 기준</span></div>
-            <table className="briefing-assets"><caption>자산별 관측 시각과 비교 기준이 다릅니다.</caption>
-              <thead><tr><th scope="col">자산 · 관측 기준</th><th scope="col">수치</th><th scope="col">변화</th></tr></thead>
-              <tbody>{home.assets.map(asset => <tr key={asset.label}>
-                <th scope="row">{asset.label}<SourceRefs item={item} ids={asset.sourceIds} /><span>{asset.basis}</span></th>
-                <td>{asset.value}</td><td className={trendClass(asset.change)}>{asset.change}</td>
-              </tr>)}</tbody>
-            </table>
-          </section>}
-          {activeDetail === 'events' && <section className="briefing-section" aria-labelledby="briefing-events-title">
-            <div className="briefing-section-heading"><h4 id="briefing-events-title">오늘·다음 일정</h4><span>발행일 기준 · KST</span></div>
-            <ol className="briefing-events">{home.events.map(event => <li key={`${event.at}-${event.label}`}>
-              <time dateTime={event.at}>{eventTime(event.at)}</time>
-              <p>{event.label}<SourceRefs item={item} ids={event.sourceIds} /></p>
-              {event.detail && <small>{event.detail}</small>}
-            </li>)}</ol>
-          </section>}
+          <BriefingDetails item={item} section={activeDetail} />
         </div>
       </div>}
 
