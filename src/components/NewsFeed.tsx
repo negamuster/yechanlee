@@ -9,6 +9,10 @@ import { BookmarkButton } from './SavedItemsProvider'
 import { useEffect, useId, useRef, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
+import MobileNewsArticle from './MobileNewsArticle'
+import MobileNewsFilters from './MobileNewsFilters'
+import { countNewsFilters, matchingNews } from '../lib/newsFilters'
+import type { NewsFilters } from '../lib/newsFilters'
 
 import { newsBatches, filterNews, TOPICS } from './newsSelection'
 import type { NewsItem, Region, TopicFilter } from './newsSelection'
@@ -78,7 +82,7 @@ function NewsImage({ item }: { item: NewsItem }) {
   </figure>
 }
 
-export default function NewsFeed({ previewTarget = null, previewSector = null, onClearSector }: { previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
+export default function NewsFeed({ mobile = false, previewTarget = null, previewSector = null, onClearSector }: { mobile?: boolean; previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
   const { isRead, mark } = useReadArticles()
   const [hideRead, setHideRead] = useSessionState('news.hideRead', false, v => typeof v === 'boolean')
   const [sectorFilter, setSectorFilter] = useSessionState<NewsSector | null>('news.sector', null, isNewsSector)
@@ -86,16 +90,24 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
   const [topic, setTopic] = useSessionState<TopicFilter>('news.topic', 'all', v => v === 'all' || TOPICS.some(t => t.value === v))
   const [query, setQuery] = useSessionState('news.query', '', v => typeof v === 'string' && v.length <= 120)
-  const [view, setView] = useSessionState<'cards' | 'list'>('news.view', () => window.matchMedia('(max-width: 700px)').matches ? 'list' : 'cards', v => v === 'cards' || v === 'list')
+  const [view, setView] = useSessionState<'cards' | 'list'>('news.view', mobile ? 'list' : 'cards', v => v === 'cards' || v === 'list')
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
   const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
-  const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', () => !window.matchMedia('(max-width: 700px)').matches, v => typeof v === 'boolean')
+  const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', !mobile, v => typeof v === 'boolean')
+  const [mobileDraft, setMobileDraft] = useState<NewsFilters | null>(null)
   const filtersId = useId()
   const searchId = useId()
   const searchInput = useRef<HTMLInputElement>(null)
   const [, setClock] = useState(0)
+
+  useEffect(() => {
+    const viewport = window.matchMedia('(max-width: 700px)')
+    const discardDraft = () => { if (!viewport.matches) setMobileDraft(null) }
+    viewport.addEventListener('change', discardDraft)
+    return () => viewport.removeEventListener('change', discardDraft)
+  }, [])
 
   useEffect(() => {
     const refresh = window.setInterval(() => { setRevision(value => value + 1) }, TTL)
@@ -130,7 +142,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
     return () => { active = false; controller.abort(); window.clearTimeout(timeout) }
   }, [revision])
 
-  const matching = filterNews(feed?.items || [], region, topic, query).filter(item => matchesSector(item.title, sectorFilter?.symbol ?? null) && (!hideRead || !isRead(item.article_url)))
+  const currentFilters: NewsFilters = { region, topic, query, sector: sectorFilter, hideRead, view }
+  const matching = matchingNews(feed?.items || [], currentFilters, isRead)
   const previewItems = filterNews(feed?.items || [], 'all', 'all').filter(item => matchesSector(item.title, previewSector?.symbol ?? null) && (!hideRead || !isRead(item.article_url))).sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc)).slice(0, 3)
   function showRelated() {
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(previewSector); setVisibleBatches(1)
@@ -141,12 +154,19 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
   const publishers = [...new Set(news.map(item => item.publisher))]
-  const filterCount = Number(region !== 'all') + Number(topic !== 'all') + Number(Boolean(query.trim())) + Number(Boolean(sectorFilter)) + Number(hideRead)
+  const filterCount = countNewsFilters(currentFilters)
+  function applyMobileFilters(filters: NewsFilters) {
+    setRegion(filters.region); setTopic(filters.topic); setQuery(filters.query); setSectorFilter(filters.sector)
+    setHideRead(filters.hideRead); setView(filters.view); setVisibleBatches(1); setMobileDraft(null)
+  }
   function resetFilters() {
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1)
     searchInput.current?.focus({ preventScroll: true })
   }
   function article(item: NewsItem) {
+    if (mobile) return <MobileNewsArticle key={item.id} item={item} read={isRead(item.article_url)}
+      timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)}
+      image={view === 'cards' ? <NewsImage key={item.image_url || item.id} item={item} /> : undefined} />
     return (
       <article key={item.id} data-reading-key={`news:${item.article_url}`} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
         <a href={item.article_url} data-focus-key={`news:${item.article_url}`} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
@@ -178,7 +198,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
       {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
-    <div className="news-feed">
+    <div className={`news-feed${mobile ? ' mobile-news-feed' : ''}`}>
       <div className="news-controls">
         <div className="news-toolbar">
           <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
@@ -188,13 +208,13 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
             ))}
           </div>
           <div className="news-toolbar-actions">
-            <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
+            {!mobile && <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
               <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
               <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
-            </div>
-            <button type="button" className="news-refresh" disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
+            </div>}
+            <button type="button" className="news-refresh" aria-label={loading ? '새 기사 확인 중' : '새 기사 확인'} disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 6.1A8 8 0 0 1 20 12M4 12a8 8 0 0 0 13.9 5.9" /></svg>
-              {loading ? '확인 중…' : '새로고침'}
+              <span className={mobile ? 'news-sr-only' : undefined}>{loading ? '확인 중…' : '새로고침'}</span>
             </button>
           </div>
         </div>
@@ -205,20 +225,25 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
             <input ref={searchInput} id={searchId} type="search" value={query} maxLength={120} onChange={event => { setQuery(event.target.value); setVisibleBatches(1) }} placeholder="기사 제목·매체 검색" />
             {query && <button type="button" className="news-search-clear" aria-label="검색어 지우기" onClick={() => { setQuery(''); setVisibleBatches(1); searchInput.current?.focus() }}><span aria-hidden="true">×</span></button>}
           </div>
-          <button type="button" className="news-filter-toggle" aria-expanded={filtersOpen} aria-controls={filtersId} onClick={() => setFiltersOpen(value => !value)}>
+          <button type="button" className="news-filter-toggle" aria-haspopup={mobile ? 'dialog' : undefined}
+            aria-expanded={mobile ? Boolean(mobileDraft) : filtersOpen} aria-controls={!mobile || mobileDraft ? filtersId : undefined}
+            onClick={event => {
+              if (mobile) { event.currentTarget.focus({ preventScroll: true }); setMobileDraft({ ...currentFilters }) }
+              else setFiltersOpen(value => !value)
+            }}>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" fill="currentColor" stroke="none" /><circle cx="15" cy="17" r="2.5" fill="currentColor" stroke="none" /></svg>
             필터{filterCount > 0 && <span className="news-filter-count">{filterCount}<span className="news-sr-only">개 적용</span></span>}
-            <span className="news-filter-chevron" aria-hidden="true">⌄</span>
+            {!mobile && <span className="news-filter-chevron" aria-hidden="true">⌄</span>}
           </button>
         </div>
-        <div id={filtersId} className="news-filter-panel" hidden={!filtersOpen}>
+        {!mobile && <div id={filtersId} className="news-filter-panel" hidden={!filtersOpen}>
           <div className="news-topic-filters" data-scroll-key="news-topics" role="group" aria-label="뉴스 주제 선택">
             {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
               <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
           </div>
           <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
           <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
-        </div>
+        </div>}
         {filterCount > 0 && <div className="news-active-filters" role="group" aria-label="적용한 뉴스 필터">
           {region !== 'all' && <button type="button" aria-label={`${region === 'kr' ? '국내' : '해외'} 지역 필터 해제`} onClick={() => { setRegion('all'); setVisibleBatches(1) }}>{region === 'kr' ? '국내' : '해외'} <span aria-hidden="true">×</span></button>}
           {topic !== 'all' && <button type="button" aria-label={`${TOPICS.find(t => t.value === topic)?.label} 주제 필터 해제`} onClick={() => { setTopic('all'); setVisibleBatches(1) }}>{TOPICS.find(t => t.value === topic)?.label} <span aria-hidden="true">×</span></button>}
@@ -228,6 +253,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <button type="button" className="news-clear-filters" onClick={resetFilters}>전체 초기화</button>
         </div>}
       </div>
+      {mobile && mobileDraft && <MobileNewsFilters id={filtersId} value={mobileDraft} items={feed?.items || []}
+        available={Boolean(feed)} isRead={isRead} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
       {feed && <p className="news-updated">최근 확인: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
       <div role="status" aria-live="polite">
@@ -250,7 +277,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <div /><div /><div />
         </div> : news.length ? <>
           <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 묶음별 최신순 · 묶음당 매체별 최대 3개</p>
-          <div className={view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
+          <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
         </> : !failed ? <div className="news-notice" role="status"><p>{hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>

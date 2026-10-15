@@ -47,8 +47,8 @@ export default function MobileNavigation() {
   const selected = mobileSection(pathname)
   return <nav ref={bar} className={`mobile-navigation${editing ? ' is-editing' : ''}`} aria-label="모바일 주요 메뉴">
     {items.map(item => <Link key={item.to} to={item.to} aria-current={selected === item.to ? 'page' : undefined}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={item.icon} /></svg>
-      <span>{item.label}</span>
+      <span className="mobile-navigation-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon} /></svg></span>
+      <span className="mobile-navigation-label">{item.label}</span>
     </Link>)}
   </nav>
 }

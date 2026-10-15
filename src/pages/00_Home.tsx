@@ -38,7 +38,7 @@ export default function Home() {
         <div className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></div>
         <section className="home-news" aria-labelledby="home-news-title">
           <h2 id="home-news-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
-          <NewsFeed previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
+          <NewsFeed mobile={mobile} previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
         </section>
       </div>
       {!mobile && <>

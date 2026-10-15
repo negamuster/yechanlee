@@ -115,6 +115,9 @@
   .news-list .news-topic-tags { justify-content: flex-start; }
 }
 @media (max-width: 700px) {
+  .mobile-news-feed .news-toolbar { flex-wrap: nowrap; }
+  .mobile-news-feed .news-toolbar-actions { width: auto; margin-left: auto; }
+  .mobile-news-feed .news-refresh { min-width: 44px; min-height: 44px; padding: 8px; border-color: var(--ui-border); background: #fff; }
   .news-controls { padding: 10px; }
   .news-controls :is(.news-filters, .news-view-toggle) button { min-height: var(--ui-control-height); }
   .news-search-tools { gap: 8px; }

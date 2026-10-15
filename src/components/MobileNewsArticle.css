@@ -1,0 +1,24 @@
+.mobile-news-articles { border-top: 1px solid var(--ui-border); }
+.mobile-news-article { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--ui-border); }
+.mobile-news-topics { display: flex; flex-wrap: wrap; gap: 4px 8px; color: var(--ui-muted); font-size: 11px; line-height: 1.5; }
+.mobile-news-topics:empty { display: none; }
+.mobile-news-link { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 12px; color: var(--ui-text); text-decoration: none; }
+.mobile-news-link.has-image { grid-template-columns: minmax(0, 1fr) 76px; }
+.mobile-news-link h3 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.6; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.mobile-news-link:hover h3 { text-decoration: underline; text-underline-offset: .2em; }
+.mobile-news-article.is-read h3 { color: #74796f; }
+.mobile-news-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.mobile-news-metadata { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: var(--ui-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.mobile-news-metadata p { margin: 0; }
+.mobile-news-publisher { color: #4d5348; font-weight: 500; }
+.mobile-news-time { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; }
+.mobile-news-stale { font-size: 11px; }
+.mobile-news-footer > .save-button { flex-shrink: 0; align-self: center; justify-content: center; min-height: 44px; min-width: 92px; margin: 0; padding: 8px 10px; border-radius: var(--ui-radius); font-size: 12px; }
+.mobile-news-footer > .save-button[aria-pressed="true"] { background: #eef1e9; border-color: #c9d2bf; color: #434f36; }
+.mobile-news-thumbnail { min-width: 0; }
+.mobile-news-thumbnail .news-image-wrap { margin: 0; }
+.mobile-news-thumbnail .news-image-frame { height: 58px; aspect-ratio: auto; border-radius: 8px; }
+.mobile-news-thumbnail .news-publisher-logo { gap: 2px; padding: 3px; font-size: 10px; }
+.mobile-news-thumbnail .news-publisher-logo img { width: 22px; height: 22px; }
+.mobile-news-thumbnail .news-publisher-logo > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mobile-news-thumbnail .news-image-credit { font-size: 9px; }

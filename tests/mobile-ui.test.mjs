@@ -5,7 +5,7 @@ import { hideMobileNavigation, isTextEntry, mobileSection } from '../src/lib/mob
 test('nested briefing and investment-note routes retain the correct mobile tab', () => {
   for (const route of ['/', '/briefings', '/briefings/2026-10-15', '/briefings/methodology']) assert.equal(mobileSection(route), '/')
   for (const route of ['/saved', '/saved/thesis/TSLA']) assert.equal(mobileSection(route), '/saved')
-  for (const route of ['/markets', '/equity', '/stock/TSLA']) assert.equal(mobileSection(route), '/markets')
+  for (const route of ['/markets', '/equity', '/rates', '/fed', '/indicators', '/macro', '/stock/TSLA']) assert.equal(mobileSection(route), '/markets')
   assert.equal(mobileSection('/calendar'), '/calendar')
   assert.equal(mobileSection('/form13f'), '/more')
 })

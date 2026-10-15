@@ -2,7 +2,7 @@ export function mobileSection(pathname: string) {
   if (pathname === '/' || pathname === '/briefings' || pathname.startsWith('/briefings/')) return '/'
   if (pathname === '/saved' || pathname.startsWith('/saved/')) return '/saved'
   if (pathname === '/calendar') return '/calendar'
-  if (['/markets', '/equity'].includes(pathname) || pathname.startsWith('/stock/')) return '/markets'
+  if (['/markets', '/equity', '/rates', '/fed', '/indicators', '/macro'].includes(pathname) || pathname.startsWith('/stock/')) return '/markets'
   return '/more'
 }
 interface KeyboardTarget { tagName: string; type?: string; readOnly?: boolean; disabled?: boolean; isContentEditable?: boolean }

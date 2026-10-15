@@ -1,34 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { registerHooks } from 'node:module'
-import ts from 'typescript'
+import './helpers/register-tsx.mjs'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router-dom'
 import { load } from 'cheerio'
 import { briefingEventPreview, briefingSections, validMobileBriefingState, visibleBriefingSummary } from '../src/lib/briefingPresentation.ts'
 
-// Render real TSX components in Node without starting a server or a browser.
-const sourceRoot = new URL('../src/', import.meta.url).href
-registerHooks({
-  resolve(specifier, context, next) {
-    try { return next(specifier, context) } catch (error) {
-      if (context.parentURL?.startsWith(sourceRoot) && specifier.startsWith('.')) {
-        for (const extension of ['.tsx', '.ts']) { try { return next(specifier + extension, context) } catch { /* Try the other source extension. */ } }
-      }
-      throw error
-    }
-  },
-  load(url, context, next) {
-    if (url.startsWith(sourceRoot)) {
-      if (url.endsWith('.css')) return { format: 'module', source: '', shortCircuit: true }
-      if (url.endsWith('.json')) return { format: 'module', source: `export default ${readFileSync(new URL(url), 'utf8')}`, shortCircuit: true }
-      if (url.endsWith('.tsx')) return { format: 'module', source: ts.transpileModule(readFileSync(new URL(url), 'utf8'), { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2023 } }).outputText, shortCircuit: true }
-    }
-    return next(url, context)
-  },
-})
 const { MobileBriefingCard } = await import('../src/components/MobileDailyBriefing.tsx')
 const { default: BriefingDetails } = await import('../src/components/BriefingDetails.tsx')
 const { default: DailyBriefing } = await import('../src/components/DailyBriefing.tsx')
