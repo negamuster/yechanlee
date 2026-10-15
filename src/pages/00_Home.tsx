@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useSessionState } from '../hooks/useSessionState'
 import { isNewsSector } from '../components/sectorNews'
 import type { NewsSector } from '../components/sectorNews'
-import MarketCalendar from '../components/MarketCalendar'
+import CalendarPreview from '../components/CalendarPreview'
 import SectorPerformance from '../components/SectorPerformance'
 import MarketTicker from '../components/MarketTicker'
 import NewsFeed from '../components/NewsFeed'
@@ -45,7 +45,7 @@ export default function Home() {
       {!mobile && <>
         <aside className="home-market-column" aria-label="시장 흐름과 일정">
           <LinkedWidget className="home-widget home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></LinkedWidget>
-          <LinkedWidget className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></LinkedWidget>
+          <LinkedWidget className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><CalendarPreview /></LinkedWidget>
           <details className="home-widget home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
         </aside>
         <aside className="home-dashboard-sidebar" data-scroll-key="home-sidebar" tabIndex={0} aria-label="종목 순위와 라이브 방송">

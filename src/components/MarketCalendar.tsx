@@ -8,38 +8,16 @@ import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { calendarLabels as labels, koreanCalendarTitle as koreanTitle } from '../lib/calendarPresentation'
+import type { CalendarCategory as Category, CalendarEvent, CalendarData } from '../lib/calendarPresentation'
 import './MarketCalendar.css'
 
-type Category = 'All' | 'Economic' | 'Earnings' | 'Fed' | 'Events'
-type CalendarEvent = { ticker?: string; id: string; title: string; description?: string; category: Exclude<Category, 'All'>; date: string; startAt: string | null; session: 'pre' | 'post' | 'unknown' | null; major: boolean; source: string; sourceUrl: string; estimated: boolean }
-type Source = { name: string; date: string | null; state: 'ok' | 'snapshot' | 'stale' | 'unavailable'; updatedAt: string | null; url: string }
-type CalendarData = { events: CalendarEvent[]; sources: Source[]; fetchedAt: string }
 const categories: Category[] = ['All', 'Economic', 'Earnings', 'Fed', 'Events']
-const labels: Record<Category, string> = { All: '전체', Economic: '경제지표', Earnings: '실적', Fed: '연준', Events: '행사' }
 const nyDate = (now: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 const prettyDate = (date: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'UTC', month: 'numeric', day: 'numeric', weekday: 'short' }).format(new Date(`${date}T12:00:00Z`))
 const addDays = (date: string, days: number) => new Date(Date.parse(`${date}T12:00:00Z`) + days * 86400000).toISOString().slice(0, 10)
 const weekStart = (date: string) => addDays(date, -new Date(`${date}T12:00:00Z`).getUTCDay())
 const shiftMonth = (month: string, offset: number) => { const [year, m] = month.split('-').map(Number); return new Date(Date.UTC(year, m - 1 + offset, 1)).toISOString().slice(0, 7) }
-const translations: [RegExp, string][] = [
-  [/Consumer Price Index/i, '소비자물가지수 (CPI)'], [/Producer Price Index/i, '생산자물가지수 (PPI)'],
-  [/^Employment Situation/i, '고용보고서'], [/Job Openings and Labor Turnover Survey/i, '구인·이직 보고서 (JOLTS)'],
-  [/Personal Income and Outlays/i, '개인소득·소비지출 (PCE)'], [/Gross Domestic Product|^GDP\b/i, '국내총생산 (GDP)'],
-  [/Employment Cost Index/i, '고용비용지수'], [/Productivity and Costs/i, '생산성·노동비용'],
-  [/U.S. International Trade in Goods and Services/i, '미국 무역수지'], [/Import and Export Price/i, '수출입 물가지수'],
-  [/Metropolitan Area Employment/i, '대도시권 고용·실업'], [/State Employment and Unemployment/i, '주별 고용·실업'],
-  [/Real Earnings/i, '실질임금'], [/FOMC Press Conference/i, 'FOMC 기자회견'], [/FOMC Minutes/i, 'FOMC 의사록'],
-  [/FOMC Meeting/i, 'FOMC 회의 · 금리 결정 일정'], [/Beige Book/i, '베이지북'],
-]
-function koreanTitle(event: CalendarEvent) {
-  if (event.category === 'Earnings') return `${event.title} · 실적 발표`
-  const match = translations.find(([pattern]) => pattern.test(event.title))
-  if (match) return match[1]
-  if (/^Speech/i.test(event.title)) return `연준 연설 · ${event.title.replace(/^Speech\s*-\s*/i, '')}`
-  if (/^Discussion/i.test(event.title)) return `연준 대담 · ${event.title.replace(/^Discussion\s*-\s*/i, '')}`
-  if (/Holiday/i.test(event.title)) return `연준 휴일 안내 · ${event.title.replace(/^Holiday\s*-\s*/i, '')}`
-  return `${labels[event.category]} · ${event.title}`
-}
 function validCalendar(value: unknown): value is CalendarData {
   const data = value as CalendarData | null
   return !!data && Array.isArray(data.events) && Array.isArray(data.sources)
