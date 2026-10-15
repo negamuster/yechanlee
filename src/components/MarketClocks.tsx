@@ -19,8 +19,8 @@ export default function MarketClocks() {
       const parts = formatter.formatToParts(now)
       const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(p => p.type === type)?.value || ''
       return <div className="market-clock" key={zone}>
-        <span>{label} <small>{zone === 'Asia/Seoul' ? 'KST' : part('timeZoneName')}</small></span>
-        <time dateTime={now.toISOString()}><span className="clock-year">{part('year')}.</span>{part('month')}.{part('day')} <strong>{part('hour')}:{part('minute')}<span className="clock-seconds">:{part('second')}</span></strong></time>
+        <span className="market-clock-label">{label} <small>{zone === 'Asia/Seoul' ? 'KST' : part('timeZoneName')}</small></span>
+        <time dateTime={now.toISOString()} title={formatter.format(now)} aria-label={`${label} ${formatter.format(now)}`}><span className="clock-year">{part('year')}.</span>{part('month')}.{part('day')} <strong>{part('hour')}:{part('minute')}<span className="clock-seconds">:{part('second')}</span></strong></time>
       </div>
     })}
   </div>

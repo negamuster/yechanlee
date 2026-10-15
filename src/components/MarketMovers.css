@@ -1,12 +1,12 @@
 .market-movers { margin-top: 40px; padding-top: 30px; border-top: 1px solid #e8e8e8; min-width: 0; }
-.movers-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-.movers-heading h2 { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .12em; text-transform: none; }
+.movers-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--ui-space-md); margin-bottom: var(--ui-space-md); }
+.movers-heading h2 { margin: 0; font-size: var(--ui-font-section); font-weight: 600; letter-spacing: 0; text-transform: none; }
 .movers-heading > span { font-size: 13px; color: #666; }
 .movers-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.movers-tabs button { border: 1px solid #e5e5e5; border-radius: 999px; padding: 9px 17px; background: white; color: #555; font: inherit; font-size: 14px; cursor: pointer; min-height: 40px; }
-.movers-tabs button[aria-pressed="true"] { background: #151515; color: #fff; border-color: #151515; }
+.movers-tabs button { border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 7px 10px; background: white; color: var(--ui-muted); font: inherit; font-size:var(--ui-font-control); cursor: pointer; min-height: var(--ui-control-height); }
+.movers-tabs button[aria-pressed="true"] { background: var(--ui-selected); color: #fff; border-color: var(--ui-selected); }
 .movers-tabs button:hover { border-color: #555; }
-.movers-description { margin: 14px 0 18px; font-size: 14px; color: #555; }
+.movers-description { margin: 14px 0 18px; font-size:var(--ui-font-body); color: #555; }
 .movers-status { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; font-size: 13px; color: #666; line-height: 1.6; }
 .movers-status button { background: none; border: 0; padding: 0; font: inherit; color: #444; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .movers-status button:disabled { color: #777; cursor: wait; }
@@ -15,19 +15,19 @@
 .mover-row:hover { background: #fafafa; }
 .mover-rank { font-size: 13px; color: #777; }
 .mover-identity, .mover-price { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.mover-identity strong { font-size: 17px; font-weight: 600; overflow-wrap: anywhere; }
+.mover-identity strong { font-size:var(--ui-font-section); font-weight: 600; overflow-wrap: anywhere; }
 .mover-identity > span { font-size: 13px; color: #666; overflow-wrap: anywhere; }
-.mover-price { text-align: right; font-size: 17px; }
-.mover-price > span:last-child { font-size: 14px; }
+.mover-price { text-align: right; font-size:var(--ui-font-section); }
+.mover-price > span:last-child { font-size:var(--ui-font-body); }
 .mover-up { color: #00883a; }.mover-down { color: #d32f2f; }.mover-neutral { color: #666; }
-.movers-notice, .movers-empty { font-size: 14px; line-height: 1.65; padding: 14px 0; color: #555; }
-.movers-footnote { color: #666; font-size: 12px; line-height: 1.7; padding-top: 14px; }
+.movers-notice, .movers-empty { font-size:var(--ui-font-body); line-height: 1.65; padding: 14px 0; color: #555; }
+.movers-footnote { color: #666; font-size:var(--ui-font-control); line-height: 1.7; padding-top: 14px; }
 .movers-footnote p { margin: 0 0 8px; }
-.market-movers button:focus-visible, .mover-row:focus-visible { outline: 2px solid #222; outline-offset: 4px; }
+.market-movers button:focus-visible, .mover-row:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
 @media (max-width: 400px) { .mover-row { grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; }.mover-price { font-size: 16px; } }
 
 
-.movers-info { margin: 3px 0 8px; font-size: 11px; color: #74776e; line-height: 1.6; }
+.movers-info { margin: 3px 0 8px; font-size:var(--ui-font-meta); color: #74776e; line-height: 1.6; }
 .movers-info summary { cursor: pointer; padding: 6px 0; width: fit-content; }
 .movers-info summary:focus-visible { outline: 2px solid #69785c; outline-offset: 3px; }
 .movers-info .movers-footnote { margin-top: 5px; }

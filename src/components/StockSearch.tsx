@@ -43,7 +43,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
     <label className="news-sr-only" htmlFor="site-stock-search">미국 종목명 또는 티커 검색</label>
     <input ref={input} id="site-stock-search" role="combobox" aria-autocomplete="list" aria-expanded={opened && !!query.trim()} aria-controls="stock-search-options"
       aria-activedescendant={active >= 0 && opened ? `stock-option-${active}` : undefined}
-      autoComplete="off" maxLength={60} value={query} placeholder="종목명·티커 검색 (Apple, AAPL…)"
+      autoComplete="off" maxLength={60} value={query} placeholder="티커·종목명 검색"
       onFocus={() => setOpened(true)} onChange={e => { setQuery(e.target.value); setOpened(true); setMatches([]); setActive(-1) }}
       onKeyDown={e => {
         if (e.nativeEvent.isComposing) { if (e.key === 'Enter') e.preventDefault(); return }

@@ -12,8 +12,26 @@
   --ui-selected: #292e27;
   --ui-focus: #69785c;
   --ui-radius: 8px;
+  --ui-card-radius: 12px;
+  --ui-font-page: 28px;
+  --ui-font-section: 17px;
+  --ui-font-body: 14px;
+  --ui-font-control: 12px;
+  --ui-font-meta: 11px;
+  --ui-font-caption: 10px;
+  --ui-space-xs: 4px;
+  --ui-space-sm: 8px;
+  --ui-space-md: 12px;
+  --ui-space-lg: 16px;
+  --ui-space-xl: 24px;
+  --ui-card-padding: 14px;
+  --ui-page-gutter: 18px;
+  --ui-layout-gap: 24px;
   --ui-control-height: 36px;
 }
-@media (max-width: 700px) { :root { --ui-control-height: 44px; } }
-body { font-family: var(--font-ui); }
+@media (max-width: 700px) {
+  :root { --ui-control-height: 44px; --ui-card-padding: 12px; --ui-page-gutter: 14px; --ui-layout-gap: 18px; }
+}
+body { font-family: var(--font-ui); font-size: var(--ui-font-body); color: var(--ui-text); }
 button, input, select, textarea { font-family: inherit; }
+:where(button, input, select, textarea, a, summary):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
