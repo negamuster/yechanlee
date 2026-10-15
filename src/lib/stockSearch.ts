@@ -15,7 +15,7 @@ export async function searchStocks(query: string, signal: AbortSignal, fetcher =
   if (!Array.isArray(data.results)) throw new Error('invalid search response')
   const matches: StockMatch[] = data.results.filter((row: StockMatch) => typeof row?.ticker === 'string'
     && /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(row.ticker) && typeof row.name === 'string')
-    .sort((a: StockMatch, b: StockMatch) => Number(b.ticker === query.toUpperCase()) - Number(a.ticker === query.toUpperCase())).slice(0, 8)
+    .sort((a: StockMatch, b: StockMatch) => Number(b.ticker === query.trim().toUpperCase()) - Number(a.ticker === query.trim().toUpperCase())).slice(0, 8)
   if (cache.size >= 50) cache.delete(cache.keys().next().value!)
   cache.set(query.trim().toLowerCase(), { at: now, matches })
   return matches

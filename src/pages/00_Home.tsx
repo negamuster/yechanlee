@@ -31,25 +31,25 @@ export default function Home() {
   }, [])
   return <div className="home-page">
     {!mobile && <MarketTicker />}
-    <main className="home-content" ref={content}>
+    <main className="home-content home-overview" ref={content}>
       <div className="home-primary">
-      <div className="home-dashboard">
-        {!mobile && <div className="home-dashboard-left">
-          <div className="home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></div>
-          <div className="home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></div>
-          <details className="home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
-        </div>}
-        <DailyBriefing />
+        <div className="home-widget home-briefing"><DailyBriefing /></div>
+        <section className="home-news" aria-labelledby="home-news-title">
+          <h2 id="home-news-title" tabIndex={-1}>Latest News</h2>
+          <NewsFeed previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
+        </section>
       </div>
-      <section className="home-news" aria-labelledby="home-news-title">
-        <h2 id="home-news-title" tabIndex={-1}>Latest News</h2>
-        <NewsFeed previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
-      </section>
-      </div>
-        {!mobile && <div className="home-dashboard-sidebar">
-          <div className="home-dashboard-live"><MarketLive /></div>
-          <div className="home-dashboard-movers" tabIndex={0} role="region" aria-label="Market Movers 목록"><MarketMovers /></div>
-        </div>}
+      {!mobile && <>
+        <aside className="home-market-column" aria-label="시장 흐름과 일정">
+          <div className="home-widget home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></div>
+          <div className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></div>
+          <details className="home-widget home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
+        </aside>
+        <aside className="home-dashboard-sidebar" tabIndex={0} aria-label="종목 순위와 라이브 방송">
+          <div className="home-widget home-dashboard-movers"><MarketMovers /></div>
+          <div className="home-widget home-dashboard-live"><MarketLive /></div>
+        </aside>
+      </>}
     </main>
     <footer className="home-footer">Anthracite © 2026</footer>
   </div>

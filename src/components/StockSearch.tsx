@@ -37,7 +37,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
     e.preventDefault()
     const selected = matches[active] || matches.find(row => row.ticker === search.toUpperCase())
     if (selected) select(selected.ticker)
-    else if (/^[A-Z][A-Z0-9.-]{0,5}$/i.test(search)) select(search.toUpperCase())
+    else if (/^[A-Z0-9][A-Z0-9.:-]{0,19}$/i.test(search)) select(search.toUpperCase())
     else { setOpened(true); setStatus('검색 결과에서 원하는 종목을 선택해 주세요.') }
   }}>
     <label className="news-sr-only" htmlFor="site-stock-search">미국 종목명 또는 티커 검색</label>

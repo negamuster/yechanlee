@@ -46,10 +46,41 @@ test('retired analysis rejects old clients without reading credentials or callin
 test('ticker search fixes scope and limits, rejects mixed proxy parameters', async () => {
   let calls=0
   const handler=createStockHandler({getKey:()=> 'secret', fetchImpl:async url=>{
-    calls++;assert.equal(url.pathname,'/v3/reference/tickers');assert.equal(url.searchParams.get('market'),'stocks');assert.equal(url.searchParams.get('locale'),'us');assert.equal(url.searchParams.get('limit'),'8');assert.equal(url.searchParams.get('search'),'Apple')
+    calls++;assert.equal(url.pathname,'/v3/reference/tickers');assert.equal(url.searchParams.get('market'),'stocks');assert.equal(url.searchParams.get('locale'),'us')
+    if(url.searchParams.has('ticker')) { assert.equal(url.searchParams.get('ticker'),'APPLE');assert.equal(url.searchParams.get('limit'),'1') }
+    else { assert.equal(url.searchParams.get('limit'),'8');assert.equal(url.searchParams.get('search'),'Apple') }
     return Response.json({results:[{ticker:'AAPL',name:'Apple Inc.'}]})
   }})
   assert.equal((await handler(new Request(`${base}/api/stock-data?search=Apple`))).status,200)
   for(const query of ['search=Apple&path=/v3/reference/tickers/AAPL','search=Apple&search=Tesla','search=','search='+ 'a'.repeat(61),'search=https://evil.test'])assert.equal((await handler(new Request(`${base}/api/stock-data?${query}`))).status,400)
-  assert.equal(calls,1)
+  assert.equal(calls,2)
+})
+
+test('exact TSLA precedes a full page of related ETFs and duplicate results remain bounded', async () => {
+  let calls = 0
+  const related = ['CRSH','ELOL','TESC','TESL','TEST','TLA','TSDD','TSIB'].map(ticker => ({ticker,name:`${ticker} TSLA ETF`}))
+  const handler = createStockHandler({getKey:()=> 'secret',fetchImpl:async url=>{
+    calls++
+    return Response.json({results: url.searchParams.has('ticker') ? [{ticker:'TSLA',name:'Tesla, Inc.'}] : related})
+  }})
+  const request = () => new Request(`${base}/api/stock-data?search=tsla`)
+  const response = await handler(request())
+  assert.equal(response.status,200)
+  const data = await response.json()
+  assert.equal(data.results[0].ticker,'TSLA')
+  assert.equal(data.results.length,8)
+  assert.equal(new Set(data.results.map(row=>row.ticker)).size,8)
+  await handler(request())
+  assert.equal(calls,2)
+})
+
+test('search retains a verified exact match during broad-search failure but does not cache a failed search as empty', async () => {
+  const handler = createStockHandler({getKey:()=> 'secret',fetchImpl:async url=>{
+    if(!url.searchParams.has('ticker')) return new Response(null,{status:503})
+    return Response.json({results:url.searchParams.get('ticker')==='TSLA' ? [{ticker:'TSLA',name:'Tesla'}] : []})
+  }})
+  const response=await handler(new Request(`${base}/api/stock-data?search=TSLA`))
+  assert.equal(response.status,200)
+  assert.equal((await response.json()).results[0].ticker,'TSLA')
+  assert.equal((await handler(new Request(`${base}/api/stock-data?search=UNKNOWN`))).status,503)
 })

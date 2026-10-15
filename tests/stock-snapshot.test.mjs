@@ -56,3 +56,37 @@ test('previous-day response supplements a lagging range only for the requested t
   const mismatch = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher('MSFT'), now)
   assert.equal(quoteFromBars(mismatch.bars).latest.c, 105)
 })
+
+test('a transient core-data error retries once; persistent failure stays bounded', async () => {
+  let detailsCalls = 0
+  const fetcher = async (url, options) => {
+    const path = new URL(url, 'https://example.com').searchParams.get('path')
+    if (path.includes('/v3/') && ++detailsCalls === 1) return new Response(null, {status:503})
+    return mock()(url, options)
+  }
+  const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher, now)
+  assert.equal(snapshot.details.ticker, 'AAPL')
+  assert.equal(detailsCalls, 2)
+  let deniedCalls = 0
+  await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+    if (url.includes(encodeURIComponent('/v3/'))) { deniedCalls++; return new Response(null, {status:403}) }
+    return mock()(url, options)
+  }, now))
+  assert.equal(deniedCalls, 1)
+})
+
+test('failed price history preserves a confirmed same-symbol close without inventing a change or a 52-week range', async () => {
+  let historyCalls = 0
+  const fetcher = async (url, options) => {
+    const path = new URL(url, 'https://example.com').searchParams.get('path')
+    if (path.includes('/range/')) { historyCalls++; return new Response(null, {status:503}) }
+    if (path.includes('/prev?')) return Response.json({results:[{...bars[1],T:'AAPL'}]})
+    return mock()(url, options)
+  }
+  const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher, now)
+  assert.equal(historyCalls,2)
+  assert.equal(quoteFromBars(snapshot.bars).latest.c,105)
+  assert.equal(quoteFromBars(snapshot.bars).changePct,null)
+  assert.equal(snapshot.historyAvailable,false)
+  assert.ok(snapshot.issues.includes('가격 이력'))
+})

@@ -103,8 +103,8 @@ export default function Stock() {
   const roe = netIncome != null && equity > 0 ? (netIncome / equity) * 100 : null
   const debtEquity = liabilities != null && equity > 0 ? liabilities / equity : null
   const revenueGrowth = revenue != null && revenue1 > 0 ? ((revenue - revenue1) / revenue1) * 100 : null
-  const week52High = quote.high
-  const week52Low = quote.low
+  const week52High = snapshot?.historyAvailable ? quote.high : null
+  const week52Low = snapshot?.historyAvailable ? quote.low : null
   const change = quote.change
   const changePct = quote.changePct
   const isPositive = (change ?? 0) >= 0
@@ -176,6 +176,7 @@ export default function Stock() {
               {snapshot && <p>조회 시각: {new Date(snapshot.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })} KST · 5분마다 확인</p>}
               {error && <p role="status">{error}</p>}
               {!!snapshot?.issues.length && <p role="status">일부 자료 조회 실패: {snapshot.issues.join(', ')} · 해당 항목은 미확인으로 표시합니다.</p>}
+              {snapshot && !snapshot.historyAvailable && <p role="status">가격 이력을 받지 못해 확인된 최근 종가만 표시합니다. 차트·전일 대비·52주 범위는 미확인입니다.</p>}
             </div>
 
             {/* HEADER */}
@@ -241,7 +242,7 @@ export default function Stock() {
                   ))}
                 </div>
               </div>
-              {candles.length > 0
+              {candles.length > 1
                 ? <PriceChart candles={candles} isPositive={isPositive} />
                 : <p role="status">이 기간의 차트 자료가 없습니다.</p>}
             </div>
