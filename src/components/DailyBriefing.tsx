@@ -28,7 +28,7 @@ function DesktopDailyBriefing() {
   const calendarStart = item?.blocks.findIndex(b => b.kind === 'heading' && b.text.includes('공식 일정')) ?? -1
   const calendar = calendarStart >= 0 ? item?.blocks.slice(calendarStart + 1).find(b => b.kind === 'paragraph') : undefined
   return <section className="daily-briefing" aria-labelledby="daily-briefing-title">
-    <div className="briefing-kicker"><h2 id="daily-briefing-title">Daily Market Briefing</h2><Link to="/briefings">지난 브리핑 ↗</Link></div>
+    <div className="briefing-kicker"><h2 id="daily-briefing-title"><Link to="/briefings" data-widget-link aria-label="Daily Market Briefing · 지난 브리핑 목록 보기">Daily Market Briefing</Link></h2></div>
     {item ? <>
       <p className="briefing-meta">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 {kstTime(item.cutoffAt)}</p>
       <h3><Link to={`/briefings/${item.id}`}>{withoutCitations(home?.headline ?? item.title)}</Link></h3>
@@ -57,7 +57,6 @@ function DesktopDailyBriefing() {
         </div>
       </div>}
 
-      <Link className="briefing-read" to={`/briefings/${item.id}`}>전체 브리핑 읽기 →</Link>
       <p className="briefing-meta">{item.reviewMode === 'automated' && <>AI 작성·자동 검토 · </>}{item.reviewMode === 'gemini-research' && <>Gemini 본문 요약·해석 · 자동 근거 대조 · </>}{item.reviewMode === 'gemini' && <>Gemini 제목 요약 · 자동 대조 · </>}{item.reviewMode === 'rules' && <>규칙 기반 자동 정리 · AI 미사용 · </>}가장 최근 게시된 브리핑 · 실시간 시황이 아닙니다.</p>
     </> : <div className="briefing-empty">
       <span className="briefing-edition">ANTHRACITE / DAILY</span>

@@ -6,7 +6,7 @@ export default function BriefingDetails({ item, section, mobile = false }: { ite
   const home = item.homepage
   if (!home) return null
   if (section === 'stocks') return <section className="briefing-section" aria-labelledby="briefing-stocks-title">
-    <div className="briefing-section-heading"><h4 id="briefing-stocks-title">주요 종목</h4><span>움직임과 배경</span></div>
+    <div className="briefing-section-heading"><h4 id="briefing-stocks-title">주요 종목</h4></div>
     <ul className="briefing-stocks">{home.stocks.map(stock => <li key={stock.ticker}>
       <div className="briefing-stock-heading"><strong>{stock.name} <span>{stock.ticker}</span></strong><b className={trendClass(stock.change)}>{stock.change}</b></div>
       <p>{stock.reason}<SourceRefs item={item} ids={stock.sourceIds} /></p>
@@ -14,7 +14,7 @@ export default function BriefingDetails({ item, section, mobile = false }: { ite
     </li>)}</ul>
   </section>
   if (section === 'assets') return <section className="briefing-section" aria-labelledby="briefing-assets-title">
-    <div className="briefing-section-heading"><h4 id="briefing-assets-title">자산 흐름</h4><span>아침 브리핑 기준</span></div>
+    <div className="briefing-section-heading"><h4 id="briefing-assets-title">자산 흐름</h4></div>
     {mobile ? <><p className="mobile-briefing-basis-note">자산별 관측 시각과 비교 기준이 다릅니다.</p><dl className="mobile-briefing-assets">{home.assets.map(asset => <div key={asset.label}>
       <dt>{asset.label}<SourceRefs item={item} ids={asset.sourceIds} /></dt>
       <dd><strong>{asset.value}</strong><span className={trendClass(asset.change)}>변화 {asset.change}</span><small>{asset.basis}</small></dd>
@@ -27,7 +27,7 @@ export default function BriefingDetails({ item, section, mobile = false }: { ite
     </table>}
   </section>
   if (section === 'events') return <section className="briefing-section" aria-labelledby="briefing-events-title">
-    <div className="briefing-section-heading"><h4 id="briefing-events-title">오늘·다음 일정</h4><span>발행일 기준 · KST</span></div>
+    <div className="briefing-section-heading"><h4 id="briefing-events-title">오늘·다음 일정</h4><span>KST</span></div>
     <ol className="briefing-events">{home.events.map(event => <li key={`${event.at}-${event.label}`}>
       <time dateTime={event.at}>{eventTime(event.at)}</time>
       <p>{event.label}<SourceRefs item={item} ids={event.sourceIds} /></p>

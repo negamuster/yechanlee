@@ -11,6 +11,9 @@
 .home-dashboard-sidebar:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
 .home-dashboard-sidebar > div { min-width: 0; }
 .home-dashboard-live { width: 100%; }
+.home-dashboard-live .market-live-actions { margin-top: 8px; }
+.home-dashboard-live .market-live-actions button { min-width: 32px; min-height: 32px; font-size: 20px; text-decoration: none; }
+.home-dashboard-movers .movers-info summary, .home-dashboard-calendar .calendar-help summary { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; min-height: 30px; padding: 3px; font-size: 14px; }
 .home-content .market-movers, .home-content .sector-panel, .home-content .market-calendar { margin: 0; padding-top: 0; border-top: 0; }
 .home-content .market-live { width: 100%; max-width: none; }
 .home-content .calendar-list { max-height: 240px; }

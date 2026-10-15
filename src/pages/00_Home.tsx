@@ -9,6 +9,7 @@ import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
 import DailyBriefing from '../components/DailyBriefing'
+import LinkedWidget from '../components/LinkedWidget'
 import './Home.css'
 
 export default function Home() {
@@ -35,7 +36,7 @@ export default function Home() {
     {!mobile && <MarketTicker />}
     <main className="home-content home-overview" ref={content}>
       <div className="home-primary">
-        <div className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></div>
+        <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></LinkedWidget>
         <section className="home-news" aria-labelledby="home-news-title">
           <h2 id="home-news-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
           <NewsFeed mobile={mobile} previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
@@ -43,13 +44,13 @@ export default function Home() {
       </div>
       {!mobile && <>
         <aside className="home-market-column" aria-label="시장 흐름과 일정">
-          <div className="home-widget home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></div>
-          <div className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></div>
+          <LinkedWidget className="home-widget home-dashboard-maps"><SectorPerformance compact selectedSector={newsSector?.symbol} onSelectSector={setNewsSector} /></LinkedWidget>
+          <LinkedWidget className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></LinkedWidget>
           <details className="home-widget home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
         </aside>
         <aside className="home-dashboard-sidebar" data-scroll-key="home-sidebar" tabIndex={0} aria-label="종목 순위와 라이브 방송">
-          <div className="home-widget home-dashboard-movers"><MarketMovers /></div>
-          <div className="home-widget home-dashboard-live"><MarketLive /></div>
+          <LinkedWidget className="home-widget home-dashboard-movers"><MarketMovers overview /></LinkedWidget>
+          <LinkedWidget className="home-widget home-dashboard-live"><MarketLive compact /></LinkedWidget>
         </aside>
       </>}
     </main>

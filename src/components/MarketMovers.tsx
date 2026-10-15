@@ -31,7 +31,7 @@ function validData(value: unknown): value is MoversData {
   return !!data && !!data.tradingDate && Number.isFinite(data.fetchedAt) && categories.every(tab => Array.isArray(data.rankings?.[tab.id]))
 }
 
-export default function MarketMovers() {
+export default function MarketMovers({ overview = false }: { overview?: boolean }) {
   const returnState = useReturnOrigin()
   const [category, setCategory] = useSessionState<Category>('movers.category', 'turnover', v => categories.some(tab => tab.id === v))
   const [refresh, setRefresh] = useState(0)
@@ -47,8 +47,7 @@ export default function MarketMovers() {
   return (
     <section className="market-movers" aria-labelledby="market-movers-heading">
       <div className="movers-heading">
-        <h2 id="market-movers-heading">Market Movers</h2>
-        <span>미국 · USD</span>
+        <h2 id="market-movers-heading">{overview ? <Link to="/markets#market-movers-heading" data-widget-link aria-label="Market Movers 전체 보기">Market Movers</Link> : 'Market Movers'}</h2>
       </div>
       <div className="movers-tabs" role="group" aria-label="종목 순위 기준">
         {categories.map(tab => <button key={tab.id} type="button" aria-pressed={category === tab.id}
@@ -63,11 +62,11 @@ export default function MarketMovers() {
       </div>
       {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
       {data?.pendingLatest && <p className="movers-notice" role="status">최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
-      <details className="movers-info"><summary>정보 ⓘ · 출처·산정 기준</summary>
+      <details className="movers-info"><summary aria-label="종목 순위 출처와 산정 기준" title="출처·산정 기준">{overview ? 'ⓘ' : '정보 ⓘ · 출처·산정 기준'}</summary>
       <p>{selected.description} · 상위 10개</p>
       {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
       <div className="movers-footnote">
-        <p>미국 상장 종목 · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
+        <p>미국 상장 종목 · USD · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
         <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
         <p>출처: Polygon / Massive · 실시간 순위가 아닙니다. 미국 동부시간 21시 이후 당일 집계를 확인하며, 수집 범위가 부족하면 이전 거래일을 유지합니다.</p>
       </div>

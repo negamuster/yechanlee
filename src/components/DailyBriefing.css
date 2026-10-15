@@ -9,7 +9,6 @@
 .briefing-empty { padding:26px 0 18px; }
 .briefing-edition { color:#6b745f; font-size:var(--ui-font-meta); letter-spacing:.16em; }
 .briefing-empty ul { padding-left:18px; line-height:2; font-size:var(--ui-font-body); color:#606759; margin:22px 0; }
-.briefing-read { display:inline-flex; align-items:center; min-height:44px; color:#414e36; font-size:var(--ui-font-body); text-underline-offset:5px; }
 .briefing-article,.briefing-archive { max-width:840px; margin:auto; padding:30px 22px 70px; color:#292d27; }
 .briefing-article h1,.briefing-archive h1 { font-family:Georgia,serif; font-size:clamp(25px,4vw,38px); line-height:1.4; }
 .briefing-article h2 { font-size:22px; margin:32px 0 14px; }
