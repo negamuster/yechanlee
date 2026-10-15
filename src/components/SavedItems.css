@@ -35,8 +35,8 @@
 .saved-selection-tools button:disabled { opacity: .5; cursor: default; }
 .saved-delete-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; background: #f6f1e8; width: 100%; }
 .saved-checkbox { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; min-height: 36px; flex: 0 0 auto; }
-.saved-checkbox input { width: 16px; height: 16px; accent-color: #505a46; }
-.saved-page :is(input,select,button):focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+.saved-checkbox input { width: 16px; height: 16px; accent-color: var(--ui-selected); }
+.saved-page :is(input,select,button):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
 .saved-page .watch-row { display: grid; grid-template-columns: 30px minmax(0,1fr) auto auto; }
 .route-loading { min-height: 50vh; padding: 36px 24px; color: #72776b; font-size:var(--ui-font-body); }
 @media (max-width:700px) { .saved-selection-tools button, .saved-checkbox, .saved-manage-toolbar :is(input,select), .watch-toolbar input { min-height: 44px; } .saved-checkbox { min-width: 36px; } .saved-page .watch-row { grid-template-columns: 36px minmax(0,1fr) auto auto; gap: 5px; } }

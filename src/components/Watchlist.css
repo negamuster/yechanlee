@@ -14,13 +14,13 @@
 .watch-time { margin:8px 0 0; font-size:var(--ui-font-caption); color:#777; }
 .watch-notice { color:#806a3d; font-size:var(--ui-font-control); line-height:1.7; }
 .watch-earnings-list li { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; border-bottom:1px solid #eee; padding:12px 0; font-size:13px; }
-.watch-earnings-list a, .watch-calendar-link { color:#505a46; }
+.watch-earnings-list a, .watch-calendar-link { color:var(--ui-selected); }
 .watch-calendar-link { display:inline-flex; min-height:44px; align-items:center; font-size:13px; }
 .watch-source { font-size:var(--ui-font-meta); color:#73776b; line-height:1.7; }
 .watch-source summary { display:flex; align-items:center; min-height:44px; cursor:pointer; }
-.saved-page :is(a,button,select,summary):focus-visible { outline:2px solid #69785c; outline-offset:3px; }
-.calendar-watch-badge { color:#505a46; border:1px solid #bbc7ae; padding:1px 5px; border-radius:3px; font-size:var(--ui-font-caption); }
-.calendar-event.is-watched { background:#f1f4ed; border-left:3px solid #69785c; }
+.saved-page :is(a,button,select,summary):focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
+.calendar-watch-badge { color:var(--ui-selected); border:1px solid var(--ui-accent-border); padding:1px 5px; border-radius:3px; font-size:var(--ui-font-caption); }
+.calendar-event.is-watched { background:var(--ui-accent-soft); border-left:3px solid var(--ui-focus); }
 @media(max-width:700px) {
   .saved-page { padding:16px 14px 24px; }
   .saved-page h1 { font-size:24px; }

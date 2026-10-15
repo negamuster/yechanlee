@@ -1,7 +1,7 @@
-.daily-briefing { min-width:0; color:#282c27; container-type:inline-size; container-name:briefing; }
+.daily-briefing { min-width:0; color:var(--ui-text); container-type:inline-size; container-name:briefing; }
 .briefing-kicker { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-md); padding-bottom:var(--ui-space-md);  }
 .briefing-kicker h2 { font-size:var(--ui-font-section); font-weight:600; margin:0; }
-.briefing-kicker a,.briefing-meta { font-size:var(--ui-font-control); color:#62685e; line-height:1.6; }
+.briefing-kicker a,.briefing-meta { font-size:var(--ui-font-control); color:var(--ui-muted); line-height:1.6; }
 .daily-briefing h3 { font-family:Georgia,'Noto Serif KR',serif; font-size:clamp(23px,2.1vw,32px); line-height:1.4; letter-spacing:-.035em; margin:16px 0; }
 .daily-briefing h3 a { color:inherit; text-decoration:none; }
 .daily-briefing > p,.briefing-empty > p { font-size:15px; line-height:1.85; word-break:keep-all; overflow-wrap:anywhere; }
@@ -14,7 +14,7 @@
 .briefing-article h2 { font-size:22px; margin:32px 0 14px; }
 .briefing-article h3 { font-size:18px; margin:22px 0 12px; }
 .briefing-article p { line-height:1.9; font-size:16px; white-space:pre-line; overflow-wrap:anywhere; }
-.briefing-article a,.briefing-archive a { color:#445a38; overflow-wrap:anywhere; }
+.briefing-article a,.briefing-archive a { color:var(--ui-selected); overflow-wrap:anywhere; }
 .briefing-sources { border-top:1px solid #ddd; padding-top:18px; }
 .briefing-sources li { margin:12px 0; line-height:1.6; }
 .briefing-article details { margin-top:22px; }
@@ -24,17 +24,17 @@
 @media(max-width:700px) { .daily-briefing { padding-top:12px; } .briefing-kicker { flex-wrap:wrap; } .briefing-kicker h2 { font-size:var(--ui-font-section); } .briefing-empty { padding-top:18px; } .briefing-empty h3 { font-size:26px; } }
 
 .briefing-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
-.briefing-tags span { background: #f2f3ee; color: #555e50; padding: 4px 7px; border-radius: 4px; font-size:var(--ui-font-meta); line-height: 1.6; }
+.briefing-tags span { background: var(--ui-accent-soft); color: var(--ui-selected); padding: 4px 7px; border-radius: 4px; font-size:var(--ui-font-meta); line-height: 1.6; }
 .briefing-access { display: inline-block; margin-left: 8px; color: #6e7169; font-size:var(--ui-font-meta); }
 .briefing-source-alternate { display: block; width: fit-content; font-size:var(--ui-font-control); margin-top: 4px; }
 .briefing-sources li { scroll-margin-top: calc(var(--header-height, 100px) + 16px); }
 
 .briefing-at-a-glance { display:grid; gap:18px; margin:18px 0 12px; }
-.briefing-highlight { padding-left:13px; border-left:2px solid #d9ded1; min-width:0; }
-.briefing-highlight h4 { margin:0 0 7px; font-size:var(--ui-font-control); font-weight:650; color:#45563c; }
+.briefing-highlight { padding-left:13px; border-left:2px solid var(--ui-accent-border); min-width:0; }
+.briefing-highlight h4 { margin:0 0 7px; font-size:var(--ui-font-control); font-weight:650; color:var(--ui-selected); }
 .briefing-highlight h4 span { margin-left:6px; font-size:var(--ui-font-caption); font-weight:400; color:#71766c; }
 .briefing-highlight p { margin:0; font-size:var(--ui-font-body); line-height:1.75; overflow-wrap:anywhere; }
-.briefing-highlight > a { display:inline-block; margin-top:5px; font-size:var(--ui-font-meta); color:#67725e; text-underline-offset:3px; }
+.briefing-highlight > a { display:inline-block; margin-top:5px; font-size:var(--ui-font-meta); color:var(--ui-selected); text-underline-offset:3px; }
 .briefing-highlight ul { list-style:none; margin:0; padding:0; display:grid; gap:12px; }
 .briefing-highlight li a { font-size:var(--ui-font-body); line-height:1.65; color:inherit; text-decoration:none; overflow-wrap:anywhere; }
 .briefing-highlight li a:hover { text-decoration:underline; text-underline-offset:3px; }
@@ -44,9 +44,9 @@
 .briefing-summary-list li { padding-left:3px; margin:8px 0; font-size:var(--ui-font-body); line-height:1.75; overflow-wrap:anywhere; }
 
 .briefing-citations { font-size:var(--ui-font-caption); line-height:0; vertical-align:super; white-space:nowrap; margin-left:2px; }
-.briefing-citations a { color:#626f58; text-decoration:none; }
+.briefing-citations a { color:var(--ui-selected); text-decoration:none; }
 .briefing-citations a:hover { text-decoration:underline; }
-.briefing-citations a:focus-visible { outline:2px solid #69785c; outline-offset:3px; }
+.briefing-citations a:focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
 .briefing-expanded { margin-top:20px; }
 .briefing-detail-tabs { display:flex; flex-wrap:wrap; gap:6px; border-top:1px solid var(--ui-border); padding-top:14px; margin-bottom:16px; }
 .briefing-detail-tabs button { display:inline-flex; align-items:center; gap:7px; min-height:var(--ui-control-height); padding:7px 10px; border:1px solid var(--ui-border); border-radius:var(--ui-radius); background:#fff; color:var(--ui-muted); font:inherit; font-size:var(--ui-font-control); cursor:pointer; }
@@ -56,7 +56,7 @@
 .briefing-detail-tabs button:focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
 .briefing-detail-panel .briefing-section { border-top:0; padding-top:0; }
 .briefing-detail-panel .briefing-section-heading { margin-bottom:10px; }
-.briefing-section { border-top:1px solid #e2e5dd; padding-top:15px; min-width:0; }
+.briefing-section { border-top:1px solid var(--ui-border); padding-top:15px; min-width:0; }
 .briefing-section-heading { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:5px 12px; margin-bottom:12px; }
 .briefing-section-heading h4 { margin:0; font-size:var(--ui-font-body); font-weight:600; }
 .briefing-section-heading > span { font-size:var(--ui-font-meta); color:#74796f; }
@@ -79,7 +79,7 @@
 .briefing-down { color:#ba3930; }
 .briefing-up { color:#07803e; }
 .briefing-events { list-style:none; padding:0; margin:0; display:grid; gap:14px; }
-.briefing-events time { font-size:var(--ui-font-meta); color:#5c6950; font-weight:500; font-variant-numeric:tabular-nums; }
+.briefing-events time { font-size:var(--ui-font-meta); color:var(--ui-selected); font-weight:500; font-variant-numeric:tabular-nums; }
 .briefing-events p { font-size:13px; line-height:1.65; margin:4px 0; overflow-wrap:anywhere; }
 .briefing-events small { display:block; font-size:var(--ui-font-meta); line-height:1.6; color:#73786e; }
 @media(max-width:700px) { .daily-briefing { padding-top:0; } }

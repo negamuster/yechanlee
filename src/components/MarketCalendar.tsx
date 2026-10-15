@@ -7,8 +7,9 @@ import './Watchlist.css'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
+import WidgetActions from './WidgetActions'
 import { calendarLabels as labels, koreanCalendarTitle as koreanTitle } from '../lib/calendarPresentation'
 import type { CalendarCategory as Category, CalendarEvent, CalendarData } from '../lib/calendarPresentation'
 import './MarketCalendar.css'
@@ -42,6 +43,8 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const focus = full ? savedFocus : 'all'
   const view = full ? savedView : 'month'
   const [exportMessage, setExportMessage] = useState('')
+  const [infoOpen, setInfoOpen] = useState(false)
+  const infoId = useId()
   const [reload, setReload] = useState(0)
   const from = `${month}-01`
   const [year, monthNumber] = month.split('-').map(Number)
@@ -96,8 +99,17 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       </li>)}</ul></div>
     </div>
   </>
+  const help = <>
+    {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
+    <p>{schedule.data ? `일정 조회 ${dataTime(schedule.data.fetchedAt, timezone)}` : 'BLS · BEA · 연준 · Nasdaq'}</p>
+    <ul className="calendar-source-status">{[...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].map(source => <li key={`${source.name}:${source.date || 'month'}`}><strong>{source.name}</strong>{source.date ? ` · ${source.date} 실적` : ''}<br />원본 확인: {dataTime(source.updatedAt, timezone)}<br />{source.state === 'unavailable' ? '조회 불가' : source.state === 'stale' ? '갱신 실패 또는 저장본 노후 · 이전 데이터' : source.state === 'snapshot' ? '저장 일정 사용 · 변경 가능' : '확인된 일정'} </li>)}</ul>
+    <p>일정 조회는 서버 응답 생성 시각이며, 출처별 원본 확인 시각과 다를 수 있습니다. 저장 일정은 수집 이후 변경 사항이 아직 반영되지 않았을 수 있습니다.</p><p>날짜별 점과 요약은 현재 조회한 일정만 표시합니다. 월간 보기의 실적은 선택 날짜만, 주간 보기의 실적은 해당 주를 조회합니다. 빈 날짜가 일정 없음을 보장하지는 않습니다.</p><p>BLS 직접 조회가 어려우면 CPI·PPI·고용보고서 등 9개 지표군은 FRED 일정으로 보완합니다. 그 외 BLS 일정은 별도 저장본의 확인 시각을 따릅니다.</p><p>일정 저장은 개별 .ics 파일 다운로드입니다. 시각이 미정인 일정은 미국 기준 날짜의 종일 일정으로 저장하며, 이후 변경 사항은 자동 반영되지 않습니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p>
+  </>
   return <section className={`market-calendar${full ? ' calendar-full' : ''}`} aria-label="경제·실적 캘린더">
-    <div className="calendar-heading"><h2>{full ? <>Calendar <small>경제·실적</small></> : <Link to="/calendar" data-widget-link aria-label="Calendar 전체 경제·실적 캘린더 보기">Calendar</Link>}</h2></div>
+    <div className={`calendar-heading${full ? '' : ' widget-heading'}`}><h2>{full ? <>Calendar <small>경제·실적</small></> : <Link to="/calendar" data-widget-link aria-label="Calendar 전체 경제·실적 캘린더 보기">Calendar</Link>}</h2>
+      {!full && <WidgetActions label="Calendar" refresh={{ loading, onClick: () => setReload(n => n + 1) }} info={{ id: infoId, label: '캘린더 출처와 조회 범위', open: infoOpen, onClick: () => setInfoOpen(value => !value) }} />}
+    </div>
+    {!full && <div id={infoId} hidden={!infoOpen} className="calendar-help widget-info-panel" data-widget-interactive>{help}</div>}
     {full && <div className="calendar-controls">
       <div className="calendar-tabs" role="group" aria-label="캘린더 보기"><button type="button" aria-pressed={view === 'month'} onClick={() => setView('month')}>월간</button><button type="button" aria-pressed={view === 'week'} onClick={() => setView('week')}>주간</button></div><div className="calendar-jump" role="group" aria-label="현재 날짜로 이동"><button type="button" onClick={() => { setMonth(today.slice(0, 7)); setSelected(today) }}>오늘</button><button type="button" onClick={() => { setMonth(today.slice(0, 7)); setSelected(today); setView('week') }}>이번 주</button></div>
       <details className="calendar-settings-menu"><summary>설정 ⚙</summary><div className="calendar-settings">
@@ -121,16 +133,11 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         return <button type="button" key={date} data-date={date} disabled={date < earliestDate || date.slice(0, 7) > latestMonth || (view === 'week' && date > weekTo)} className={`calendar-date${outsideMonth ? ' is-outside-month' : ''}${date === today ? ' is-today' : ''}${hasMajor ? ' has-major' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${outsideMonth ? date < from ? ', 이전 달' : ', 다음 달' : ''}${hasMajor ? ", 주요 일정 있음" : ""}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span className="calendar-date-number">{Number(date.slice(-2))}{hasMajor && <b className="calendar-important-mark" aria-hidden="true">★</b>}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 2).map((event, index) => <span key={event.id} title={language === 'ko' ? koreanTitle(event) : event.title} className={`calendar-cell-title calendar-${event.category.toLowerCase()}${index === 1 ? ' calendar-cell-secondary' : ''}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more calendar-cell-more-compact">+{dayEvents.length - 1}</span>}{dayEvents.length > 2 && <span className="calendar-cell-more calendar-cell-more-wide">+{dayEvents.length - 2}</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
-    <div className="calendar-compact-status"><span>{full ? `미국 날짜 기준 · 시간 ${zoneLabel} · ★ 주요 일정` : `미국 날짜 · ${zoneLabel}`}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>
+    <div className="calendar-compact-status"><span>{full ? `미국 날짜 기준 · 시간 ${zoneLabel} · ★ 주요 일정` : `미국 날짜 · ${zoneLabel}`}</span>{full && <button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button>}</div>
     {full && schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 나머지 BLS 일정은 별도 저장본의 확인 시각을 따르며, 저장본 만료 시 표시되지 않습니다.</p>}
     {agenda}
     {exportMessage && <p className="calendar-time-note" role="status">{exportMessage}<button type="button" onClick={() => setExportMessage('')}>닫기</button></p>}
-    <details className="calendar-help"><summary aria-label="캘린더 출처와 조회 범위" title="출처·조회 범위">{full ? '정보 ⓘ · 출처·조회 범위' : 'ⓘ'}</summary>
-    {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
-
-      <p>{schedule.data ? `일정 조회 ${dataTime(schedule.data.fetchedAt, timezone)}` : 'BLS · BEA · 연준 · Nasdaq'}</p>
-      <ul className="calendar-source-status">{[...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].map(source => <li key={`${source.name}:${source.date || 'month'}`}><strong>{source.name}</strong>{source.date ? ` · ${source.date} 실적` : ''}<br />원본 확인: {dataTime(source.updatedAt, timezone)}<br />{source.state === 'unavailable' ? '조회 불가' : source.state === 'stale' ? '갱신 실패 또는 저장본 노후 · 이전 데이터' : source.state === 'snapshot' ? '저장 일정 사용 · 변경 가능' : '확인된 일정'} </li>)}</ul>
-      <p>일정 조회는 서버 응답 생성 시각이며, 출처별 원본 확인 시각과 다를 수 있습니다. 저장 일정은 수집 이후 변경 사항이 아직 반영되지 않았을 수 있습니다.</p><p>날짜별 점과 요약은 현재 조회한 일정만 표시합니다. 월간 보기의 실적은 선택 날짜만, 주간 보기의 실적은 해당 주를 조회합니다. 빈 날짜가 일정 없음을 보장하지는 않습니다.</p><p>BLS 직접 조회가 어려우면 CPI·PPI·고용보고서 등 9개 지표군은 FRED 일정으로 보완합니다. 그 외 BLS 일정은 별도 저장본의 확인 시각을 따릅니다.</p><p>일정 저장은 개별 .ics 파일 다운로드입니다. 시각이 미정인 일정은 미국 기준 날짜의 종일 일정으로 저장하며, 이후 변경 사항은 자동 반영되지 않습니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p></details>
+    {full && <details className="calendar-help"><summary aria-label="캘린더 출처와 조회 범위" title="출처·조회 범위">정보 ⓘ · 출처·조회 범위</summary>{help}</details>}
 
   </section>
 }

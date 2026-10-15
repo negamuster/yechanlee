@@ -80,6 +80,29 @@ test('home retains price dates, currency context, timezone, source references an
   assert.ok($('.daily-briefing').text().includes('실시간 시황이 아닙니다'))
   for (const stock of latestBriefing?.homepage?.stocks ?? []) assert.ok($('.briefing-stocks').text().includes(stock.basis))
 })
+test('home cards align their title and actions without duplicate refresh controls or nested links', () => {
+  const $ = render(createElement(Home))
+  for (const selector of ['.home-briefing', '.home-dashboard-maps', '.home-dashboard-calendar', '.home-dashboard-movers', '.home-dashboard-live']) {
+    assert.equal($(`${selector} .widget-heading > h2 > [data-widget-link]`).length, 1, selector)
+  }
+  for (const selector of ['.home-dashboard-maps', '.home-dashboard-calendar', '.home-dashboard-movers']) {
+    const card = $(selector), actions = card.find('.widget-heading > .widget-actions')
+    assert.equal(actions.find('[data-widget-action="refresh"]').length, 1, selector)
+    assert.equal(actions.find('[data-widget-action="info"]').length, 1, selector)
+    const info = actions.find('[data-widget-action="info"]')
+    assert.equal(info.attr('aria-expanded'), 'false', selector)
+    const panel = card.find(`[id="${info.attr('aria-controls')}"]`)
+    assert.equal(panel.length, 1, selector)
+    assert.equal(panel.hasClass('widget-info-panel'), true, selector)
+    assert.equal(panel.is('[hidden]'), true, selector)
+    assert.equal(panel.is('[data-widget-interactive]'), true, selector)
+    assert.ok(panel.text().length > 30, selector)
+    assert.equal(card.find('.sector-compact-status button, .calendar-compact-status button, .movers-status button, .sector-info-toggle, details.movers-info, details.calendar-help').length, 0, selector)
+  }
+  assert.equal($('.home-dashboard-live .widget-heading [data-widget-action="close"]').attr('aria-label'), '영상 닫기')
+  assert.equal($('.home-dashboard-live .market-live-actions button').length, 0)
+  assert.equal($('a button, a a').length, 0)
+})
 test('mobile home keeps its briefing archive destination and disclosures without extra navigation buttons', () => {
   const $ = render(createElement(Home), true)
   assert.equal($('.linked-widget').length, 1)

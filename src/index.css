@@ -4,13 +4,17 @@
 
 :root {
   --font-ui: Arial, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --ui-text: #242424;
-  --ui-muted: #62665f;
-  --ui-border: #dedfda;
-  --ui-surface: #f7f8f5;
-  --ui-hover: #eef0eb;
-  --ui-selected: #292e27;
-  --ui-focus: #69785c;
+  --ui-text: #242a33;
+  --ui-muted: #626b77;
+  --ui-border: #dde2e8;
+  --ui-surface: #f8fafc;
+  --ui-hover: #f1f5f9;
+  --ui-selected: #334155;
+  --ui-focus: #64748b;
+  --ui-accent-soft: #eef2f6;
+  --ui-accent-border: #cbd5e1;
+  --ui-focus-ring: #64748b26;
+  --ui-selected-hover: #475569;
   --ui-radius: 8px;
   --ui-card-radius: 12px;
   --ui-font-page: 28px;
@@ -24,7 +28,7 @@
   --ui-space-md: 12px;
   --ui-space-lg: 16px;
   --ui-space-xl: 24px;
-  --ui-card-padding: 14px;
+  --ui-card-padding: 16px;
   --ui-page-gutter: 18px;
   --ui-layout-gap: 24px;
   --ui-control-height: 36px;

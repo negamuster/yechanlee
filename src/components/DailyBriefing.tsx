@@ -28,7 +28,7 @@ function DesktopDailyBriefing() {
   const calendarStart = item?.blocks.findIndex(b => b.kind === 'heading' && b.text.includes('공식 일정')) ?? -1
   const calendar = calendarStart >= 0 ? item?.blocks.slice(calendarStart + 1).find(b => b.kind === 'paragraph') : undefined
   return <section className="daily-briefing" aria-labelledby="daily-briefing-title">
-    <div className="briefing-kicker"><h2 id="daily-briefing-title"><Link to="/briefings" data-widget-link aria-label="Daily Market Briefing · 지난 브리핑 목록 보기">Daily Market Briefing</Link></h2></div>
+    <div className="briefing-kicker widget-heading"><h2 id="daily-briefing-title"><Link to="/briefings" data-widget-link aria-label="Daily Market Briefing · 지난 브리핑 목록 보기">Daily Market Briefing</Link></h2></div>
     {item ? <>
       <p className="briefing-meta">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 {kstTime(item.cutoffAt)}</p>
       <h3><Link to={`/briefings/${item.id}`}>{withoutCitations(home?.headline ?? item.title)}</Link></h3>

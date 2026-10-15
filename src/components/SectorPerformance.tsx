@@ -3,8 +3,9 @@ import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import { dataTime } from '../utils/dataTime'
 import DataStatus from './DataStatus'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
+import WidgetActions from './WidgetActions'
 import './SectorPerformance.css'
 const periods = [['1d', '1일'], ['1w', '1주'], ['1m', '1개월'], ['ytd', '연초 이후']] as const
 type Period = typeof periods[number][0]
@@ -19,13 +20,22 @@ function validData(value: unknown): value is Data {
 export default function SectorPerformance({ compact = false, selectedSector, onSelectSector }: { compact?: boolean; selectedSector?: string; onSelectSector?: (sector: NewsSector) => void }) {
   const [period, setPeriod] = useSessionState<Period>('maps.period', '1d', v => periods.some(([period]) => period === v))
   const [infoOpen, setInfoOpen] = useState(false)
+  const infoId = useId()
   const [relative, setRelative] = useSessionState('maps.relative', false, v => typeof v === 'boolean')
   const [retry, setRetry] = useState(0)
   const { data, loading, error } = useResource('/api/sector-performance', validData, 5 * 60000, retry)
   const rows = [...(data?.sectors || [])].sort((a, b) => (b.returns[period] ?? -Infinity) - (a.returns[period] ?? -Infinity))
   const unavailable = rows.filter(r => r.returns[period] == null).length
+  const dataInfo = data && <>
+    <p className="sector-mobile-description">11개 업종 ETF의 완료된 거래일 성과 · {data.benchmark.starts[period] || '—'} → {data.benchmark.asOf || '—'}</p>
+    <DataStatus basis={`${data.benchmark.asOf || '기준일 미제공'} · 미국 거래일 종가 · 장중 시세 아님`} source="Yahoo Finance" collectedAt={data.fetchedAt} stale={data.stale || error} />
+    <p className="sector-note">Yahoo Finance · {data.basis}. 업종 전체 지수가 아닌 대표 ETF의 성과입니다. 1주는 7일, 1개월은 30일 전 또는 직전 거래일 대비이며, 연초 이후는 전년도 마지막 거래일 대비입니다.{!compact && ' 초과성과는 업종 ETF 수익률에서 VOO 수익률을 뺀 값입니다.'}</p>
+  </>
   return <section className={`sector-panel ${compact ? 'sector-compact' : ''}`} aria-label="Maps · 미국 업종 ETF 히트맵">
-    <div className="sector-heading"><div><h2>{compact ? <Link to="/equity" data-widget-link aria-label="Maps 전체 업종 성과 보기">Maps</Link> : 'Maps'}</h2></div></div>
+    <div className={`sector-heading${compact ? ' widget-heading' : ''}`}><h2>{compact ? <Link to="/equity" data-widget-link aria-label="Maps 전체 업종 성과 보기">Maps</Link> : 'Maps'}</h2>
+      {compact && <WidgetActions label="Maps" refresh={{ loading, onClick: () => setRetry(n => n + 1) }} info={{ id: infoId, label: 'Maps 출처와 산정 기준', open: infoOpen, disabled: !data, onClick: () => setInfoOpen(value => !value) }} />}
+    </div>
+    {compact && <div id={infoId} hidden={!infoOpen} className="widget-info-panel" data-widget-interactive>{dataInfo}</div>}
     {!compact && <p className="sector-description">11개 업종 ETF로 보는 시장의 흐름 · 완료된 거래일 기준</p>}
     <div className="sector-controls"><div className="sector-periods" aria-label="비교 기간">{periods.map(([key, label]) => <button key={key} aria-pressed={period === key} onClick={() => setPeriod(key)}>{label}</button>)}</div>
       {!compact && <label><input type="checkbox" checked={relative} onChange={e => setRelative(e.target.checked)} /> VOO 대비 초과성과</label>}
@@ -48,14 +58,10 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
         </a>
       })}</div>
       {!compact && <div className="sector-table-wrap"><table><caption>업종별 기간 성과{relative ? ' · VOO 대비 차이 (%p)' : ' (%)'}</caption><thead><tr><th scope="col">업종 / ETF</th>{periods.map(([key, label]) => <th scope="col" key={key}>{label}</th>)}</tr></thead><tbody>{[data.benchmark, ...rows].map(row => <tr key={row.symbol}><th scope="row">{row.name}<small>{row.symbol}</small></th>{periods.map(([key]) => <td key={key}>{format(relative ? row.relative[key] : row.returns[key], relative ? '%p' : '%')}</td>)}</tr>)}</tbody></table></div>}
-      <div className="sector-compact-status"><span>{data.benchmark.asOf || '기준일 미제공'} 종가 기준 · Yahoo Finance</span><button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>새로고침</button></div>
-      <button type="button" className="sector-info-toggle" aria-expanded={infoOpen} aria-controls="sector-data-info" onClick={() => setInfoOpen(!infoOpen)}>정보 · 산정 기준 {infoOpen ? '−' : 'ⓘ'}</button>
-      <div id="sector-data-info" hidden={!infoOpen} className={`sector-data-info${infoOpen ? ' is-open' : ''}`}>
-      <p className="sector-mobile-description">11개 업종 ETF의 완료된 거래일 성과 · {data.benchmark.starts[period] || '—'} → {data.benchmark.asOf || '—'}</p>
-      <DataStatus basis={`${data.benchmark.asOf || '기준일 미제공'} · 미국 거래일 종가 · 장중 시세 아님`} source="Yahoo Finance" collectedAt={data.fetchedAt} stale={data.stale || error} />
-      <p className="sector-note">Yahoo Finance · {data.basis}. 업종 전체 지수가 아닌 대표 ETF의 성과입니다. 1주는 7일, 1개월은 30일 전 또는 직전 거래일 대비이며, 연초 이후는 전년도 마지막 거래일 대비입니다.{!compact && ' 초과성과는 업종 ETF 수익률에서 VOO 수익률을 뺀 값입니다.'}</p>
-      </div>
+      <div className="sector-compact-status"><span>{data.benchmark.asOf || '기준일 미제공'} 종가 기준 · Yahoo Finance</span>{!compact && <button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>새로고침</button>}</div>
+      {!compact && <><button type="button" className="sector-info-toggle" aria-expanded={infoOpen} aria-controls={infoId} onClick={() => setInfoOpen(!infoOpen)}>정보 · 산정 기준 {infoOpen ? '−' : 'ⓘ'}</button>
+      <div id={infoId} hidden={!infoOpen} className={`sector-data-info${infoOpen ? ' is-open' : ''}`}>{dataInfo}</div></>}
     </>}
-    {!data && <button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>다시 조회</button>}
+    {!data && !compact && <button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>다시 조회</button>}
   </section>
 }

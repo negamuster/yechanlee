@@ -3,8 +3,9 @@ import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import DataStatus from './DataStatus'
 import { WatchButton } from './SavedItemsProvider'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
+import WidgetActions from './WidgetActions'
 import './MarketMovers.css'
 
 type Category = 'turnover' | 'gainers' | 'losers'
@@ -35,6 +36,8 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   const returnState = useReturnOrigin()
   const [category, setCategory] = useSessionState<Category>('movers.category', 'turnover', v => categories.some(tab => tab.id === v))
   const [refresh, setRefresh] = useState(0)
+  const [infoOpen, setInfoOpen] = useState(false)
+  const infoId = useId()
 
   const { data, loading, error: failed } = useResource('/api/market-movers', validData, 5 * 60000, refresh)
   useEffect(() => {
@@ -45,11 +48,22 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   const selected = categories.find(tab => tab.id === category)!
   const limit = overview ? 5 : 10
   const rows = (data?.rankings[category] ?? []).slice(0, limit)
+  const info = <>
+    <p>{selected.description} · 상위 {limit}개까지</p>
+    {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
+    <div className="movers-footnote">
+      <p>미국 상장 종목 · USD · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
+      <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
+      <p>출처: Polygon / Massive · 실시간 순위가 아닙니다. 미국 동부시간 21시 이후 당일 집계를 확인하며, 수집 범위가 부족하면 이전 거래일을 유지합니다.</p>
+    </div>
+  </>
   return (
     <section className="market-movers" aria-labelledby="market-movers-heading">
-      <div className="movers-heading">
+      <div className={`movers-heading${overview ? ' widget-heading' : ''}`}>
         <h2 id="market-movers-heading">{overview ? <Link to="/markets#market-movers-heading" data-widget-link aria-label="Market Movers 전체 보기">Market Movers</Link> : 'Market Movers'}</h2>
+        {overview && <WidgetActions label="Market Movers" refresh={{ loading, onClick: () => setRefresh(value => value + 1) }} info={{ id: infoId, label: '종목 순위 출처와 산정 기준', open: infoOpen, onClick: () => setInfoOpen(value => !value) }} />}
       </div>
+      {overview && <div id={infoId} hidden={!infoOpen} className="movers-info widget-info-panel" data-widget-interactive>{info}</div>}
       <div className="movers-tabs" role="group" aria-label="종목 순위 기준">
         {categories.map(tab => <button key={tab.id} type="button" aria-pressed={category === tab.id}
           onClick={() => setCategory(tab.id)}>{tab.label}</button>)}
@@ -57,21 +71,13 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
       
       <div className="movers-status">
         <span>{data ? `${data.tradingDate} 종가 기준 · 실시간 아님` : '최근 완료된 거래일 기준'}</span>
-        <button type="button" disabled={loading} onClick={() => setRefresh(value => value + 1)}>
+        {!overview && <button type="button" disabled={loading} onClick={() => setRefresh(value => value + 1)}>
           {loading ? '불러오는 중…' : '새로고침'}
-        </button>
+        </button>}
       </div>
       {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
       {data?.pendingLatest && <p className="movers-notice" role="status">최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
-      <details className="movers-info"><summary aria-label="종목 순위 출처와 산정 기준" title="출처·산정 기준">{overview ? 'ⓘ' : '정보 ⓘ · 출처·산정 기준'}</summary>
-      <p>{selected.description} · 상위 {limit}개까지</p>
-      {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
-      <div className="movers-footnote">
-        <p>미국 상장 종목 · USD · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
-        <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
-        <p>출처: Polygon / Massive · 실시간 순위가 아닙니다. 미국 동부시간 21시 이후 당일 집계를 확인하며, 수집 범위가 부족하면 이전 거래일을 유지합니다.</p>
-      </div>
-      </details>
+      {!overview && <details className="movers-info"><summary aria-label="종목 순위 출처와 산정 기준" title="출처·산정 기준">정보 ⓘ · 출처·산정 기준</summary>{info}</details>}
       {failed && !data && <p className="movers-notice" role="status">
         {data ? '최신 데이터를 받지 못해 마지막으로 수집한 순위를 표시합니다.' : '종목 순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
       </p>}

@@ -6,7 +6,7 @@
 .home-primary { grid-area: primary; min-width: 0; }
 .home-market-column { grid-area: market; display: grid; gap: var(--ui-space-lg); min-width: 0; }
 .home-widget { min-width: 0; padding: var(--ui-card-padding); border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); background: #fff; }
-.home-briefing { padding: var(--ui-space-lg); }
+.home-briefing { padding: var(--ui-card-padding); }
 .home-dashboard-sidebar { grid-area: support; position: sticky; top: calc(var(--header-height, 100px) + 16px); max-height: calc(100dvh - var(--header-height, 100px) - 32px); overflow-y: auto; scrollbar-width: thin; display: grid; gap: var(--ui-space-lg); align-content: start; min-width: 0; padding-right: 4px; }
 .home-dashboard-sidebar:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
 .home-dashboard-sidebar > div { min-width: 0; }
@@ -76,6 +76,12 @@
 .home-page .home-content :is(.briefing-kicker, .sector-heading, .calendar-heading, .market-live-heading, .movers-heading) h2,
 .home-page .home-news > h2,
 .home-page .market-ticker-meta > strong { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
+.home-page .home-content .widget-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; min-height: 32px; margin: 0 0 12px; padding: 0; }
+.home-page .home-content .widget-heading h2 { min-width: 0; margin: 0; font-size: var(--ui-font-section); line-height: 1.4; overflow-wrap: anywhere; }
+.home-page .home-content .widget-heading h2 [data-widget-link] { white-space: normal; }
+.home-page .home-content .widget-info-panel { margin: 0 0 12px; }
+.home-page .home-content .widget-heading + :is(.sector-controls, .calendar-month-navigation) { margin-top: 0; }
+.home-page .home-content .movers-status { margin-top: 10px; }
 .home-page .home-content :is(.sector-controls, .movers-tabs, .calendar-tabs, .calendar-filters, .calendar-focus-filters, .calendar-jump) button {
   min-height: var(--ui-control-height);
   padding: 7px 10px;
@@ -100,7 +106,6 @@
   .home-overview { grid-template-columns: clamp(240px, 28vw, 300px) minmax(0, 1fr); grid-template-areas: "market primary" "support primary"; grid-template-rows: min-content 1fr; gap: 18px; }
   .home-dashboard-sidebar { position: static; max-height: none; overflow: visible; padding-right: 0; }
   .home-widget { padding: 12px; }
-  .home-briefing { padding: 16px; }
 }
 @media (max-width: 700px) {
   .home-content { padding: 4px 14px 0; }

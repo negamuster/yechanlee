@@ -3,13 +3,13 @@
 .market-hub > h1, .more-page > h1, .live-page > h1 { margin: 8px 0 20px; font-size: 24px; font-weight: 600; }
 .market-hub-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
 .market-hub-grid > section { min-width: 0; }
-.market-hub-link { display: inline-flex; min-height: 44px; align-items: center; margin-top: 12px; color: #505a46; font-size: 13px; }
+.market-hub-link { display: inline-flex; min-height: 44px; align-items: center; margin-top: 12px; color: var(--ui-selected); font-size: 13px; }
 .more-page, .live-page { max-width: 800px; margin: auto; padding: 24px 18px; font-family: var(--font-ui); color: #222; }
 .more-page section { margin-bottom: 24px; }
 .more-page h2 { font-size: 13px; font-weight: 500; color: #73776b; margin: 0; padding: 12px 0; border-bottom: 1px solid #e8e8e8; }
 .more-page a { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; min-height: 48px; box-sizing: border-box; color: #333; text-decoration: none; font-size: 14px; overflow-wrap: anywhere; }
-.more-page a:hover { color: #505a46; }
-.more-page a:focus-visible, .market-hub a:focus-visible { outline: 2px solid #69785c; outline-offset: 2px; }
+.more-page a:hover { color: var(--ui-selected); }
+.more-page a:focus-visible, .market-hub a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
 @media (max-width: 700px) {
   :root { --mobile-nav-clearance: calc(var(--mobile-nav-height, 64px) + 20px + env(safe-area-inset-bottom, 0px)); }
   #root { padding-bottom: var(--mobile-nav-clearance); min-width: 0; }
@@ -22,7 +22,7 @@
   .mobile-navigation-icon { display: flex; align-items: center; justify-content: center; width: 34px; height: 28px; border-radius: 8px; }
   .mobile-navigation svg { display: block; width: 21px; height: 21px; flex-shrink: 0; }
   .mobile-navigation-label { max-width: 100%; text-align: center; word-break: keep-all; overflow-wrap: anywhere; }
-  .mobile-navigation a[aria-current="page"] { background: #f0f2ed; color: var(--ui-selected); font-weight: 700; }
+  .mobile-navigation a[aria-current="page"] { background: var(--ui-accent-soft); color: var(--ui-selected); font-weight: 700; }
   .mobile-navigation a[aria-current="page"] .mobile-navigation-icon { background: var(--ui-selected); color: #fff; }
   .mobile-navigation a:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: -2px; }
   .site-header .site-menu-toggle, .site-header .site-contact, .site-header #site-menu { display: none; }

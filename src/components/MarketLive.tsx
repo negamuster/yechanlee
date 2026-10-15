@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import WidgetActions from './WidgetActions'
 import './MarketLive.css'
 
 // Yahoo Finance's official 24/7 stream, verified using YouTube oEmbed.
@@ -15,8 +16,9 @@ export default function MarketLive({ autoPlay = true, compact = false }: { autoP
 
   return (
     <section className="market-live" aria-labelledby="market-live-heading">
-      <div className="market-live-heading">
+      <div className={`market-live-heading${compact ? ' widget-heading' : ''}`}>
         <h2 id="market-live-heading">{compact ? <Link to="/live" data-widget-link aria-label="Yahoo Finance Live 방송 페이지 보기">Yahoo Finance Live</Link> : 'Yahoo Finance Live'}</h2>
+        {compact && opened && <WidgetActions label="Yahoo Finance Live" close={() => setOpened(false)} />}
       </div>
       <div className="market-live-frame" id="market-live-player">
         {opened ? <iframe
@@ -35,7 +37,7 @@ export default function MarketLive({ autoPlay = true, compact = false }: { autoP
       </div>
       <div className="market-live-actions">
         <a href={channelUrl} target="_blank" rel="noopener noreferrer">YouTube ↗</a>
-        {opened && <button type="button" aria-label="영상 닫기" title="영상 닫기" onClick={() => setOpened(false)}>{compact ? '×' : '영상 닫기'}</button>}
+        {opened && !compact && <button type="button" aria-label="영상 닫기" title="영상 닫기" onClick={() => setOpened(false)}>영상 닫기</button>}
       </div>
       {!compact && <p className="market-live-note">{autoPlay ? '음소거 상태로 자동 재생됩니다.' : '버튼을 누르면 방송 플레이어를 불러옵니다.'} 소리는 플레이어에서 켤 수 있습니다.</p>}
     </section>

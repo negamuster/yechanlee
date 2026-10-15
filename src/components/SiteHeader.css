@@ -5,10 +5,10 @@
 .site-search { grid-column: 2; grid-row: 1; position: relative; display: flex; width: 100%; max-width: 480px; min-width: 0; min-height: var(--ui-control-height); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-surface); transition: border-color .15s, box-shadow .15s; }
 .site-search input { min-width: 0; width: 100%; border: 0; padding: 7px 12px; border-radius: var(--ui-radius); background: transparent; font: inherit; font-size: var(--ui-font-body); line-height: 1.4; color: var(--ui-text); }
 .site-search input::placeholder { color: var(--ui-muted); }
-.site-search:focus-within { border-color: var(--ui-focus); box-shadow: 0 0 0 2px #69785c26; }
+.site-search:focus-within { border-color: var(--ui-focus); box-shadow: 0 0 0 2px var(--ui-focus-ring); }
 .site-search input:focus-visible { outline: none; }
 .site-search button { display: flex; align-items: center; justify-content: center; width: 44px; min-height: var(--ui-control-height); flex-shrink: 0; margin: -1px; border: 1px solid var(--ui-selected); border-radius: 0 var(--ui-radius) var(--ui-radius) 0; background: var(--ui-selected); color: #fff; cursor: pointer; }
-.site-search button:hover { background: #414b39; }
+.site-search button:hover { background: var(--ui-selected-hover); }
 .site-search button svg { width: 17px; height: 17px; }
 .site-menu { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; gap: 20px; min-width: 0; margin: 3px 0 0; }
 .site-menu a, .site-tools > button { display: flex; align-items: center; min-height: 32px; padding: 6px 0; border: 0; background: none; color: var(--ui-muted); font: inherit; font-size: 13px; line-height: 1.3; text-decoration: none; white-space: nowrap; cursor: pointer; }
