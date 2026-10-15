@@ -83,10 +83,10 @@
 .home-page .home-content .widget-heading + :is(.sector-controls, .calendar-month-navigation) { margin-top: 0; }
 .home-page .home-content .movers-status { margin-top: 10px; }
 .home-page .home-content :is(.sector-controls, .movers-tabs, .calendar-tabs, .calendar-filters, .calendar-focus-filters, .calendar-jump) button {
-  min-height: var(--ui-control-height);
-  padding: 7px 10px;
+  min-height: var(--ui-chip-height);
+  padding: var(--ui-chip-padding);
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
+  border-radius: var(--ui-chip-radius);
   background: #fff;
   color: var(--ui-muted);
   font: inherit;

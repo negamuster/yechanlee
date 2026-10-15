@@ -32,9 +32,15 @@
   --ui-page-gutter: 18px;
   --ui-layout-gap: 24px;
   --ui-control-height: 36px;
+  --ui-chip-height: 28px;
+  --ui-chip-padding: 4px 8px;
+  --ui-chip-radius: 6px;
 }
 @media (max-width: 700px) {
   :root { --ui-control-height: 44px; --ui-card-padding: 12px; --ui-page-gutter: 14px; --ui-layout-gap: 18px; }
+}
+@media (max-width: 700px), (pointer: coarse) {
+  :root { --ui-chip-height: 44px; --ui-chip-padding: 8px 10px; --ui-chip-radius: 8px; }
 }
 body { font-family: var(--font-ui); font-size: var(--ui-font-body); color: var(--ui-text); }
 button, input, select, textarea { font-family: inherit; }

@@ -135,6 +135,7 @@
 
 .calendar-focus-filters { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0; }
 .calendar-focus-filters button { font-size:var(--ui-font-control); border-radius: var(--ui-radius); padding-inline: 10px; }
+.market-calendar :is(.calendar-tabs, .calendar-filters, .calendar-focus-filters, .calendar-jump) button { min-height: var(--ui-chip-height); padding: var(--ui-chip-padding); border-radius: var(--ui-chip-radius); line-height: 1.3; }
 
 .calendar-controls { align-items: flex-start; gap: 8px; }
 .calendar-tabs, .calendar-jump { display: inline-flex; gap: var(--ui-space-xs); }

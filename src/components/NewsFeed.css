@@ -75,10 +75,7 @@
 .news-list .news-topic-tags { margin: 0; }
 .news-more { display: block; margin: 24px auto; padding-inline: 24px; color: var(--ui-text); }
 .news-sources { margin-top: 20px; overflow-wrap: anywhere; }
-.news-skeleton { min-height: 300px; }
-.news-skeleton div { background: var(--ui-hover); height: 24px; margin: 16px 0; width: 90%; border-radius: 4px; }
-.news-skeleton div:nth-child(2) { width: 75%; }
-.news-skeleton div:nth-child(3) { width: 45%; height: 12px; }
+.news-controls :is(.news-filters, .news-view-toggle, .news-topic-filters, .news-active-filters) button { min-height: var(--ui-chip-height); padding: var(--ui-chip-padding); border-radius: var(--ui-chip-radius); }
 
 .news-source-status { margin: 0 0 12px; font-size:var(--ui-font-meta); color: var(--ui-muted); line-height: 1.65; }
 .news-source-status summary { cursor: pointer; min-height: var(--ui-control-height); display: flex; align-items: center; gap: 7px; }

@@ -1,8 +1,8 @@
 import type { NewsSector } from './sectorNews'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
-import { dataTime } from '../utils/dataTime'
 import DataStatus from './DataStatus'
+import ResourceState from './ResourceState'
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
@@ -40,12 +40,11 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
     <div className="sector-controls"><div className="sector-periods" aria-label="비교 기간">{periods.map(([key, label]) => <button key={key} aria-pressed={period === key} onClick={() => setPeriod(key)}>{label}</button>)}</div>
       {!compact && <label><input type="checkbox" checked={relative} onChange={e => setRelative(e.target.checked)} /> VOO 대비 초과성과</label>}
     </div>
-    {loading && <p role="status">업종 데이터를 불러오는 중…</p>}
-    {error && !data && <p role="status">업종 데이터를 불러오지 못했습니다.</p>}
+    <ResourceState label="업종 데이터" loading={loading} error={error} hasData={!!data} stale={data?.stale}
+      updatedAt={data?.fetchedAt} onRetry={() => setRetry(n => n + 1)} layout="tiles" />
     {data && <>
       <div className="sector-summary"><span><span className="sector-benchmark-label">S&P 500 추종 ETF · </span>VOO <small className="sector-mobile-date">· {data.benchmark.asOf || '기준일 미제공'} 종가</small></span><strong>{format(data.benchmark.returns[period])}</strong></div>
       <p className="sector-date sector-period-range">{data.benchmark.starts[period] || '—'} → {data.benchmark.asOf || '—'} · 미국 거래일</p>
-      {(data.stale || error) && <p className="sector-stale-alert" role="status">갱신 실패 · 이전 데이터 표시 중 · 마지막 정상 수집 {dataTime(data.fetchedAt)}</p>}
       {!!unavailable && <p className="sector-date">{unavailable}개 업종은 동일 기준일 데이터가 없어 표시하지 못했습니다.</p>}
       <div className="sector-grid">{rows.map(row => {
         const v = relative && !compact ? row.relative[period] : row.returns[period]
@@ -62,6 +61,5 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
       {!compact && <><button type="button" className="sector-info-toggle" aria-expanded={infoOpen} aria-controls={infoId} onClick={() => setInfoOpen(!infoOpen)}>정보 · 산정 기준 {infoOpen ? '−' : 'ⓘ'}</button>
       <div id={infoId} hidden={!infoOpen} className={`sector-data-info${infoOpen ? ' is-open' : ''}`}>{dataInfo}</div></>}
     </>}
-    {!data && !compact && <button className="sector-refresh" disabled={loading} onClick={() => setRetry(n => n + 1)}>다시 조회</button>}
   </section>
 }

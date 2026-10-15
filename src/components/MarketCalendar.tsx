@@ -10,6 +10,7 @@ import { dataTime } from '../utils/dataTime'
 import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
+import ResourceState from './ResourceState'
 import { calendarLabels as labels, koreanCalendarTitle as koreanTitle } from '../lib/calendarPresentation'
 import type { CalendarCategory as Category, CalendarEvent, CalendarData } from '../lib/calendarPresentation'
 import './MarketCalendar.css'
@@ -72,6 +73,9 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const stamp = (value: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value))
   const zoneLabel = timezone === 'Asia/Seoul' ? 'KST' : 'ET'
   const loading = schedule.loading || earnings.loading
+  const hasData = !!schedule.data || !!earnings.data
+  const failed = schedule.error || earnings.error
+  const missingSources = [schedule.error ? '경제지표·연준 조회 실패' : '', earnings.error ? '실적 조회 실패' : '', ...issues].filter(Boolean)
   function navigate(offset: number) {
     if (view === 'week') { const date = addDays(selected, offset * 7); setSelected(date); setMonth(date.slice(0, 7)); return }
     const next = shiftMonth(month, offset); setMonth(next); setSelected(next === today.slice(0, 7) ? today : `${next}-01`) }
@@ -85,11 +89,12 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     } catch { setExportMessage('일정 파일을 만들지 못했습니다. 다시 시도해 주세요.') }
   }
   const agenda = <>
-    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{selectedEvents.length}건{full && ` · ${focus === 'major' ? '주요 일정만' : focus === 'watched' ? '관심 종목 실적만' : '주요 일정 우선'}`}</span></div>
+    <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{loading && !hasData ? '확인 중' : `${selectedEvents.length}건`}{full && ` · ${focus === 'major' ? '주요 일정만' : focus === 'watched' ? '관심 종목 실적만' : '주요 일정 우선'}`}</span></div>
     <div className="calendar-list" aria-busy={loading} key={`${selected}:${category}:${focus}`} tabIndex={0} aria-label="선택한 날짜 일정">
-      {loading && <p className="calendar-message" role="status">일정을 불러오는 중…</p>}
-      {(schedule.error || earnings.error || issues.length > 0) && <p className="calendar-warning" role="status">{schedule.error ? '경제지표·연준 일정 조회 실패. ' : ''}{earnings.error ? '실적 일정 조회 실패. ' : ''}{issues.length > 0 ? `${issues.join(', ')} 일정 일부 확인 불가. ` : ''}{(schedule.error && schedule.data || earnings.error && earnings.data) ? '이전에 조회한 일정을 표시합니다. ' : ''}<button type="button" onClick={() => setReload(n => n + 1)}>재조회</button></p>}
-      {!loading && !selectedEvents.length && <p className="calendar-message">{schedule.error || earnings.error || issues.length ? '현재 확인 가능한 일정이 없어요.' : focus === 'all' ? '선택한 날짜에 등록된 일정이 없어요.' : '선택한 날짜에 이 필터에 맞는 일정이 없어요.'}</p>}
+      <ResourceState label="일정 데이터" loading={loading} error={failed} hasData={hasData} stale={issues.length > 0}
+        failureMessage={hasData ? '일정 일부를 확인하지 못했습니다.' : '일정을 불러오지 못했습니다.'}
+        failureDetail={missingSources.join(' · ')} onRetry={() => setReload(n => n + 1)} />
+      {!loading && !selectedEvents.length && !failed && !issues.length && <p className="calendar-message" role="status">{focus === 'all' ? '선택한 날짜에 등록된 일정이 없어요.' : '선택한 날짜에 이 필터에 맞는 일정이 없어요.'}</p>}
       <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
         <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>

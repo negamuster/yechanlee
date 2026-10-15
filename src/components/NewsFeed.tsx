@@ -10,6 +10,7 @@ import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
 import NewsArticle from './NewsArticle'
 import MobileNewsFilters from './MobileNewsFilters'
+import ResourceState from './ResourceState'
 import { countNewsFilters, matchingNews } from '../lib/newsFilters'
 import type { NewsFilters } from '../lib/newsFilters'
 
@@ -152,6 +153,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   const news = batches.slice(0, visibleBatches).flat()
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
+  const previewPartial = feed?.sources.some(source => ['unavailable', 'stale'].includes(source.status)) ?? false
   const publishers = [...new Set(news.map(item => item.publisher))]
   const filterCount = countNewsFilters(currentFilters)
   function applyMobileFilters(filters: NewsFilters) {
@@ -162,6 +164,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1)
     searchInput.current?.focus({ preventScroll: true })
   }
+  function retryNews() { setRevision(value => value + 1); setVisibleBatches(1) }
   function article(item: NewsItem) {
     return <NewsArticle key={item.id} item={item} mobile={mobile} read={isRead(item.article_url)}
       timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)}
@@ -172,9 +175,9 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
     {previewTarget && createPortal(<section className="sector-news" aria-label="업종 관련 뉴스" aria-busy={loading}>
       <div className="sector-news-heading"><h3>{previewSector ? `${previewSector.name} News` : 'Market News'}</h3>{previewSector && <button type="button" onClick={onClearSector}>선택 해제</button>}</div>
       <p className="sector-news-note">{previewSector ? '제목 키워드 기준 관련 기사' : 'Maps 업종을 선택하면 관련 기사를 표시합니다.'}</p>
-      {failed && <p role="status" className="sector-news-note">{feed ? '갱신 실패 · 이전 수집 기사' : '뉴스를 불러오지 못했습니다.'}</p>}
-      {!failed && feed?.sources.some(source => ['unavailable', 'stale'].includes(source.status)) && <p className="sector-news-note">일부 매체 수집 불가</p>}
-      {loading && !feed ? <p role="status">기사를 불러오는 중…</p> : <ul>{previewItems.map(item => <li key={item.id} className={isRead(item.article_url) ? 'is-read' : undefined}><a onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }} href={item.article_url} target="_blank" rel="noopener noreferrer" title={item.title}>{item.title}</a><p>{isRead(item.article_url) ? '읽음 · ' : ''}{item.publisher} · <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>{relativeTime(Date.parse(item.published_utc))}</time></p></li>)}</ul>}
+      <ResourceState label="업종 뉴스" loading={loading} error={failed} hasData={!!feed} stale={previewPartial} updatedAt={failed ? feed?.fetchedAt : undefined}
+        failureMessage={!failed && previewPartial ? '일부 매체를 확인하지 못했습니다.' : undefined} onRetry={retryNews} />
+      <ul>{previewItems.map(item => <li key={item.id} className={isRead(item.article_url) ? 'is-read' : undefined}><a onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }} href={item.article_url} target="_blank" rel="noopener noreferrer" title={item.title}>{item.title}</a><p>{isRead(item.article_url) ? '읽음 · ' : ''}{item.publisher} · <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>{relativeTime(Date.parse(item.published_utc))}</time></p></li>)}</ul>
       {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
@@ -192,7 +195,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
               <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
               <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
             </div>}
-            <button type="button" className="news-refresh" aria-label={loading ? '새 기사 확인 중' : '새 기사 확인'} disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
+            <button type="button" className="news-refresh" aria-label={loading ? '새 기사 확인 중' : '새 기사 확인'} disabled={loading} onClick={retryNews}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 6.1A8 8 0 0 1 20 12M4 12a8 8 0 0 0 13.9 5.9" /></svg>
               <span className={mobile ? 'news-sr-only' : undefined}>{loading ? '확인 중…' : '새로고침'}</span>
             </button>
@@ -237,10 +240,9 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
         available={Boolean(feed)} isRead={isRead} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
       {feed && <p className="news-updated">최근 확인: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
-      <div role="status" aria-live="polite">
-        {failed ? <p className="news-notice">{news.length ? '업데이트하지 못해 이전 수집 기사를 표시합니다.' : '뉴스를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.'}</p>
-          : partial ? <p className="news-notice">일부 매체의 뉴스를 불러오지 못했습니다. 수집된 기사를 표시합니다.</p> : null}
-      </div>
+      <ResourceState label="뉴스" loading={loading} error={failed} hasData={!!feed} stale={partial} updatedAt={failed ? feed?.fetchedAt : undefined}
+        failureMessage={failed ? feed ? '갱신 실패 · 이전 수집 기사 표시 중' : '뉴스를 불러오지 못했습니다.' : '일부 매체를 확인하지 못했습니다.'}
+        onRetry={retryNews} layout="news" />
       {!!relevantSources.length && <details className="news-source-status">
         <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 피드 기사 확인</summary>
         <ul>{relevantSources.map(source => <li key={source.id}>
@@ -253,14 +255,12 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
         <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
       </details>}
       <div aria-busy={loading}>
-        {loading && !feed ? <div className="news-skeleton" aria-label="뉴스를 불러오는 중">
-          <div /><div /><div />
-        </div> : news.length ? <>
+        {loading && !feed ? null : news.length ? <>
           <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 묶음별 최신순 · 묶음당 매체별 최대 3개</p>
           <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
-        </> : !failed ? <div className="news-notice" role="status"><p>{hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
+        </> : !failed || feed ? <div className="news-notice" role="status"><p>{failed || partial ? '표시 가능한 기사 중 선택한 조건에 맞는 기사가 없습니다.' : hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
           {filterCount > 0 && <button className="news-reset" type="button" onClick={resetFilters}>필터 초기화</button>}
         </div> : null}
       </div>

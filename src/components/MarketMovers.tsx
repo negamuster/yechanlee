@@ -6,6 +6,7 @@ import { WatchButton } from './SavedItemsProvider'
 import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
+import ResourceState, { DataNotice } from './ResourceState'
 import './MarketMovers.css'
 
 type Category = 'turnover' | 'gainers' | 'losers'
@@ -48,6 +49,7 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   const selected = categories.find(tab => tab.id === category)!
   const limit = overview ? 5 : 10
   const rows = (data?.rankings[category] ?? []).slice(0, limit)
+  const pendingMessage = '최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.'
   const info = <>
     <p>{selected.description} · 상위 {limit}개까지</p>
     {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
@@ -75,14 +77,11 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
           {loading ? '불러오는 중…' : '새로고침'}
         </button>}
       </div>
-      {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
-      {data?.pendingLatest && <p className="movers-notice" role="status">최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
+      <ResourceState label="종목 순위" loading={loading} error={failed} hasData={!!data} stale={data?.stale}
+        updatedAt={data?.fetchedAt} failureDetail={data?.pendingLatest ? pendingMessage : undefined} onRetry={() => setRefresh(value => value + 1)} />
+      {data?.pendingLatest && !failed && !data.stale && <DataNotice message={pendingMessage} updatedAt={data.fetchedAt} busy={loading} onRetry={() => setRefresh(value => value + 1)} />}
       {!overview && <details className="movers-info"><summary aria-label="종목 순위 출처와 산정 기준" title="출처·산정 기준">정보 ⓘ · 출처·산정 기준</summary>{info}</details>}
-      {failed && !data && <p className="movers-notice" role="status">
-        {data ? '최신 데이터를 받지 못해 마지막으로 수집한 순위를 표시합니다.' : '종목 순위를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
-      </p>}
       <div aria-busy={loading} aria-live="polite">
-        {loading && !data && <p className="movers-empty">거래일과 종목 순위를 확인하고 있습니다.</p>}
         {!loading && data && !rows.length && <p className="movers-empty">조건에 맞는 종목이 없습니다.</p>}
         <ol className="movers-list" data-scroll-key={`movers-${category}`} aria-label={`${selected.description} · 상위 ${limit}개까지`}>
           {rows.map((row, index) => <li key={row.ticker}>

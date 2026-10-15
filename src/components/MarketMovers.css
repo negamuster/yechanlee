@@ -3,7 +3,7 @@
 .movers-heading h2 { margin: 0; font-size: var(--ui-font-section); font-weight: 600; letter-spacing: 0; text-transform: none; }
 .movers-heading > span { font-size: 13px; color: #666; }
 .movers-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.movers-tabs button { border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 7px 10px; background: white; color: var(--ui-muted); font: inherit; font-size:var(--ui-font-control); cursor: pointer; min-height: var(--ui-control-height); }
+.movers-tabs button { border: 1px solid var(--ui-border); border-radius: var(--ui-chip-radius); padding: var(--ui-chip-padding); background: white; color: var(--ui-muted); font: inherit; font-size:var(--ui-font-control); line-height: 1.3; cursor: pointer; min-height: var(--ui-chip-height); }
 .movers-tabs button[aria-pressed="true"] { background: var(--ui-selected); color: #fff; border-color: var(--ui-selected); }
 .movers-tabs button:hover { border-color: #555; }
 .movers-description { margin: 14px 0 18px; font-size:var(--ui-font-body); color: #555; }
