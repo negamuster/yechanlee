@@ -38,7 +38,7 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
       let transient = true
       try {
         const response = await fetcher(`/api/stock-data?path=${encodeURIComponent(path)}`, {
-          signal: AbortSignal.any([signal, AbortSignal.timeout(retry ? 12000 : 8000)]),
+          signal: AbortSignal.any([signal, AbortSignal.timeout(retry ? 12000 : 18000)]),
         })
         transient = [500, 502, 503, 504].includes(response.status)
         if (!response.ok) throw new Error('조회 실패')
