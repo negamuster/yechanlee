@@ -1,0 +1,338 @@
+{
+  "id": "2026-10-16",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026년 10월 15일",
+  "sessionDate": "2026-10-15",
+  "cutoffAt": "2026-10-15T22:02:55Z",
+  "summary": [
+    "미국 증시는 초반 하락을 만회했습니다. 다우가 1.08% 오른 반면 나스닥 종합은 0.08% 상승에 그쳤고, 헬스케어·소재가 반등을 이끌었습니다. 반도체지수는 7거래일 연속 내려 업종별 차이가 컸습니다.[1][2]",
+    "9월 생산자물가는 전월 대비 1.3% 올라 Reuters 조사 예상 0.5%를 웃돌았습니다. 에너지 외 서비스 가격도 상승한 가운데 AI 투자·차입 부담에 대한 우려가 남았지만, 국채금리는 하락했습니다.[3][6][7]",
+    "기업별로는 FMC의 가격 조정·유통재고 대책에 따른 실적 전망 하향과 로켓랩의 뉴트론 발사 연기가 주가를 눌렀습니다. WTI는 미국 원유 재고 감소로 3.03% 올랐고, 오늘 21:30 KST에는 미국 수출입물가가 발표됩니다.[1][4][5][7][8]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-10-16 07:02:55 KST · 최근 24시간: 10월 15일 07:02:55~10월 16일 07:02:55 KST. 직전 미국 거래일 2026-10-15(정규장 마감 10월 16일 05:00 KST) · 공식 휴장일에 해당하지 않습니다.[9]"
+    },
+    {
+      "kind": "heading",
+      "text": "미국장 흐름"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 15일 미국 증시는 장 초반 약세를 딛고 상승했습니다. S&P500은 0.33%, 다우는 1.08% 올랐지만 나스닥 종합은 0.08% 상승에 그쳤습니다.[1][2] S&P500의 11개 업종 중 8개가 올랐고 헬스케어(+1.84%)·소재(+1.71%)가 상승을 이끌었습니다. 반도체지수는 0.9% 내려 7거래일 연속 하락했습니다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "이날 발표된 9월 최종수요 생산자물가지수(PPI)는 계절조정 기준 전월 대비 1.3% 올라 Reuters 조사 예상 0.5%를 웃돌았습니다. 8월 상승률은 0.4%에서 0.5%로 수정됐고, 9월 전년 대비 상승률은 6.3%였습니다. 상품 가격은 2.6%, 서비스 가격은 0.8% 상승했으며 에너지 가격 급등이 상품 상승분의 80% 이상을 차지했습니다.[3] Reuters는 물가 압력이 에너지 밖으로 확산됐다고 보도했지만, 같은 날 국채금리와 달러는 하락했다고 전했습니다.[3][7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "주식 반등에도 AI 인프라의 투자 수요와 자금 조달에 대한 경계는 이어졌습니다. Reuters는 데이터센터 수요의 지속 가능성에 대한 의문과 높은 조달 비용이 자본 집약적 AI 사업의 투자 부담을 키운다는 시장 평가를 전했습니다. 이날 부각된 업종 공통의 자금 조달 쟁점입니다.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "농업용 화학업체 FMC는 전망을 크게 낮춘 뒤 30% 넘게 하락했습니다.[1] 회사는 유통업체가 보유한 고가 재고와 예상보다 약한 수요를 이유로 일부 제품 가격을 낮추고 미국 판매·가격 체계를 바꾸겠다고 밝혔습니다. 이 조치의 3분기 매출·조정 EBITDA 영향은 6억2,500만~6억7,500만 달러로 추산했으며, 조정 EBITDA는 5억1,000만~5억6,500만 달러 적자를 예상했습니다. 확정 실적이 아닌 잠정 전망입니다.[4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "로켓랩은 6.6% 하락했습니다.[1] 회사가 전날 정규장 마감 후 발표한 뉴트론 첫 발사 목표는 2027년으로 미뤄졌습니다. 당초 2026년 4분기 첫 비행을 목표로 했던 중형 로켓의 일정 지연이 쟁점이었습니다.[5]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "채권에서는 금리가 내렸고 달러는 18개월 고점에서 물러났으며 금 현물은 상승했습니다.[6][7] 원유는 엇갈렸습니다. Reuters는 미국 원유 재고의 큰 폭 감소를 WTI 상승 배경으로 설명한 반면, 브렌트는 제재 완화 가능성과 중동 공급 위험을 함께 반영하며 소폭 하락했다고 보도했습니다.[7]"
+    },
+    {
+      "kind": "heading",
+      "text": "시장 수치"
+    },
+    {
+      "kind": "metadata",
+      "text": "주가지수 · 2026-10-15 미국 정규장 종가 · 단위: 포인트 · 전 거래일 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,744.06 (+0.33%) · 다우 52,177.69 (+1.08%) · 나스닥 종합 26,713.03 (+0.08%).[1][2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "러셀2000 2,767.27 (+1.4%, 보도 반올림 기준).[2]"
+    },
+    {
+      "kind": "metadata",
+      "text": "국채 · 호가 기반 재무부 파 수익률 · 2026-10-15 약 15:30 EDT / 10월 16일 04:30 KST 관측 · 10월 14일 대비 · 실거래 종가 아님"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2년물 4.77% (−5bp) · 10년물 5.10% (−9bp).[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "금 현물 4,169.48 미국달러/트로이온스 (+1.57%) · 10월 15일 미국장 마감 반영 Reuters 보도 · 개별 호가 시각 미표기 · 공식 종가 아님.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "WTI 선물 +3.03% (배럴당 +2.88달러) · 브렌트 선물 −0.13% (배럴당 −0.14달러) · 10월 15일 Reuters 결제 보도 · 계약월 미확인으로 가격 수준 제외.[7]"
+    },
+    {
+      "kind": "heading",
+      "text": "주요 경제지표"
+    },
+    {
+      "kind": "metadata",
+      "text": "2026-10-15 21:30 KST 발표 · 대상 기간: 미국 2026년 9월 · 실제·이전: BLS / 예상: Reuters 조사"
+    },
+    {
+      "kind": "paragraph",
+      "text": "최종수요 PPI 전월 대비(계절조정): 실제 +1.3% / 예상 +0.5% / 이전 +0.5%(+0.4%에서 수정). 전년 대비(계절 미조정): 실제 +6.3% / 이전 +5.6%.[3]"
+    },
+    {
+      "kind": "heading",
+      "text": "향후 공식 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-10-16 21:30 KST · 미국 9월 수출입물가지수. 확인할 항목: 수입가격의 전월 대비 변화와 연료·비연료 항목의 차이.[8]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters · 10월 15일 미국장 마감·업종 및 기업 주가",
+      "url": "https://www.reuters.com/business/nasdaq-futures-dive-1-ai-rout-deepens-debt-concerns-2026-10-15/",
+      "accessNote": "최종 마감 반영 본문을 읽었습니다. S&P500·다우 종가는 AP 결산과 일치하는 값을 사용했습니다. 별도 WSJ 기사에는 소폭 다른 종가가 있어 혼용하지 않았습니다. 갱신형 기사의 정확한 최종 수정 시각은 미표기입니다."
+    },
+    {
+      "id": 2,
+      "label": "AP · 10월 15일 지수별 최종 종가",
+      "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-f0a4f8aa60a6a24237c419aba38f31fd",
+      "accessNote": "지수 종가와 포인트 변화는 최종 결산 본문 기준입니다. 러셀2000 등락률은 보도의 한 자리 반올림을 유지했고, 나머지 지수의 두 자리 등락률은 Reuters 보도와 대조했습니다."
+    },
+    {
+      "id": 3,
+      "label": "BLS · 9월 생산자물가 공식 발표",
+      "url": "https://www.bls.gov/news.release/ppi.nr0.htm",
+      "links": [
+        {
+          "label": "Reuters · PPI 시장 예상·발표 당일 반응",
+          "url": "https://www.reuters.com/business/us-producer-prices-post-largest-increase-4-12-years-september-2026-10-15/"
+        }
+      ],
+      "accessNote": "실제·수정된 이전 값은 BLS, 예상 0.5%는 연결된 Reuters 조사 기준입니다. 다른 매체의 예상치를 혼용하지 않았습니다. 물가 발표 당일 금리 하락을 물가 둔화 반응으로 해석하지 않았습니다."
+    },
+    {
+      "id": 4,
+      "label": "FMC · 3분기 잠정 전망·판매가격 조정 발표",
+      "url": "https://www.fmc.com/en/articles/fmc-corporation-provides-update-third-quarter-expectations-and-announces-comprehensive",
+      "accessNote": "10월 15일 회사 원문으로 유통재고·가격 조정과 조정 EBITDA 전망을 확인했습니다. 확정 실적·순이익·현금 유출액과 구분했습니다. 주가 반응은 Reuters 마감 기사 기준입니다."
+    },
+    {
+      "id": 5,
+      "label": "로켓랩 · 뉴트론 발사 일정 변경",
+      "url": "https://investors.rocketlabcorp.com/news-releases/news-release-details/rocket-lab-provides-update-neutron-development-and-adjusts",
+      "links": [
+        {
+          "label": "Reuters · 기존 목표·발표 직후 시간외 반응",
+          "url": "https://www.reuters.com/business/aerospace-defense/rocket-lab-pushes-neutron-rockets-debut-flight-2027-shares-fall-2026-10-14/"
+        }
+      ],
+      "accessNote": "10월 14일 장 마감 후 발표한 회사 원문입니다. 최근 24시간보다 앞선 발표이지만 10월 15일 정규장 반응의 배경으로 표시했습니다. 시간외 약 −6%는 연결된 전날 기사, 정규장 −6.6%는 10월 15일 마감 기사로 구분했습니다."
+    },
+    {
+      "id": 6,
+      "label": "미국 재무부 · 일별 파 수익률·산출 기준",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+      "accessNote": "10월 14·15일 같은 만기의 파 수익률을 비교했습니다. Reuters의 별도 시장 호가·변동폭과 혼합하지 않았습니다. 약 15:30 뉴욕연은 매수호가를 바탕으로 한 보간 수익률이며 실거래 종가가 아닙니다."
+    },
+    {
+      "id": 7,
+      "label": "Reuters · 10월 15일 글로벌시장·자산 흐름",
+      "url": "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-10-15/",
+      "links": [
+        {
+          "label": "Reuters · 원유 결제·재고 감소와 제재 논의",
+          "url": "https://www.reuters.com/business/energy/oil-prices-fall-investors-weigh-supply-outlook-middle-east-tensions-2026-10-15/"
+        }
+      ],
+      "accessNote": "미국장 마감 반영 본문과 원유 결제 기사를 읽었습니다. 자산별 관측 시각은 같지 않습니다. 달러지수의 수준·등락률은 확인되지 않아 숫자 행을 제외했습니다. 원유 계약월 미확인으로 가격 수준을 제외하고 원문 등락률·달러 변화만 사용했습니다."
+    },
+    {
+      "id": 8,
+      "label": "BLS · 공식 발표 일정·수출입물가 항목",
+      "url": "https://www.bls.gov/schedule/2026/10_sched.htm",
+      "links": [
+        {
+          "label": "BLS · 수출입물가지수 안내·다음 발표",
+          "url": "https://www.bls.gov/mxp/"
+        }
+      ],
+      "accessNote": "10월 16일 08:30 EDT를 같은 날 21:30 KST로 변환했습니다. 연료·비연료는 공식 공표 항목이며 확인 포인트만 제시했습니다. 아직 발표되지 않은 9월 결과나 예상치는 포함하지 않았습니다."
+    },
+    {
+      "id": 9,
+      "label": "NYSE · 공식 휴장일·정규장 거래시간",
+      "url": "https://www.nyse.com/trade/hours-calendars"
+    }
+  ],
+  "homepage": {
+    "headline": "미국장 반등에도 반도체 약세…FMC 전망 하향·뉴트론 연기[1]",
+    "stocks": [
+      {
+        "name": "FMC",
+        "ticker": "FMC",
+        "change": "−30% 넘게",
+        "reason": "고가 유통재고와 약한 수요에 대응해 제품 가격·미국 판매 체계를 조정합니다. 관련 매출·조정 EBITDA 영향 6.25억~6.75억 달러를 반영해 3분기 전망을 크게 낮췄습니다.",
+        "basis": "2026-10-15 미국 정규장 · Reuters 마감 보도 반올림",
+        "sourceIds": [
+          1,
+          4
+        ]
+      },
+      {
+        "name": "로켓랩",
+        "ticker": "RKLB",
+        "change": "−6.6%",
+        "reason": "전날 장 마감 후 뉴트론 첫 발사 목표를 2027년으로 연기했습니다. 당초 2026년 4분기 비행을 목표로 했던 중형 로켓의 일정 지연이 쟁점입니다.",
+        "basis": "2026-10-15 미국 정규장 종가 · 전 거래일 종가 대비",
+        "sourceIds": [
+          1,
+          5
+        ]
+      }
+    ],
+    "assets": [
+      {
+        "label": "미국 10년물",
+        "value": "5.10%",
+        "change": "−9bp",
+        "basis": "재무부 호가 기반 파 수익률 · 2026-10-15 약 15:30 EDT / 10월 16일 04:30 KST · 10월 14일 대비 · 실거래 종가 아님",
+        "sourceIds": [
+          6
+        ]
+      },
+      {
+        "label": "금 현물",
+        "value": "4,169.48 USD/트로이온스",
+        "change": "+1.57%",
+        "basis": "2026-10-15 미국장 마감 반영 Reuters 보도 · 개별 호가 시각 미표기 · 공식 종가 아님",
+        "sourceIds": [
+          7
+        ]
+      },
+      {
+        "label": "WTI 선물",
+        "value": "계약월 미확인·가격 수준 제외",
+        "change": "+3.03% (배럴당 +2.88달러)",
+        "basis": "2026-10-15 Reuters 결제 보도 · 전 거래일 대비 · 계약월 미확인",
+        "sourceIds": [
+          7
+        ]
+      }
+    ],
+    "events": [
+      {
+        "at": "2026-10-16T21:30:00+09:00",
+        "label": "미국 9월 수출입물가지수",
+        "detail": "수입가격의 전월 대비 변화와 연료·비연료 항목의 차이 확인",
+        "sourceIds": [
+          8
+        ]
+      }
+    ]
+  },
+  "dataNote": "AI 작성·동일 모델 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 정보 기준 시각 이후의 소식은 반영하지 않았습니다.",
+  "publishedAt": "2026-10-15T22:08:54Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-10-15T22:08:54Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/nasdaq-futures-dive-1-ai-rout-deepens-debt-concerns-2026-10-15/",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "Reuters 최종 마감 본문: S&P500 +0.33%, 다우 +1.08%, 나스닥 종합 +0.08%; 업종 8/11 상승, 헬스케어 +1.84%, 소재 +1.71%, 반도체 −0.9% 및 7거래일 연속 하락. FMC 30% 넘게 하락, RKLB −6.6%는 정규장 마감 반응. 본문·요약·홈페이지의 동일 주장과 대조했다. 기사 첫 게시 10월 15일 08:22 UTC이나 최종 갱신 시각은 미표기로 null."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-f0a4f8aa60a6a24237c419aba38f31fd",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "AP 최종 결산 본문: SPX 7744.06(+25.12), Dow 52177.69(+556.21), Nasdaq Composite 26713.03(+20.16), Russell2000 2767.27(+37.74,+1.4%). 앞의 세 종가를 Reuters와 대조해 일치 확인. WSJ의 다른 소수점 종가를 혼용하지 않았다. 절대 게시 시각 미표기."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.bls.gov/news.release/ppi.nr0.htm",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": "2026-10-15T12:30:00Z",
+        "basis": "primary",
+        "claimSummary": "BLS 9월 최종수요 PPI 전월 SA +1.3%, 8월 +0.5%, 전년 NSA +6.3%, 8월 +5.6%; 상품 +2.6%, 서비스 +0.8%, 에너지가 상품 상승분의 80% 이상. 연결된 Reuters 본문도 읽어 Reuters 조사 예상 +0.5%, 8월 기존 +0.4%→수정 +0.5%, 당일 금리·달러 하락 확인. 발표일과 대상 기간을 구분하고 요약·경제지표·본문에 대조했다."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.fmc.com/en/articles/fmc-corporation-provides-update-third-quarter-expectations-and-announces-comprehensive",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "10월 15일 FMC 회사 원문: 약한 수요, 유통업체의 고가 제품 재고, 일부 가격 인하 및 미국 판매·가격체계 변경. 조치의 revenue/adjusted EBITDA 영향 $625–675m, 조정 EBITDA 전망 −$565m~−$510m. 6.25~6.75억달러, 적자5.1~5.65억달러로 산술 확인. 확정 실적·GAAP 순손익·현금유출과 구분, 본문·홈페이지 일치. 날짜만 표시되어 정확한 게시 시각 null."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://investors.rocketlabcorp.com/news-releases/news-release-details/rocket-lab-provides-update-neutron-development-and-adjusts",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "Rocket Lab 회사 원문 10월14일 장마감 후 발표: Neutron inaugural launch now expected 2027. 연결 Reuters 전날 보도도 읽어 기존 2026Q4 첫비행 목표·장마감후 약−6% 확인. 이 발표는 24시간 밖의 배경임을 명시하며, 이날 정규장 −6.6%는 별도 마감기사로 확인. 본문과 홈페이지는 같은 일정 이슈를 사용한다. 절대 게시시각 null."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "Treasury 표 머리말·10/14·10/15 행·방법론을 읽었다. 2Y4.82→4.77%,10Y5.19→5.10%, 각 −5bp/−9bp. 약15:30EDT 매수호가 기반 보간 파 수익률로 익일04:30KST. 실거래 종가나 Reuters 장중시장 수익률과 섞지 않음. 본문·시장수치·홈페이지에 대조. 공개시각 미표기."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-10-15/",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "Reuters 글로벌 최종 마감 반영 본문: 데이터센터 수요 지속가능성·높은 조달비용에 관한 시장 평가, 달러18개월고점에서후퇴, 금현물4169.48 USD/troyoz,+1.57%. 연결 원유 결제 본문: WTI+$2.88,+3.03%, Brent−$0.14,−0.13%, 미국 재고감소가WTI지지, 제재완화가능성·중동위험병존. 본문·요약·홈페이지·시장수치 대조. 원유 계약월 미확인으로 수준 제외, 달러지수 수치도 제외. 자산별 비동시호가·최종갱신절대시각미표기 한계 유지."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.bls.gov/schedule/2026/10_sched.htm",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "BLS 공식10월달력과MXP안내 본문 모두 읽음. 9월수출입물가는10/16 08:30EDT=10/16 21:30KST, 원래cutoff후72시간이내. MXP 공표항목 Imports/Fuels&Lubricants/AllImportsExcludingFuels에 근거해 연료·비연료 전월변화만 확인항목으로 제시. 향후결과·컨센서스·방향예측 없음. 본문일정과홈페이지events동일. 정적안내 절대게시시각미표기."
+      },
+      {
+        "sourceId": 9,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-10-15T22:07:51Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "NYSE 2026 공식휴장일표에서10/15 휴장 아님, 정규장09:30–16:00ET 확인. 10/15 16:00EDT=10/16 05:00KST. cutoff07:02:55KST는마감후. 최근24시간 시작10/15 07:02:55KST를 고정하고 이후뉴스 제외. 정적안내 게시시각미표기."
+      }
+    ],
+    "contentHash": "ca89825a2556dc255cd72345a3c7cc6e24affefe6a87c8e1f3883ec5eb2cf371"
+  }
+}
