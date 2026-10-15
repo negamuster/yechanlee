@@ -2,9 +2,8 @@
 .save-button[aria-pressed="true"] { background:var(--ui-selected); border-color:var(--ui-selected); color:#fff; }
 .save-button:hover { border-color:#555; }
 .save-button:focus-visible, .saved-page a:focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
-.news-card { display:flex; flex-direction:column; }
-.news-card > .news-row { flex:1; height:auto; }
-.news-card > .save-button { margin-top:14px; }
+.save-button-icon { display:inline-flex; align-items:center; justify-content:center; width:var(--ui-control-height); height:var(--ui-control-height); padding:8px; }
+.save-button-icon svg { display:block; width:18px; height:18px; flex-shrink:0; }
 .movers-list > li { display:flex; align-items:center; gap:10px; }
 .movers-list .mover-row { flex:1; min-width:0; }
 .movers-list .save-button { align-self:center; padding:8px; font-size:var(--ui-font-meta); }

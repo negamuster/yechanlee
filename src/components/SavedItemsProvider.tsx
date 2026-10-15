@@ -61,9 +61,13 @@ export function WatchButton({ ticker, name = ticker }: SavedStock | { ticker: st
   const saved = items.stocks.some(row => row.ticker === ticker)
   return <button type="button" className="save-button" aria-pressed={saved} aria-label={`${ticker} 관심 종목 ${saved ? '해제' : '저장'}`} onClick={() => toggleStock({ ticker, name })}><span aria-hidden="true">{saved ? '★' : '☆'}</span> {saved ? '관심 종목' : '관심 저장'}</button>
 }
-export function BookmarkButton({ article }: { article: SavedArticle }) {
+export function BookmarkButton({ article, iconOnly = false }: { article: SavedArticle; iconOnly?: boolean }) {
   const { items, toggleArticle } = useSavedItems()
   const saved = items.articles.some(row => row.article_url === articleKey(article.article_url))
-  return <button type="button" className="save-button" aria-pressed={saved} aria-label={`${article.title} 북마크 ${saved ? '해제' : '저장'}`} onClick={() => toggleArticle(article)}>{saved ? '✓ 저장됨' : '+ 기사 저장'}</button>
+  return <button type="button" className={`save-button${iconOnly ? ' save-button-icon' : ''}`} aria-pressed={saved}
+    aria-label={`${article.title} 북마크 ${saved ? '해제' : '저장'}`} title={iconOnly ? saved ? '북마크 해제' : '기사 저장' : undefined}
+    onClick={() => toggleArticle(article)}>
+    {iconOnly ? <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z" /></svg> : saved ? '✓ 저장됨' : '+ 기사 저장'}
+  </button>
 }
 

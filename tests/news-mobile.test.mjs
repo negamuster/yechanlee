@@ -5,27 +5,27 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { load } from 'cheerio'
 
-const { default: MobileNewsArticle } = await import('../src/components/MobileNewsArticle.tsx')
+const { default: NewsArticle } = await import('../src/components/NewsArticle.tsx')
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
 const { default: MobileNewsFilters } = await import('../src/components/MobileNewsFilters.tsx')
 const { default: NewsFeed } = await import('../src/components/NewsFeed.tsx')
 const { defaultNewsFilters } = await import('../src/lib/newsFilters.ts')
 const item = { id: 'mobile-news', title: '긴 제목도 임의로 자르지 않고 시장의 움직임과 그 이유를 온전히 확인할 수 있는 기사', publisher: 'Test Financial News', published_utc: '2026-10-15T03:20:00Z', article_url: 'https://example.com/news/mobile', region: 'global', topics: ['economy', 'tech'] }
 const render = (props = {}) => load(renderToStaticMarkup(createElement(SavedItemsProvider, null,
-  createElement(MobileNewsArticle, { item, read: false, timeLabel: '30분 전', onRead() {}, ...props }))))
+  createElement(NewsArticle, { item, mobile: true, read: false, timeLabel: '30분 전', onRead() {}, ...props }))))
 
 test('mobile news keeps intact title above consistent source/time metadata and an independent bookmark action', () => {
   const $ = render(), link = $('.mobile-news-link')
   assert.equal(link.find('h3').text(), item.title)
   assert.equal(link.attr('href'), item.article_url)
   assert.equal(link.attr('target'), '_blank')
-  assert.equal($('.mobile-news-publisher').text(), item.publisher)
-  assert.equal($('.mobile-news-time time').attr('datetime'), item.published_utc)
-  assert.equal($('.mobile-news-time time').text(), '30분 전')
+  assert.equal($('.news-article-publisher').text(), item.publisher)
+  assert.equal($('.news-article-time time').attr('datetime'), item.published_utc)
+  assert.equal($('.news-article-time time').text(), '30분 전')
   assert.equal($('.mobile-news-footer > .save-button').length, 1)
   assert.equal(link.find('button').length, 0)
   assert.equal($('.save-button').attr('aria-pressed'), 'false')
-  assert.equal(link.attr('aria-describedby'), $('.mobile-news-metadata').attr('id'))
+  assert.equal(link.attr('aria-describedby'), $('.news-article-metadata').attr('id'))
   assert.equal($('.mobile-news-article').attr('data-reading-key'), `news:${item.article_url}`)
   assert.equal(link.attr('data-focus-key'), `news:${item.article_url}`)
 })
@@ -34,15 +34,15 @@ test('card and list views share title, metadata and bookmark order without reser
   assert.equal(list('.mobile-news-thumbnail').length, 0)
   assert.equal(card('.mobile-news-thumbnail img').length, 1)
   assert.equal(card('.mobile-news-link.has-image').length, 1)
-  for (const selector of ['h3', '.mobile-news-metadata', '.save-button']) assert.equal(list(selector).text(), card(selector).text())
+  for (const selector of ['h3', '.news-article-metadata', '.save-button']) assert.equal(list(selector).text(), card(selector).text())
   assert.equal(card('.mobile-news-link + .mobile-news-footer').length, 1)
 })
 test('read and stale indicators remain explicit without obscuring title or publication time', () => {
   const $ = render({ item: { ...item, region: 'kr', feedStale: true }, read: true })
   assert.equal($('.mobile-news-article.is-read').length, 1)
   assert.equal($('.news-read-badge').text(), '읽음')
-  assert.equal($('.mobile-news-stale').text(), '이전 수집 기사')
-  assert.ok($('.mobile-news-time').text().includes('국내'))
+  assert.equal($('.news-article-stale').text(), '이전 수집 기사')
+  assert.ok($('.news-article-time').text().includes('국내'))
   assert.equal($('h3').text(), item.title)
   assert.equal($('time').attr('datetime'), item.published_utc)
 })

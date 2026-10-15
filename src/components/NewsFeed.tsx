@@ -5,11 +5,10 @@ import type { NewsSector } from './sectorNews'
 import './SectorNews.css'
 import { dataTime } from '../utils/dataTime'
 import { useSessionState } from '../hooks/useSessionState'
-import { BookmarkButton } from './SavedItemsProvider'
 import { useEffect, useId, useRef, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
-import MobileNewsArticle from './MobileNewsArticle'
+import NewsArticle from './NewsArticle'
 import MobileNewsFilters from './MobileNewsFilters'
 import { countNewsFilters, matchingNews } from '../lib/newsFilters'
 import type { NewsFilters } from '../lib/newsFilters'
@@ -164,28 +163,9 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
     searchInput.current?.focus({ preventScroll: true })
   }
   function article(item: NewsItem) {
-    if (mobile) return <MobileNewsArticle key={item.id} item={item} read={isRead(item.article_url)}
+    return <NewsArticle key={item.id} item={item} mobile={mobile} read={isRead(item.article_url)}
       timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)}
       image={view === 'cards' ? <NewsImage key={item.image_url || item.id} item={item} /> : undefined} />
-    return (
-      <article key={item.id} data-reading-key={`news:${item.article_url}`} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
-        <a href={item.article_url} data-focus-key={`news:${item.article_url}`} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
-          {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} />}
-          <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}{item.feedStale ? ' · 이전 수집 기사' : ''}</p>
-          <div className="news-topic-tags" aria-label="기사 주제">
-            {TOPICS.filter(t => item.topics?.includes(t.value)).map(t => <span key={t.value}>{t.label}</span>)}
-          </div>
-          <h3 className="news-title" title={item.title}>{item.title}</h3>
-          <p className="news-meta news-card-footer">
-            <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
-              {relativeTime(Date.parse(item.published_utc))}
-            </time>{isRead(item.article_url) && <span className="news-read-badge">읽음</span>}
-            <span className="news-original">원문 읽기 ↗</span>
-          </p>
-        </a>
-      <BookmarkButton article={item} />
-      </article>
-    )
   }
 
   return (<>
