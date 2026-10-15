@@ -72,16 +72,6 @@
 .home-dashboard-movers .movers-footnote { padding-top: 8px; font-size:var(--ui-font-meta); line-height: 1.6; }
 .home-dashboard-movers .movers-footnote p { margin-bottom: 5px; }
 .home-dashboard-movers .movers-notice, .home-dashboard-movers .movers-empty { font-size:var(--ui-font-control); padding: 8px 0; }
-@media (min-width: 1280px) {
-  .home-dashboard-movers .movers-list {
-    max-height: clamp(100px, calc(100dvh - var(--header-height, 100px) - 550px), 320px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    padding-right: 4px;
-  }
-}
-
 /* Shared section labels and controls, including the separate Markets page. */
 .home-page .home-content :is(.briefing-kicker, .sector-heading, .calendar-heading, .market-live-heading, .movers-heading) h2,
 .home-page .home-news > h2,

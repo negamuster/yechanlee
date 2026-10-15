@@ -36,7 +36,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const [focus, setFocus] = useSessionState<CalendarFocus>('calendar.focus', 'all', v => ['all', 'major', 'watched'].includes(String(v)))
   const [language, setLanguage] = useSessionState<'ko' | 'en'>('calendar.language', 'ko', v => v === 'ko' || v === 'en')
   const [timezone, setTimezone] = useSessionState<'Asia/Seoul' | 'America/New_York'>('calendar.timezone', 'Asia/Seoul', v => v === 'Asia/Seoul' || v === 'America/New_York')
-  const [view, setView] = useSessionState<'month' | 'week'>('calendar.view', 'month', v => v === 'month' || v === 'week')
+  const [view, setView] = useSessionState<'month' | 'week'>(full ? 'calendar.view' : 'calendar.homeView', 'month', v => v === 'month' || v === 'week')
   const [exportMessage, setExportMessage] = useState('')
   const [reload, setReload] = useState(0)
   const from = `${month}-01`

@@ -43,7 +43,8 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   }, [])
 
   const selected = categories.find(tab => tab.id === category)!
-  const rows = data?.rankings[category] ?? []
+  const limit = overview ? 5 : 10
+  const rows = (data?.rankings[category] ?? []).slice(0, limit)
   return (
     <section className="market-movers" aria-labelledby="market-movers-heading">
       <div className="movers-heading">
@@ -63,7 +64,7 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
       {data && (failed || data.stale) && <p className="movers-notice" role="status">갱신 실패 · 이전 데이터 표시 중</p>}
       {data?.pendingLatest && <p className="movers-notice" role="status">최근 거래일 집계를 확인할 수 없어 이전 거래일 순위를 표시합니다.</p>}
       <details className="movers-info"><summary aria-label="종목 순위 출처와 산정 기준" title="출처·산정 기준">{overview ? 'ⓘ' : '정보 ⓘ · 출처·산정 기준'}</summary>
-      <p>{selected.description} · 상위 10개</p>
+      <p>{selected.description} · 상위 {limit}개까지</p>
       {data && <DataStatus basis={`${data.tradingDate} · 미국 거래일 종가 · 실시간 순위 아님`} source="Polygon / Massive" collectedAt={data.fetchedAt} stale={failed || data.stale} />}
       <div className="movers-footnote">
         <p>미국 상장 종목 · USD · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
@@ -77,7 +78,7 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
       <div aria-busy={loading} aria-live="polite">
         {loading && !data && <p className="movers-empty">거래일과 종목 순위를 확인하고 있습니다.</p>}
         {!loading && data && !rows.length && <p className="movers-empty">조건에 맞는 종목이 없습니다.</p>}
-        <ol className="movers-list" data-scroll-key={`movers-${category}`} aria-label={selected.description}>
+        <ol className="movers-list" data-scroll-key={`movers-${category}`} aria-label={`${selected.description} · 상위 ${limit}개까지`}>
           {rows.map((row, index) => <li key={row.ticker}>
             <Link to={`/stock/${encodeURIComponent(row.ticker)}`} className="mover-row" state={returnState} data-focus-key={`mover:${category}:${row.ticker}`}>
               <span className="mover-rank" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
