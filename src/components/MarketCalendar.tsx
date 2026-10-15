@@ -1,6 +1,7 @@
 import { exportCalendar } from '../lib/calendarExport'
 import { matchesCalendarFocus } from '../lib/calendarFilters'
 import type { CalendarFocus } from '../lib/calendarFilters'
+import { monthGridDates } from '../lib/calendarGrid'
 import { useSavedItems } from './SavedItemsProvider'
 import './Watchlist.css'
 import { useResource } from '../hooks/useResource'
@@ -32,21 +33,26 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const today = nyDate(now)
   const [month, setMonth] = useSessionState('calendar.month', () => today.slice(0, 7), v => typeof v === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(v) && v >= shiftMonth(today.slice(0, 7), -1) && v <= shiftMonth(today.slice(0, 7), 3))
   const [selected, setSelected] = useSessionState('calendar.day', () => month === today.slice(0, 7) ? today : `${month}-01`, v => typeof v === 'string' && v.startsWith(`${month}-`) && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v)
-  const [category, setCategory] = useSessionState<Category>('calendar.category', 'All', v => categories.includes(v as Category))
-  const [focus, setFocus] = useSessionState<CalendarFocus>('calendar.focus', 'all', v => ['all', 'major', 'watched'].includes(String(v)))
+  const [savedCategory, setCategory] = useSessionState<Category>('calendar.category', 'All', v => categories.includes(v as Category))
+  const [savedFocus, setFocus] = useSessionState<CalendarFocus>('calendar.focus', 'all', v => ['all', 'major', 'watched'].includes(String(v)))
   const [language, setLanguage] = useSessionState<'ko' | 'en'>('calendar.language', 'ko', v => v === 'ko' || v === 'en')
   const [timezone, setTimezone] = useSessionState<'Asia/Seoul' | 'America/New_York'>('calendar.timezone', 'Asia/Seoul', v => v === 'Asia/Seoul' || v === 'America/New_York')
-  const [view, setView] = useSessionState<'month' | 'week'>(full ? 'calendar.view' : 'calendar.homeView', 'month', v => v === 'month' || v === 'week')
+  const [savedView, setView] = useSessionState<'month' | 'week'>('calendar.view', 'month', v => v === 'month' || v === 'week')
+  const category = full ? savedCategory : 'All'
+  const focus = full ? savedFocus : 'all'
+  const view = full ? savedView : 'month'
   const [exportMessage, setExportMessage] = useState('')
   const [reload, setReload] = useState(0)
   const from = `${month}-01`
   const [year, monthNumber] = month.split('-').map(Number)
   const days = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate()
   const to = `${month}-${days}`
-  const firstWeekday = new Date(`${from}T12:00:00Z`).getUTCDay()
   const weekFrom = weekStart(selected)
   const weekEnd = addDays(weekFrom, 6)
   const weekTo = weekEnd > addDays(today, 124) ? addDays(today, 124) : weekEnd
+  const dates = view === 'week' ? Array.from({ length: 7 }, (_, index) => addDays(weekFrom, index)) : monthGridDates(month)
+  const earliestDate = `${shiftMonth(today.slice(0, 7), -1)}-01`
+  const latestMonth = shiftMonth(today.slice(0, 7), 3)
   const schedule = useCalendarData(view === 'week' ? weekFrom : from, view === 'week' ? weekTo : to, 'month', reload)
   const earnings = useCalendarData(view === 'week' ? weekFrom : selected, view === 'week' ? weekTo : selected, view === 'week' ? 'earnings-week' : 'earnings', reload)
   useEffect(() => {
@@ -92,28 +98,27 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   </>
   return <section className={`market-calendar${full ? ' calendar-full' : ''}`} aria-label="경제·실적 캘린더">
     <div className="calendar-heading"><h2>{full ? <>Calendar <small>경제·실적</small></> : <Link to="/calendar" data-widget-link aria-label="Calendar 전체 경제·실적 캘린더 보기">Calendar</Link>}</h2></div>
-    <div className="calendar-controls">
+    {full && <div className="calendar-controls">
       <div className="calendar-tabs" role="group" aria-label="캘린더 보기"><button type="button" aria-pressed={view === 'month'} onClick={() => setView('month')}>월간</button><button type="button" aria-pressed={view === 'week'} onClick={() => setView('week')}>주간</button></div><div className="calendar-jump" role="group" aria-label="현재 날짜로 이동"><button type="button" onClick={() => { setMonth(today.slice(0, 7)); setSelected(today) }}>오늘</button><button type="button" onClick={() => { setMonth(today.slice(0, 7)); setSelected(today); setView('week') }}>이번 주</button></div>
       <details className="calendar-settings-menu"><summary>설정 ⚙</summary><div className="calendar-settings">
         <select aria-label="일정 이름 언어" value={language} onChange={e => setLanguage(e.target.value as typeof language)}><option value="ko">한국어</option><option value="en">English</option></select>
         <select aria-label="발표 시간대" value={timezone} onChange={e => setTimezone(e.target.value as typeof timezone)}><option value="Asia/Seoul">한국시간</option><option value="America/New_York">뉴욕시간</option></select>
       </div></details>
-    </div>
+    </div>}
     <div className="calendar-month-navigation"><button type="button" aria-label={view === 'week' ? '이전 주' : '이전 달'} disabled={view === 'week' ? addDays(selected, -7) < `${shiftMonth(today.slice(0, 7), -1)}-01` : month <= shiftMonth(today.slice(0, 7), -1)} onClick={() => navigate(-1)}>‹</button><strong aria-live="polite">{view === 'week' ? `${prettyDate(weekFrom)} – ${prettyDate(weekTo)}` : `${year}년 ${monthNumber}월`}</strong><button type="button" aria-label={view === 'week' ? '다음 주' : '다음 달'} disabled={view === 'week' ? addDays(selected, 7).slice(0, 7) > shiftMonth(today.slice(0, 7), 3) : month >= shiftMonth(today.slice(0, 7), 3)} onClick={() => navigate(1)}>›</button></div>
-    <div className="calendar-filters" role="group" aria-label="일정 종류">{categories.map(item => <button type="button" key={item} aria-pressed={category === item} onClick={() => { setCategory(item); setFocus('all') }}>{item !== 'All' && <i aria-hidden="true" className={`calendar-key calendar-dot-${item.toLowerCase()}`} />}{labels[item]}</button>)}</div>
+    {full && <><div className="calendar-filters" role="group" aria-label="일정 종류">{categories.map(item => <button type="button" key={item} aria-pressed={category === item} onClick={() => { setCategory(item); setFocus('all') }}>{item !== 'All' && <i aria-hidden="true" className={`calendar-key calendar-dot-${item.toLowerCase()}`} />}{labels[item]}</button>)}</div>
     <div className="calendar-focus-filters" role="group" aria-label="일정 빠른 필터">
-      {([['all', '전체 일정'], ['major', '★ 주요 일정만'], ['watched', '관심 종목 실적만']] as const).map(([value, label]) => <button key={value} type="button" aria-label={label} aria-pressed={focus === value} onClick={() => { setFocus(value); setCategory(value === 'watched' ? 'Earnings' : 'All') }}>{full ? label : { all: '전체', major: '★ 주요', watched: '관심 종목' }[value]}</button>)}
-    </div>
+      {([['all', '전체 일정'], ['major', '★ 주요 일정만'], ['watched', '관심 종목 실적만']] as const).map(([value, label]) => <button key={value} type="button" aria-label={label} aria-pressed={focus === value} onClick={() => { setFocus(value); setCategory(value === 'watched' ? 'Earnings' : 'All') }}>{label}</button>)}
+    </div></>}
     {focus === 'watched' && <p className="calendar-time-note">{items.stocks.length ? (view === 'month' ? '관심 종목 실적은 선택한 날짜를 조회합니다. 주간 보기에서는 해당 주를 확인할 수 있습니다.' : '현재 표시된 주의 관심 종목 실적입니다.') : <>저장한 관심 종목이 없습니다. <Link to="/saved">관심 종목 추가 안내 ↗</Link></>}</p>}
     <div className={`calendar-month-grid${view === 'week' ? ' calendar-week-grid' : ''}`} aria-label={view === 'week' ? '주간 날짜 선택' : `${year}년 ${monthNumber}월 날짜 선택`}>
       {['일', '월', '화', '수', '목', '금', '토'].map(day => <span className="calendar-weekday" key={day}>{day}</span>)}
-      {Array.from({ length: view === 'week' ? 0 : firstWeekday }, (_, i) => <span key={`empty-${i}`} aria-hidden="true" />)}
-      {Array.from({ length: view === 'week' ? 7 : days }, (_, i) => {
-        const date = view === 'week' ? addDays(weekFrom, i) : `${month}-${String(i + 1).padStart(2, '0')}`
+      {dates.map(date => {
+        const outsideMonth = view === 'month' && date.slice(0, 7) !== month
         const dayEvents = events.filter(event => event.date === date).sort((a, b) => Number(b.major) - Number(a.major))
         const hasMajor = dayEvents.some(event => event.major)
         const types = [...new Set(dayEvents.map(event => event.category))]
-        return <button type="button" key={date} disabled={view === 'week' && date > weekTo} className={`calendar-date${date === today ? ' is-today' : ''}${hasMajor ? ' has-major' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${hasMajor ? ", 주요 일정 있음" : ""}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span className="calendar-date-number">{Number(date.slice(-2))}{hasMajor && <b className="calendar-important-mark" aria-hidden="true">★</b>}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 2).map((event, index) => <span key={event.id} title={language === 'ko' ? koreanTitle(event) : event.title} className={`calendar-cell-title calendar-${event.category.toLowerCase()}${index === 1 ? ' calendar-cell-secondary' : ''}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more calendar-cell-more-compact">+{dayEvents.length - 1}</span>}{dayEvents.length > 2 && <span className="calendar-cell-more calendar-cell-more-wide">+{dayEvents.length - 2}</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
+        return <button type="button" key={date} data-date={date} disabled={date < earliestDate || date.slice(0, 7) > latestMonth || (view === 'week' && date > weekTo)} className={`calendar-date${outsideMonth ? ' is-outside-month' : ''}${date === today ? ' is-today' : ''}${hasMajor ? ' has-major' : ''}`} aria-pressed={date === selected} aria-current={date === today ? 'date' : undefined} aria-label={`${prettyDate(date)}${outsideMonth ? date < from ? ', 이전 달' : ', 다음 달' : ''}${hasMajor ? ", 주요 일정 있음" : ""}${types.length ? `, ${types.map(t => labels[t]).join('·')} 일정` : ''}`} onClick={() => { setSelected(date); setMonth(date.slice(0, 7)) }}><span className="calendar-date-number">{Number(date.slice(-2))}{hasMajor && <b className="calendar-important-mark" aria-hidden="true">★</b>}</span><span className="calendar-cell-preview" aria-hidden="true">{dayEvents.slice(0, 2).map((event, index) => <span key={event.id} title={language === 'ko' ? koreanTitle(event) : event.title} className={`calendar-cell-title calendar-${event.category.toLowerCase()}${index === 1 ? ' calendar-cell-secondary' : ''}`}>{language === 'ko' ? koreanTitle(event) : event.title}</span>)}{dayEvents.length > 1 && <span className="calendar-cell-more calendar-cell-more-compact">+{dayEvents.length - 1}</span>}{dayEvents.length > 2 && <span className="calendar-cell-more calendar-cell-more-wide">+{dayEvents.length - 2}</span>}</span><span className="calendar-dots" aria-hidden="true">{types.map(type => <i key={type} className={`calendar-dot-${type.toLowerCase()}`} />)}</span></button>
       })}
     </div>
     <div className="calendar-compact-status"><span>{full ? `미국 날짜 기준 · 시간 ${zoneLabel} · ★ 주요 일정` : `미국 날짜 · ${zoneLabel}`}</span><button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button></div>

@@ -51,6 +51,8 @@
 .market-calendar .calendar-date { border: 0; background: #f7f8f4; border-radius: 4px; box-sizing: border-box; padding: 8px 3px 6px; width: 100%; min-height: 0; height: auto; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-size:var(--ui-font-control); }
 .market-calendar .calendar-date.is-today { box-shadow: inset 0 0 0 1px #7b8d69; font-weight: 600; }
 .market-calendar .calendar-date[aria-pressed="true"] { color: #fff; background: #505a46; }
+.market-calendar .calendar-date.is-outside-month { color: #9b9f94; background: #fafbf8; }
+.calendar-date.is-outside-month :is(.calendar-cell-preview, .calendar-dots) { opacity: .5; }
 .calendar-dots { display: flex; gap: 2px; height: 5px; }
 .calendar-dots i { width: 4px; height: 4px; border-radius: 50%; background: #738963; }
 .calendar-dots .calendar-dot-fed { background: #7985b4; }

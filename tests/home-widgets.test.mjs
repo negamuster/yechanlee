@@ -53,13 +53,12 @@ test('each desktop home card has one keyboard-accessible destination with no dup
   for (const removed of ['전체 보기 ↗', '지난 브리핑 ↗', '움직임과 배경', '미국 · USD', '영어 방송', '24/7 Stream · Daily Market Coverage']) assert.equal(mainText.includes(removed), false, removed)
   assert.equal($('a a, a button, a input, a select, a iframe').length, 0)
 })
-test('home restores the monthly calendar while five stock rows, watch buttons and live playback retain independent controls', () => {
+test('home keeps the month grid without detail filters while stock rows and playback retain independent controls', () => {
   const $ = render(createElement(Home))
   assert.equal($('.home-dashboard-calendar .calendar-month-grid:not(.calendar-week-grid)').length, 1)
   assert.ok($('.home-dashboard-calendar .calendar-date').length >= 28)
-  assert.equal($('.calendar-tabs button').length, 2)
-  assert.equal($('.calendar-filters button').length, 5)
-  assert.equal($('.calendar-focus-filters button').length, 3)
+  assert.equal($('.calendar-tabs, .calendar-filters, .calendar-focus-filters, .calendar-controls, .calendar-settings').length, 0)
+  assert.equal($('.calendar-month-navigation button').length, 2)
   assert.equal($('.home-dashboard-calendar .calendar-preview').length, 0)
   assert.equal($('.home-dashboard-movers .movers-tabs button').length, 3)
   assert.equal($('.mover-row').attr('href'), '/stock/ABC')
@@ -101,27 +100,84 @@ test('full calendar page retains its full labels and has no self-referencing car
   assert.equal($('.calendar-filters button').length, 5)
   assert.equal($('.calendar-focus-filters button').length, 3)
 })
-test('home starts in month view independently of the full calendar weekly preference and retains shared filters and date', () => {
+test('home always shows the month and all events without overwriting detailed calendar preferences', () => {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(Date.now())
   const [year, month] = today.split('-').map(Number)
   const previousMonth = new Date(Date.UTC(year, month - 2, 1)).toISOString().slice(0, 7)
   const session = {
     'anthracite.ui.v1.calendar.month': previousMonth, 'anthracite.ui.v1.calendar.day': `${previousMonth}-01`,
     'anthracite.ui.v1.calendar.category': 'Earnings', 'anthracite.ui.v1.calendar.focus': 'watched',
-    'anthracite.ui.v1.calendar.view': 'week', 'anthracite.ui.v1.calendar.language': 'en', 'anthracite.ui.v1.calendar.timezone': 'America/New_York',
+    'anthracite.ui.v1.calendar.view': 'week', 'anthracite.ui.v1.calendar.homeView': 'week', 'anthracite.ui.v1.calendar.language': 'en', 'anthracite.ui.v1.calendar.timezone': 'America/New_York',
   }
   const saved = { version: 1, stocks: [{ ticker: 'ABC', name: 'Test Company' }], articles: [] }
   const home = render(createElement(Home), false, { session, saved })
   const [savedYear, savedMonth] = previousMonth.split('-').map(Number)
   assert.ok(home('.calendar-month-navigation').text().includes(`${savedYear}년 ${savedMonth}월`))
-  assert.ok(home('.calendar-date').length >= 28)
-  assert.equal(home('.calendar-tabs button[aria-pressed=true]').text(), '월간')
+  assert.ok(home('.calendar-date').length >= 35)
+  assert.equal(home('.calendar-week-grid, .calendar-tabs, .calendar-filters, .calendar-focus-filters, .calendar-settings').length, 0)
   assert.ok(home('.calendar-compact-status').text().includes('ET'))
-  assert.equal(home('.calendar-filters button[aria-pressed=true]').text(), '실적')
   const full = render(createElement(MarketCalendar, { full: true }), false, { session, saved })
   assert.equal(full('.calendar-tabs button[aria-pressed=true]').text(), '주간')
   assert.equal(full('.calendar-week-grid .calendar-date').length, 7)
   assert.equal(full('.calendar-filters button[aria-pressed=true]').text(), '실적')
   assert.equal(full('.calendar-focus-filters button[aria-pressed=true]').text(), '관심 종목 실적만')
   assert.equal(full('.calendar-settings select[aria-label="일정 이름 언어"] option[selected]').attr('value'), 'en')
+})
+
+test('October and November home grids fill five complete weeks with muted neighboring dates', () => {
+  const previousNow = Date.now
+  Date.now = () => Date.parse('2026-10-15T12:00:00Z')
+  try {
+    const october = render(createElement(Home), false, { session: { 'anthracite.ui.v1.calendar.month': '2026-10' } })
+    assert.equal(october('.calendar-date').length, 35)
+    assert.equal(october('.calendar-date').first().attr('data-date'), '2026-09-27')
+    assert.equal(october('.calendar-date').last().attr('data-date'), '2026-10-31')
+    assert.deepEqual(october('.calendar-date.is-outside-month').toArray().map(node => october(node).attr('data-date')), ['2026-09-27', '2026-09-28', '2026-09-29', '2026-09-30'])
+    assert.equal(october('.calendar-date[data-date="2026-10-01"]').index(), 11) // Seven weekday labels, then Thursday.
+    assert.ok(october('.calendar-date').first().attr('aria-label').includes('이전 달'))
+    assert.equal(october('.calendar-date[aria-current="date"]').attr('data-date'), '2026-10-15')
+    assert.equal(october('.calendar-date[aria-pressed="true"]').attr('data-date'), '2026-10-15')
+
+    const november = render(createElement(Home), false, { session: { 'anthracite.ui.v1.calendar.month': '2026-11' } })
+    assert.equal(november('.calendar-date').length, 35)
+    assert.equal(november('.calendar-date').first().attr('data-date'), '2026-11-01')
+    assert.equal(november('.calendar-date').last().attr('data-date'), '2026-12-05')
+    assert.deepEqual(november('.calendar-date.is-outside-month').toArray().map(node => november(node).attr('data-date')), ['2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04', '2026-12-05'])
+    assert.ok(november('.calendar-date[data-date="2026-12-01"]').attr('aria-label').includes('다음 달'))
+    assert.equal(november('.calendar-date[data-date="2026-12-01"]').attr('disabled'), undefined)
+  } finally { Date.now = previousNow }
+})
+
+test('home includes economic and earnings events despite saved detail filters', async () => {
+  const previousNow = Date.now
+  Date.now = () => Date.parse('2026-10-15T12:00:00Z')
+  try {
+    const common = { date: '2026-10-15', startAt: null, session: null, major: false, source: 'Test', sourceUrl: 'https://example.com', estimated: false }
+    const economic = { ...common, id: 'economic', title: 'Economic event', category: 'Economic' }
+    const earnings = { ...common, id: 'earnings', title: 'Test earnings', category: 'Earnings', ticker: 'ABC' }
+    await seed('/api/calendar?from=2026-10-01&to=2026-10-31&mode=month', { events: [economic], sources: [], fetchedAt: '2026-10-15T12:00:00Z' })
+    await seed('/api/calendar?from=2026-10-15&to=2026-10-15&mode=earnings', { events: [earnings], sources: [], fetchedAt: '2026-10-15T12:00:00Z' })
+    const session = { 'anthracite.ui.v1.calendar.category': 'Earnings', 'anthracite.ui.v1.calendar.focus': 'watched' }
+    const home = render(createElement(Home), false, { session })
+    assert.equal(home('.calendar-event').length, 2)
+    assert.equal(home('.calendar-date[data-date="2026-10-15"] .calendar-dots i').length, 2)
+    const full = render(createElement(MarketCalendar, { full: true }), false, { session })
+    assert.equal(full('.calendar-event').length, 0)
+    assert.equal(full('.calendar-filters button[aria-pressed=true]').text(), '실적')
+    assert.equal(full('.calendar-focus-filters button[aria-pressed=true]').text(), '관심 종목 실적만')
+  } finally { Date.now = previousNow }
+})
+
+test('neighboring dates remain visible but cannot navigate outside the supported month range', () => {
+  const previousNow = Date.now
+  Date.now = () => Date.parse('2026-10-15T12:00:00Z')
+  try {
+    const september = render(createElement(MarketCalendar), false, { session: { 'anthracite.ui.v1.calendar.month': '2026-09' } })
+    assert.equal(september('.calendar-date[data-date="2026-08-30"]').is('[disabled]'), true)
+    assert.equal(september('.calendar-date[data-date="2026-09-01"]').attr('disabled'), undefined)
+    const january = render(createElement(MarketCalendar), false, { session: { 'anthracite.ui.v1.calendar.month': '2027-01' } })
+    assert.equal(january('.calendar-date').length, 42)
+    assert.equal(january('.calendar-date[data-date="2027-01-31"]').length, 1)
+    assert.equal(january('.calendar-date[data-date="2027-02-01"]').is('[disabled]'), true)
+  } finally { Date.now = previousNow }
 })
