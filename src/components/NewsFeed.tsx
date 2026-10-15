@@ -6,7 +6,7 @@ import './SectorNews.css'
 import { dataTime } from '../utils/dataTime'
 import { useSessionState } from '../hooks/useSessionState'
 import { BookmarkButton } from './SavedItemsProvider'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
 
@@ -91,6 +91,10 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
   const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
+  const [filtersOpen, setFiltersOpen] = useState(() => !window.matchMedia('(max-width: 700px)').matches)
+  const filtersId = useId()
+  const searchId = useId()
+  const searchInput = useRef<HTMLInputElement>(null)
   const [, setClock] = useState(0)
 
   useEffect(() => {
@@ -137,6 +141,11 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
   const publishers = [...new Set(news.map(item => item.publisher))]
+  const filterCount = Number(region !== 'all') + Number(topic !== 'all') + Number(Boolean(query.trim())) + Number(Boolean(sectorFilter)) + Number(hideRead)
+  function resetFilters() {
+    setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1)
+    searchInput.current?.focus({ preventScroll: true })
+  }
   function article(item: NewsItem) {
     return (
       <article key={item.id} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
@@ -150,7 +159,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           <p className="news-meta news-card-footer">
             <time dateTime={item.published_utc} title={new Date(item.published_utc).toLocaleString('ko-KR')}>
               {relativeTime(Date.parse(item.published_utc))}
-            </time>{isRead(item.article_url) && <span>읽음</span>}
+            </time>{isRead(item.article_url) && <span className="news-read-badge">읽음</span>}
             <span className="news-original">원문 읽기 ↗</span>
           </p>
         </a>
@@ -170,33 +179,55 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
     <div className="news-feed">
-      {sectorFilter && <div className="news-sector-filter" role="status">{sectorFilter.name} · 제목 키워드 기준 <button type="button" onClick={() => { setSectorFilter(null); setVisibleBatches(1) }}>업종 필터 해제 ×</button></div>}
-      <div className="news-toolbar">
-        <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
-          {FILTERS.map(filter => (
-            <button key={filter.value} type="button" aria-pressed={region === filter.value}
-              onClick={() => { setRegion(filter.value); setVisibleBatches(1) }}>{filter.label}</button>
-          ))}
+      <div className="news-controls">
+        <div className="news-toolbar">
+          <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
+            {FILTERS.map(filter => (
+              <button key={filter.value} type="button" aria-pressed={region === filter.value}
+                onClick={() => { setRegion(filter.value); setVisibleBatches(1) }}>{filter.label}</button>
+            ))}
+          </div>
+          <div className="news-toolbar-actions">
+            <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
+              <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
+              <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
+            </div>
+            <button type="button" className="news-refresh" disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 6.1A8 8 0 0 1 20 12M4 12a8 8 0 0 0 13.9 5.9" /></svg>
+              {loading ? '확인 중…' : '새로고침'}
+            </button>
+          </div>
         </div>
-        <button type="button" className="news-refresh" disabled={loading} onClick={() => { setRevision(value => value + 1); setVisibleBatches(1) }}>
-          {loading ? '불러오는 중…' : '새로고침'}
-        </button>
-      </div>
-      <div className="news-topic-filters" role="group" aria-label="뉴스 주제 선택">
-        {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
-          <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
-      </div>
-      <div className="news-search-tools">
-        <label className="news-search"><span className="news-sr-only">기사 제목 또는 매체 검색</span>
-          <input type="search" value={query} maxLength={120} onChange={event => { setQuery(event.target.value); setVisibleBatches(1) }} placeholder="기사 제목·매체 검색" />
-        </label>
-        <div className="news-view-toggle" role="group" aria-label="뉴스 표시 방식">
-          <button type="button" aria-pressed={view === 'cards'} onClick={() => setView('cards')}>카드</button>
-          <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')}>목록</button>
+        <div className="news-search-tools">
+          <div className="news-search">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+            <label className="news-sr-only" htmlFor={searchId}>기사 제목 또는 매체 검색</label>
+            <input ref={searchInput} id={searchId} type="search" value={query} maxLength={120} onChange={event => { setQuery(event.target.value); setVisibleBatches(1) }} placeholder="기사 제목·매체 검색" />
+            {query && <button type="button" className="news-search-clear" aria-label="검색어 지우기" onClick={() => { setQuery(''); setVisibleBatches(1); searchInput.current?.focus() }}><span aria-hidden="true">×</span></button>}
+          </div>
+          <button type="button" className="news-filter-toggle" aria-expanded={filtersOpen} aria-controls={filtersId} onClick={() => setFiltersOpen(value => !value)}>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" fill="currentColor" stroke="none" /><circle cx="15" cy="17" r="2.5" fill="currentColor" stroke="none" /></svg>
+            필터{filterCount > 0 && <span className="news-filter-count">{filterCount}<span className="news-sr-only">개 적용</span></span>}
+            <span className="news-filter-chevron" aria-hidden="true">⌄</span>
+          </button>
         </div>
+        <div id={filtersId} className="news-filter-panel" hidden={!filtersOpen}>
+          <div className="news-topic-filters" role="group" aria-label="뉴스 주제 선택">
+            {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
+              <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
+          </div>
+          <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
+          <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
+        </div>
+        {filterCount > 0 && <div className="news-active-filters" role="group" aria-label="적용한 뉴스 필터">
+          {region !== 'all' && <button type="button" aria-label={`${region === 'kr' ? '국내' : '해외'} 지역 필터 해제`} onClick={() => { setRegion('all'); setVisibleBatches(1) }}>{region === 'kr' ? '국내' : '해외'} <span aria-hidden="true">×</span></button>}
+          {topic !== 'all' && <button type="button" aria-label={`${TOPICS.find(t => t.value === topic)?.label} 주제 필터 해제`} onClick={() => { setTopic('all'); setVisibleBatches(1) }}>{TOPICS.find(t => t.value === topic)?.label} <span aria-hidden="true">×</span></button>}
+          {query.trim() && <button type="button" aria-label={`검색어 ${query} 해제`} title={`검색: ${query}`} onClick={() => { setQuery(''); setVisibleBatches(1); searchInput.current?.focus() }}><span className="news-query-chip">검색: {query}</span><span aria-hidden="true">×</span></button>}
+          {sectorFilter && <button type="button" title="제목 키워드 기준" aria-label={`${sectorFilter.name} 업종 필터 해제`} onClick={() => { setSectorFilter(null); setVisibleBatches(1) }}>{sectorFilter.name} · 키워드 <span aria-hidden="true">×</span></button>}
+          {hideRead && <button type="button" aria-label="읽은 기사 숨기기 해제" onClick={() => { setHideRead(false); setVisibleBatches(1) }}>읽지 않은 기사 <span aria-hidden="true">×</span></button>}
+          <button type="button" className="news-clear-filters" onClick={resetFilters}>전체 초기화</button>
+        </div>}
       </div>
-      <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
-      <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
       {feed && <p className="news-updated">최근 확인: <time dateTime={new Date(feed.fetchedAt).toISOString()}
         title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
       <div role="status" aria-live="polite">
@@ -204,7 +235,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           : partial ? <p className="news-notice">일부 매체의 뉴스를 불러오지 못했습니다. 수집된 기사를 표시합니다.</p> : null}
       </div>
       {!!relevantSources.length && <details className="news-source-status">
-        <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 설정 피드 기사 확인</summary>
+        <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 피드 기사 확인</summary>
         <ul>{relevantSources.map(source => <li key={source.id}>
           <div><strong>{source.publisher}</strong><small>{source.id}</small></div>
           <span>{source.status === 'stale' ? '갱신 실패 · 이전 수집 기사 표시' : source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_404' ? '출처 피드 주소를 찾을 수 없음 (404)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 대기 후 재시도'}</span>
@@ -223,7 +254,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
         </> : !failed ? <div className="news-notice" role="status"><p>{hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
-          {(topic !== 'all' || region !== 'all' || query || sectorFilter || hideRead) && <button className="news-reset" type="button" onClick={() => { setTopic('all'); setRegion('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1) }}>필터 초기화</button>}
+          {filterCount > 0 && <button className="news-reset" type="button" onClick={resetFilters}>필터 초기화</button>}
         </div> : null}
       </div>
     </div>

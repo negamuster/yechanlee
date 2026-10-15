@@ -33,14 +33,6 @@
 .install-help summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; color: #333; }
 .install-help p { margin: 8px 0; }
 @media (max-width: 700px) {
-  .news-feed .news-toolbar { gap: 8px; margin-bottom: 8px; }
-  .news-feed .news-topic-filters { margin-bottom: 8px; gap: 6px; }
-  .news-feed .news-scope, .news-feed .news-updated, .news-feed .news-result-count { font-size: 11px; margin-block: 6px 10px; }
-  .news-feed .news-list .news-card { padding-block: 12px; }
-  .news-feed .news-list .news-row { gap: 5px; }
-  .news-feed .news-list .news-title { font-size: 15px; line-height: 1.55; }
-  .news-feed .news-meta { font-size: 11px; }
-  .news-feed .news-card > .save-button { margin-top: 7px; min-height: 44px; }
   .home-content.market-hub .movers-list > li { flex-wrap: nowrap; gap: 5px; padding-bottom: 0; }
   .home-content.market-hub .movers-list .mover-row { flex-basis: auto; grid-template-columns: 17px minmax(0, 1fr) auto; gap: 6px; padding-block: 8px; }
   .home-content.market-hub .mover-identity strong, .home-content.market-hub .mover-price { font-size: 13px; }

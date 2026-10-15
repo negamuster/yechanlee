@@ -2,6 +2,18 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-:root { --font-ui: Arial, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+:root {
+  --font-ui: Arial, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --ui-text: #242424;
+  --ui-muted: #62665f;
+  --ui-border: #dedfda;
+  --ui-surface: #f7f8f5;
+  --ui-hover: #eef0eb;
+  --ui-selected: #292e27;
+  --ui-focus: #69785c;
+  --ui-radius: 8px;
+  --ui-control-height: 36px;
+}
+@media (max-width: 700px) { :root { --ui-control-height: 44px; } }
 body { font-family: var(--font-ui); }
 button, input, select, textarea { font-family: inherit; }
