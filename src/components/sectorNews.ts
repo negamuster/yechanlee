@@ -1,4 +1,8 @@
 export type NewsSector = { symbol: string; name: string }
+export function isNewsSector(value: unknown): boolean {
+  const sector = value as NewsSector | null
+  return value === null || (!!sector && Object.hasOwn(keywords, sector.symbol) && typeof sector.name === 'string' && sector.name.length > 0 && sector.name.length <= 80)
+}
 // Conservative title keywords, not a claim about the cause of sector returns.
 const keywords: Record<string, RegExp> = {
   XLK: /\b(tech|technology|software|semiconductors?|chips?|artificial intelligence|AI|OpenAI|Anthropic|Broadcom|cybersecurity|data cent(?:er|re)s?|Nvidia|Microsoft|Apple|Intel|AMD|TSMC|HP|Hewlett.Packard)\b|반도체|인공지능|소프트웨어|엔비디아|마이크로소프트|오픈AI|브로드컴|데이터센터|삼성전자|SK하이닉스|보안주|보안株|보안 관련주|안랩/i,

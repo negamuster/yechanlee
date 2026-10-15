@@ -1,3 +1,4 @@
+import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useId, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -8,6 +9,7 @@ import { quoteFromBars } from '../lib/stockSnapshot'
 import type { DailyBar } from '../lib/stockSnapshot'
 import { nearestStockBar, stockChartWindow, stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
 import { isWebUrl } from '../lib/watchlist'
+import ReturnToList from '../components/ReturnToList'
 import './Stock.css'
 
 const periods = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 } as const
@@ -87,6 +89,7 @@ export default function Stock() {
   const [period, setPeriod] = useState<keyof typeof periods>('3M')
   const [aboutOpen, setAboutOpen] = useState(false)
   const aboutId = useId()
+  const returnState = useReturnOrigin()
   const details = snapshot?.details
   const bars = snapshot?.bars ?? []
   const quote = quoteFromBars(bars)
@@ -123,7 +126,7 @@ export default function Stock() {
   ]
   return <>
     <main className="stock-page">
-      <nav className="stock-breadcrumb" aria-label="현재 위치"><Link to="/markets">시장</Link><span aria-hidden="true">/</span><span>{symbol}</span></nav>
+      <div className="stock-top-nav"><ReturnToList /><nav className="stock-breadcrumb" aria-label="현재 위치"><Link to="/markets">시장</Link><span aria-hidden="true">/</span><span>{symbol}</span></nav></div>
       {loading && !snapshot ? <section className="stock-loading" aria-busy="true"><h1>{symbol}</h1><p role="status">종목 정보와 시세를 불러오는 중…</p><div className="stock-skeleton" aria-hidden="true"><div /><div /><div /></div></section>
         : error && !snapshot ? <section className="stock-empty" role="alert"><h1>{symbol} 종목 정보</h1><p>{error}</p><div className="stock-actions"><button type="button" onClick={refresh}>다시 조회</button><Link to="/markets">시장으로 돌아가기 →</Link></div></section>
         : snapshot && details ? <>
@@ -164,7 +167,7 @@ export default function Stock() {
               {typeof details.description === 'string' && details.description && <><p id={aboutId} className={`stock-company-description${aboutOpen ? ' is-open' : ''}`}>{details.description}</p><button type="button" className="stock-text-button" aria-expanded={aboutOpen} aria-controls={aboutId} onClick={() => setAboutOpen(value => !value)}>{aboutOpen ? '설명 접기 −' : '사업 설명 더 보기 +'}</button></>}
               {isWebUrl(details.homepage_url) && <a className="stock-company-website" href={details.homepage_url} target="_blank" rel="noopener noreferrer">기업 웹사이트 ↗</a>}
             </section>
-            <section className="stock-card" aria-labelledby="stock-related-title"><div className="stock-section-heading"><h2 id="stock-related-title">관련 종목</h2></div>{related.length ? <div className="stock-related-links">{related.map(ticker => <Link key={ticker} to={`/stock/${encodeURIComponent(ticker)}`}>{ticker} →</Link>)}</div> : <p className="stock-note">{snapshot.issues.includes('관련 종목') ? '관련 종목을 불러오지 못했습니다.' : '제공된 관련 종목이 없습니다.'}</p>}</section>
+            <section className="stock-card" aria-labelledby="stock-related-title"><div className="stock-section-heading"><h2 id="stock-related-title">관련 종목</h2></div>{related.length ? <div className="stock-related-links">{related.map(ticker => <Link key={ticker} to={`/stock/${encodeURIComponent(ticker)}`} state={returnState}>{ticker} →</Link>)}</div> : <p className="stock-note">{snapshot.issues.includes('관련 종목') ? '관련 종목을 불러오지 못했습니다.' : '제공된 관련 종목이 없습니다.'}</p>}</section>
           </aside></div>
         </> : null}
     </main>

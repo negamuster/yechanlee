@@ -1,6 +1,6 @@
 import { useReadArticles } from '../hooks/useReadArticles'
 import { createPortal } from 'react-dom'
-import { matchesSector } from './sectorNews'
+import { isNewsSector, matchesSector } from './sectorNews'
 import type { NewsSector } from './sectorNews'
 import './SectorNews.css'
 import { dataTime } from '../utils/dataTime'
@@ -81,7 +81,7 @@ function NewsImage({ item }: { item: NewsItem }) {
 export default function NewsFeed({ previewTarget = null, previewSector = null, onClearSector }: { previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
   const { isRead, mark } = useReadArticles()
   const [hideRead, setHideRead] = useSessionState('news.hideRead', false, v => typeof v === 'boolean')
-  const [sectorFilter, setSectorFilter] = useState<NewsSector | null>(null)
+  const [sectorFilter, setSectorFilter] = useSessionState<NewsSector | null>('news.sector', null, isNewsSector)
   const [feed, setFeed] = useState<Feed | null>(() => readCache(6 * 60 * 60 * 1000))
   const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
   const [topic, setTopic] = useSessionState<TopicFilter>('news.topic', 'all', v => v === 'all' || TOPICS.some(t => t.value === v))
@@ -91,7 +91,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
   const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
-  const [filtersOpen, setFiltersOpen] = useState(() => !window.matchMedia('(max-width: 700px)').matches)
+  const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', () => !window.matchMedia('(max-width: 700px)').matches, v => typeof v === 'boolean')
   const filtersId = useId()
   const searchId = useId()
   const searchInput = useRef<HTMLInputElement>(null)
@@ -148,8 +148,8 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
   }
   function article(item: NewsItem) {
     return (
-      <article key={item.id} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
-        <a href={item.article_url} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
+      <article key={item.id} data-reading-key={`news:${item.article_url}`} className={`news-card${isRead(item.article_url) ? ' is-read' : ''}`}>
+        <a href={item.article_url} data-focus-key={`news:${item.article_url}`} target="_blank" rel="noopener noreferrer" className="news-row" onClick={() => mark(item.article_url)} onAuxClick={e => { if (e.button === 1) mark(item.article_url) }}>
           {view === 'cards' && <NewsImage key={item.image_url || item.id} item={item} />}
           <p className="news-meta news-publisher" title={item.publisher}>{item.publisher} · {item.region === 'kr' ? '국내' : '해외'}{item.feedStale ? ' · 이전 수집 기사' : ''}</p>
           <div className="news-topic-tags" aria-label="기사 주제">
@@ -212,7 +212,7 @@ export default function NewsFeed({ previewTarget = null, previewSector = null, o
           </button>
         </div>
         <div id={filtersId} className="news-filter-panel" hidden={!filtersOpen}>
-          <div className="news-topic-filters" role="group" aria-label="뉴스 주제 선택">
+          <div className="news-topic-filters" data-scroll-key="news-topics" role="group" aria-label="뉴스 주제 선택">
             {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(t =>
               <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
           </div>

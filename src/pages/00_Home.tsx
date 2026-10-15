@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSessionState } from '../hooks/useSessionState'
+import { isNewsSector } from '../components/sectorNews'
 import type { NewsSector } from '../components/sectorNews'
 import MarketCalendar from '../components/MarketCalendar'
 import SectorPerformance from '../components/SectorPerformance'
@@ -11,7 +13,7 @@ import './Home.css'
 
 export default function Home() {
   const [newsTarget, setNewsTarget] = useState<HTMLDivElement | null>(null)
-  const [newsSector, setNewsSector] = useState<NewsSector | null>(null)
+  const [newsSector, setNewsSector] = useSessionState<NewsSector | null>('news.previewSector', null, isNewsSector)
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 700px)').matches)
   useEffect(() => {
     const query = window.matchMedia('(max-width: 700px)')
@@ -45,7 +47,7 @@ export default function Home() {
           <div className="home-widget home-dashboard-calendar" id="home-calendar" tabIndex={-1} role="region" aria-label="경제·실적 캘린더"><MarketCalendar /></div>
           <details className="home-widget home-sector-news"><summary>업종 관련 기사</summary><div ref={setNewsTarget} /></details>
         </aside>
-        <aside className="home-dashboard-sidebar" tabIndex={0} aria-label="종목 순위와 라이브 방송">
+        <aside className="home-dashboard-sidebar" data-scroll-key="home-sidebar" tabIndex={0} aria-label="종목 순위와 라이브 방송">
           <div className="home-widget home-dashboard-movers"><MarketMovers /></div>
           <div className="home-widget home-dashboard-live"><MarketLive /></div>
         </aside>

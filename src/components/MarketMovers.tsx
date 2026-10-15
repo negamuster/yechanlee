@@ -1,3 +1,4 @@
+import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import DataStatus from './DataStatus'
@@ -31,6 +32,7 @@ function validData(value: unknown): value is MoversData {
 }
 
 export default function MarketMovers() {
+  const returnState = useReturnOrigin()
   const [category, setCategory] = useSessionState<Category>('movers.category', 'turnover', v => categories.some(tab => tab.id === v))
   const [refresh, setRefresh] = useState(0)
 
@@ -76,9 +78,9 @@ export default function MarketMovers() {
       <div aria-busy={loading} aria-live="polite">
         {loading && !data && <p className="movers-empty">거래일과 종목 순위를 확인하고 있습니다.</p>}
         {!loading && data && !rows.length && <p className="movers-empty">조건에 맞는 종목이 없습니다.</p>}
-        <ol className="movers-list" aria-label={selected.description}>
+        <ol className="movers-list" data-scroll-key={`movers-${category}`} aria-label={selected.description}>
           {rows.map((row, index) => <li key={row.ticker}>
-            <Link to={`/stock/${encodeURIComponent(row.ticker)}`} className="mover-row">
+            <Link to={`/stock/${encodeURIComponent(row.ticker)}`} className="mover-row" state={returnState} data-focus-key={`mover:${category}:${row.ticker}`}>
               <span className="mover-rank" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <div className="mover-identity"><strong>{row.ticker}</strong>
                 <span>{category === 'turnover'

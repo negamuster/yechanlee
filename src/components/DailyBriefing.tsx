@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useId, useState } from 'react'
+import { useId } from 'react'
+import { useSessionState } from '../hooks/useSessionState'
 import { latestBriefing, kstTime } from '../lib/briefings'
 import type { Briefing } from '../lib/briefings'
 import './DailyBriefing.css'
@@ -13,7 +14,7 @@ const trendClass = (change: string) => /[-−](?:US\$|\$)?\s*\d/.test(change) ? 
 const eventTime = (at: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(at))
 
 export default function DailyBriefing() {
-  const [detail, setDetail] = useState<'stocks' | 'assets' | 'events'>('stocks')
+  const [detail, setDetail] = useSessionState<'stocks' | 'assets' | 'events'>('briefing.detail', 'stocks', v => ['stocks', 'assets', 'events'].includes(String(v)))
   const detailId = useId()
   const item = latestBriefing
   const home = item?.homepage

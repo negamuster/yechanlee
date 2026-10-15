@@ -154,3 +154,8 @@
   .stock-company-website { min-height: 44px; }
   .stock-skeleton > div:nth-child(2) { min-height: 300px; }
 }
+
+.stock-top-nav { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
+.stock-top-nav .stock-breadcrumb { margin-bottom: 0; }
+.stock-return-link { display: inline-flex; align-items: center; min-height: var(--ui-control-height); padding: 4px 0; color: var(--ui-text); font-size: var(--ui-font-control); text-decoration: none; }
+.stock-return-link:hover { text-decoration: underline; text-underline-offset: 3px; }

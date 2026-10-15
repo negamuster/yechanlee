@@ -1,3 +1,4 @@
+import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cachedSearch, searchStocks } from '../lib/stockSearch'
@@ -11,6 +12,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const [status, setStatus] = useState('')
   const input = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const returnState = useReturnOrigin()
   const search = aliases[query.trim()] || query.trim()
   useEffect(() => {
     const controller = new AbortController()
@@ -32,7 +34,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
     }, 350)
     return () => { live = false; controller.abort(); window.clearTimeout(timer); window.clearTimeout(timeout) }
   }, [search, opened])
-  function select(ticker: string) { setQuery(ticker); setOpened(false); input.current?.blur(); navigate(`/stock/${encodeURIComponent(ticker)}`); onSelect() }
+  function select(ticker: string) { setQuery(ticker); setOpened(false); input.current?.blur(); navigate(`/stock/${encodeURIComponent(ticker)}`, { state: returnState }); onSelect() }
   return <form className="site-search" onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setOpened(false) }} onSubmit={e => {
     e.preventDefault()
     const selected = matches[active] || matches.find(row => row.ticker === search.toUpperCase())
