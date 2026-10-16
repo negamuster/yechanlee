@@ -1,0 +1,281 @@
+{
+  "id": "2026-10-17",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026년 10월 16일",
+  "sessionDate": "2026-10-16",
+  "cutoffAt": "2026-10-16T22:04:20Z",
+  "summary": [
+    "미국 증시는 기술주 중심으로 하락했습니다. 나스닥 종합이 2.1% 내려 다우보다 낙폭이 컸고, S&P500 기술업종 75개 종목 중 68개가 하락해 매도 압력이 기술주에 집중됐습니다.[1]",
+    "코어위브의 기존 회사채 수익률이 이번 주 약 15%로 뛰면서 AI 인프라의 자금 조달과 수익 회수 시차가 쟁점이 됐습니다. 넷플릭스는 전날 콘텐츠 책임자 교체 발표 이후 2.9% 하락했습니다.[1][2][3]",
+    "9월 수입물가는 예상보다 크게 올랐지만 2년·10년 국채 파 수익률과 달러는 하락했습니다. 중동 공급 우려로 WTI 선물은 3.5% 상승해, 주가 약세·국채금리 하락과 유가 상승이 함께 나타났습니다.[4][5][6][7]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-10-17 07:04:20 KST · 최근 24시간: 10월 16일 07:04:20~10월 17일 07:04:20 KST · 직전 미국 거래일 2026-10-16 · 정규장 마감 10월 17일 05:00 KST · 16일은 공식 휴장일이 아니며, KST 토요일에 작성한 금요일 마감 요약입니다.[8]"
+    },
+    {
+      "kind": "heading",
+      "text": "미국장 흐름"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10월 16일 미국 증시는 하락했습니다. S&P500은 1.1%, 나스닥 종합은 2.1% 내렸고 다우는 0.3% 하락했습니다. S&P500 전체로는 절반을 조금 넘는 종목이 내렸지만 기술업종에서는 75개 중 68개가 하락해, 기술주에 매도 압력이 집중된 장이었습니다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "거시 지표는 물가 부담을 더했습니다. 이날 발표된 9월 수입물가는 전월 대비 1.1% 올라 Reuters 조사 예상 0.8%를 웃돌았고, 8월 상승률은 0.7%에서 0.5%로 낮아졌습니다. 연료 수입가격은 4.8%, 비연료는 0.7% 상승했습니다. 관세를 제외한 지수라는 점도 구분해야 합니다. Reuters는 발표 당일 국채금리와 달러가 내렸으며, 시장은 10월 금리 동결과 12월 인상 가능성을 반영하고 있다고 전했습니다.[4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "코어위브는 정규장에 12% 하락했으며, 기존 회사채의 시장 수익률은 이번 주 약 15%로 뛰었습니다.[2][7] Reuters는 데이터센터 건설비를 먼저 차입하지만 매출은 수년에 걸쳐 발생하는 구조에서, 높아진 조달 비용과 자금 공급의 지속 가능성이 투자자들의 우려라고 보도했습니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "넷플릭스는 전날 콘텐츠 책임자 교체를 발표한 뒤 2.9% 하락했습니다.[1] 회사는 피터 라이스가 10월 26일부터 벨라 바자리아를 대신해 시리즈·영화·라이브 이벤트 등 글로벌 콘텐츠 조직을 이끈다고 밝혔습니다.[3]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "채권에서는 재무부 기준 2년물 파 수익률이 전일보다 3bp, 10년물은 1bp 낮아졌습니다.[5] 달러도 하락했고 Reuters는 연준의 즉각적인 추가 긴축 기대가 약해진 점을 배경으로 전했습니다.[7] 반면 WTI 선물은 3.5% 올랐습니다. Reuters는 중동 긴장에 따른 원유 공급 우려가 상승 배경이라고 보도했습니다. 사우디 얀부 방향 미사일 요격 발표가 있었지만, 초기 보고에서 기반시설 피해는 확인되지 않았다는 설명도 함께 전했습니다.[6]"
+    },
+    {
+      "kind": "heading",
+      "text": "시장 수치"
+    },
+    {
+      "kind": "metadata",
+      "text": "주가지수 · 2026-10-16 미국 정규장 종가 · 단위: 포인트 · 전 거래일 대비 · 등락률은 AP의 소수 첫째 자리 반올림 기준"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,659.44 (−1.1%) · 다우 52,002.41 (−0.3%) · 나스닥 종합 26,140.03 (−2.1%) · 러셀2000 2,721.37 (−1.7%).[1]"
+    },
+    {
+      "kind": "metadata",
+      "text": "국채 · 재무부 호가 기반 파 수익률 · 2026-10-16 약 15:30 EDT / 10월 17일 04:30 KST 관측 · 10월 15일 대비 · 실거래 종가 아님"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2년물 4.74% (−3bp) · 10년물 5.09% (−1bp).[5]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "달러지수 101.87포인트 (−0.17%) · 10월 16일 14:57 EDT / 10월 17일 03:57 KST 갱신 Reuters 보도 스냅샷 · 개별 호가 시각 미표기 · 전 거래일 대비 · 정규장 마감값 아님.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "WTI 선물 +3.5% (배럴당 +3.44미국달러) · 브렌트 선물 +3.7% (배럴당 +3.94미국달러) · 2026-10-16 Reuters 결제 보도 · 전 거래일 대비 · 계약월 미확인으로 가격 수준 제외.[6]"
+    },
+    {
+      "kind": "heading",
+      "text": "주요 경제지표"
+    },
+    {
+      "kind": "metadata",
+      "text": "2026-10-16 21:30 KST 발표 · 대상 기간: 미국 2026년 9월 · 전월 대비 · 계절 미조정 · 실제·이전: BLS / 예상: Reuters 조사"
+    },
+    {
+      "kind": "paragraph",
+      "text": "수입물가: 실제 +1.1% / 예상 +0.8% / 이전 +0.5%(+0.7%에서 수정). 전년 대비 실제 +8.1%. 수출물가: 실제 +2.2% / 이전 +1.2%. 수입물가지수에는 관세가 포함되지 않습니다.[4]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "AP · 10월 16일 정규장 지수 결산·기술주 및 넷플릭스 반응",
+      "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-c27809783ae3230b44c26e5ee4bea056",
+      "links": [
+        {
+          "label": "AP · 기술업종 종목 수·넷플릭스 정규장 반응",
+          "url": "https://apnews.com/article/stocks-markets-us-ai-oil-tech-warsh-d2655f64db7ec8ae450525d58f97b628"
+        },
+        {
+          "label": "WSJ · 정규장 종가 대조",
+          "url": "https://www.wsj.com/finance/investing/u-s-stocks-fall-as-credit-fears-haunt-tech-sector-db50c887"
+        }
+      ],
+      "accessNote": "AP 두 원문의 결산과 시장 설명을 읽었습니다. 지수 종가 세 개는 읽을 수 있는 WSJ 마감 본문과 일치합니다. 등락률은 AP의 한 자리 반올림을 그대로 사용하며, 장중 Reuters 수치와 혼용하지 않았습니다. 절대 게시·갱신 시각은 미표기입니다."
+    },
+    {
+      "id": 2,
+      "label": "Reuters · 코어위브 회사채와 AI 인프라 자금조달 우려",
+      "url": "https://www.reuters.com/legal/transactional/coreweave-bond-rout-tests-markets-math-ai-buildout-2026-10-16/",
+      "accessNote": "본문의 기존 회사채 시장 수익률 약 15%와 건설비·매출 발생 시차에 대한 투자자 평가를 사용했습니다. 신규 발행 조건이나 국채 수익률이 아닙니다. 기사 첫 게시 10월 16일 10:03 UTC, 정확한 최종 갱신 시각은 미표기입니다."
+    },
+    {
+      "id": 3,
+      "label": "Netflix · 피터 라이스 콘텐츠 책임자 선임 공식 발표",
+      "url": "https://about.netflix.com/en/news/peter-rice-named-netflix-chief-content-officer",
+      "accessNote": "10월 15일 발표된 인사와 10월 26일 발효일을 구분했습니다. 전날 발표를 배경으로만 쓰고 16일 정규장 주가 반응은 AP로 확인했습니다. 날짜만 표시되어 발표가 최근 24시간 안에 있었는지는 확정하지 않았습니다."
+    },
+    {
+      "id": 4,
+      "label": "BLS · 9월 수출입물가 공식 발표",
+      "url": "https://www.bls.gov/news.release/ximpim.nr0.htm",
+      "links": [
+        {
+          "label": "BLS · 계절 미조정 등 기술 기준",
+          "url": "https://www.bls.gov/news.release/ximpim.tn.htm"
+        },
+        {
+          "label": "Reuters · 수입물가 예상·이전 값 수정·발표 당일 시장 반응",
+          "url": "https://www.reuters.com/business/us-import-prices-increase-more-than-expected-september-2026-10-16/"
+        }
+      ],
+      "accessNote": "실제와 수정된 이전 값은 BLS, 예상 0.8%와 8월 기존 0.7%는 Reuters 조사 보도 기준입니다. 발표일과 대상 월을 구분했습니다. Reuters의 발표 당일 금리·달러 하락 서술을 발표 직후의 독립적인 인과 추정으로 바꾸지 않았습니다."
+    },
+    {
+      "id": 5,
+      "label": "미국 재무부 · 10월 15·16일 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+      "accessNote": "표 머리말·15일 및 16일 행·방법론을 읽었습니다. 약 15:30 EDT 매수호가 기반 보간 파 수익률이며 실거래 종가가 아닙니다. 장중 국채 호가나 다른 관측 시각의 수익률과 비교하지 않았습니다. 공개 시각은 미표기입니다."
+    },
+    {
+      "id": 6,
+      "label": "Reuters · 원유 결제와 중동 공급 우려",
+      "url": "https://www.reuters.com/business/autos-transportation/oil-edges-down-investors-weigh-possible-us-sanctions-shadow-fleet-2026-10-16/",
+      "accessNote": "결제 반영 본문의 WTI +3.44달러·3.5%, 브렌트 +3.94달러·3.7%를 사용했습니다. 계약월이 없어 가격 수준은 제외했습니다. 얀부 기반시설 피해를 확정하거나 확인되지 않은 공격 소문을 사실로 쓰지 않았습니다. 정확한 최종 갱신 시각은 미표기입니다."
+    },
+    {
+      "id": 7,
+      "label": "Reuters / MarketScreener · 달러지수와 연준 긴축 기대",
+      "url": "https://uk.marketscreener.com/news/dollar-heads-for-weekly-loss-as-fed-hike-bets-fade-ai-jitters-linger-ce785cdadf89f42d",
+      "links": [
+        {
+          "label": "Reuters · 미국장 마감 반영 글로벌 시황·코어위브 주가",
+          "url": "https://www.reuters.com/world/china/global-markets-global-markets-2026-10-16/"
+        }
+      ],
+      "accessNote": "Reuters 재배포 본문을 읽었으며 독립 확인으로 세지 않습니다. 달러지수는 10월 16일 19:57 BST 갱신 기사 스냅샷으로 마감값이 아닙니다. 연결된 글로벌 시황의 마감 반영 본문에서 코어위브 −12%를 확인했습니다. 금은 현물 여부·관측 기준을 충분히 확인하지 못해 수치에서 제외했습니다."
+    },
+    {
+      "id": 8,
+      "label": "NYSE · 공식 휴장일·정규장 시간",
+      "url": "https://www.nyse.com/trade/hours-calendars",
+      "accessNote": "2026년 공식 휴장일표와 09:30~16:00 ET 정규장 시간을 읽었습니다. 10월 16일은 휴장일이 아니며, 미국 거래일과 KST 작성일이 다른 점을 명시했습니다."
+    }
+  ],
+  "homepage": {
+    "headline": "AI 차입 우려에 기술주 하락…원유는 공급 불안에 상승[1][2][6]",
+    "stocks": [
+      {
+        "name": "코어위브",
+        "ticker": "CRWV",
+        "change": "−12%",
+        "reason": "기존 회사채 수익률이 이번 주 약 15%로 뛰었습니다. Reuters는 데이터센터 건설비 지출과 매출 발생의 시차 속에서 차입 비용·자금 공급에 대한 우려가 커졌다고 전했습니다.",
+        "basis": "2026-10-16 미국 정규장 종가 · 전 거래일 대비 · 보도 반올림 기준",
+        "sourceIds": [2, 7]
+      },
+      {
+        "name": "넷플릭스",
+        "ticker": "NFLX",
+        "change": "−2.9%",
+        "reason": "전날 피터 라이스를 새 콘텐츠 책임자로 선임한다고 발표했습니다. 시리즈·영화·라이브 등 글로벌 콘텐츠 조직 수장을 교체한다는 소식 이후 주가가 하락했습니다.",
+        "basis": "2026-10-16 미국 정규장 종가 · 전 거래일 대비 · 인사 발표 10월 15일 / 발효 10월 26일",
+        "sourceIds": [1, 3]
+      }
+    ],
+    "assets": [
+      {
+        "label": "미국 10년물",
+        "value": "5.09%",
+        "change": "−1bp",
+        "basis": "재무부 호가 기반 파 수익률 · 2026-10-16 약 15:30 EDT / 10월 17일 04:30 KST · 10월 15일 대비 · 실거래 종가 아님",
+        "sourceIds": [5]
+      },
+      {
+        "label": "달러지수",
+        "value": "101.87포인트",
+        "change": "−0.17%",
+        "basis": "10월 16일 14:57 EDT / 10월 17일 03:57 KST 갱신 Reuters 보도 스냅샷 · 개별 호가 시각 미표기 · 전 거래일 대비 · 정규장 마감값 아님",
+        "sourceIds": [7]
+      },
+      {
+        "label": "WTI 선물",
+        "value": "계약월 미확인·가격 수준 제외",
+        "change": "+3.5% (배럴당 +3.44달러)",
+        "basis": "2026-10-16 Reuters 결제 보도 · 전 거래일 대비 · 계약월 미확인",
+        "sourceIds": [6]
+      }
+    ],
+    "events": []
+  },
+  "dataNote": "AI 작성·동일 모델 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 정보 기준 시각 이후 소식은 제외했고, 자산별 관측 시각은 서로 다릅니다.",
+  "corrections": [],
+  "publishedAt": "2026-10-16T22:09:11Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-10-16T22:09:11Z",
+    "checkedSources": [1, 2, 3, 4, 5, 6, 7, 8],
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "contentHash": "e70b9a1972bd80ea44cc3f3433bd5459bf56fbe791d0e5f1a7d77c62b4750e56",
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-c27809783ae3230b44c26e5ee4bea056",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "AP 지수 결산과 연결된 AP 시장 본문을 읽어 SPX 7659.44(−1.1%), Dow 52002.41(−0.3%), Nasdaq Composite 26140.03(−2.1%), Russell2000 2721.37(−1.7%) 확인. 등락률은 원문 한 자리 반올림을 유지. WSJ 접근 가능한 마감 본문의 앞 세 종가도 일치. 전체 SPX 절반 조금 넘게 하락, 기술업종75개 중7개 제외 하락이므로68개로 산술 확인. NFLX 정규장−2.9%, 전날 CCO 교체 발표 후라는 시간 순서 확인. 요약·본문·홈페이지와 대조. 절대 게시 시각 미표기."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.reuters.com/legal/transactional/coreweave-bond-rout-tests-markets-math-ai-buildout-2026-10-16/",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "실제 본문은 기존 CoreWeave 채권 가격 하락으로 이번 주 시장 수익률 약15%에 도달, 투자자들이 수년 후 수익을 낼 AI 프로젝트의 선행 차입비·조달 지속성을 재평가한다고 설명한다. 신규발행금리·국채금리·확정 부도로 바꾸지 않았다. 주가−12% 종가는7번의 마감 반영 본문에서 확인했다. 요약·본문·홈페이지reason 같은 쟁점. 첫 게시10/16 10:03UTC이나 최종 갱신 절대시각 미표기로 null."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://about.netflix.com/en/news/peter-rice-named-netflix-chief-content-officer",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "Netflix 10월15일 회사 발표: Peter Rice가 Bela Bajaria를 대신해10월26일CCO취임, scripted/unscripted series·film·live events 등 글로벌 콘텐츠조직 총괄. 인사발표와 발효일,16일 주가관측일을 구분. 전날 발표를 배경으로 쓰며 정확한 시각 미표기로 최근24시간 내 신규발표라 단정하지 않음. 회사 원문으로 주가 하락의 유일 원인을 추정하지 않고1번AP의 반응과 구분."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.bls.gov/news.release/ximpim.nr0.htm",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": "2026-10-16T12:30:00Z",
+        "basis": "primary",
+        "claimSummary": "BLS9월수입물가전월+1.1%,8월+0.5%,전년+8.1%,연료+4.8%,비연료+0.7%;수출전월+2.2%,8월+1.2%。10/16 08:30EDT=21:30KST발표. 기술노트도 읽어 계절미조정 확인. 연결Reuters본문에서 예상+0.8%,8월기존+0.7%→수정+0.5%,관세제외,당일금리·달러하락 및10월동결/12월긴축기대 확인. 발표직후인과로 과장하지 않고 요약·본문·지표행을 대조."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "표머리말·10/15및10/16행·방법론을 읽음.2Y4.77→4.74%,10Y5.10→5.09%,각−3bp/−1bp를(당일−전일)*100으로검산.약15:30EDT매수호가 기반 보간 파수익률로10/17 04:30KST.실거래종가나Reuters다른시각시장호가와혼용하지 않음.요약·본문·시장수치·홈페이지대조.공개시각미표기."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.reuters.com/business/autos-transportation/oil-edges-down-investors-weigh-possible-us-sanctions-shadow-fleet-2026-10-16/",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "reported",
+        "claimSummary": "결제반영본문:WTI+$3.44,+3.5%;Brent+$3.94,+3.7%,각미국달러/배럴및전거래일비.계약월이확인되지 않아가격수준제외.중동공급긴장이상승배경이라는보도에귀속.사우디주도연합의얀부방향미사일요격발표,초기보고기반시설피해없음이라는Rapidan설명을구분하고미확인공격소문제외.요약·본문·수치·홈페이지일치.최종갱신시각미표기."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://uk.marketscreener.com/news/dollar-heads-for-weekly-loss-as-fed-hike-bets-fade-ai-jitters-linger-ce785cdadf89f42d",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": "2026-10-16T18:57:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters재배포본문DXY101.87,−0.17%,연준즉각추가긴축기대약화·달러하락확인.갱신10/16 19:57BST=18:57UTC=14:57EDT=10/17 03:57KST로검산;개별호가시각미표기의기사스냅샷이며마감값아님.연결글로벌시황은미국장마감반영명시·CoreWeave−12%확인.글로벌기사의다른시각DXY변동률은혼용하지않음.금현물기준불충분으로제외.재배포는독립확인아님.요약·본문·홈페이지대조."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-10-16T22:08:27Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "NYSE2026공식휴장일표·정규장09:30~16:00ET확인.10/16휴장아님,16:00EDT=10/17 05:00KST.미국거래일금요일과KST작성일토요일구분.실제고정cutoff10/17 07:04:20KST및이전24시간10/16 07:04:20시작을metadata와대조.정적안내게시시각미표기."
+      }
+    ]
+  }
+}
