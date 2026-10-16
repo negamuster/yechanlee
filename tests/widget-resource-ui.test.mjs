@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import './helpers/register-tsx.mjs'
 import { createElement } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { renderToStaticMarkup } from './helpers/render-static.mjs'
 import { MemoryRouter } from 'react-router-dom'
 import { load } from 'cheerio'
 

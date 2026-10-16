@@ -32,7 +32,7 @@ test('mobile home starts with one intact summary and folded details while retain
   assert.ok($('.mobile-briefing-meta').text().includes(edition.sessionDate))
   assert.equal($('.mobile-briefing-meta time').attr('datetime'), edition.cutoffAt)
   assert.ok($('.mobile-briefing-meta').text().includes('KST'))
-  assert.equal($('.mobile-briefing-detail-content[hidden]').length, 1)
+  assert.equal($('.mobile-briefing-detail-content[aria-hidden="true"][inert]').length, 1)
   assert.equal($('.mobile-briefing-detail-controls button[aria-expanded="true"]').length, 0)
   assert.ok($('.mobile-briefing-disclaimer').text().includes('실시간 시황이 아닙니다'))
   assert.ok($(`a[href="/briefings/${edition.id}#source-1"]`).length)
@@ -49,7 +49,7 @@ test('expanded mobile summary preserves every original paragraph and source refe
 })
 test('mobile asset cards retain full values, changes, observation basis and source links', () => {
   const $ = card({ summary: false, section: 'assets' })
-  assert.equal($('.mobile-briefing-detail-content[hidden]').length, 0)
+  assert.equal($('.mobile-briefing-detail-content[aria-hidden="true"]').length, 0)
   assert.equal($('.mobile-briefing-assets > div').length, edition.homepage.assets.length)
   assert.equal($('.mobile-briefing-detail-content table').length, 0)
   for (const asset of edition.homepage.assets) {

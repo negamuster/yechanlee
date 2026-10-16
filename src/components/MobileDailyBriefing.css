@@ -21,10 +21,9 @@
 .mobile-briefing-detail-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .mobile-briefing-detail-controls button { display: flex; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; min-height: 44px; padding: 8px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-muted); font: inherit; font-size: var(--ui-font-control); cursor: pointer; }
 .mobile-briefing-detail-controls button small { margin-left: 3px; font-size: var(--ui-font-caption); font-variant-numeric: tabular-nums; }
-.mobile-briefing-detail-controls button > span:last-child { font-size: 16px; }
+.mobile-briefing-detail-controls .mobile-briefing-detail-symbol { font-size: 16px; }
 .mobile-briefing-detail-controls button[aria-expanded=true] { background: var(--ui-selected); color: #fff; border-color: var(--ui-selected); }
-.mobile-briefing-detail-content:not([hidden]) { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--ui-border); }
-.mobile-briefing-detail-content[hidden] { display: none; }
+.mobile-briefing-detail-content .briefing-disclosure-inner { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--ui-border); }
 .mobile-briefing-detail-content .briefing-section { border: 0; padding: 0; }
 .mobile-briefing-detail-content .briefing-stocks { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 0; }
 .mobile-briefing-detail-content .briefing-stocks > li + li { border-top: 1px solid var(--ui-border); padding-top: 14px; }

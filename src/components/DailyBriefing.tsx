@@ -6,6 +6,8 @@ import { briefingSections, withoutCitations } from '../lib/briefingPresentation'
 import { CitedText } from './BriefingReferences'
 import BriefingDetails from './BriefingDetails'
 import MobileDailyBriefing from './MobileDailyBriefing'
+import SelectionButton from './SelectionButton'
+import { BriefingTransition } from './BriefingMotion'
 import './DailyBriefing.css'
 export default function DailyBriefing({ mobile = false }: { mobile?: boolean }) {
   return mobile ? <MobileDailyBriefing key={latestBriefing?.id ?? 'empty'} item={latestBriefing} /> : <DesktopDailyBriefing />
@@ -50,10 +52,10 @@ function DesktopDailyBriefing() {
 
       {home && <div className="briefing-expanded">
         {!!sections.length && <div className="briefing-detail-tabs" data-scroll-key="briefing-tabs" role="group" aria-label="브리핑 상세 보기">
-          {sections.map(section => <button type="button" key={section.key} aria-pressed={activeDetail === section.key} aria-controls={detailId} onClick={() => setDetail(section.key)}>{section.label} <span>{section.count}</span></button>)}
+          {sections.map(section => <SelectionButton key={section.key} selected={activeDetail === section.key} selectionId={`${detailId}-selection`} aria-controls={detailId} onClick={() => setDetail(section.key)}>{section.label} <span className="briefing-detail-count">{section.count}</span></SelectionButton>)}
         </div>}
         <div id={detailId} className="briefing-detail-panel">
-          <BriefingDetails item={item} section={activeDetail} />
+          <BriefingTransition section={activeDetail}><BriefingDetails item={item} section={activeDetail} /></BriefingTransition>
         </div>
       </div>}
 

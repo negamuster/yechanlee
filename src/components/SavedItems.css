@@ -4,6 +4,18 @@
 .save-button:focus-visible, .saved-page a:focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
 .save-button-icon { display:inline-flex; align-items:center; justify-content:center; width:var(--ui-control-height); height:var(--ui-control-height); padding:8px; }
 .save-button-icon svg { display:block; width:18px; height:18px; flex-shrink:0; }
+.anthracite-toaster[data-sonner-toaster] { z-index: 210; width: min(356px, calc(100vw - 28px)); font-family: var(--font-ui); }
+.anthracite-toaster[data-sonner-toaster] [data-sonner-toast] { width: 100%; }
+.anthracite-toast[data-sonner-toast][data-styled="true"] { padding: 12px 14px; gap: 10px; border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); background: #fff; color: var(--ui-text); box-shadow: 0 5px 22px #0f172a14; font-size: var(--ui-font-control); line-height: 1.6; }
+.anthracite-toast[data-sonner-toast][data-styled="true"] [data-button] { flex-shrink: 0; min-height: 32px; height: auto; padding: 5px 9px; border-radius: var(--ui-chip-radius); background: var(--ui-selected); color: #fff; font: inherit; }
+.anthracite-toast[data-sonner-toast][data-styled="true"] [data-close-button] { position: static; transform: none; flex-shrink: 0; order: 3; width: 32px; height: 32px; margin-left: 0; border: 0; background: transparent; color: var(--ui-muted); }
+.anthracite-toast[data-sonner-toast] :is([data-button], [data-close-button]):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+@media (max-width: 700px), (pointer: coarse) {
+  .anthracite-toast[data-sonner-toast][data-styled="true"] { flex-wrap: wrap; }
+  .anthracite-toast[data-sonner-toast][data-styled="true"] [data-content] { flex: 1; min-width: 70px; }
+  .anthracite-toast[data-sonner-toast][data-styled="true"] :is([data-button], [data-close-button]) { min-height: 44px; }
+  .anthracite-toast[data-sonner-toast][data-styled="true"] [data-close-button] { width: 44px; }
+}
 .movers-list > li { display:flex; align-items:center; gap:10px; }
 .movers-list .mover-row { flex:1; min-width:0; }
 .movers-list .save-button { align-self:center; padding:8px; font-size:var(--ui-font-meta); }

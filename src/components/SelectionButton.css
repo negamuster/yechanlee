@@ -1,0 +1,4 @@
+.ui-selection-button.ui-selection-button { position: relative; isolation: isolate; }
+.ui-selection-button.ui-selection-button:is([aria-pressed="true"], [aria-expanded="true"]) { background: transparent; border-color: var(--ui-selected); color: #fff; z-index: 1; }
+.ui-selection-button > .ui-selection-highlight { position: absolute; inset: -1px; z-index: -1; border-radius: inherit; background: var(--ui-selected); pointer-events: none; opacity: 1; }
+.ui-selection-button > .ui-selection-label { display: inline-flex; align-items: center; justify-content: inherit; gap: inherit; width: 100%; font: inherit; opacity: 1; }

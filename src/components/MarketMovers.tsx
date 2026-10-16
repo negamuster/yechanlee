@@ -7,6 +7,7 @@ import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
 import ResourceState, { DataNotice } from './ResourceState'
+import SelectionButton from './SelectionButton'
 import './MarketMovers.css'
 
 type Category = 'turnover' | 'gainers' | 'losers'
@@ -67,8 +68,8 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
       </div>
       {overview && <div id={infoId} hidden={!infoOpen} className="movers-info widget-info-panel" data-widget-interactive>{info}</div>}
       <div className="movers-tabs" role="group" aria-label="종목 순위 기준">
-        {categories.map(tab => <button key={tab.id} type="button" aria-pressed={category === tab.id}
-          onClick={() => setCategory(tab.id)}>{tab.label}</button>)}
+        {categories.map(tab => <SelectionButton key={tab.id} selected={category === tab.id} selectionId={`${infoId}-category`}
+          onClick={() => setCategory(tab.id)}>{tab.label}</SelectionButton>)}
       </div>
       
       <div className="movers-status">

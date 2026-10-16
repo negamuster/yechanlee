@@ -1,5 +1,6 @@
 import RouteLoadBoundary from './components/RouteLoadBoundary'
 import { lazy, Suspense } from 'react'
+import { MotionConfig } from 'motion/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import RouteScroll from './components/RouteScroll'
 const Briefings = lazy(() => import('./pages/Briefings'))
@@ -25,6 +26,7 @@ const Form13F = lazy(() => import('./pages/Form13F'))
 function App() {
   return (
     <BrowserRouter>
+      <MotionConfig reducedMotion="user" transition={{ duration: 0.18, ease: 'easeOut' }}>
       <SavedItemsProvider>
       <RouteScroll />
       <SiteHeader />
@@ -51,6 +53,7 @@ function App() {
       </Suspense></RouteLoadBoundary>
       <MobileNavigation />
     </SavedItemsProvider>
+      </MotionConfig>
     </BrowserRouter>
   )
 }

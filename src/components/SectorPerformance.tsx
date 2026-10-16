@@ -6,6 +6,7 @@ import ResourceState from './ResourceState'
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
+import SelectionButton from './SelectionButton'
 import './SectorPerformance.css'
 const periods = [['1d', '1일'], ['1w', '1주'], ['1m', '1개월'], ['ytd', '연초 이후']] as const
 type Period = typeof periods[number][0]
@@ -37,7 +38,7 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
     </div>
     {compact && <div id={infoId} hidden={!infoOpen} className="widget-info-panel" data-widget-interactive>{dataInfo}</div>}
     {!compact && <p className="sector-description">11개 업종 ETF로 보는 시장의 흐름 · 완료된 거래일 기준</p>}
-    <div className="sector-controls"><div className="sector-periods" aria-label="비교 기간">{periods.map(([key, label]) => <button key={key} aria-pressed={period === key} onClick={() => setPeriod(key)}>{label}</button>)}</div>
+    <div className="sector-controls"><div className="sector-periods" role="group" aria-label="비교 기간">{periods.map(([key, label]) => <SelectionButton key={key} selected={period === key} selectionId={`${infoId}-period`} onClick={() => setPeriod(key)}>{label}</SelectionButton>)}</div>
       {!compact && <label><input type="checkbox" checked={relative} onChange={e => setRelative(e.target.checked)} /> VOO 대비 초과성과</label>}
     </div>
     <ResourceState label="업종 데이터" loading={loading} error={error} hasData={!!data} stale={data?.stale}
