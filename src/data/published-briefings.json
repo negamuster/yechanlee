@@ -1,5 +1,239 @@
 [
   {
+    "id": "2026-10-20",
+    "reviewMode": "automated",
+    "title": "미국 증시 요약 | 2026년 10월 19일",
+    "sessionDate": "2026-10-19",
+    "cutoffAt": "2026-10-19T22:00:41Z",
+    "publishedAt": "2026-10-19T22:06:37Z",
+    "summary": [
+      "미국 증시는 기술주 중심으로 반등해 나스닥 종합이 1.1%, S&P500이 0.4% 올랐지만 다우는 0.1% 내렸습니다. AI·기술주 밖에서는 하락한 종목이 많아 시장 전반의 동반 상승과는 거리가 있었습니다.[1]",
+      "클리블랜드클리프스는 조정 EBITDA가 회사의 종전 가이던스를 넘고 이익 전망도 개선되면서 16.3% 올랐습니다. 아마존은 모건스탠리의 최선호주 선정·목표주가 상향 소식 속에 4.98% 상승했습니다.[1][2][3]",
+      "미국 10년물 파 수익률은 6bp 올라 5.15%를 기록했고, Reuters는 달러 강세와 높은 금리가 금 가격을 눌렀다고 전했습니다. 금 현물은 14:09 EDT 관측에서 0.4% 낮았고, 브렌트 선물은 결제 기준 0.3% 하락했습니다.[1][4][5]"
+    ],
+    "blocks": [
+      {
+        "kind": "metadata",
+        "text": "작성 기준 2026-10-20 07:00:41 KST · 최근 24시간: 2026-10-19 07:00:41~10월 20일 07:00:41 KST · 직전 미국 정규장 거래일 2026-10-19 · 정규장 마감 10월 20일 05:00 KST · NYSE 공식 휴장일표상 19일은 휴장일이 아닙니다. 주식 등락률은 별도 표시가 없으면 정규장 기준입니다.[6]"
+      },
+      {
+        "kind": "heading",
+        "text": "기술주 반등과 기업별 재료"
+      },
+      {
+        "kind": "paragraph",
+        "text": "19일 미국장은 나스닥의 반등과 다우의 약세가 엇갈렸습니다. AP는 AI·기술주 외 다수 종목이 하락했다고 전했습니다. 지수 상승이 넓게 퍼진 장이라기보다 기술주 회복의 영향이 컸던 하루였습니다.[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "금리 부담은 가라앉지 않았습니다. 미국 재무부의 10년물 파 수익률은 금요일보다 6bp 높아졌습니다.[4] Reuters는 달러 강세와 높은 국채 수익률이 이자를 지급하지 않는 금의 매력을 낮췄다고 설명했습니다. 주식 반등과 별개로 금리·달러의 압박이 함께 관측됐습니다.[5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "철강업체 클리블랜드클리프스는 19일 장전 발표한 3분기 조정 EBITDA가 6억1,200만달러로 회사의 종전 안내치 5억7,500만달러를 웃돌았고, 주가는 16.3% 뛰었습니다.[1][2] 회사는 판매가격·물량·단위원가가 전분기보다 개선됐다고 설명하면서 4분기 조정 EBITDA를 약 7억1,500만달러로 제시했으며, 역사적 수준을 밑도는 수입과 고객의 국내 공급망 선호 등을 이유로 2027년 이익 전망도 좋아졌다고 밝혔습니다.[2]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "아마존은 4.98% 상승한 262.45달러로 마감했습니다. The Motley Fool은 모건스탠리가 비중확대 의견을 유지하면서 아마존을 최선호주로 선정하고 목표주가를 335달러에서 350달러로 높였으며, AI 고객 확대에 따른 AWS 성장 기대 등을 근거로 들었다고 전했습니다.[3]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "이번 주 기업 일정에는 메타의 3분기 실적 발표가 있습니다. 회사가 사전 공지한 발표 시점은 미국 현지 21일 장 마감 후이고, 실적을 설명하는 콘퍼런스콜은 한국 시각 22일 05:30에 시작합니다.[8]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "채권 수치는 재무부가 약 15:30 EDT의 매수호가에서 보간한 파 수익률로, 실거래 종가와는 다릅니다.[4] 금 현물은 14:09 EDT 관측에서 온스당 4,147.87달러로 0.4% 하락했습니다.[5] 브렌트 선물은 결제 기준 0.3% 내렸습니다.[1]"
+      },
+      {
+        "kind": "heading",
+        "text": "시장 수치"
+      },
+      {
+        "kind": "metadata",
+        "text": "주가지수 · 2026-10-19 미국 정규장 종가 · 단위: 포인트 · 10월 16일 대비 · 등락률은 AP 보도의 소수 첫째 자리 값"
+      },
+      {
+        "kind": "paragraph",
+        "text": "S&P500 7,690.73 (+0.4%) · 다우 51,966.03 (−0.1%) · 나스닥 종합 26,430.89 (+1.1%).[1]"
+      },
+      {
+        "kind": "metadata",
+        "text": "국채 · 재무부 호가 기반 파 수익률 · 2026-10-19 약 15:30 EDT / 10월 20일 04:30 KST 관측 · 10월 16일 대비 · 실거래 종가 아님"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2년물 4.77% (+3bp) · 10년물 5.15% (+6bp).[4]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "금 현물 4,147.87미국달러/온스 (−0.4%) · 2026-10-19 14:09 EDT / 10월 20일 03:09 KST 장중 관측 · Reuters 일일 등락률 · 비교 호가 시각 미표기.[5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "브렌트 원유 선물 −0.3% · 2026-10-19 결제 AP 보도 · 10월 16일 대비 · 계약월 미확인으로 가격 수준 제외.[1]"
+      },
+      {
+        "kind": "heading",
+        "text": "기준 시각 이후 72시간 공식 일정"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-10-20 21:30 KST · 미국 9월 신규 주택건설(New Residential Construction). 확인할 항목: 주택착공·건축허가·완공 건수.[7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-10-22 05:30 KST (미국 현지 21일의 익일) · 메타 2026년 3분기 실적 콘퍼런스콜. 확인할 항목: 3분기 실적과 경영진 설명. 실적 발표 자체는 미국 현지 21일 장 마감 후이며 표기한 시각은 콜 시작입니다.[8]"
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "AP · 10월 19일 미국장 마감",
+        "url": "https://apnews.com/article/stocks-markets-oil-us-ai-494fbe4361a0360b2f6368e7a6d8f058",
+        "accessNote": "마감 본문을 읽고 지수 종가·시장 성격·클리블랜드클리프스 최종 등락률·브렌트 결제를 확인했습니다. 지수 등락률은 AP의 소수 첫째 자리 정밀도를 유지했습니다. 브렌트 계약월이 없어 가격 수준은 제외했습니다. 정확한 최종 게시·갱신 시각은 미표기입니다."
+      },
+      {
+        "id": 2,
+        "label": "Cleveland-Cliffs IR · 3분기 실적과 회사 전망",
+        "url": "https://www.clevelandcliffs.com/news/news-releases/detail/705/cleveland-cliffs-reports-third-quarter-2026-results",
+        "links": [
+          {
+            "label": "Cleveland-Cliffs · 장전 발표 사전 공지",
+            "url": "https://www.clevelandcliffs.com/news/news-releases/detail/703/cleveland-cliffs-to-announce-third-quarter-2026-earnings"
+          }
+        ],
+        "accessNote": "19일 발표한 9월 말 종료 분기 본문을 읽었습니다. 실제 조정 EBITDA는 종전 회사 가이던스와 비교했으며 애널리스트 예상으로 바꾸지 않았습니다. 4분기·2027년 수치는 회사 전망으로 귀속했습니다. 공식 페이지는 날짜만 표시하며 장전 발표는 공지·당일 오전 콜 안내와 대조했습니다."
+      },
+      {
+        "id": 3,
+        "label": "The Motley Fool·WSJ · 아마존 종가와 모건스탠리 평가",
+        "url": "https://www.fool.com/coverage/stock-market-today/2026/10/19/stock-market-today-oct-19-amazon-surges-on-morgan-stanley-top-pick-and-usd350-price-target/",
+        "links": [
+          {
+            "label": "WSJ · 목표주가 상향과 장중 약 5% 상승 보도",
+            "url": "https://www.wsj.com/livecoverage/stock-market-today-dow-sp-500-nasdaq-10-19-2026/card/stocks-to-watch-intel-cxmt-french-banks-EEArMscySni9CXncwOKX"
+          }
+        ],
+        "accessNote": "두 기사 본문을 읽었습니다. 아마존 종가·4.98%는 Fool의 명시적 마감 문장만 사용하고, WSJ의 장중 약 5%를 종가로 대체하지 않았습니다. 비중확대 유지·목표가 상향·AWS 기대는 보도된 모건스탠리 평가이며 원 리서치 보고서를 읽었다고 주장하지 않습니다. Fool의 별도 지수·거래량 수치는 사용하지 않았습니다. 절대 게시·갱신 시각은 미표기입니다."
+      },
+      {
+        "id": 4,
+        "label": "미국 재무부 · 10월 16·19일 파 수익률",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "accessNote": "표 머리말·16일과 19일 행·방법론을 읽었습니다. 약 15:30 뉴욕연은 매수호가 기반 보간 파 수익률이며 실거래 종가가 아닙니다. AP의 별도 시장금리 관측치와 혼합해 bp를 계산하지 않았습니다."
+      },
+      {
+        "id": 5,
+        "label": "Reuters · 금 현물·달러·금리 흐름",
+        "url": "https://www.reuters.com/world/india/gold-edges-higher-softer-oil-fed-rate-outlook-focus-2026-10-19/",
+        "accessNote": "갱신된 본문의 14:09 EDT 현물 가격·하락률과 달러/국채 수익률 배경을 읽었습니다. URL의 초반 상승 제목 대신 실제 본문을 사용했습니다. 금 선물과 현물을 섞지 않았고, 기사의 금리 상대 등락률 0.6%를 0.6bp로 옮기지 않았습니다. 첫 게시 19일 03:11 UTC, 최종 갱신 절대시각은 미표기입니다."
+      },
+      {
+        "id": 6,
+        "label": "NYSE · 공식 휴장일·정규장 시간",
+        "url": "https://www.nyse.com/trade/hours-calendars",
+        "accessNote": "2026년 공식 휴장일표와 09:30~16:00 ET 정규장 시간을 읽었습니다. 19일 월요일 거래와 20일 KST 마감 날짜를 구분했습니다."
+      },
+      {
+        "id": 7,
+        "label": "미국 Census · 주택건설 일정과 공표 범위",
+        "url": "https://www.census.gov/construction/soc/schedule.html",
+        "links": [
+          {
+            "label": "Census · 신규 주택건설 통계의 공표 항목",
+            "url": "https://www.census.gov/construction/nrc/index.html"
+          },
+          {
+            "label": "Census · 기존 발표의 EDT 표기·다음 발표일 안내",
+            "url": "https://www.census.gov/construction/nrc/pdf/newresconst.pdf"
+          }
+        ],
+        "accessNote": "일정표의 9월 자료·10월 20일 08:30과 소개 원문의 착공·허가·완공 공표 범위를 읽었습니다. 기존 9월 17일 PDF에서 EDT·다음 발표일을 확인했으며 그 옛 통계 결과는 사용하지 않았습니다. 예상치는 포함하지 않았습니다."
+      },
+      {
+        "id": 8,
+        "label": "Meta IR · 3분기 실적 발표·콘퍼런스콜 일정",
+        "url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-to-Announce-Third-Quarter-2026-Results/default.aspx",
+        "accessNote": "10월 12일 공지 본문의 21일 장 마감 후 발표·13:30 PT/16:30 ET 콘퍼런스콜을 읽었습니다. 사전 공지와 아직 발표되지 않은 실적을 구분했고, 콜 시작을 실적 발표 정확한 시각으로 쓰지 않았습니다. 절대 갱신 시각은 미표기입니다."
+      }
+    ],
+    "dataNote": "AI 작성·동일 모델 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 관측 기준을 충분히 확인하지 못한 러셀2000·달러지수·WTI 수치는 생략했습니다.",
+    "corrections": [],
+    "homepage": {
+      "headline": "나스닥 반등·다우 약세…클리프스 실적 호조[1][2]",
+      "stocks": [
+        {
+          "name": "클리블랜드클리프스",
+          "ticker": "CLF",
+          "change": "+16.3%",
+          "reason": "3분기 조정 EBITDA가 회사 종전 가이던스를 웃돌고 4분기 추가 개선을 예고했습니다. 회사는 판매가격·물량·원가 개선과 더 나아진 2027년 이익 전망을 설명했습니다.",
+          "basis": "2026-10-19 정규장 종가 · 10월 16일 대비 · 실적은 19일 장전 발표",
+          "sourceIds": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "아마존",
+          "ticker": "AMZN",
+          "change": "+4.98%",
+          "reason": "모건스탠리가 비중확대를 유지하며 최선호주로 선정하고 목표가를 335→350달러로 높였다는 보도입니다. 근거로 AWS의 AI 수요 성장 기대 등을 제시했다고 전했습니다.",
+          "basis": "2026-10-19 정규장 종가 262.45미국달러 · 10월 16일 대비 · WSJ 장중 약 5%와 구분",
+          "sourceIds": [
+            3
+          ]
+        }
+      ],
+      "assets": [
+        {
+          "label": "미국 10년물",
+          "value": "5.15%",
+          "change": "+6bp",
+          "basis": "2026-10-19 약 15:30 EDT / 10월 20일 04:30 KST · 10월 16일 대비 · 재무부 호가 기반 파 수익률 · 실거래 종가 아님",
+          "sourceIds": [
+            4
+          ]
+        },
+        {
+          "label": "금 현물",
+          "value": "4,147.87미국달러/온스",
+          "change": "−0.4%",
+          "basis": "2026-10-19 14:09 EDT / 10월 20일 03:09 KST 장중 · Reuters 일일 등락률 · 비교 호가 시각 미표기",
+          "sourceIds": [
+            5
+          ]
+        },
+        {
+          "label": "브렌트 원유 선물",
+          "value": "계약월 미확인·가격 수준 제외",
+          "change": "−0.3%",
+          "basis": "2026-10-19 결제 AP 보도 · 10월 16일 대비 · 계약월 미확인",
+          "sourceIds": [
+            1
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-10-20T21:30:00+09:00",
+          "label": "미국 9월 신규 주택건설",
+          "detail": "주택착공·건축허가·완공 건수 확인",
+          "sourceIds": [
+            7
+          ]
+        },
+        {
+          "at": "2026-10-22T05:30:00+09:00",
+          "label": "메타 2026년 3분기 실적 콘퍼런스콜",
+          "detail": "3분기 실적과 경영진 설명 확인 · 미국 현지 21일의 익일 · 실적 발표 시각과 구분",
+          "sourceIds": [
+            8
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "2026-10-19",
     "reviewMode": "automated",
     "title": "미국 증시 요약 | 2026년 10월 16일",
