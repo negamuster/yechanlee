@@ -24,7 +24,7 @@
 .financial-table-scroll .is-negative { color: #ad4a43; }
 .financial-audit { margin-top: 16px; font-size: 12px; color: var(--ui-muted); line-height: 1.8; }
 .financial-audit summary { cursor: pointer; color: var(--ui-text); padding: 10px 0; }
-.financial-audit label { display: block; margin: 10px 0; }
+.financial-audit label { display: inline-block; margin: 10px 0; }
 .financial-audit a { color: var(--ui-text); text-underline-offset: 3px; }
 .financial-audit-metric { margin-top: 14px; border-top: 1px solid var(--ui-border); padding-top: 10px; }
 .financial-audit-metric h4 { margin: 0; color: var(--ui-text); font-size: 12px; font-weight: 500; }

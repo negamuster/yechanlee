@@ -42,7 +42,7 @@ export default function FinancialHistory({ annual, quarterly = [], ttm = [], sta
     {stale && <p className="stock-alert" role="status">재무 갱신에 실패해 이전에 확인한 추이를 표시합니다.</p>}
     {unavailable && <button className="stock-text-button" type="button" disabled={loading} onClick={onRetry} aria-label="재무 추이 다시 조회">{loading ? '조회 중…' : '재무 자료 다시 조회'}</button>}
     {rows.length ? <>
-      <label className="financial-metric-picker" htmlFor={`${id}-metric`}>차트 지표<select id={`${id}-metric`} value={metricKey} onChange={event => setMetricKey(event.target.value)}>{financialMetrics.map(m => <option key={m.key} value={m.key}>{m.label}</option>)}</select></label>
+      <div className="financial-metric-picker"><label htmlFor={`${id}-metric`}>차트 지표</label><select id={`${id}-metric`} value={metricKey} onChange={event => setMetricKey(event.target.value)}>{financialMetrics.map(m => <option key={m.key} value={m.key}>{m.label}</option>)}</select></div>
       <TrendChart rows={rows} metric={metric} label={label} />
       <div className="financial-table-scroll" role="region" aria-label={`${label} 재무 추이 표, 좌우로 이동 가능`} tabIndex={0}>
         <table><caption>{label} 재무 추이 · 최신 기간부터 · 각 셀의 보고 통화 기준</caption><thead><tr><th scope="col">지표 / 기간 종료</th>{rows.map(row => <th scope="col" key={row.end_date}>{financialDate(row.end_date)}<small>{row.accounting_standard === 'ifrs-full' ? 'IFRS' : 'US GAAP'}{row.calculated ? ' · 계산' : ''}{row.amended ? ' · 수정 공시' : ''}</small></th>)}</tr></thead>
@@ -51,7 +51,7 @@ export default function FinancialHistory({ annual, quarterly = [], ttm = [], sta
         </table>
       </div>
       <details className="financial-audit"><summary>계산·공시 근거 확인</summary>
-        <label htmlFor={`${id}-audit`}>확인할 기간<select id={`${id}-audit`} value={audit.end_date} onChange={event => setAuditEnd(event.target.value)}>{rows.map(row => <option key={row.end_date} value={row.end_date}>{financialDate(row.end_date)} 종료</option>)}</select></label>
+        <div><label htmlFor={`${id}-audit`}>확인할 기간</label><select id={`${id}-audit`} value={audit.end_date} onChange={event => setAuditEnd(event.target.value)}>{rows.map(row => <option key={row.end_date} value={row.end_date}>{financialDate(row.end_date)} 종료</option>)}</select></div>
         <p>{financialDate(audit.start_date)} ~ {financialDate(audit.end_date)} · 제출 {financialDate(audit.filing_date)}{audit.amended ? ' · 수정 공시' : ''} · {isWebUrl(audit.source_filing_url) && <a href={audit.source_filing_url} target="_blank" rel="noopener noreferrer">기간 기준 원문 공시 ↗</a>}</p>
         {financialMetrics.map(m => { const value = financialValue(audit, m); return <div className="financial-audit-metric" key={m.key}><h4>{m.label} · {value ? `${stockMoney(value.value, value.unit)} ${value.unit}` : '미확인'}</h4>
           {value?.basis && <p>Capex 범위: {financialBasis(value.basis)}</p>}{value && <p>{value.calculation ? calculationLabel[value.calculation] : '공시값'}{value.sources?.some(s => s.revised) ? ' · 이전 제출 공시와 값이 다릅니다.' : ''}</p>}
