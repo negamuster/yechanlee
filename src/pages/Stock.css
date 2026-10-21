@@ -55,10 +55,11 @@
 .stock-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .stock-section-heading > div > .stock-note { margin-top: 4px; }
 .stock-page .stock-note { font-size: var(--ui-font-meta); color: var(--ui-muted); line-height: 1.6; overflow-wrap: anywhere; }
-.stock-periods { display: flex; align-items: center; gap: 3px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 3px; }
+.stock-periods { display: flex; align-items: center; max-width: 100%; gap: 3px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 3px; }
 .stock-periods button { min-height: 30px; min-width: 42px; border: 0; border-radius: 5px; padding: 4px 9px; background: transparent; color: var(--ui-muted); font-size: var(--ui-font-control); cursor: pointer; }
 .stock-periods button:hover { background: var(--ui-hover); }
 .stock-periods button[aria-pressed=true] { background: var(--ui-selected); color: #fff; }
+.stock-chart-source { margin-top: 16px; line-height: 1.7; }
 .stock-chart-period { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px; font-size: var(--ui-font-meta); color: var(--ui-muted); margin-bottom: 16px !important; }
 .stock-chart-period strong { font-size: 15px; font-variant-numeric: tabular-nums; }
 .stock-chart-period > span { font-size: var(--ui-font-caption); }
@@ -159,3 +160,8 @@
 .stock-top-nav .stock-breadcrumb { margin-bottom: 0; }
 .stock-return-link { display: inline-flex; align-items: center; min-height: var(--ui-control-height); padding: 4px 0; color: var(--ui-text); font-size: var(--ui-font-control); text-decoration: none; }
 .stock-return-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 700px) {
+  .stock-periods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
+  .stock-periods button { min-width: 0; min-height: 44px; }
+}

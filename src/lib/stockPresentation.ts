@@ -22,7 +22,7 @@ export function stockChartWindow(bars: DailyBar[], days: number) {
   const changePercent = selected.length > 1 && first && last ? (last.c / first.c - 1) * 100 : null
   return { bars: selected, first, last, changePercent }
 }
-export function nearestStockBar(bars: DailyBar[], fraction: number) {
+export function nearestStockBar(bars: readonly { t: number }[], fraction: number) {
   if (!bars.length) return -1
   const target = bars[0].t + Math.max(0, Math.min(1, fraction)) * (bars.at(-1)!.t - bars[0].t)
   return bars.reduce((closest, bar, index) => Math.abs(bar.t - target) < Math.abs(bars[closest].t - target) ? index : closest, 0)

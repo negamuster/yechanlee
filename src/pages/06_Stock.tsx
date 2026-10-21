@@ -5,14 +5,16 @@ import { Link, useParams } from 'react-router-dom'
 import { useReadArticles } from '../hooks/useReadArticles'
 import { BookmarkButton, WatchButton } from '../components/SavedItemsProvider'
 import { useStockSnapshot } from '../hooks/useStockSnapshot'
+import { useStockChart } from '../hooks/useStockChart'
 import { quoteFromBars } from '../lib/stockSnapshot'
-import type { DailyBar } from '../lib/stockSnapshot'
-import { nearestStockBar, stockChartWindow, stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
+import { nearestStockBar, stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
+import { stockChartPeriods, chartIntervalLabel, chartPointTime } from '../lib/stockChart'
+import type { PricePoint, StockChartPeriod } from '../lib/stockChart'
+import ResourceState from '../components/ResourceState'
 import { isWebUrl } from '../lib/watchlist'
 import ReturnToList from '../components/ReturnToList'
 import './Stock.css'
 
-const periods = { '1M': 30, '3M': 90, '6M': 180, '1Y': 365 } as const
 const tradingDate = (at: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(at)
 const tone = (value: number | null) => value === null || value === 0 ? 'neutral' : value > 0 ? 'up' : 'down'
 type Figure = { value?: unknown; unit?: unknown } | undefined
@@ -37,7 +39,7 @@ function NewsThumbnail({ url }: { url?: string }) {
 function Metrics({ items }: { items: { label: string; value: string; note?: string }[] }) {
   return <dl className="stock-metrics">{items.map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}{item.note && <small>{item.note}</small>}</dd></div>)}</dl>
 }
-function PriceChart({ bars, currency, changePercent }: { bars: DailyBar[]; currency: string; changePercent: number | null }) {
+export function PriceChart({ bars, currency, changePercent, period, interval }: { bars: PricePoint[]; currency: string; changePercent: number | null; period: StockChartPeriod; interval: string }) {
   const chartId = useId()
   const [active, setActive] = useState<number | null>(null)
   if (bars.length < 2) return null
@@ -57,8 +59,8 @@ function PriceChart({ bars, currency, changePercent }: { bars: DailyBar[]; curre
     if (bounds.width) setActive(nearestStockBar(bars, (event.clientX - bounds.left) / bounds.width))
   }
   return <div className={`stock-price-chart stock-${tone(changePercent)}`}>
-    <div className="stock-chart-readout" role="status" aria-live="polite"><time dateTime={tradingDate(selected.t)}>{tradingDate(selected.t)} 미국 거래일</time><strong>{stockMoney(selected.c, currency)}</strong><span>종가</span></div>
-    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="날짜별 종가 차트" aria-describedby={`${chartId}-help`} onKeyDown={event => {
+    <div className="stock-chart-readout" role="status" aria-live="polite"><time dateTime={new Date(selected.t).toISOString()}>{chartPointTime(selected.t, period)} ET</time><strong>{stockMoney(selected.c, currency)}</strong><span>{chartIntervalLabel(interval)} 종가</span></div>
+    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${chartId}-help`} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
       event.preventDefault()
       setActive(index => event.key === 'Home' ? 0 : event.key === 'End' ? bars.length - 1 : Math.max(0, Math.min(bars.length - 1, (index ?? bars.length - 1) + (event.key === 'ArrowLeft' ? -1 : 1))))
@@ -66,7 +68,7 @@ function PriceChart({ bars, currency, changePercent }: { bars: DailyBar[]; curre
       <div className="stock-chart-y-labels" aria-hidden="true">{[max, (max + min) / 2, min].map((price, index) => <span key={index} style={{ top: `${(12 + index * (H - 24) / 2) / H * 100}%` }}>{stockMoney(price, currency, Math.abs(price) >= 10000)}</span>)}</div>
       <div className="stock-chart-drawing">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-labelledby={`${chartId}-title`} onPointerMove={select} onPointerDown={select} onPointerLeave={event => { if (event.pointerType === 'mouse') setActive(null) }}>
-          <title id={`${chartId}-title`}>{tradingDate(start)}부터 {tradingDate(end)}까지 일별 종가. 선택 기간 등락률 {stockPercent(changePercent, true)}.</title>
+          <title id={`${chartId}-title`}>{chartPointTime(start, period)}부터 {chartPointTime(end, period)}까지 {chartIntervalLabel(interval)} 종가. 선택 기간 등락률 {stockPercent(changePercent, true)}.</title>
           <defs><linearGradient id={`${chartId}-fill`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="currentColor" stopOpacity=".12" /><stop offset="100%" stopColor="currentColor" stopOpacity="0" /></linearGradient></defs>
           {[12, H / 2, H - 12].map(at => <line key={at} x1="0" x2={W} y1={at} y2={at} className="stock-chart-gridline" vectorEffect="non-scaling-stroke" />)}
           <polygon points={`0,${H} ${points} ${W},${H}`} fill={`url(#${chartId}-fill)`} />
@@ -76,24 +78,28 @@ function PriceChart({ bars, currency, changePercent }: { bars: DailyBar[]; curre
         <span className="stock-chart-dot" aria-hidden="true" style={{ left: `${x(selected.t) / W * 100}%`, top: `${y(selected.c) / H * 100}%` }} />
       </div>
     </div>
-    <div className={`stock-chart-x-labels${ticks.length > 3 ? ' many-ticks' : ''}`} aria-hidden="true">{ticks.map(index => <span key={index} style={{left: `${x(bars[index].t) / W * 100}%`}}>{tradingDate(bars[index].t).slice(5).replace('-', '.')}</span>)}</div>
-    <p id={`${chartId}-help`} className="stock-note">차트 위에서 날짜별 종가를 확인하세요. 키보드: ← → 이동 · Home/End 처음·마지막.</p>
+    <div className={`stock-chart-x-labels${ticks.length > 3 ? ' many-ticks' : ''}`} aria-hidden="true">{ticks.map(index => <span key={index} style={{left: `${x(bars[index].t) / W * 100}%`}}>{chartPointTime(bars[index].t, period, true)}</span>)}</div>
+    <p id={`${chartId}-help`} className="stock-note">차트 위에서 시점별 가격을 확인하세요. 시각은 미국 동부시간(ET) 기준입니다. 키보드: ← → 이동 · Home/End 처음·마지막.</p>
   </div>
 }
 
 export default function Stock() {
   const { ticker } = useParams<{ ticker: string }>()
   const symbol = ticker?.toUpperCase() || ''
-  const { snapshot, loading, error, refresh } = useStockSnapshot(symbol)
+  const { snapshot, loading, error, refresh: refreshSnapshot } = useStockSnapshot(symbol)
   const { isRead, mark } = useReadArticles()
-  const [period, setPeriod] = useState<keyof typeof periods>('3M')
+  const [period, setPeriod] = useState<StockChartPeriod>('1M')
+  const [chartRevision, setChartRevision] = useState(0)
+  const chartState = useStockChart(symbol, period, chartRevision)
+  const chart = chartState.data
+  const refreshChart = () => setChartRevision(value => value + 1)
+  function refresh() { refreshSnapshot(); refreshChart() }
   const [aboutOpen, setAboutOpen] = useState(false)
   const aboutId = useId()
   const returnState = useReturnOrigin()
   const details = snapshot?.details
   const bars = snapshot?.bars ?? []
   const quote = quoteFromBars(bars)
-  const chart = stockChartWindow(bars, periods[period])
   const currency = typeof details?.currency_name === 'string' && /^[a-z]{3}$/i.test(details.currency_name) ? details.currency_name.toUpperCase() : 'USD'
   const financials = snapshot?.financials ?? []
   const annual = financials[0], previousAnnual = financials[1]
@@ -109,7 +115,8 @@ export default function Stock() {
   const pe = eps !== null && eps > 0 && quote.latest && figureCurrency(epsField) === currency ? quote.latest.c / eps : null
   const roe = income !== null && equity !== null && equity > 0 && sameCurrency(incomeField, equityField) ? income / equity * 100 : null
   const debtEquity = liabilities !== null && equity !== null && equity > 0 && sameCurrency(liabilitiesField, equityField) ? liabilities / equity : null
-  const growth = revenue !== null && previousRevenue !== null && previousRevenue > 0 && sameCurrency(revenueField, previousRevenueField) && previousAnnual?.end_date < annual?.start_date ? (revenue / previousRevenue - 1) * 100 : null
+  const previousGap = annual?.start_date && previousAnnual?.end_date ? Date.parse(annual.start_date) - Date.parse(previousAnnual.end_date) : NaN
+  const growth = revenue !== null && previousRevenue !== null && previousRevenue > 0 && sameCurrency(revenueField, previousRevenueField) && previousGap > 0 && previousGap <= 7 * 86400000 ? (revenue / previousRevenue - 1) * 100 : null
   const hasFinancials = [eps, revenue, income, equity, liabilities].some(value => value !== null)
   const hasHistory = snapshot?.historyAvailable ?? false
   const rangePosition = hasHistory && quote.latest && quote.high !== null && quote.low !== null && quote.high > quote.low ? (quote.latest.c - quote.low) / (quote.high - quote.low) * 100 : null
@@ -147,13 +154,16 @@ export default function Stock() {
           </section>
           <nav className="stock-section-nav" aria-label="종목 정보 바로가기"><a href="#stock-chart">차트</a><a href="#stock-financials">핵심 재무</a><a href="#stock-news">관련 뉴스</a><a href="#stock-about">기업 정보</a></nav>
           <section id="stock-chart" className="stock-card" aria-labelledby="stock-chart-title">
-            <div className="stock-section-heading"><div><h2 id="stock-chart-title">주가 차트</h2><p className="stock-note">일별 종가 · 주식분할 조정</p></div><div className="stock-periods" role="group" aria-label="차트 조회 기간">{(Object.keys(periods) as (keyof typeof periods)[]).map(value => <button type="button" key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{value}</button>)}</div></div>
-            {hasHistory && chart.bars.length > 1 ? <><p className="stock-chart-period">{tradingDate(chart.first!.t)} ~ {tradingDate(chart.last!.t)} <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>표시 기간 첫 종가 대비</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.bars} currency={currency} changePercent={chart.changePercent} /></> : <p className="stock-empty-note" role="status">{hasHistory ? '이 기간의 차트를 그릴 만큼 일별 시세가 충분하지 않습니다.' : '가격 이력을 불러오지 못했습니다. 새로고침으로 다시 확인해 주세요.'}</p>}
+            <div className="stock-section-heading"><div><h2 id="stock-chart-title">주가 차트</h2><p className="stock-note">Yahoo Finance · {chart ? chartIntervalLabel(chart.interval) : '가격 이력'}</p></div><div className="stock-periods" role="group" aria-label="차트 조회 기간">{stockChartPeriods.map(value => <button type="button" key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{value}</button>)}</div></div>
+            <ResourceState label="주가 차트" loading={chartState.loading} error={chartState.error} hasData={!!chart?.points.length} stale={chart?.stale} updatedAt={chart?.fetchedAt} onRetry={refreshChart} layout="rows" />
+            {chart && chart.points.length > 1 ? <><p className="stock-chart-period">{chartPointTime(chart.points[0].t, period)} ~ {chartPointTime(chart.points.at(-1)!.t, period)} ET <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>{chart.baseline?.label || '비교 기준 미확인'}</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.points} currency={chart.currency} changePercent={chart.changePercent} period={period} interval={chart.interval} /></> : !chartState.loading && !chartState.error && <p className="stock-empty-note" role="status">이 기간에 확인된 가격이 충분하지 않습니다. 다른 기간을 선택해 주세요.</p>}
+            <p className="stock-note stock-chart-source">지연 시세 포함 · 지연 시간 미확인 · 배당 포함 총수익률 아님 · 진행 중인 봉은 값이 바뀔 수 있습니다.{period === 'ALL' && ' ALL은 제공자가 반환한 조회 가능 전체 범위입니다. 상장 이후 전체 이력이 아닐 수 있습니다.'}{period === '5D' && ' 최근 확인 가능한 최대 5거래일을 표시합니다.'}{chart && ` 조회 ${new Date(chart.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST.`} 상단의 Polygon / Massive 일별 종가와 관측 시점·출처가 다를 수 있습니다.</p>
           </section>
           <div className="stock-detail-grid"><div className="stock-main-column">
             <section id="stock-financials" className="stock-card" aria-labelledby="stock-financials-title"><div className="stock-section-heading"><h2 id="stock-financials-title">핵심 재무·가격 정보</h2><span className="stock-note">확인된 자료 기준</span></div>
               <Metrics items={[{label:'시가총액',value:stockMoney(details.market_cap,currency,true),note:'기업정보 기준'},{label:'1년 조회 고가',value:stockMoney(hasHistory ? quote.high : null,currency),note:'일별 고가 중 최댓값'},{label:'1년 조회 저가',value:stockMoney(hasHistory ? quote.low : null,currency),note:'일별 저가 중 최솟값'}]} />
-              {hasFinancials ? <><p className="stock-financial-period">연간 회계기간 {annual.start_date ?? '미확인'} ~ {annual.end_date ?? '미확인'} · 제출 {annual.filing_date ?? '미확인'}</p><Metrics items={financialMetrics} /></> : <div className="stock-empty-note" role="status"><strong>{snapshot.issues.includes('연간 재무') ? '연간 재무 자료 조회 실패' : '제공된 연간 재무 자료가 없습니다.'}</strong><p>{snapshot.issues.includes('연간 재무') ? '새로고침으로 다시 확인할 수 있습니다.' : '이 종목에서 확인되지 않은 재무 수치는 미확인으로 표시합니다.'}</p></div>}
+              {hasFinancials ? <><p className="stock-financial-period">SEC EDGAR · {annual.accounting_standard === 'ifrs-full' ? 'IFRS' : 'US GAAP'} 연간 공시 · 회계기간 {annual.start_date ?? '미확인'} ~ {annual.end_date ?? '미확인'} · 제출 {annual.filing_date ?? '미확인'}{isWebUrl(annual.source_filing_url) && <> · <a href={annual.source_filing_url} target="_blank" rel="noopener noreferrer">원문 공시 ↗</a></>}</p><Metrics items={financialMetrics} />{snapshot.financialSource?.stale && <p className="stock-alert" role="status">SEC 재조회에 실패해 이전에 확인한 연간 공시 자료를 표시합니다.</p>}</> : <div className="stock-empty-note" role="status"><strong>{snapshot.issues.includes('연간 재무') ? 'SEC 연간 재무 공시를 불러오지 못했습니다.' : '확인 가능한 표준 연간 재무 자료가 없습니다.'}</strong><p>{snapshot.issues.includes('연간 재무') ? '가격·뉴스는 계속 볼 수 있으며, 새로고침으로 공시를 다시 확인할 수 있습니다.' : 'ETF·비공시 종목이나 표준 XBRL 자료가 없는 기업은 연간 재무를 제공하지 않을 수 있습니다. 미확인 수치는 표시하지 않습니다.'}</p></div>}
+              {snapshot.financialSource && <p className="stock-note">SEC 공시 조회 {new Date(snapshot.financialSource.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST · 연간 자료이며 TTM이 아닙니다. 공시 EPS는 이후 주식분할을 반영하지 않았을 수 있습니다.</p>}
               <details className="stock-data-details"><summary>추가 비율·계산 기준</summary><dl className="stock-extra-metrics"><div><dt>총부채 / 자기자본</dt><dd>{debtEquity === null ? '—' : `${debtEquity.toFixed(2)}x`}</dd></div><div><dt>조회 범위 내 종가 위치</dt><dd>{stockPercent(rangePosition)}</dd></div></dl><p>P/E는 양수인 연간 희석 EPS로 계산합니다. ROE는 기말 자기자본 기준입니다. 총부채에는 이자부 차입금 외 부채도 포함합니다. 비율은 비교 가능한 통화·기간이 확인된 경우에 표시합니다.</p><p>고가·저가는 최대 1년 내 수집된 일별 자료 기준입니다. {hasHistory && bars[0] ? `조회 범위: ${tradingDate(bars[0].t)} ~ ${quote.tradingDate}. ` : ''}신규 상장이나 자료 누락으로 1년 전체가 아닐 수 있습니다. ‘—’는 미확인이거나 계산 조건을 충족하지 않은 값입니다.</p></details>
             </section>
             <section id="stock-news" className="stock-card" aria-labelledby="stock-news-title"><div className="stock-section-heading"><h2 id="stock-news-title">관련 뉴스</h2><span className="stock-note">{articles.length ? `${articles.length}건 · 원문으로 이동` : '종목별 기사'}</span></div>

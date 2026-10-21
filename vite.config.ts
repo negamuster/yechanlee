@@ -18,6 +18,10 @@ import { createAnalysisHandler } from './lib/stock-analysis.js'
 
 // @ts-expect-error Shared SEC server handler.
 import { create13FHandler } from './lib/form13f.js'
+// @ts-expect-error Shared stock chart server handler.
+import { createStockChartHandler } from './lib/stock-chart.js'
+// @ts-expect-error Shared SEC annual financials server handler.
+import { createFinancialsHandler } from './lib/stock-financials.js'
 
 export default defineConfig({
   // Only this non-secret setting may be exposed to browser code.
@@ -31,6 +35,8 @@ export default defineConfig({
       const handlers: Record<string, (req: Request) => Promise<Response>> = {
         '/api/calendar': calendarAPI.fetch,
         '/api/form13f': filingHandler,
+        '/api/stock-chart': createStockChartHandler(),
+        '/api/stock-financials': createFinancialsHandler(),
         '/api/sector-performance': sectorAPI.fetch,
         '/api/stock-data': createStockHandler({ getKey: () => process.env.POLYGON_KEY || env.POLYGON_KEY || env.VITE_POLYGON_KEY }),
         '/api/claude-proxy': createAnalysisHandler(),
