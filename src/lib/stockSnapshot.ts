@@ -8,8 +8,10 @@ export interface DailyBar { t: number; o: number; h: number; l: number; c: numbe
 export interface StockSnapshot {
   symbol: string; fetchedAt: number; details: any; bars: DailyBar[];
   news: any[]; financials: any[]; related: string[]; issues: string[]; historyAvailable: boolean;
+  companySource: 'Polygon / Massive' | 'SEC EDGAR';
   financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
 }
+export class StockSnapshotError extends Error {}
 export function freshSnapshot(item: StockSnapshot | undefined, symbol: string, now = Date.now()) {
   return !!item && item.symbol === symbol && now >= item.fetchedAt && now - item.fetchedAt < STOCK_TTL && !item.issues.length
 }
@@ -43,9 +45,11 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
           signal: AbortSignal.any([signal, AbortSignal.timeout(retry ? 12000 : 18000)]),
         })
         transient = [500, 502, 503, 504].includes(response.status)
-        if (!response.ok) throw new Error('조회 실패')
         const data = await response.json()
-        if (data.error || ['ERROR', 'NOT_AUTHORIZED'].includes(data.status)) throw new Error('조회 실패')
+        transient = transient && data?.code !== 'MARKET_ACCESS_DENIED'
+        if (response.status === 429) throw new StockSnapshotError('조회 요청이 몰려 일시적으로 제한되고 있습니다. 잠시 후 다시 조회해 주세요.')
+        if (!response.ok) throw new Error('조회 실패')
+        if (!data || data.error || ['ERROR', 'NOT_AUTHORIZED'].includes(data.status)) throw new Error('조회 실패')
         return data.results
       } catch (error) {
         signal.throwIfAborted()
@@ -70,18 +74,33 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
   ])
   signal.throwIfAborted()
   const value = (i: number) => jobs[i].status === 'fulfilled' ? jobs[i].value : undefined
-  if (!value(0)?.name || value(0).ticker !== symbol) throw new Error('종목 데이터를 확인하지 못했습니다. 잠시 후 다시 조회해 주세요.')
+  const annualData = value(3), reference = value(0)
+  // A failed reference request must not hide independently confirmed prices and
+  // filings. SEC has already checked this symbol's ticker-to-CIK correspondence.
+  // An explicit conflicting symbol is never eligible for fallback.
+  if (reference?.ticker && reference.ticker !== symbol) throw new StockSnapshotError('응답한 기업 정보의 티커가 일치하지 않습니다. 다시 조회해 주세요.')
+  const hasReference = reference?.ticker === symbol && typeof reference.name === 'string' && !!reference.name.trim()
+  const secName = annualData?.status === 'ok' && typeof annualData.company === 'string' && annualData.company.trim()
+  if (!hasReference && !secName) {
+    if (jobs[0].status === 'rejected' && jobs[0].reason instanceof StockSnapshotError) throw jobs[0].reason
+    throw new StockSnapshotError('기업 정보를 확인하지 못했습니다. 데이터 제공자의 일시적인 오류일 수 있으니 잠시 후 다시 조회해 주세요.')
+  }
+  const details = hasReference ? reference : { ticker: symbol, name: secName }
   // The range endpoint can lag the previous-day endpoint. Merge only validated,
   // completed, same-ticker bars; a missing latest bar never becomes a zero quote.
   const previousDay = Array.isArray(value(5)) ? value(5).filter((row: DailyBar & { T?: string }) => row.T === symbol) : []
   const history = Array.isArray(value(1)) ? completedBars(value(1), now) : []
   const bars = completedBars([...history, ...previousDay], now)
-  if (!bars.length) throw new Error('확인된 일별 시세가 없습니다. 잠시 후 다시 조회해 주세요.')
-  const annualData = value(3)
+  if (!bars.length) {
+    const rateLimit = [jobs[1], jobs[5]].find(job => job.status === 'rejected' && job.reason instanceof StockSnapshotError)
+    if (rateLimit?.status === 'rejected') throw rateLimit.reason
+    throw new StockSnapshotError('기업 정보는 확인했지만 일별 시세를 받지 못했습니다. 잠시 후 다시 조회해 주세요.')
+  }
   const issues = [2, 4, 5].filter(i => !Array.isArray(value(i))).map(i => ['','','뉴스','','관련 종목','최근 종가'][i])
+  if (!hasReference) issues.unshift('상세 기업 정보')
   if (!annualData || annualData.stale) issues.push('연간 재무')
   if (!history.length) issues.unshift('가격 이력')
-  return { symbol, fetchedAt: now, details: value(0), bars, issues, historyAvailable: history.length > 0,
+  return { symbol, fetchedAt: now, details, companySource: hasReference ? 'Polygon / Massive' : 'SEC EDGAR', bars, issues, historyAvailable: history.length > 0,
     news: Array.isArray(value(2)) ? value(2) : [], financials: annualData?.results ?? [],
     financialSource: annualData ? { source: annualData.source, fetchedAt: annualData.fetchedAt, stale: annualData.stale, status: annualData.status } : undefined,
     related: Array.isArray(value(4)) ? value(4).map((r: { ticker: string }) => r.ticker).filter((s: string) => /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(s)).slice(0, 8) : [] }

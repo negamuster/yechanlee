@@ -84,3 +84,22 @@ test('search retains a verified exact match during broad-search failure but does
   assert.equal((await response.json()).results[0].ticker,'TSLA')
   assert.equal((await handler(new Request(`${base}/api/stock-data?search=UNKNOWN`))).status,503)
 })
+
+test('upstream quota and access failures remain distinct without exposing provider bodies or credentials', async () => {
+  for (const route of [stockReq('/v3/reference/tickers/TSLA'), new Request(`${base}/api/stock-data?search=TSLA`)]) {
+    for (const [retry, expected] of [['17', '17'], ['9999', '120'], ['secret-key', '60']]) {
+      const handler = createStockHandler({ getKey: () => 'secret-key', fetchImpl: async () => Response.json({ error: 'secret-key provider internals' }, { status: 429, headers: { 'Retry-After': retry } }) })
+      const response = await handler(route)
+      assert.equal(response.status, 429)
+      assert.equal(response.headers.get('Retry-After'), expected)
+      assert.equal(response.headers.get('Cache-Control'), 'no-store')
+      const body = await response.text()
+      assert.ok(!body.includes('secret-key'))
+      assert.equal(JSON.parse(body).code, 'MARKET_RATE_LIMITED')
+    }
+  }
+  const handler = createStockHandler({ getKey: () => 'secret-key', fetchImpl: async () => Response.json({ error: 'secret-key' }, { status: 403 }) })
+  const response = await handler(stockReq('/v3/reference/tickers/TSLA'))
+  assert.equal(response.status, 503)
+  assert.equal((await response.json()).code, 'MARKET_ACCESS_DENIED')
+})

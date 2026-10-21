@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { completedBars, quoteFromBars, freshSnapshot, usableSnapshot, fetchStockSnapshot, STOCK_TTL, STOCK_MAX_AGE } from '../src/lib/stockSnapshot.ts'
+import { completedBars, quoteFromBars, freshSnapshot, usableSnapshot, fetchStockSnapshot, StockSnapshotError, STOCK_TTL, STOCK_MAX_AGE } from '../src/lib/stockSnapshot.ts'
 import { latestDailyDate } from '../lib/trading-session.js'
 const now = Date.parse('2026-10-07T03:00:00Z')
 const bar = (day, c, o = c, h = Math.max(c, o) + 10, l = Math.min(c, o) - 10) => ({ t: Date.parse(`${day}T04:00:00Z`), o, h, l, c })
@@ -91,4 +91,49 @@ test('failed price history preserves a confirmed same-symbol close without inven
   assert.equal(quoteFromBars(snapshot.bars).changePct,null)
   assert.equal(snapshot.historyAvailable,false)
   assert.ok(snapshot.issues.includes('가격 이력'))
+})
+
+test('a failed company reference does not hide confirmed prices and a same-symbol SEC company', async () => {
+  let detailsCalls = 0
+  const fetcher = async (url, options) => {
+    const endpoint = new URL(url, 'https://example.com'), path = endpoint.searchParams.get('path')
+    if (path?.includes('/v3/')) { detailsCalls++; return Response.json({}, { status: 503 }) }
+    if (endpoint.pathname === '/api/stock-financials') return Response.json({ symbol: 'AAPL', company: 'Apple Inc.', source: 'SEC EDGAR', status: 'ok', results: [], fetchedAt: now, stale: false })
+    return mock()(url, options)
+  }
+  const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher, now)
+  assert.equal(detailsCalls, 2)
+  assert.deepEqual(snapshot.details, { ticker: 'AAPL', name: 'Apple Inc.' })
+  assert.equal(snapshot.companySource, 'SEC EDGAR')
+  assert.ok(snapshot.issues.includes('상세 기업 정보'))
+  assert.equal(quoteFromBars(snapshot.bars).latest.c, 105)
+  assert.equal(freshSnapshot(snapshot, 'AAPL', now), false)
+  // A conflicting reference is evidence of a mismatch, not a retrieval failure.
+  await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+    if (new URL(url, 'https://example.com').searchParams.get('path')?.includes('/v3/')) return Response.json({ results: { ticker: 'MSFT', name: 'Microsoft' } })
+    return fetcher(url, options)
+  }, now), /티커가 일치하지/)
+  // A different SEC symbol, an unnamed company, or no confirmed price cannot enable fallback.
+  for (const change of [{ symbol: 'MSFT' }, { company: '' }, { source: 'unverified' }, { status: 'not_available' }]) {
+    await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+      if (new URL(url, 'https://example.com').pathname === '/api/stock-financials') return Response.json({ symbol: 'AAPL', company: 'Apple', source: 'SEC EDGAR', status: 'ok', results: [], fetchedAt: now, ...change })
+      return fetcher(url, options)
+    }, now), StockSnapshotError)
+  }
+  await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+    if (new URL(url, 'https://example.com').searchParams.get('path')?.includes('/range/')) return Response.json({}, { status: 503 })
+    return fetcher(url, options)
+  }, now), /일별 시세/)
+})
+
+test('rate limits and known access failures are not retried immediately and missing prices have a specific error', async () => {
+  for (const [status, code] of [[429, 'MARKET_RATE_LIMITED'], [503, 'MARKET_ACCESS_DENIED']]) {
+    let detailsCalls = 0
+    await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+      if (new URL(url, 'https://example.com').searchParams.get('path')?.includes('/v3/')) { detailsCalls++; return Response.json({ code }, { status }) }
+      return mock()(url, options)
+    }, now), status === 429 ? /일시적으로 제한/ : /기업 정보를 확인하지/)
+    assert.equal(detailsCalls, 1)
+  }
+  await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, mock('/range/'), now), /기업 정보는 확인했지만 일별 시세/)
 })
