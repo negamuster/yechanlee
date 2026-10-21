@@ -78,3 +78,11 @@ test('rate limits stop remaining provider requests while independent financial/c
   const invalid = await runStockHealth({ symbol: 'AAPL', now: () => FIXED_AT, sleep: async () => {}, fetcher: async () => new Response('<html>private</html>') })
   assert.ok(invalid.checks.every(c => c.errors.includes('Invalid JSON response')))
 })
+
+test('chart health distinguishes optional OHLCV gaps from a complete price failure', () => {
+  const data = fixturePayload('chart', 'NVDA', '1M'), context = { symbol: 'NVDA', period: '1M', now: FIXED_AT }
+  assert.deepEqual(inspectStockHealth('chart', data, context).warnings, [])
+  delete data.points[0].v; delete data.points[0].o; delete data.points[0].h; delete data.points[0].l
+  const result = inspectStockHealth('chart', data, context)
+  assert.deepEqual(result.errors, []); assert.equal(result.warnings.length, 2)
+})

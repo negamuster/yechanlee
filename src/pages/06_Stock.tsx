@@ -1,6 +1,5 @@
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useId, useState } from 'react'
-import type { PointerEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useReadArticles } from '../hooks/useReadArticles'
 import { BookmarkButton, WatchButton } from '../components/SavedItemsProvider'
@@ -8,11 +7,13 @@ import { useStockSnapshot } from '../hooks/useStockSnapshot'
 import { useStockChart } from '../hooks/useStockChart'
 import { quoteFromBars } from '../lib/stockSnapshot'
 import type { StockResourceSource } from '../lib/stockSnapshot'
-import { nearestStockBar, stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
+import { stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
 import { stockChartPeriods, chartIntervalLabel, chartPointTime } from '../lib/stockChart'
-import type { PricePoint, StockChartPeriod } from '../lib/stockChart'
+import type { StockChartPeriod } from '../lib/stockChart'
 import ResourceState from '../components/ResourceState'
 import FinancialHistory from '../components/FinancialHistory'
+import PriceChart from '../components/StockPriceChart'
+import type { StockChartMode } from '../components/StockPriceChart'
 import { isWebUrl } from '../lib/watchlist'
 import ReturnToList from '../components/ReturnToList'
 import './Stock.css'
@@ -48,55 +49,13 @@ function StockPartStatus({ label, source, unavailable, loading, onRetry }: { lab
     {unavailable && <button type="button" className="stock-text-button" disabled={loading} onClick={onRetry} aria-label={`${label} 누락 자료 다시 조회`}>{loading ? '조회 중…' : '자료 다시 조회'}</button>}
   </>
 }
-export function PriceChart({ bars, currency, changePercent, period, interval }: { bars: PricePoint[]; currency: string; changePercent: number | null; period: StockChartPeriod; interval: string }) {
-  const chartId = useId()
-  const [active, setActive] = useState<number | null>(null)
-  if (bars.length < 2) return null
-  const W = 1000, H = 240
-  const prices = bars.map(bar => bar.c)
-  const low = Math.min(...prices), high = Math.max(...prices)
-  const margin = Math.max((high - low) * .08, high * .002)
-  const min = low - margin, max = high + margin
-  const start = bars[0].t, end = bars.at(-1)!.t
-  const x = (at: number) => (at - start) / (end - start || 1) * W
-  const y = (price: number) => 12 + (max - price) / (max - min) * (H - 24)
-  const points = bars.map(bar => `${x(bar.t)},${y(bar.c)}`).join(' ')
-  const selected = bars[Math.min(active ?? bars.length - 1, bars.length - 1)]
-  const ticks = [...new Set([0, Math.floor(bars.length / 4), Math.floor(bars.length / 2), Math.floor(bars.length * .75), bars.length - 1])]
-  function select(event: PointerEvent<SVGSVGElement>) {
-    const bounds = event.currentTarget.getBoundingClientRect()
-    if (bounds.width) setActive(nearestStockBar(bars, (event.clientX - bounds.left) / bounds.width))
-  }
-  return <div className={`stock-price-chart stock-${tone(changePercent)}`}>
-    <div className="stock-chart-readout" role="status" aria-live="polite"><time dateTime={new Date(selected.t).toISOString()}>{chartPointTime(selected.t, period)} ET</time><strong>{stockMoney(selected.c, currency)}</strong><span>{chartIntervalLabel(interval)} 종가</span></div>
-    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${chartId}-help`} onKeyDown={event => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
-      event.preventDefault()
-      setActive(index => event.key === 'Home' ? 0 : event.key === 'End' ? bars.length - 1 : Math.max(0, Math.min(bars.length - 1, (index ?? bars.length - 1) + (event.key === 'ArrowLeft' ? -1 : 1))))
-    }}>
-      <div className="stock-chart-y-labels" aria-hidden="true">{[max, (max + min) / 2, min].map((price, index) => <span key={index} style={{ top: `${(12 + index * (H - 24) / 2) / H * 100}%` }}>{stockMoney(price, currency, Math.abs(price) >= 10000)}</span>)}</div>
-      <div className="stock-chart-drawing">
-        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-labelledby={`${chartId}-title`} onPointerMove={select} onPointerDown={select} onPointerLeave={event => { if (event.pointerType === 'mouse') setActive(null) }}>
-          <title id={`${chartId}-title`}>{chartPointTime(start, period)}부터 {chartPointTime(end, period)}까지 {chartIntervalLabel(interval)} 종가. 선택 기간 등락률 {stockPercent(changePercent, true)}.</title>
-          <defs><linearGradient id={`${chartId}-fill`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="currentColor" stopOpacity=".12" /><stop offset="100%" stopColor="currentColor" stopOpacity="0" /></linearGradient></defs>
-          {[12, H / 2, H - 12].map(at => <line key={at} x1="0" x2={W} y1={at} y2={at} className="stock-chart-gridline" vectorEffect="non-scaling-stroke" />)}
-          <polygon points={`0,${H} ${points} ${W},${H}`} fill={`url(#${chartId}-fill)`} />
-          <polyline points={points} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <line x1={x(selected.t)} x2={x(selected.t)} y1="0" y2={H} stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" opacity=".4" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span className="stock-chart-dot" aria-hidden="true" style={{ left: `${x(selected.t) / W * 100}%`, top: `${y(selected.c) / H * 100}%` }} />
-      </div>
-    </div>
-    <div className={`stock-chart-x-labels${ticks.length > 3 ? ' many-ticks' : ''}`} aria-hidden="true">{ticks.map(index => <span key={index} style={{left: `${x(bars[index].t) / W * 100}%`}}>{chartPointTime(bars[index].t, period, true)}</span>)}</div>
-    <p id={`${chartId}-help`} className="stock-note">차트 위에서 시점별 가격을 확인하세요. 시각은 미국 동부시간(ET) 기준입니다. 키보드: ← → 이동 · Home/End 처음·마지막.</p>
-  </div>
-}
-
 export default function Stock() {
   const { ticker } = useParams<{ ticker: string }>()
   const symbol = ticker?.toUpperCase() || ''
   const { snapshot, loading, error, refresh: refreshSnapshot } = useStockSnapshot(symbol)
   const { isRead, mark } = useReadArticles()
+  const [chartMode, setChartMode] = useState<StockChartMode>('line')
+  const [chartVolume, setChartVolume] = useState(true)
   const [period, setPeriod] = useState<StockChartPeriod>('1M')
   const [chartRevision, setChartRevision] = useState(0)
   const chartState = useStockChart(symbol, period, chartRevision)
@@ -166,7 +125,7 @@ export default function Stock() {
           <section id="stock-chart" className="stock-card" aria-labelledby="stock-chart-title">
             <div className="stock-section-heading"><div><h2 id="stock-chart-title">주가 차트</h2><p className="stock-note">Yahoo Finance · {chart ? chartIntervalLabel(chart.interval) : '가격 이력'}</p></div><div className="stock-periods" role="group" aria-label="차트 조회 기간">{stockChartPeriods.map(value => <button type="button" key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{value}</button>)}</div></div>
             <ResourceState label="주가 차트" loading={chartState.loading} error={chartState.error} hasData={!!chart?.points.length} stale={chart?.stale} updatedAt={chart?.fetchedAt} onRetry={refreshChart} layout="rows" />
-            {chart && chart.points.length > 1 ? <><p className="stock-chart-period">{chartPointTime(chart.points[0].t, period)} ~ {chartPointTime(chart.points.at(-1)!.t, period)} ET <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>{chart.baseline?.label || '비교 기준 미확인'}</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.points} currency={chart.currency} changePercent={chart.changePercent} period={period} interval={chart.interval} /></> : !chartState.loading && !chartState.error && <p className="stock-empty-note" role="status">이 기간에 확인된 가격이 충분하지 않습니다. 다른 기간을 선택해 주세요.</p>}
+            {chart && chart.points.length > 1 ? <><p className="stock-chart-period">{chartPointTime(chart.points[0].t, period)} ~ {chartPointTime(chart.points.at(-1)!.t, period)} ET <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>{chart.baseline?.label || '비교 기준 미확인'}</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.points} currency={chart.currency} changePercent={chart.changePercent} period={period} interval={chart.interval} mode={chartMode} onModeChange={setChartMode} volume={chartVolume} onVolumeChange={setChartVolume} /></> : !chartState.loading && !chartState.error && <p className="stock-empty-note" role="status">이 기간에 확인된 가격이 충분하지 않습니다. 다른 기간을 선택해 주세요.</p>}
             <p className="stock-note stock-chart-source">지연 시세 포함 · 지연 시간 미확인 · 배당 포함 총수익률 아님 · 진행 중인 봉은 값이 바뀔 수 있습니다.{period === 'ALL' && ' ALL은 제공자가 반환한 조회 가능 전체 범위입니다. 상장 이후 전체 이력이 아닐 수 있습니다.'}{period === '5D' && ' 최근 확인 가능한 최대 5거래일을 표시합니다.'}{chart && ` 조회 ${new Date(chart.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST.`} 상단의 Polygon / Massive 일별 종가와 관측 시점·출처가 다를 수 있습니다.</p>
           </section>
           <div className="stock-detail-grid"><div className="stock-main-column">

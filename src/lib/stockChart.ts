@@ -4,7 +4,7 @@ import { CHART_PERIODS } from '../../lib/stock-chart-periods.js'
 import { stockPayloadIssue } from '../../lib/stock-contracts.js'
 export const stockChartPeriods = CHART_PERIODS as readonly ['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y', 'ALL']
 export type StockChartPeriod = typeof stockChartPeriods[number]
-export interface PricePoint { t: number; c: number }
+export interface PricePoint { t: number; c: number; o?: number; h?: number; l?: number; v?: number }
 export interface StockChartData {
   symbol: string; period: StockChartPeriod; points: PricePoint[]; currency: string; interval: string; source: string;
   fetchedAt: number; stale: boolean; baseline: { c: number; t?: number; label: string } | null; changePercent: number | null;
