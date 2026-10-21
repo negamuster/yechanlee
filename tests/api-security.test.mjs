@@ -103,3 +103,29 @@ test('upstream quota and access failures remain distinct without exposing provid
   assert.equal(response.status, 503)
   assert.equal((await response.json()).code, 'MARKET_ACCESS_DENIED')
 })
+
+test('company and peer metadata cache for an hour, news for five minutes and prices for a minute with original receipt times', async () => {
+  let time = Date.parse('2026-10-21T04:00:00Z')
+  const firstTime = time, calls = new Map()
+  const handler = createStockHandler({ getKey: () => 'secret', now: () => time, fetchImpl: async url => {
+    calls.set(url.pathname, (calls.get(url.pathname) || 0) + 1)
+    return Response.json({ results: [] })
+  } })
+  const routes = [['/v3/reference/tickers/NVDA', 3600], ['/v1/related-companies/NVDA', 3600], ['/v2/reference/news?ticker=NVDA&limit=8&order=desc', 300], ['/v2/aggs/ticker/NVDA/prev?adjusted=true', 60]]
+  for (const [path, ttl] of routes) {
+    const response = await handler(stockReq(path))
+    assert.equal(response.headers.get('Cache-Control'), `public, s-maxage=${ttl}`)
+    assert.equal((await response.json()).sourceInfo.fetchedAt, firstTime)
+  }
+  time += 120000
+  for (const [path, ttl] of routes) {
+    const body = await (await handler(stockReq(path))).json()
+    assert.equal(body.sourceInfo.fetchedAt, ttl === 60 ? time : firstTime)
+  }
+  time += 240000
+  for (const [path, ttl] of routes) {
+    const body = await (await handler(stockReq(path))).json()
+    assert.equal(body.sourceInfo.fetchedAt, ttl <= 300 ? time : firstTime)
+    assert.equal(calls.get(new URL(path, base).pathname), ttl === 60 ? 3 : ttl === 300 ? 2 : 1)
+  }
+})

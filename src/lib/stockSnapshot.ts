@@ -5,10 +5,12 @@ import { refreshPolicies } from './refreshPolicy.ts'
 export const STOCK_TTL = refreshPolicies.stock.staleTime
 export const STOCK_MAX_AGE = 24 * 3600000
 export interface DailyBar { t: number; o: number; h: number; l: number; c: number }
+export interface StockResourceSource { fetchedAt: number; stale: boolean }
 export interface StockSnapshot {
   symbol: string; fetchedAt: number; details: any; bars: DailyBar[];
   news: any[]; financials: any[]; related: string[]; issues: string[]; historyAvailable: boolean;
   companySource: 'Polygon / Massive' | 'SEC EDGAR';
+  resourceSources?: { details?: StockResourceSource; news?: StockResourceSource; related?: StockResourceSource };
   financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
 }
 export class StockSnapshotError extends Error {}
@@ -17,6 +19,25 @@ export function freshSnapshot(item: StockSnapshot | undefined, symbol: string, n
 }
 export function usableSnapshot(item: StockSnapshot | undefined, symbol: string, now = Date.now()) {
   return !!item && item.symbol === symbol && now >= item.fetchedAt && now - item.fetchedAt <= STOCK_MAX_AGE
+}
+export function retainStockResources(previous: StockSnapshot | undefined, incoming: StockSnapshot, now = Date.now()): StockSnapshot {
+  if (!usableSnapshot(previous, incoming.symbol, now) || !previous) return incoming
+  const result = { ...incoming, resourceSources: { ...incoming.resourceSources } }
+  const source = (part: 'details' | 'news' | 'related', maxAge: number) => {
+    const value = previous.resourceSources?.[part]
+    return value && now >= value.fetchedAt && now - value.fetchedAt <= maxAge ? { ...value, stale: true } : undefined
+  }
+  const details = source('details', 24 * 3600000)
+  if (incoming.companySource === 'SEC EDGAR' && previous.companySource === 'Polygon / Massive' && previous.details?.ticker === incoming.symbol && details) {
+    result.details = previous.details; result.companySource = previous.companySource; result.resourceSources.details = details
+  }
+  for (const [part, issue, maxAge] of [['news', '뉴스', 6 * 3600000], ['related', '관련 종목', 7 * 86400000]] as const) {
+    const original = source(part, maxAge)
+    if (incoming.issues.includes(issue) && previous[part].length && original) {
+      result[part] = previous[part]; result.resourceSources[part] = original
+    }
+  }
+  return result
 }
 export function completedBars(rows: DailyBar[], now = Date.now()): DailyBar[] {
   const cutoff = latestDailyDate(now)
@@ -50,7 +71,7 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
         if (response.status === 429) throw new StockSnapshotError('조회 요청이 몰려 일시적으로 제한되고 있습니다. 잠시 후 다시 조회해 주세요.')
         if (!response.ok) throw new Error('조회 실패')
         if (!data || data.error || ['ERROR', 'NOT_AUTHORIZED'].includes(data.status)) throw new Error('조회 실패')
-        return data.results
+        return data
       } catch (error) {
         signal.throwIfAborted()
         if (!retry || attempt > 0 || !transient) throw error
@@ -67,13 +88,18 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
   const jobs = await Promise.allSettled([
     get(`/v3/reference/tickers/${symbol}`, true),
     get(`/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}?adjusted=true&sort=asc&limit=500`, true),
-    get(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`),
+    get(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`, true),
     annual(),
-    get(`/v1/related-companies/${symbol}`),
+    get(`/v1/related-companies/${symbol}`, true),
     get(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`),
   ])
   signal.throwIfAborted()
-  const value = (i: number) => jobs[i].status === 'fulfilled' ? jobs[i].value : undefined
+  const value = (i: number) => jobs[i].status === 'fulfilled' ? i === 3 ? jobs[i].value : jobs[i].value.results : undefined
+  const source = (i: number): StockResourceSource => {
+    const info = jobs[i].status === 'fulfilled' ? jobs[i].value.sourceInfo : undefined
+    return info?.source === 'Polygon / Massive' && Number.isFinite(info.fetchedAt) && info.fetchedAt > 0 && info.fetchedAt <= Date.now() + 30000
+      ? { fetchedAt: info.fetchedAt, stale: info.stale === true } : { fetchedAt: now, stale: false }
+  }
   const annualData = value(3), reference = value(0)
   // A failed reference request must not hide independently confirmed prices and
   // filings. SEC has already checked this symbol's ticker-to-CIK correspondence.
@@ -101,6 +127,7 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
   if (!annualData || annualData.stale) issues.push('연간 재무')
   if (!history.length) issues.unshift('가격 이력')
   return { symbol, fetchedAt: now, details, companySource: hasReference ? 'Polygon / Massive' : 'SEC EDGAR', bars, issues, historyAvailable: history.length > 0,
+    resourceSources: { details: hasReference ? source(0) : undefined, news: Array.isArray(value(2)) ? source(2) : undefined, related: Array.isArray(value(4)) ? source(4) : undefined },
     news: Array.isArray(value(2)) ? value(2) : [], financials: annualData?.results ?? [],
     financialSource: annualData ? { source: annualData.source, fetchedAt: annualData.fetchedAt, stale: annualData.stale, status: annualData.status } : undefined,
     related: Array.isArray(value(4)) ? value(4).map((r: { ticker: string }) => r.ticker).filter((s: string) => /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(s)).slice(0, 8) : [] }
