@@ -22,7 +22,7 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   const [query, setQuery] = useState('')
   const [group, setGroup] = useState<SearchGroup | 'all'>('all')
   const [selection, setSelection] = useState('')
-  const [remote, setRemote] = useState<{ query: string; stocks: StockMatch[]; status: string }>({ query: '', stocks: [], status: '' })
+  const [remote, setRemote] = useState<{ query: string; stocks: StockMatch[]; status: string; pending: boolean }>({ query: '', stocks: [], status: '', pending: false })
   const [newsRevision, setNewsRevision] = useState(0)
   const [snapshot] = useState(() => { try { return readNewsSnapshot(sessionStorage).latest } catch { return null } })
   const { data, loading, error } = useResource('/api/news', isNewsFeed, refreshPolicies.news, newsRevision)
@@ -39,6 +39,10 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   const results = useMemo(() => siteSearchResults(query, items, briefings, feed, stocks, group), [query, items, feed, stocks, group])
   const selected = results.find(row => row.id === selection) ?? results[0]
   const index = selected ? results.indexOf(selected) : -1
+  const directTicker = search.toUpperCase()
+  // Unverified input is an explicit recovery action, never a default search hit.
+  const showDirect = stockEnabled && remote.query === search && !remote.pending && !remote.stocks.length
+    && /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(directTicker) && !results.some(row => row.id === `stock:${directTicker}`)
   useEffect(() => {
     const element = dialog.current!
     const release = presentModal(element)
@@ -51,21 +55,21 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   useEffect(() => {
     if (!stockEnabled || !search) return
     if (search.length > 60 || !/^[\p{L}\p{N} .&':-]+$/u.test(search)) {
-      setRemote({ query: search, stocks: [], status: group === 'stocks' ? '60자 이내의 종목명 또는 티커를 입력해 주세요.' : '' })
+      setRemote({ query: search, stocks: [], status: group === 'stocks' ? '60자 이내의 종목명 또는 티커를 입력해 주세요.' : '', pending: false })
       return
     }
     const cached = cachedSearch(search)
-    if (cached) { setRemote({ query: search, stocks: cached, status: cached.length ? '' : '일치하는 종목이 없습니다.' }); return }
+    if (cached) { setRemote({ query: search, stocks: cached, status: cached.length ? '' : '일치하는 종목이 없습니다.', pending: false }); return }
     const controller = new AbortController()
     let active = true
     let timeout: number | undefined
-    setRemote({ query: search, stocks: [], status: '종목 검색 중…' })
+    setRemote({ query: search, stocks: [], status: '종목 검색 중…', pending: true })
     const timer = window.setTimeout(async () => {
       timeout = window.setTimeout(() => controller.abort(), 10000)
       try {
         const found = await searchStocks(search, controller.signal)
-        if (active) setRemote({ query: search, stocks: found, status: found.length ? '' : '일치하는 종목이 없습니다. 정확한 티커로 직접 이동할 수 있습니다.' })
-      } catch { if (active) setRemote({ query: search, stocks: [], status: '종목 검색을 불러오지 못했습니다. 정확한 티커로 직접 이동하거나 다시 입력해 주세요.' }) }
+        if (active) setRemote({ query: search, stocks: found, status: found.length ? '' : '일치하는 종목이 없습니다.', pending: false })
+      } catch { if (active) setRemote({ query: search, stocks: [], status: '종목 검색을 불러오지 못했습니다. 정확한 티커로 직접 이동하거나 다시 입력해 주세요.', pending: false }) }
       finally { window.clearTimeout(timeout) }
     }, 350)
     return () => { active = false; controller.abort(); window.clearTimeout(timer); window.clearTimeout(timeout) }
@@ -101,6 +105,9 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
     </div>
     {!results.length && <p className="command-notice" role="status">검색 결과가 없습니다. 검색어를 줄이거나 다른 범위를 선택해 주세요.</p>}
     {stockEnabled && query.trim() && remote.query === search && remote.status && <p className="command-notice" role="status">{remote.status}</p>}
+    {showDirect && <div className="command-direct-stock"><button type="button" onClick={() => {
+      navigate(`/stock/${encodeURIComponent(directTicker)}`, { state: returnState }); onSelect(); onClose()
+    }}>‘{directTicker}’ 티커로 직접 이동</button><small>종목 존재를 확인하지 못했습니다. 정확한 티커를 알고 있을 때 사용하세요.</small></div>}
     {(group === 'all' || group === 'news') && <p className="command-notice" role="status">{error ? <>뉴스 갱신에 실패했습니다. {data || snapshot ? '이전 수집 기사를 검색합니다.' : '다른 항목은 계속 검색할 수 있습니다.'} <button type="button" onClick={() => setNewsRevision(n => n + 1)}>뉴스 다시 조회</button></> : loading ? '최근 수집 뉴스를 확인하는 중…' : '뉴스는 최근 수집한 기사 제목·매체에서 검색합니다.'}</p>}
     <p id={hintId} className="command-help">↑↓ 결과 이동 · Enter 열기 · Esc 닫기 <span>기사는 원문을 새 탭에서 엽니다.</span></p>
   </dialog>

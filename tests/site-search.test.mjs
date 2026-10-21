@@ -27,14 +27,24 @@ test('saved articles win canonical URL deduplication and unsafe links are exclud
   const invalid = { ...saved, articles: [{ ...saved.articles[0], article_url: 'javascript:alert(1)' }] }
   assert.equal(siteSearchResults('', invalid, [], null).filter(row => row.external).length, 0)
 })
-test('Korean aliases and case-insensitive tickers share remote search, with a direct route when lookup is unavailable', () => {
+test('Korean aliases and case-insensitive tickers share confirmed remote and saved matches', () => {
   assert.equal(stockSearchQuery(' 애플 '), 'AAPL')
   assert.equal(find('애플').find(row => row.group === 'stocks').href, '/stock/AAPL')
   const matches = [{ ticker: 'AAPL', name: 'Apple' }, { ticker: 'AAP', name: 'Advance Auto Parts' }]
   assert.equal(find('aapl', matches, 'stocks').length, 1)
-  assert.equal(find('brk.b', [], 'stocks')[0].href, '/stock/BRK.B')
+  assert.equal(find('brk.b', [], 'stocks').length, 0, 'unverified tickers are not search results')
   assert.equal(find('https://evil.test', [], 'stocks').length, 0)
   assert.ok(find('엔비디아', [{ ticker: 'NVDA', name: 'NVIDIA' }], 'stocks').some(row => row.href === '/stock/NVDA'))
+})
+test('company names cannot invent ticker results or outrank the company returned by the provider', () => {
+  for (const [query, ticker, name] of [['Apple', 'AAPL', 'Apple Inc.'], ['Nvidia', 'NVDA', 'NVIDIA Corporation'], ['Tesla', 'TSLA', 'Tesla Inc.']]) {
+    const items = { version: 1, stocks: [], articles: [] }
+    assert.equal(siteSearchResults(query, items, [], null, [], 'stocks').length, 0)
+    const rows = siteSearchResults(query, items, [], null, [{ ticker, name }], 'stocks')
+    assert.equal(rows.length, 1)
+    assert.equal(rows[0].href, `/stock/${ticker}`)
+    assert.equal(rows.some(row => row.href === `/stock/${query.toUpperCase()}`), false)
+  }
 })
 test('category filters keep results in their category and multiword matching requires all words', () => {
   assert.ok(find('반도체', [], 'briefings').every(row => row.group === 'briefings'))

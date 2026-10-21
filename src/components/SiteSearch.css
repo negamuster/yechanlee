@@ -25,6 +25,9 @@
 .command-result > span:last-child { font-size: 16px; color: var(--ui-muted); }
 .command-notice { flex-shrink: 0; margin: 0; padding: 8px 18px; font-size: 12px; line-height: 1.5; color: var(--ui-muted); }
 .command-notice button { padding: 4px; border: 0; background: transparent; color: var(--ui-text); font: inherit; text-decoration: underline; cursor: pointer; }
+.command-direct-stock { flex-shrink: 0; padding: 4px 18px 12px; }
+.command-direct-stock button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-text); font: inherit; font-size: 13px; cursor: pointer; }
+.command-direct-stock small { display: block; margin-top: 6px; color: var(--ui-muted); font-size: 11px; line-height: 1.5; }
 .command-help { flex-shrink: 0; margin: 0; padding: 12px 18px; border-top: 1px solid var(--ui-border); font-size: 11px; line-height: 1.5; color: var(--ui-muted); }
 .command-help span { margin-left: 12px; }
 .command-menu :is(input, button, a):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }

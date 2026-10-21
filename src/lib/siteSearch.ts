@@ -27,7 +27,6 @@ export function siteSearchResults(query: string, saved: SavedItems, briefings: B
   for (const stock of stocks) if (!matches.has(stock.ticker)) matches.set(stock.ticker, stock)
   const direct = stockSearchQuery(query).toUpperCase()
   for (const stock of matches.values()) rows.push({ id: `stock:${stock.ticker}`, group: 'stocks', title: `${stock.ticker} · ${stock.name}`, text: `${stock.ticker} ${stock.name}`, href: `/stock/${encodeURIComponent(stock.ticker)}`, description: stock.primary_exchange || '미국 상장 종목' })
-  if (query.trim() && /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(direct) && !matches.has(direct)) rows.push({ id: `stock:${direct}`, group: 'stocks', title: `${direct} 종목 상세`, text: `${query} ${direct}`, href: `/stock/${encodeURIComponent(direct)}`, description: '티커로 직접 이동 · 미국 상장 종목' })
   for (const item of briefings) rows.push({ id: `briefing:${item.id}`, group: 'briefings', title: item.title, description: `${item.sessionDate || item.id} · 게시된 브리핑`, href: `/briefings/${encodeURIComponent(item.id)}`, text: `${item.title} ${item.id} ${item.sessionDate || ''} ${item.summary.join(' ')} ${item.blocks.map(block => block.text).join(' ')}` })
   const seen = new Set<string>()
   const article = (item: { article_url: string; title: string; publisher: string; published_utc: string }, category: 'news' | 'saved') => {
