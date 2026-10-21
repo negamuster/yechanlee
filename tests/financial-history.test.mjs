@@ -134,3 +134,22 @@ test('a change of accounting standard cannot create a mixed-standard TTM', () =>
   assert.equal(h.quarterly[0].accounting_standard, 'ifrs-full')
   assert.deepEqual(h.ttm, [])
 })
+
+test('total revenue takes precedence over contract-revenue subtotals and a missing prefix cannot switch to the subtotal', () => {
+  const data = financialFacts(), gaap = data.facts['us-gaap'], annual = rows(data, revenue).find(r => r.end === '2025-12-31')
+  gaap.Revenues = { units: { USD: [{ ...annual, val: 150 }] } }
+  gaap.RevenueNotFromContractWithCustomer = { units: { USD: [{ ...annual, val: 50 }] } }
+  const h = history(data)
+  assert.equal(field(h.annual[0], 'revenues').value, 150)
+  assert.equal(field(h.annual[0], 'revenues').label, 'Revenues')
+  assert.equal(field(h.quarterly.find(q => q.end_date === annual.end), 'revenues'), undefined)
+  assert.equal(field(h.ttm[0], 'revenues'), undefined)
+})
+
+test('a known contract-revenue subtotal is left unconfirmed when total revenue is unavailable', () => {
+  const data = financialFacts(), gaap = data.facts['us-gaap'], annual = rows(data, revenue).find(r => r.end === '2025-12-31')
+  gaap.RevenueNotFromContractWithCustomer = { units: { USD: [{ ...annual, val: 50 }] } }
+  const h = history(data)
+  assert.equal(field(h.annual[0], 'revenues'), undefined)
+  assert.equal(field(h.annual[0], 'operating_cash_flow').value, 10)
+})
