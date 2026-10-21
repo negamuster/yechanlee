@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { completedBars, quoteFromBars, freshSnapshot, usableSnapshot, fetchStockSnapshot, StockSnapshotError, STOCK_TTL, STOCK_MAX_AGE } from '../src/lib/stockSnapshot.ts'
+import { completedBars, quoteFromBars, freshSnapshot, usableSnapshot, fetchStockSnapshot, retainStockResources, StockSnapshotError, STOCK_TTL, STOCK_MAX_AGE } from '../src/lib/stockSnapshot.ts'
 import { latestDailyDate } from '../lib/trading-session.js'
 const now = Date.parse('2026-10-07T03:00:00Z')
 const bar = (day, c, o = c, h = Math.max(c, o) + 10, l = Math.min(c, o) - 10) => ({ t: Date.parse(`${day}T04:00:00Z`), o, h, l, c })
@@ -136,4 +136,55 @@ test('rate limits and known access failures are not retried immediately and miss
     assert.equal(detailsCalls, 1)
   }
   await assert.rejects(fetchStockSnapshot('AAPL', new AbortController().signal, mock('/range/'), now), /기업 정보는 확인했지만 일별 시세/)
+})
+
+test('a partial refresh preserves dated same-symbol company data, news and peers; confirmed empty results clear old lists', async () => {
+  const confirmed = await fetchStockSnapshot('AAPL', new AbortController().signal, mock(), now)
+  const original = now - 60000
+  const previous = { ...confirmed, details: { ticker: 'AAPL', name: 'Apple', market_cap: 1000, primary_exchange: 'XNAS', list_date: '1980-12-12' }, news: [{ title: 'Confirmed news' }], related: ['MSFT'], resourceSources: Object.fromEntries(['details', 'news', 'related'].map(part => [part, { fetchedAt: original, stale: false }])) }
+  const incoming = { ...confirmed, details: { ticker: 'AAPL', name: 'Apple SEC' }, companySource: 'SEC EDGAR', issues: ['상세 기업 정보', '뉴스', '관련 종목'], news: [], related: [], resourceSources: {} }
+  const result = retainStockResources(previous, incoming, now)
+  assert.equal(result.details.market_cap, 1000)
+  assert.equal(result.companySource, 'Polygon / Massive')
+  assert.deepEqual(result.news, previous.news)
+  assert.deepEqual(result.related, ['MSFT'])
+  for (const part of ['details', 'news', 'related']) assert.deepEqual(result.resourceSources[part], { fetchedAt: original, stale: true })
+  assert.deepEqual(incoming.news, [])
+  assert.equal(previous.resourceSources.details.stale, false)
+  const cleared = retainStockResources(previous, confirmed, now)
+  assert.deepEqual(cleared.news, [])
+  assert.deepEqual(cleared.related, [])
+  assert.equal(cleared.resourceSources.news.stale, false)
+  assert.equal(retainStockResources({ ...previous, symbol: 'MSFT' }, incoming, now), incoming)
+  const expired = { ...previous, resourceSources: { details: { fetchedAt: now - 24 * 3600000 - 1 }, news: { fetchedAt: now - 6 * 3600000 - 1 }, related: { fetchedAt: now - 7 * 86400000 - 1 } } }
+  const rejected = retainStockResources(expired, incoming, now)
+  assert.equal(rejected.details.market_cap, undefined)
+  assert.deepEqual(rejected.news, [])
+  assert.deepEqual(rejected.related, [])
+})
+
+test('provider cache timestamps survive the snapshot and optional transient failures retry once', async () => {
+  const attempts = new Map(), original = now - 3600000
+  const fetcher = async (url, options) => {
+    const path = new URL(url, 'https://example.com').searchParams.get('path') || ''
+    if (path.includes('/news?') || path.includes('/related-companies/')) {
+      attempts.set(path, (attempts.get(path) || 0) + 1)
+      if (attempts.get(path) === 1) return Response.json({}, { status: 503 })
+    }
+    const response = await mock()(url, options), body = await response.json()
+    return Response.json({ ...body, sourceInfo: { source: 'Polygon / Massive', fetchedAt: original, stale: false } })
+  }
+  const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher, now)
+  assert.deepEqual(snapshot.issues, [])
+  assert.deepEqual([...attempts.values()], [2, 2])
+  for (const part of ['details', 'news', 'related']) assert.equal(snapshot.resourceSources[part].fetchedAt, original)
+  for (const status of [429, 403]) {
+    let calls = 0
+    const partial = await fetchStockSnapshot('AAPL', new AbortController().signal, async (url, options) => {
+      if (new URL(url, 'https://example.com').searchParams.get('path')?.includes('/news?')) { calls++; return Response.json({}, { status }) }
+      return mock()(url, options)
+    }, now)
+    assert.equal(calls, 1)
+    assert.ok(partial.issues.includes('뉴스'))
+  }
 })

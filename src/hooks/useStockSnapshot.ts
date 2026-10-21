@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { fetchStockSnapshot, freshSnapshot, usableSnapshot, StockSnapshotError } from '../lib/stockSnapshot'
+import { fetchStockSnapshot, freshSnapshot, usableSnapshot, StockSnapshotError, retainStockResources } from '../lib/stockSnapshot'
 import type { StockSnapshot } from '../lib/stockSnapshot'
 import { useRefreshSchedule } from './useRefreshSchedule'
 import { refreshAvailable, refreshPolicies } from '../lib/refreshPolicy'
@@ -28,6 +28,7 @@ export function useStockSnapshot(symbol: string) {
       if (!data.financialSource && data.issues.includes('연간 재무') && usable && cached?.financials.length && cached.financialSource) {
         data = { ...data, financials: cached.financials, financialSource: { ...cached.financialSource, stale: true } }
       }
+      data = retainStockResources(cached, data)
       if (cache.size >= 50) cache.delete(cache.keys().next().value!)
       cache.set(symbol, data); setSnapshot(data)
     }).catch(error => {

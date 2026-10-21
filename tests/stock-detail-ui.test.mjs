@@ -15,7 +15,7 @@ const { MemoryRouter, Routes, Route, useNavigate } = await import('react-router-
 const { default: Stock } = await import('../src/pages/06_Stock.tsx')
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
 const originalFetch = globalThis.fetch, originalNow = Date.now
-let root, symbol, sequence = 0, now, calls, failFinancials, emptyFinancials, delayedChart, failDetails, failPrices, rateLimited
+let root, symbol, sequence = 0, now, calls, failFinancials, emptyFinancials, delayedChart, failDetails, failPrices, rateLimited, failNews, failRelated, extraData
 const container = document.getElementById('root')
 const tick = () => new Promise(resolve => setTimeout(resolve, 0))
 const price = (date, c) => ({ t: Date.parse(date), c })
@@ -38,6 +38,7 @@ const period = value => buttons().find(button => button.textContent === value)
 beforeEach(() => {
   symbol = `TST${++sequence}`; now = Date.parse('2026-10-21T12:00:00Z'); Date.now = () => now
   calls = []; failFinancials = false; emptyFinancials = false; delayedChart = null; failDetails = false; failPrices = false; rateLimited = false
+  failNews = false; failRelated = false; extraData = false
   localStorage.clear(); sessionStorage.clear()
   globalThis.fetch = async raw => {
     calls.push(raw); const url = new URL(raw, 'https://anthracite.test'), ticker = url.searchParams.get('ticker')
@@ -48,8 +49,10 @@ beforeEach(() => {
     }
     if (url.pathname === '/api/stock-financials') return failFinancials ? Response.json({}, { status: 503 }) : Response.json({ symbol: ticker, company: 'SEC Test Company', status: 'ok', results: emptyFinancials ? [] : [annual()], source: 'SEC EDGAR', fetchedAt: now, stale: false })
     const path = url.searchParams.get('path') || ''
-    if (path.startsWith('/v3/reference/tickers/')) return failDetails ? Response.json({}, { status: rateLimited ? 429 : 503 }) : Response.json({ results: { ticker: path.split('/').at(-1), name: 'Test Company', currency_name: 'usd' } })
+    if (path.startsWith('/v3/reference/tickers/')) return failDetails ? Response.json({}, { status: rateLimited ? 429 : 503 }) : Response.json({ results: { ticker: path.split('/').at(-1), name: 'Test Company', currency_name: 'usd', market_cap: 1000000, primary_exchange: 'XNAS', list_date: '1999-01-22' } })
     if (path.includes('/range/')) return failPrices ? Response.json({}, { status: 503 }) : Response.json({ results: [bar('2026-10-19T04:00Z', 100), bar('2026-10-20T04:00Z', 102)] })
+    if (path.includes('/news?')) return failNews ? Response.json({}, { status: 503 }) : Response.json({ results: extraData ? [{ id: 'story', title: 'Confirmed company news', article_url: 'https://example.com/story', published_utc: '2026-10-20T12:00Z', publisher: { name: 'Test Publisher' } }] : [] })
+    if (path.includes('/related-companies/')) return failRelated ? Response.json({}, { status: 503 }) : Response.json({ results: extraData ? [{ ticker: 'MSFT' }] : [] })
     return Response.json({ results: [] })
   }
 })
@@ -136,4 +139,37 @@ test('when no fallback is confirmed, rate limits and missing prices explain the 
   await click([...container.querySelectorAll('.stock-empty button')].find(button => button.textContent === '다시 조회'))
   assert.match(container.querySelector('.stock-empty').textContent, /기업 정보는 확인했지만 일별 시세/)
   assert.equal(container.querySelector('.stock-current-price'), null)
+})
+
+test('a partial refresh retains market cap, exchange, listing, stories and peers with their original timestamps', async () => {
+  extraData = true; await render()
+  const stamp = section => [...container.querySelectorAll(`${section} .stock-note`)].find(p => / 조회 /.test(p.textContent))?.textContent
+  const sections = ['#stock-about', '#stock-news', '[aria-labelledby="stock-related-title"]']
+  const original = sections.map(stamp)
+  failDetails = true; failNews = true; failRelated = true; now += 60000
+  await click([...container.querySelectorAll('.stock-hero .stock-actions button')].find(button => button.textContent === '새로고침'))
+  assert.match(container.querySelector('#stock-financials').textContent, /\$1.00M.*이전 확인 기업정보 기준/)
+  assert.match(container.querySelector('#stock-about').textContent, /XNAS.*1999-01-22/)
+  assert.match(container.querySelector('#stock-news').textContent, /Confirmed company news/)
+  assert.ok(container.querySelector('a[href="/stock/MSFT"]'))
+  assert.deepEqual(sections.map(stamp), original)
+  for (const selector of sections) assert.match(container.querySelector(selector).textContent, /이전에 확인한 자료/)
+  failDetails = false; failNews = false; failRelated = false; extraData = false
+  await click(container.querySelector('#stock-news button[aria-label="뉴스 누락 자료 다시 조회"]'))
+  assert.equal(container.querySelector('.stock-state').textContent, '조회 완료')
+  assert.doesNotMatch(container.querySelector('#stock-news').textContent, /Confirmed company news/)
+  assert.equal(container.querySelector('a[href="/stock/MSFT"]'), null)
+})
+
+test('an initially partial view offers a retry beside missing fields and restores them after provider recovery', async () => {
+  failDetails = true; failNews = true; failRelated = true; await render()
+  assert.match(container.querySelector('#stock-financials').textContent, /기업정보 조회 실패/)
+  assert.ok(container.querySelector('#stock-news button[aria-label="뉴스 누락 자료 다시 조회"]'))
+  assert.ok(container.querySelector('button[aria-label="관련 종목 누락 자료 다시 조회"]'))
+  failDetails = false; failNews = false; failRelated = false; extraData = true
+  await click(container.querySelector('#stock-about button[aria-label="기업 정보 누락 자료 다시 조회"]'))
+  assert.match(container.querySelector('#stock-financials').textContent, /\$1.00M/)
+  assert.match(container.querySelector('#stock-about').textContent, /XNAS.*1999-01-22/)
+  assert.match(container.querySelector('#stock-news').textContent, /Confirmed company news/)
+  assert.equal(container.querySelector('.stock-state').textContent, '조회 완료')
 })
