@@ -25,6 +25,9 @@ export function useStockSnapshot(symbol: string) {
     const timer = window.setTimeout(() => controller.abort(), 30000)
     if (shouldFetch) void fetchStockSnapshot(symbol, controller.signal).then(data => {
       if (!active) return
+      if (!data.financialSource && data.issues.includes('연간 재무') && usable && cached?.financials.length && cached.financialSource) {
+        data = { ...data, financials: cached.financials, financialSource: { ...cached.financialSource, stale: true } }
+      }
       if (cache.size >= 50) cache.delete(cache.keys().next().value!)
       cache.set(symbol, data); setSnapshot(data)
     }).catch(() => {

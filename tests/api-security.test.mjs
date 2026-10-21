@@ -9,8 +9,8 @@ const aiReq = (body, extra = {}) => new Request(`${base}/api/claude-proxy`, { me
 const prompt = 'AAPL 재무 데이터에 대한 교육용 분석을 작성해 주세요.'
 
 test('stock proxy only accepts bounded app routes and parameters', () => {
-  for (const path of ['/v3/reference/tickers/AAPL', '/v2/aggs/ticker/AAPL/prev?adjusted=true', '/v2/reference/news?ticker=AAPL&limit=8&order=desc', '/vX/reference/financials?ticker=AAPL&timeframe=annual&limit=2&order=desc']) assert.ok(allowedPath(path))
-  for (const path of ['https://evil.test', '//evil.test', '/v3/reference/tickers/../tickers/AAPL', '/v3/reference/tickers/%41APL', '/v3/reference/tickers/AAPL?apiKey=attacker', '/v2/reference/news?limit=50000', '/v2/reference/news?ticker=AAPL&ticker=MSFT', '/v2/aggs/ticker/AAPL/range/1/minute/2026-01-01/2026-02-01', '/v2/aggs/ticker/AAPL/range/1/day/2026-02-30/2026-03-01']) assert.equal(allowedPath(path), null, path)
+  for (const path of ['/v3/reference/tickers/AAPL', '/v2/aggs/ticker/AAPL/prev?adjusted=true', '/v2/reference/news?ticker=AAPL&limit=8&order=desc']) assert.ok(allowedPath(path))
+  for (const path of ['/vX/reference/financials?ticker=AAPL&timeframe=annual&limit=2&order=desc', 'https://evil.test', '//evil.test', '/v3/reference/tickers/../tickers/AAPL', '/v3/reference/tickers/%41APL', '/v3/reference/tickers/AAPL?apiKey=attacker', '/v2/reference/news?limit=50000', '/v2/reference/news?ticker=AAPL&ticker=MSFT', '/v2/aggs/ticker/AAPL/range/1/minute/2026-01-01/2026-02-01', '/v2/aggs/ticker/AAPL/range/1/day/2026-02-30/2026-03-01']) assert.equal(allowedPath(path), null, path)
 })
 
 test('stock key stays upstream, JSON is sanitized and successful calls are cached', async () => {

@@ -8,6 +8,7 @@ export interface DailyBar { t: number; o: number; h: number; l: number; c: numbe
 export interface StockSnapshot {
   symbol: string; fetchedAt: number; details: any; bars: DailyBar[];
   news: any[]; financials: any[]; related: string[]; issues: string[]; historyAvailable: boolean;
+  financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
 }
 export function freshSnapshot(item: StockSnapshot | undefined, symbol: string, now = Date.now()) {
   return !!item && item.symbol === symbol && now >= item.fetchedAt && now - item.fetchedAt < STOCK_TTL && !item.issues.length
@@ -52,11 +53,18 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
       }
     }
   }
+  async function annual() {
+    const response = await fetcher(`/api/stock-financials?ticker=${encodeURIComponent(symbol)}`, { signal: AbortSignal.any([signal, AbortSignal.timeout(25000)]) })
+    if (!response.ok) throw new Error('연간 재무 조회 실패')
+    const data = await response.json()
+    if (data.symbol !== symbol || !Array.isArray(data.results) || data.source !== 'SEC EDGAR' || !Number.isFinite(data.fetchedAt)) throw new Error('연간 재무 응답 미확인')
+    return data
+  }
   const jobs = await Promise.allSettled([
     get(`/v3/reference/tickers/${symbol}`, true),
     get(`/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}?adjusted=true&sort=asc&limit=500`, true),
     get(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`),
-    get(`/vX/reference/financials?ticker=${symbol}&timeframe=annual&limit=2&order=desc`),
+    annual(),
     get(`/v1/related-companies/${symbol}`),
     get(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`),
   ])
@@ -69,9 +77,12 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
   const history = Array.isArray(value(1)) ? completedBars(value(1), now) : []
   const bars = completedBars([...history, ...previousDay], now)
   if (!bars.length) throw new Error('확인된 일별 시세가 없습니다. 잠시 후 다시 조회해 주세요.')
-  const issues = [2, 3, 4, 5].filter(i => !Array.isArray(value(i))).map(i => ['','','뉴스','연간 재무','관련 종목','최근 종가'][i])
+  const annualData = value(3)
+  const issues = [2, 4, 5].filter(i => !Array.isArray(value(i))).map(i => ['','','뉴스','','관련 종목','최근 종가'][i])
+  if (!annualData || annualData.stale) issues.push('연간 재무')
   if (!history.length) issues.unshift('가격 이력')
   return { symbol, fetchedAt: now, details: value(0), bars, issues, historyAvailable: history.length > 0,
-    news: Array.isArray(value(2)) ? value(2) : [], financials: Array.isArray(value(3)) ? value(3) : [],
+    news: Array.isArray(value(2)) ? value(2) : [], financials: annualData?.results ?? [],
+    financialSource: annualData ? { source: annualData.source, fetchedAt: annualData.fetchedAt, stale: annualData.stale, status: annualData.status } : undefined,
     related: Array.isArray(value(4)) ? value(4).map((r: { ticker: string }) => r.ticker).filter((s: string) => /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(s)).slice(0, 8) : [] }
 }
