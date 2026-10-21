@@ -90,6 +90,7 @@ test('native wheel or touch pinch zooms the actual chart and dragging moves its 
     const cdp = await context.newCDPSession(page)
     await cdp.send('Input.synthesizePinchGesture', { x, y, scaleFactor: 1.7, gestureSourceType: 'touch', relativeSpeed: 400 })
     await cdp.detach()
+    expect(await page.evaluate(() => visualViewport.scale)).toBe(1)
   } else { await page.mouse.move(x, y); await page.mouse.wheel(0, -500) }
   await expect.poll(() => count(page)).toBeLessThan(32)
   const before = await ui.locator('.stock-chart-x-labels').textContent()
@@ -103,6 +104,7 @@ test('native wheel or touch pinch zooms the actual chart and dragging moves its 
   if (isMobile) {
     const cdp = await context.newCDPSession(page), priorScroll = await page.evaluate(() => scrollY)
     await cdp.send('Input.synthesizeScrollGesture', { x, y, yDistance: -140, speed: 500, gestureSourceType: 'touch' })
+    console.log('Mobile scroll', { priorScroll, after: await page.evaluate(() => ({ scroll: scrollY, scale: visualViewport.scale, height: innerHeight, total: document.documentElement.scrollHeight })), x, y })
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(priorScroll)
     await cdp.detach()
   }

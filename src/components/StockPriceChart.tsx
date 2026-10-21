@@ -1,7 +1,7 @@
 // TradingView Lightweight Charts™
 // Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
 import { useEffect, useId, useRef, useState } from 'react'
-import { createChart, LineSeries, CandlestickSeries, HistogramSeries, ColorType, CrosshairMode } from 'lightweight-charts'
+import { createChart, LineSeries, CandlestickSeries, HistogramSeries, ColorType, CrosshairMode, TrackingModeExitMode } from 'lightweight-charts'
 import type { IChartApi, ISeriesApi, UTCTimestamp, Time } from 'lightweight-charts'
 import type { PricePoint, StockChartPeriod } from '../lib/stockChart'
 import { chartIntervalLabel, chartPointTime } from '../lib/stockChart'
@@ -44,6 +44,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
         timeScale: { borderColor: '#e5e5e5', timeVisible: period === '1D' || period === '5D', secondsVisible: false, minBarSpacing: .01, fixLeftEdge: true, fixRightEdge: true, rightOffset: 0, shiftVisibleRangeOnNewBar: false, allowShiftVisibleRangeOnWhitespaceReplacement: false, lockVisibleTimeRangeOnResize: true, tickMarkMaxCharacterLength: 20, tickMarkFormatter: (t: Time) => chartPointTime(toMilliseconds(t), period, true) },
         localization: { locale: 'en-US', timeFormatter: (t: Time) => `${chartPointTime(toMilliseconds(t), period)} ET` },
         crosshair: { mode: CrosshairMode.Normal },
+        trackingMode: { exitMode: TrackingModeExitMode.OnTouchEnd },
         handleScroll: { mouseWheel: false, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
         handleScale: { mouseWheel: true, pinch: true, axisPressedMouseMove: { time: true, price: false }, axisDoubleClickReset: { time: true, price: true } },
         kineticScroll: { mouse: false, touch: true },
@@ -76,7 +77,8 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
         instance.chart.panes()[1]?.setHeight(82)
       }
       if (instance.volume && !showVolume) { instance.chart.removeSeries(instance.volume); instance.volume = undefined }
-      instance.volume?.setData(bars.map((p, i) => ({ time: time(p), ...(p.v == null ? {} : { value: p.v, color: p.o != null ? p.c >= p.o ? '#7ab49d' : '#d49a96' : i && p.c >= bars[i - 1].c ? '#7ab49d' : '#a9afb2' }) })))
+      instance.volume?.setData(bars.map(p => ({ time: time(p), ...(p.v == null ? {} : { value: p.v, color: p.o != null ? p.c >= p.o ? '#7ab49d' : '#d49a96' : '#a9afb2' }) })))
+      container.current?.querySelectorAll('canvas').forEach(canvas => canvas.setAttribute('aria-hidden', 'true'))
       instance.chart.timeScale().setVisibleLogicalRange(next)
     }
     rangeRef.current = next; setRange(next); previous.current = bars
@@ -103,7 +105,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       else if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); select(event.key === 'Home' ? 0 : bars.length - 1) }
       else if (['+', '=', '-', '0', 'PageUp', 'PageDown'].includes(event.key)) { event.preventDefault(); if (event.key === '0') fit(); else if (event.key.startsWith('Page')) navigate(moveChartRange(range, bars.length, event.key === 'PageUp' ? -1 : 1)); else navigate(zoomChartRange(range, bars.length, event.key === '-' ? 1 / .65 : .65)) }
     }}>
-      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={container} aria-hidden="true" />
+      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={container} />
       {!available && <p className="stock-chart-fallback">이 환경에서는 차트를 표시할 수 없습니다. 아래 조회 표에서 값을 확인하세요.</p>}
     </div>
     <div className="stock-chart-x-labels"><span>{first && chartPointTime(first.t, period)} ET</span><span>{last && chartPointTime(last.t, period)} ET</span></div>

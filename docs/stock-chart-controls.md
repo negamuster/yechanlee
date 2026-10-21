@@ -4,7 +4,7 @@ The eight existing source periods (`1D`, `5D`, `1M`, `6M`, `YTD`, `1Y`, `5Y`, `A
 
 ## Interaction
 
-- Mouse wheel and touch pinch zoom horizontally; dragging pans. Explicit zoom, older/newer movement, latest-window and full-window buttons provide equivalent controls. Price axes auto-scale to the visible data. Vertical touch gestures remain available for page scrolling.
+- Mouse wheel and touch pinch zoom horizontally; dragging pans. Explicit zoom, older/newer movement, latest-window and full-window buttons provide equivalent controls. Price axes auto-scale to the visible data. Vertical touch gestures remain available for page scrolling through `touch-action: pan-y`; touch tracking exits on touch end so a prior chart gesture does not trap the next page scroll. Native browser page pinch is excluded within the chart while the chart handles two-finger zoom.
 - `←` / `→` select observations; `Home` / `End` select first/last and bring them into view; `+` / `−` zoom, `PageUp` / `PageDown` pan, and `0` restores the full fetched period. The focusable frame describes the shortcuts.
 - Line/candle and volume preferences survive source-period and stock changes within the detail view. A new stock/period starts with its full data range. Controls do not fetch extra bars beyond the selected source period.
 - Once a user changes the viewport, refreshes restore its timestamp anchors rather than treating a prior array index as the same date. Append, prepend and rolling-window changes are handled by `chartViewport.ts`. Observations outside a newly reduced source history cannot be retained. Full-window reset resumes fitting new data. Existing request identity checks continue preventing late responses from changing the selected stock/period.
