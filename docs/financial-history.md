@@ -5,6 +5,7 @@ The existing SEC Company Facts request now supplies up to five annual periods, e
 ## Normalization and calculations
 
 - Map standard US GAAP and IFRS revenue, operating income, operating cash flow and asset-purchase concepts. Custom/company-specific tags are not guessed. Preserve reported currency, zero and losses.
+- Prefer total `Revenues` to a customer-contract revenue subtotal. If a non-contract revenue component is reported in the same filing/period but no total is available, leave contract revenue unconfirmed rather than present it as total revenue. A missing total-revenue YTD prefix must not silently fall back to a contract-revenue difference.
 - Annual duration: 300–400 days in 10-K/20-F/40-F or amendments. Quarter duration: 70–110 days. Dates determine periods; a comparative fact's filing `fy`/`fp` label is not treated as its own fiscal period.
 - Select an accession for each period. Do not fill missing fields from superseded accessions. A later filing repeating only unchanged comparative values may retain the complete original-quarter filing. Changed comparative facts use the later filing and flag the change.
 - Direct three-month income facts remain direct. Derive Q2/Q3 cash flow only from a YTD total and a matching prior YTD prefix. Derive Q4 from the annual total minus a matching nine-month prefix. Exact fiscal start, adjacency, concept and currency must agree. Later unchanged repetitions do not invalidate the operand; later changed values and conflicting amendments block cross-filing differences. EPS is never derived by subtraction.
