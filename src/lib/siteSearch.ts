@@ -16,7 +16,7 @@ export const searchPages = [
   ['/calendar', '경제·실적 캘린더', '일정 calendar earnings'], ['/form13f', '기관 포트폴리오 · 13F', '13f 기관 보유 공시 institutional holdings'],
   ['/simulator', '자산 시뮬레이터', '복리 자산 경제적 자유 simulator'], ['/equity', '주식시장 · Maps', '주식 업종 히트맵 섹터 equity maps sectors'],
   ['/rates', '금리·채권', '채권 국채 수익률 bond rates treasury'], ['/fed', '연준·통화정책', 'fed fomc 금리'],
-  ['/indicators', '경제지표', '지표 경제 cpi 고용 economic indicators'], ['/macro', '글로벌 매크로', '환율 원자재 거시 macro'],
+  ['/indicators', '경제지표', '지표 경제 cpi 물가 실업률 고용 금리 effr economic indicators'], ['/macro', '글로벌 매크로', '환율 원자재 거시 macro'],
   ['/live', 'Yahoo Finance Live', '라이브 방송 live'], ['/more', '더보기 · 투자 도구', '도구 tools more'],
 ] as const
 const normalize = (value: string) => value.normalize('NFKC').toLocaleLowerCase().replace(/\s+/g, ' ').trim()

@@ -9,6 +9,7 @@ export const refreshPolicies = {
   news: { staleTime: 10 * minute, interval: 10 * minute },
   stock: { staleTime: 5 * minute, interval: 5 * minute },
   watchlist: { staleTime: 2 * minute, interval: 2 * minute },
+  indicators: { staleTime: 15 * minute, interval: 30 * minute },
   filings: { staleTime: 15 * minute, interval: 15 * minute },
 } satisfies Record<string, RefreshPolicy>
 

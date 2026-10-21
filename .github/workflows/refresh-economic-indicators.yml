@@ -1,0 +1,42 @@
+name: Refresh official economic indicators
+on:
+  schedule:
+    - cron: '31 16 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-economic-indicators.yml'
+      - 'scripts/refresh-economic-indicators.mjs'
+      - 'lib/economic-indicators.js'
+      - 'lib/economic-series.js'
+permissions:
+  contents: write
+concurrency:
+  group: refresh-economic-indicators
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: node --test tests/economic-indicators.test.mjs
+      - name: Collect official observations
+        id: collect
+        run: node scripts/refresh-economic-indicators.mjs
+      - name: Preserve successful series even if another source failed
+        if: always() && (steps.collect.outcome == 'success' || steps.collect.outcome == 'failure')
+        run: |
+          git add data/economic-indicators.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh official economic observations'
+          git pull --rebase origin main
+          git push origin HEAD:main

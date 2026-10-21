@@ -8,7 +8,7 @@ for (let index = 0; index < args.length; index++) {
   if (args[index] === '--symbol' && HEALTH_SYMBOLS.includes(args[++index])) continue
   throw new Error('Usage: node scripts/check-data-health.mjs [--stocks-only] [--symbol AAPL|NVDA|SATL]')
 }
-const checks = [['news', '/api/news'], ['indices', '/api/market-indices'], ['movers', '/api/market-movers'], ['maps', '/api/sector-performance'], ['calendar', '/api/calendar?mode=month']]
+const checks = [['indicators', '/api/economic-indicators'], ['news', '/api/news'], ['indices', '/api/market-indices'], ['movers', '/api/market-movers'], ['maps', '/api/sector-performance'], ['calendar', '/api/calendar?mode=month']]
 const lines = ['# Production data health', '', `Checked: ${new Date().toISOString()}`, '', '| Feed | Result | Detail |', '| --- | --- | --- |']
 let failed = false
 const report = { checkedAt: Date.now(), symbol, checks: [] }
