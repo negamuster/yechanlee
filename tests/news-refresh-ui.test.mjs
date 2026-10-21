@@ -18,8 +18,11 @@ const { default: SavedItemsProvider } = await import('../src/components/SavedIte
 const { default: NewsFeed } = await import('../src/components/NewsFeed.tsx')
 const { NEWS_REFRESH_INTERVAL, NEWS_SNAPSHOT_KEY } = await import('../src/lib/newsRefresh.ts')
 const { SAVED_KEY } = await import('../src/lib/savedItems.ts')
+const { invalidateResource } = await import('../src/utils/resourceCache.ts')
 const container = document.getElementById('root')
 const originalFetch = globalThis.fetch
+const originalNow = Date.now
+let now
 let root, baseline, nextResponse, requests, sequence = 0, scrollY, scrollCalls, jumps, timerId = 0
 const intervals = new Map()
 window.setInterval = (callback, delay) => { const id = ++timerId; intervals.set(id, { callback, delay }); return id }
@@ -49,6 +52,7 @@ async function render(mobile = false) {
 }
 async function click(element) { assert.ok(element); await act(async () => { element.click(); await tick() }) }
 async function poll() {
+  now += NEWS_REFRESH_INTERVAL + 1
   const refresh = [...intervals.values()].find(timer => timer.delay === NEWS_REFRESH_INTERVAL)
   assert.ok(refresh)
   await act(async () => { refresh.callback(); await tick() })
@@ -66,6 +70,7 @@ const incoming = (suffix, overrides = {}) => ({ ...baseline.items[0], id: `new-$
 const updated = items => ({ ...baseline, items, fetchedAt: Date.now() + 1 })
 
 beforeEach(() => {
+  now = originalNow(); Date.now = () => now; invalidateResource('/api/news')
   sequence++; requests = 0; scrollY = 0; scrollCalls = []; jumps = []; intervals.clear()
   localStorage.clear(); sessionStorage.clear(); toast.dismiss()
   baseline = { fetchedAt: Date.now() - 60000, sources: [], items: Array.from({ length: 18 }, (_, index) => ({
@@ -76,7 +81,7 @@ beforeEach(() => {
   nextResponse = async () => Response.json(updated([incoming('a'), ...baseline.items]))
   globalThis.fetch = async () => { requests++; return nextResponse() }
 })
-afterEach(async () => { await act(async () => { root?.unmount(); toast.dismiss(); await tick() }); root = null; globalThis.fetch = originalFetch })
+afterEach(async () => { await act(async () => { root?.unmount(); toast.dismiss(); await tick() }); root = null; globalThis.fetch = originalFetch; Date.now = originalNow })
 after(() => dom.window.close())
 
 test('automatic refresh keeps expanded articles, DOM identity, focus and the visible reading anchor until the reader applies updates', async () => {

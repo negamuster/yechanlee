@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useResource } from '../hooks/useResource'
+import { refreshPolicies } from '../lib/refreshPolicy'
 import ToolPage from '../components/ToolPage'
 import ResourceState from '../components/ResourceState'
 import WidgetActions from '../components/WidgetActions'
@@ -134,45 +136,16 @@ function HoldingsTable({ filing, query, setQuery, sort, setSort }: {
 
 export default function Form13F() {
   const [selectedIdx, setSelectedIdx] = useState(0)
-  const [cache, setCache] = useState<Record<string, FilingData>>({})
   const [refresh, setRefresh] = useState(0)
-  const [request, setRequest] = useState({ cik: '', busy: true, error: false })
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<HoldingSort>(DEFAULT_HOLDING_SORT)
   const selectedManager = INITIAL_MANAGERS[selectedIdx]
-  const current = cache[selectedManager.cik]
-  const busy = request.cik !== selectedManager.cik || request.busy
-  const failed = request.cik === selectedManager.cik && request.error
+  const { data: current, loading: busy, error: failed } = useResource(`/api/form13f?cik=${selectedManager.cik}`, isFiling, refreshPolicies.filings, refresh)
   const edgarUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`
 
   function selectManager(index: number) {
     setSelectedIdx(index); setQuery(''); setSort(DEFAULT_HOLDING_SORT)
   }
-
-  useEffect(() => {
-    const controller = new AbortController()
-    let active = true
-    const cik = selectedManager.cik
-    setRequest({ cik, busy: true, error: false })
-    async function load() {
-      try {
-        const response = await fetch(`/api/form13f?cik=${cik}`, { signal: controller.signal })
-        const result: unknown = await response.json()
-        if (!response.ok || !isFiling(result)) throw new Error('공시 검증 실패')
-        if (active) {
-          setCache(previous => ({ ...previous, [cik]: result }))
-          setRequest({ cik, busy: false, error: false })
-        }
-      } catch {
-        if (active) setRequest({ cik, busy: false, error: true })
-      }
-    }
-    void load()
-    const interval = setInterval(() => { if (!document.hidden) setRefresh(value => value + 1) }, 15 * 60000)
-    const visible = () => { if (!document.hidden) setRefresh(value => value + 1) }
-    document.addEventListener('visibilitychange', visible)
-    return () => { active = false; controller.abort(); clearInterval(interval); document.removeEventListener('visibilitychange', visible) }
-  }, [selectedManager.cik, refresh])
 
   return <ToolPage className="portfolio-page" title="기관 포트폴리오 · 13F"
     description="기관의 분기별 공시에서 보유 종목과 수량 변화를 확인합니다. 현재 보유나 실제 거래 시점과는 차이가 있습니다.">

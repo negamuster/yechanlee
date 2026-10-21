@@ -1,3 +1,6 @@
+import { useRefreshSchedule } from '../hooks/useRefreshSchedule'
+import { needsRefresh, refreshAvailable, refreshPolicies } from '../lib/refreshPolicy'
+import { loadResource } from '../utils/resourceCache'
 import { useReadArticles } from '../hooks/useReadArticles'
 import { createPortal } from 'react-dom'
 import { isNewsSector, matchesSector } from './sectorNews'
@@ -71,6 +74,8 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   const [loading, setLoading] = useState(!feed)
   const [failed, setFailed] = useState(false)
   const [revision, setRevision] = useState(0)
+  const [automatic, setAutomatic] = useState(0)
+  const manualRevision = useRef(0)
   const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
   const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', !mobile, v => typeof v === 'boolean')
   const [mobileDraft, setMobileDraft] = useState<NewsFilters | null>(null)
@@ -114,40 +119,36 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
     return () => viewport.removeEventListener('change', discardDraft)
   }, [])
 
+  useRefreshSchedule(refreshPolicies.news, () => checkedAt.current || null, () => setAutomatic(value => value + 1))
   useEffect(() => {
-    const refresh = window.setInterval(() => { setRevision(value => value + 1) }, NEWS_REFRESH_INTERVAL)
     const clock = window.setInterval(() => { preservePosition(); setClock(value => value + 1) }, 60000)
-    return () => { window.clearInterval(refresh); window.clearInterval(clock) }
+    return () => { window.clearInterval(clock) }
   }, [])
 
   useEffect(() => {
-    if (revision === 0 && Date.now() - checkedAt.current < NEWS_REFRESH_INTERVAL) return
-    const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 18000)
+    const force = manualRevision.current !== revision
+    manualRevision.current = revision
+    if (!force && (!refreshAvailable() || !needsRefresh(checkedAt.current || null, NEWS_REFRESH_INTERVAL))) return
     let active = true
     async function refresh() {
       preservePosition()
       setLoading(true)
       setFailed(false)
       try {
-        const response = await fetch('/api/news', { signal: controller.signal })
-        if (!response.ok) throw new Error('News unavailable')
-        const data: unknown = await response.json()
-        if (!isNewsFeed(data)) throw new Error('Invalid news response')
+        const data = await loadResource('/api/news', isNewsFeed, refreshPolicies.news.staleTime, force)
         if (!active) return
         preservePosition()
-        checkedAt.current = data.fetchedAt
+        checkedAt.current = Date.now()
         setSnapshot(previous => receiveNewsSnapshot(previous, data))
       } catch {
         if (active) { preservePosition(); setFailed(true) }
       } finally {
-        window.clearTimeout(timeout)
         if (active) { preservePosition(); setLoading(false) }
       }
     }
     void refresh()
-    return () => { active = false; controller.abort(); window.clearTimeout(timeout) }
-  }, [revision])
+    return () => { active = false }
+  }, [revision, automatic])
 
   const currentFilters: NewsFilters = { region, topic, query, sector: sectorFilter, hideRead, view }
   const matching = matchingNews(feed?.items || [], currentFilters, isRead, snapshot.selectedAt)

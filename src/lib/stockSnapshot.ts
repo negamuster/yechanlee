@@ -1,7 +1,8 @@
 // @ts-expect-error Shared server/client trading-day cutoff.
 import { latestDailyDate, nyDate } from '../../lib/trading-session.js'
 
-export const STOCK_TTL = 5 * 60000
+import { refreshPolicies } from './refreshPolicy.ts'
+export const STOCK_TTL = refreshPolicies.stock.staleTime
 export const STOCK_MAX_AGE = 24 * 3600000
 export interface DailyBar { t: number; o: number; h: number; l: number; c: number }
 export interface StockSnapshot {

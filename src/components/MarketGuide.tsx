@@ -1,34 +1,24 @@
+import { validMarketData } from '../lib/marketQuotes'
 import SectorPerformance from './SectorPerformance'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useResource } from '../hooks/useResource'
+import { refreshPolicies } from '../lib/refreshPolicy'
+import ResourceState from './ResourceState'
 import { marketGuides } from '../data/marketGuides'
 import type { GuideId } from '../data/marketGuides'
 import './MarketGuide.css'
-type Quote = { symbol: string; label: string; price: number | null; changePercent: number | null; asOf: string | null; unit: string }
 function Snapshot({ symbols }: { symbols: readonly string[] }) {
-  const [quotes, setQuotes] = useState<Quote[]>([])
-  const [state, setState] = useState('loading')
-  useEffect(() => {
-    let active = true
-    const controller = new AbortController()
-    async function load() {
-      try {
-        const r = await fetch('/api/market-indices', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(22000)]) })
-        if (!r.ok) throw new Error()
-        const d = await r.json()
-        if (!Array.isArray(d.quotes)) throw new Error()
-        if (active) { setQuotes(d.quotes); setState('ready') }
-      } catch { if (active) setState('error') }
-    }
-    void load()
-    return () => { active = false; controller.abort() }
-  }, [])
-  if (state !== 'ready') return <p role="status">{state === 'loading' ? '시세를 불러오는 중…' : '시세를 불러오지 못했습니다. 아래 원문 차트에서 확인해 주세요.'}</p>
-  return <div className="guide-snapshot">{symbols.map(symbol => {
+  const [revision, setRevision] = useState(0)
+  const { data, loading, error } = useResource('/api/market-indices', validMarketData, refreshPolicies.markets, revision)
+  const retry = () => setRevision(n => n + 1)
+  const quotes = data?.quotes ?? []
+  if (!data) return <ResourceState label="주요 시세" loading={loading} error={error} hasData={false} onRetry={retry} />
+  return <><ResourceState label="주요 시세" loading={loading} error={error} hasData={!!data} onRetry={retry} /><div className="guide-snapshot">{symbols.map(symbol => {
     const q = quotes.find(q => q.symbol === symbol)
     return <div key={symbol}><span>{q?.label || symbol}</span><strong>{q?.price != null ? q.price.toLocaleString('en-US', { maximumFractionDigits: 2 }) : '조회 불가'} {q?.unit}</strong>
       <span>{q?.changePercent != null ? `${q.changePercent > 0 ? '+' : ''}${q.changePercent.toFixed(2)}% · 전일 종가 대비` : '등락률 미제공'}</span>
       <small>{q?.asOf ? new Date(q.asOf).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) + ' KST' : '기준 시각 미제공'}</small></div>
-  })}</div>
+  })}</div></>
 }
 export default function MarketGuide({ id }: { id: GuideId }) {
   const guide = marketGuides[id]

@@ -1,0 +1,39 @@
+.site-search-launch .site-search-trigger { display: flex; gap: 10px; justify-content: flex-start; width: 100%; margin: 0; padding: 7px 12px; border: 0; border-radius: var(--ui-radius); background: transparent; color: var(--ui-muted); font: inherit; font-size: var(--ui-font-body); text-align: left; }
+.site-search-launch .site-search-trigger:hover { background: var(--ui-surface-hover, #f4f4f4); }
+.site-search-trigger > span { flex: 1; }
+.site-search-trigger svg { flex-shrink: 0; }
+.site-search-trigger kbd { font: inherit; font-size: 11px; white-space: nowrap; color: var(--ui-muted); }
+.command-menu { width: min(680px, calc(100vw - 32px)); max-width: 680px; max-height: min(760px, calc(100dvh - 48px)); margin: 6vh auto auto; padding: 0; overflow: hidden; border: 1px solid var(--ui-border); border-radius: 10px; background: #fff; color: var(--ui-text); font-family: var(--font-ui); box-shadow: 0 24px 80px #0003; }
+.command-menu[open] { display: flex; flex-direction: column; }
+.command-menu::backdrop { background: #1118; }
+.command-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; }
+.command-heading strong { font-size: 14px; font-weight: 600; }
+.command-heading button { min-height: 36px; border: 0; background: transparent; font: inherit; font-size: 12px; color: var(--ui-muted); cursor: pointer; }
+.command-heading kbd { margin-left: 6px; font: inherit; }
+#command-query { width: calc(100% - 36px); min-width: 0; margin: 0 18px 12px; padding: 12px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-surface); color: var(--ui-text); font: inherit; font-size: 16px; }
+.command-filters { display: flex; gap: 6px; flex-shrink: 0; padding: 0 18px 12px; overflow-x: auto; border-bottom: 1px solid var(--ui-border); }
+.command-filters button { min-height: 36px; flex-shrink: 0; padding: 7px 10px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.command-filters button[aria-pressed=true] { background: var(--ui-selected); color: #fff; border-color: var(--ui-selected); }
+.command-results { overflow-y: auto; overscroll-behavior: contain; min-height: 0; padding: 4px 10px 10px; }
+.command-group { margin: 14px 8px 6px; color: var(--ui-muted); font-size: 11px; letter-spacing: .04em; font-weight: 600; }
+.command-result { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 56px; padding: 10px 12px; border-radius: 4px; color: inherit; text-decoration: none; cursor: pointer; }
+.command-result > span:first-child { min-width: 0; }
+.command-result strong, .command-result small { display: block; overflow-wrap: anywhere; }
+.command-result strong { font-size: 14px; font-weight: 500; line-height: 1.5; }
+.command-result small { margin-top: 3px; color: var(--ui-muted); font-size: 11px; line-height: 1.5; }
+.command-result[aria-selected=true] { background: #f0f3f7; box-shadow: inset 3px 0 var(--ui-focus); }
+.command-result > span:last-child { font-size: 16px; color: var(--ui-muted); }
+.command-notice { flex-shrink: 0; margin: 0; padding: 8px 18px; font-size: 12px; line-height: 1.5; color: var(--ui-muted); }
+.command-notice button { padding: 4px; border: 0; background: transparent; color: var(--ui-text); font: inherit; text-decoration: underline; cursor: pointer; }
+.command-help { flex-shrink: 0; margin: 0; padding: 12px 18px; border-top: 1px solid var(--ui-border); font-size: 11px; line-height: 1.5; color: var(--ui-muted); }
+.command-help span { margin-left: 12px; }
+.command-menu :is(input, button, a):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+@media (max-width: 700px) {
+  .command-menu { width: calc(100vw - 16px); max-height: calc(100dvh - 24px); margin-top: 12px; border-radius: 8px; }
+  .command-heading { padding: 8px 14px; }
+  .command-heading button, .command-filters button { min-height: 44px; }
+  #command-query { width: calc(100% - 28px); margin-right: 14px; margin-left: 14px; }
+  .command-filters { padding-left: 14px; padding-right: 14px; }
+  .command-help span { display: block; margin-left: 0; }
+  .site-search-trigger kbd { font-size: 10px; }
+}

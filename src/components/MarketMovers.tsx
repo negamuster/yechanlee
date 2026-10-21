@@ -1,9 +1,10 @@
+import { refreshPolicies } from '../lib/refreshPolicy'
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
 import DataStatus from './DataStatus'
 import { WatchButton } from './SavedItemsProvider'
-import { useEffect, useId, useState } from 'react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import WidgetActions from './WidgetActions'
 import ResourceState, { DataNotice } from './ResourceState'
@@ -41,11 +42,8 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   const [infoOpen, setInfoOpen] = useState(false)
   const infoId = useId()
 
-  const { data, loading, error: failed } = useResource('/api/market-movers', validData, 5 * 60000, refresh)
-  useEffect(() => {
-    const interval = setInterval(() => setRefresh(value => value + 1), 30 * 60000)
-    return () => clearInterval(interval)
-  }, [])
+  const { data, loading, error: failed } = useResource('/api/market-movers', validData, refreshPolicies.movers, refresh)
+
 
   const selected = categories.find(tab => tab.id === category)!
   const limit = overview ? 5 : 10

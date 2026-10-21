@@ -1,3 +1,4 @@
+import { refreshPolicies } from './refreshPolicy.ts'
 import { TOPICS } from '../components/newsSelection.ts'
 import type { NewsItem } from '../components/newsSelection.ts'
 import { matchingNews } from './newsFilters.ts'
@@ -15,7 +16,7 @@ export interface NewsSnapshot {
   selectedAt: number
 }
 export const NEWS_SNAPSHOT_KEY = 'anthracite_news_snapshot_v1'
-export const NEWS_REFRESH_INTERVAL = 10 * 60 * 1000
+export const NEWS_REFRESH_INTERVAL = refreshPolicies.news.interval
 const MAX_AGE = 6 * 60 * 60 * 1000
 
 export function isNewsFeed(value: unknown, now = Date.now()): value is NewsFeedData {

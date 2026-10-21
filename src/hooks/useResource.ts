@@ -1,20 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
-import { cachedResource, loadResource } from '../utils/resourceCache'
+import { cachedResource, loadResource, subscribeResource } from '../utils/resourceCache'
+import { refreshAvailable } from '../lib/refreshPolicy'
+import type { RefreshPolicy } from '../lib/refreshPolicy'
+import { useRefreshSchedule } from './useRefreshSchedule'
 
-export function useResource<T>(key: string, valid: (data: unknown) => data is T, ttl: number, revision: number) {
+export function useResource<T>(key: string, valid: (data: unknown) => data is T, policy: RefreshPolicy, revision: number) {
   const [state, setState] = useState<{ key: string; revision: number; data: T | null; error: boolean }>({ key: '', revision: -1, data: null, error: false })
+  const [automatic, setAutomatic] = useState(0)
   const lastRevision = useRef(revision)
+  useRefreshSchedule(policy, () => cachedResource(key)?.receivedAt, () => setAutomatic(n => n + 1), key)
+  useEffect(() => subscribeResource(key, () => {
+    const cached = cachedResource<T>(key)
+    if (cached && valid(cached.data)) setState({ key, revision, data: cached.data, error: false })
+  }), [key, valid, revision])
   useEffect(() => {
     let active = true
     const force = lastRevision.current !== revision
     lastRevision.current = revision
-    void loadResource(key, valid, ttl, force).then(data => {
+    if (!force && !refreshAvailable()) return
+    void loadResource(key, valid, policy.staleTime, force).then(data => {
       if (active) setState({ key, revision, data, error: false })
     }).catch(() => {
-      if (active) setState({ key, revision, data: cachedResource<T>(key)?.data ?? null, error: true })
+      if (active) setState(previous => ({ key, revision, data: cachedResource<T>(key)?.data ?? (previous.key === key ? previous.data : null), error: true }))
     })
     return () => { active = false }
-  }, [key, valid, ttl, revision])
+  }, [key, valid, policy, revision, automatic])
   const current = state.key === key && state.revision === revision
   // Keep the same request's last data visible, never another date's events.
   return {

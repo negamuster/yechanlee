@@ -1,9 +1,8 @@
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { cachedSearch, searchStocks } from '../lib/stockSearch'
+import { cachedSearch, searchStocks, stockSearchQuery } from '../lib/stockSearch'
 import type { StockMatch as Match } from '../lib/stockSearch'
-const aliases: Record<string, string> = { '애플':'AAPL', '엔비디아':'NVDA', '테슬라':'TSLA', '마이크로소프트':'MSFT', '아마존':'AMZN', '알파벳':'GOOGL', '구글':'GOOGL', '인텔':'INTC', '팔란티어':'PLTR' }
 export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<Match[]>([])
@@ -13,7 +12,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const input = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const returnState = useReturnOrigin()
-  const search = aliases[query.trim()] || query.trim()
+  const search = stockSearchQuery(query)
   useEffect(() => {
     const controller = new AbortController()
     let live = true

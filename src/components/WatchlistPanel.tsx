@@ -1,7 +1,9 @@
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { SelectionTools } from './SavedSelection'
 import { useSavedSelection } from '../hooks/useSavedSelection'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useRefreshSchedule } from '../hooks/useRefreshSchedule'
+import { refreshAvailable, refreshPolicies } from '../lib/refreshPolicy'
 import { Link } from 'react-router-dom'
 import { useSessionState } from '../hooks/useSessionState'
 import { cachedResource, loadResource } from '../utils/resourceCache'
@@ -18,10 +20,16 @@ export default function WatchlistPanel() {
   const selection = useSavedSelection('stocks', items.stocks.map(s => s.ticker))
   const [sort, setSort] = useSessionState<Sort>('watch.sort', 'saved', v => ['saved', 'name', 'change'].includes(String(v)))
   const [revision, setRevision] = useState(0)
+  const [automatic, setAutomatic] = useState(0)
+  const lastRevision = useRef(revision)
   const [state, setState] = useState<{ key: string; revision: number; quotes: Record<string, Quote>; failed: boolean; finished: boolean }>({ key: '', revision: -1, quotes: {}, failed: false, finished: false })
   const symbols = items.stocks.map(s => s.ticker).sort().join(',')
+  const checked = useRef({ key: '', at: 0 })
+  useRefreshSchedule(refreshPolicies.watchlist, () => !symbols ? Date.now() : checked.current.key === symbols ? checked.current.at : null, () => setAutomatic(n => n + 1), symbols)
   useEffect(() => {
-    if (!symbols) return
+    const force = lastRevision.current !== revision
+    lastRevision.current = revision
+    if (!symbols || !force && !refreshAvailable()) return
     let active = true
     const tickers = symbols.split(',')
     const quotes: Record<string, Quote> = {}
@@ -31,7 +39,7 @@ export default function WatchlistPanel() {
         if (!active) return
         const url = `/api/watchlist?tickers=${encodeURIComponent(tickers.slice(i, i + 8).join(','))}`
         try {
-          const data = await loadResource(url, isQuotes, 120000, revision > 0)
+          const data = await loadResource(url, isQuotes, refreshPolicies.watchlist.staleTime, force)
           for (const quote of data.quotes) quotes[quote.ticker] = quote
           failed ||= data.quotes.some(q => q.stale)
         } catch {
@@ -40,10 +48,11 @@ export default function WatchlistPanel() {
         }
         if (active) setState({ key: symbols, revision, quotes: { ...quotes }, failed, finished: i + 8 >= tickers.length })
       }
+      if (active && !failed) checked.current = { key: symbols, at: Date.now() }
     }
     void collect()
     return () => { active = false }
-  }, [symbols, revision])
+  }, [symbols, revision, automatic])
   const loading = !!symbols && (state.key !== symbols || state.revision !== revision || !state.finished)
   const rows = sortStocks(items.stocks, state.quotes, sort).filter(s => `${s.ticker} ${s.name}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()))
   return <section aria-labelledby="saved-stocks">

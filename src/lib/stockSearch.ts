@@ -1,4 +1,6 @@
 export interface StockMatch { ticker: string; name: string; primary_exchange?: string }
+const aliases: Record<string, string> = { '애플': 'AAPL', '엔비디아': 'NVDA', '테슬라': 'TSLA', '마이크로소프트': 'MSFT', '아마존': 'AMZN', '알파벳': 'GOOGL', '구글': 'GOOGL', '인텔': 'INTC', '팔란티어': 'PLTR', '새틀로직': 'SATL', '새텔로직': 'SATL' }
+export const stockSearchQuery = (query: string) => aliases[query.trim()] || query.trim()
 const TTL = 15 * 60000
 const cache = new Map<string, { at: number; matches: StockMatch[] }>()
 export function cachedSearch(query: string, now = Date.now()) {

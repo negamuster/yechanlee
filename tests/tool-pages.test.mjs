@@ -4,7 +4,7 @@ import { JSDOM } from 'jsdom'
 import './helpers/register-tsx.mjs'
 
 // DOM interactions validate data and controls; sticky layout still needs browser QA.
-const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://anthracite.test/' })
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://anthracite.test/', pretendToBeVisual: true })
 for (const key of ['window', 'document', 'HTMLElement', 'Element', 'Node', 'MouseEvent', 'Event']) globalThis[key] = dom.window[key]
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 const { createElement: h, act } = await import('react')
@@ -12,6 +12,7 @@ const { createRoot } = await import('react-dom/client')
 const { default: Form13F } = await import('../src/pages/Form13F.tsx')
 const { default: Simulator } = await import('../src/pages/Simulator.tsx')
 const { projectAssets } = await import('../src/lib/financialMath.ts')
+const { invalidateResource } = await import('../src/utils/resourceCache.ts')
 const originalFetch = globalThis.fetch
 const container = document.getElementById('root')
 let root
@@ -33,7 +34,7 @@ const filing = overrides => ({ verification: 'matched', period: '2026-06-30', fi
     { name: 'NEW INC', cusip: '003', title: 'COM', shares: 50, prevShares: 0, value: 100 },
   ], ...overrides })
 const rowNames = () => [...container.querySelectorAll('.holdings-table tbody .holding-name strong')].map(element => element.textContent)
-beforeEach(() => { root = createRoot(container); globalThis.fetch = async () => Response.json(filing()) })
+beforeEach(() => { for (const cik of ['0001067983', '0002012383']) invalidateResource(`/api/form13f?cik=${cik}`); root = createRoot(container); globalThis.fetch = async () => Response.json(filing()) })
 afterEach(async () => { await act(async () => root.unmount()); globalThis.fetch = originalFetch })
 after(() => dom.window.close())
 
