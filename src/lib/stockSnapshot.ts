@@ -1,5 +1,7 @@
 // @ts-expect-error Shared server/client trading-day cutoff.
 import { latestDailyDate, nyDate } from '../../lib/trading-session.js'
+// @ts-expect-error Shared API contracts also drive production health checks.
+import { stockPayloadIssue } from '../../lib/stock-contracts.js'
 
 import { refreshPolicies } from './refreshPolicy.ts'
 export const STOCK_TTL = refreshPolicies.stock.staleTime
@@ -14,6 +16,7 @@ export interface StockSnapshot {
   financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
 }
 export class StockSnapshotError extends Error {}
+class StockIdentityError extends StockSnapshotError {}
 export function freshSnapshot(item: StockSnapshot | undefined, symbol: string, now = Date.now()) {
   return !!item && item.symbol === symbol && now >= item.fetchedAt && now - item.fetchedAt < STOCK_TTL && !item.issues.length
 }
@@ -58,7 +61,7 @@ export function quoteFromBars(bars: DailyBar[]) {
 export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fetcher = fetch, now = Date.now()): Promise<StockSnapshot> {
   const to = latestDailyDate(now)
   const from = new Date(Date.parse(`${to}T12:00:00Z`) - 365 * 86400000).toISOString().slice(0, 10)
-  async function get(path: string, retry = false) {
+  async function get(kind: string, path: string, retry = false) {
     for (let attempt = 0; attempt < (retry ? 2 : 1); attempt++) {
       let transient = true
       try {
@@ -71,6 +74,12 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
         if (response.status === 429) throw new StockSnapshotError('조회 요청이 몰려 일시적으로 제한되고 있습니다. 잠시 후 다시 조회해 주세요.')
         if (!response.ok) throw new Error('조회 실패')
         if (!data || data.error || ['ERROR', 'NOT_AUTHORIZED'].includes(data.status)) throw new Error('조회 실패')
+        const issue = stockPayloadIssue(kind, data, { symbol, now: Date.now() })
+        if (issue) {
+          transient = false
+          if (kind === 'details' && issue.code === 'symbol_mismatch') throw new StockIdentityError('응답한 기업 정보의 티커가 일치하지 않습니다. 다시 조회해 주세요.')
+          throw new Error('종목 응답 형식 미확인')
+        }
         return data
       } catch (error) {
         signal.throwIfAborted()
@@ -82,18 +91,19 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
     const response = await fetcher(`/api/stock-financials?ticker=${encodeURIComponent(symbol)}`, { signal: AbortSignal.any([signal, AbortSignal.timeout(25000)]) })
     if (!response.ok) throw new Error('연간 재무 조회 실패')
     const data = await response.json()
-    if (data.symbol !== symbol || !Array.isArray(data.results) || data.source !== 'SEC EDGAR' || !Number.isFinite(data.fetchedAt)) throw new Error('연간 재무 응답 미확인')
+    if (stockPayloadIssue('financials', data, { symbol, now: Date.now() })) throw new Error('연간 재무 응답 미확인')
     return data
   }
   const jobs = await Promise.allSettled([
-    get(`/v3/reference/tickers/${symbol}`, true),
-    get(`/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}?adjusted=true&sort=asc&limit=500`, true),
-    get(`/v2/reference/news?ticker=${symbol}&limit=8&order=desc`, true),
+    get('details', `/v3/reference/tickers/${symbol}`, true),
+    get('history', `/v2/aggs/ticker/${symbol}/range/1/day/${from}/${to}?adjusted=true&sort=asc&limit=500`, true),
+    get('news', `/v2/reference/news?ticker=${symbol}&limit=8&order=desc`, true),
     annual(),
-    get(`/v1/related-companies/${symbol}`, true),
-    get(`/v2/aggs/ticker/${symbol}/prev?adjusted=true`),
+    get('related', `/v1/related-companies/${symbol}`, true),
+    get('previous', `/v2/aggs/ticker/${symbol}/prev?adjusted=true`),
   ])
   signal.throwIfAborted()
+  if (jobs[0].status === 'rejected' && jobs[0].reason instanceof StockIdentityError) throw jobs[0].reason
   const value = (i: number) => jobs[i].status === 'fulfilled' ? i === 3 ? jobs[i].value : jobs[i].value.results : undefined
   const source = (i: number): StockResourceSource => {
     const info = jobs[i].status === 'fulfilled' ? jobs[i].value.sourceInfo : undefined
