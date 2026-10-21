@@ -1,62 +1,36 @@
-import './Tools.css'
 import { useState, useMemo } from 'react'
+import type { WheelEvent } from 'react'
+import ToolPage from '../components/ToolPage'
 import { projectAssets } from '../lib/financialMath'
 
 function formatInput(value: string): string {
   const num = value.replace(/[^0-9]/g, '')
-  return num ? Number(num).toLocaleString() : ''
+  return num ? Number(num).toLocaleString('ko-KR') : ''
 }
-
 function parseInput(value: string): number {
   return Number(value.replace(/,/g, '')) || 0
 }
-
 function formatKorean(value: number): string {
   const abs = Math.abs(value)
   if (abs >= 1_0000_0000) return (value / 1_0000_0000).toFixed(1).replace(/\.0$/, '') + '억'
   if (abs >= 10000) return Math.round(value / 10000) + '만'
-  return value.toLocaleString()
+  return value.toLocaleString('ko-KR')
 }
+const handleWheel = (event: WheelEvent<HTMLInputElement>) => event.currentTarget.blur()
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  border: 'none',
-  borderBottom: '1px solid #e8e8e8',
-  padding: '10px 0',
-  fontSize: '16px',
-  fontFamily: 'var(--font-ui)',
-  outline: 'none',
-  background: 'transparent',
-  color: '#000',
-  transition: 'border-color 0.2s',
+function SimulatorInput({ label, value, onChange, money = false, placeholder = '0', hint, integer = false }: {
+  label: string; value: string; onChange: (value: string) => void; money?: boolean; placeholder?: string; hint?: string; integer?: boolean
+}) {
+  return <label className="tool-field">
+    <span>{label}</span>
+    <input className="sim-input" type={money ? 'text' : 'number'} inputMode={money || integer ? 'numeric' : 'decimal'}
+      step={integer ? 1 : 'any'} value={value} placeholder={placeholder}
+      onChange={event => onChange(money ? formatInput(event.target.value) : event.target.value)} onWheel={money ? undefined : handleWheel} />
+    {hint && <small>{hint}</small>}
+  </label>
 }
-
-const sectionTitleStyle: React.CSSProperties = {
-  fontSize: '14px',
-  letterSpacing: '0.15em',
-  textTransform: 'uppercase' as const,
-  color: '#000',
-  marginBottom: '8px',
-  fontWeight: '500',
-}
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '13px',
-  letterSpacing: '0.08em',
-  color: '#000',
-  marginBottom: '8px',
-}
-
-const hintStyle: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#ccc',
-  marginTop: '5px',
-}
-
-const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
 
 export default function Simulator() {
-
   const [currentAge, setCurrentAge] = useState('')
   const [retireAge, setRetireAge] = useState('')
   const [savings, setSavings] = useState('')
@@ -118,248 +92,121 @@ export default function Simulator() {
   const polyline = data.map(d => `${xOf(d.age)},${yOf(d.asset)}`).join(' ')
   const dots = data.filter((_, i) => i % 5 === 0)
 
-  return (
-    <>
-      <style>{`
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .page-title { opacity: 0; animation: slideUp 0.7s ease forwards 0.1s; }
-        .page-desc  { opacity: 0; animation: slideUp 0.7s ease forwards 0.3s; }
-        .page-section { opacity: 0; animation: slideUp 0.7s ease forwards 0.5s; }
-        input::-webkit-inner-spin-button,
-        input::-webkit-outer-spin-button { -webkit-appearance: none; }
-        .sim-input:focus { border-bottom-color: #000 !important; }
-        .sim-input::placeholder { color: #ddd; }
-        .table-row:hover { background: #fafafa; }
-      `}</style>
 
-      <div className="financial-tool-page simulator-page" style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: 'var(--font-ui)', color: '#000' }}>
-
-
-        <div className="financial-tool-content" style={{ maxWidth: '860px', margin: '0 auto', padding: '40px 24px 80px' }}>
-
-          <h1 className="page-title" style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '-0.02em', marginBottom: '16px', lineHeight: '1.1' }}>
-            자산 시뮬레이터
-          </h1>
-          <p className="page-desc" style={{ fontSize: '18px', lineHeight: '1.85', color: '#444', maxWidth: '640px', marginBottom: '24px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-            자산·소득·지출과 수익률 가정을 입력해 100세까지의 순자산 변화를 계산합니다. 실제 미래 수익을 예측하는 모델은 아닙니다.
-          </p>
-
-          <p style={{ fontSize: 13, color: '#666', lineHeight: 1.8, marginBottom: 24 }}>연초 자산에 수익률을 적용하고 연말에 소득·소비·대출 이자·원금 상환을 반영합니다. 최초 자산 비중으로 매년 재조정한다고 가정하며 초기 자산이 0원이면 수익률은 0%입니다. 세금·수수료·수익률 변동은 반영하지 않습니다.</p>
-          <div className="page-section">
-
-            {/* ── 나이 ── */}
-            <div className="sim-field-section" style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={sectionTitleStyle}>나이</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
-              <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
-                <div>
-                  <p style={labelStyle}>현재 나이</p>
-                  <input className="sim-input" aria-label="현재 나이" style={inputStyle} type="number" placeholder="예: 25" value={currentAge} onChange={e => setCurrentAge(e.target.value)} onWheel={handleWheel} />
-                </div>
-                <div>
-                  <p style={labelStyle}>은퇴 나이</p>
-                  <input className="sim-input" aria-label="은퇴 나이" style={inputStyle} type="number" placeholder="예: 60" value={retireAge} onChange={e => setRetireAge(e.target.value)} onWheel={handleWheel} />
-                  <p style={hintStyle}>수입이 없어지는 나이</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 금융 자산 ── */}
-            <div className="sim-field-section" style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={sectionTitleStyle}>금융 자산 (Financial Assets)</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>부채를 차감하기 전 자산을 입력하세요. 주택담보대출이 있다면 대응하는 주택 가치도 기타 자산에 포함하세요.</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
-                  <div>
-                    <p style={labelStyle}>1. 은행 저축 · 예금 (원)</p>
-                    <input className="sim-input" aria-label="1. 은행 저축 · 예금 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 10,000,000" value={savings} onChange={e => setSavings(formatInput(e.target.value))} />
-                  </div>
-                  <div>
-                    <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" aria-label="연 수익률 (%)" style={inputStyle} type="number" placeholder="예: 3.5" value={savingsRate} onChange={e => setSavingsRate(e.target.value)} onWheel={handleWheel} />
-                    <p style={hintStyle}>예금, 적금 이율</p>
-                  </div>
-                </div>
-                <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
-                  <div>
-                    <p style={labelStyle}>2. 증권사 주식 · 펀드 (원)</p>
-                    <input className="sim-input" aria-label="2. 증권사 주식 · 펀드 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 30,000,000" value={stocks} onChange={e => setStocks(formatInput(e.target.value))} />
-                  </div>
-                  <div>
-                    <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" aria-label="연 수익률 (%)" style={inputStyle} type="number" placeholder="예: 8" value={stocksRate} onChange={e => setStocksRate(e.target.value)} onWheel={handleWheel} />
-                    <p style={hintStyle}>미래 수익률 가정 · 음수도 입력 가능</p>
-                  </div>
-                </div>
-                <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
-                  <div>
-                    <p style={labelStyle}>3. 기타 자산 · 부동산 등 (원)</p>
-                    <input className="sim-input" aria-label="3. 기타 자산 · 부동산 등 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 5,000,000" value={other} onChange={e => setOther(formatInput(e.target.value))} />
-                  </div>
-                  <div>
-                    <p style={labelStyle}>연 수익률 (%)</p>
-                    <input className="sim-input" aria-label="연 수익률 (%)" style={inputStyle} type="number" placeholder="예: 10" value={otherRate} onChange={e => setOtherRate(e.target.value)} onWheel={handleWheel} />
-                    <p style={hintStyle}>암호화폐 등 고변동성 자산은 보수적 수익률 적용을 권장합니다.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 연 소비 ── */}
-            <div className="sim-field-section" style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={sectionTitleStyle}>연 소비</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
-              <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
-                <div>
-                  <p style={labelStyle}>연간 평균 소비 (원)</p>
-                  <input className="sim-input" aria-label="연간 평균 소비 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 24,000,000" value={expense} onChange={e => setExpense(formatInput(e.target.value))} />
-                </div>
-                <div>
-                  <p style={labelStyle}>연 소비 증가율 (%)</p>
-                  <input className="sim-input" aria-label="연 소비 증가율 (%)" style={inputStyle} type="number" placeholder="예: 2" value={expenseGrowth} onChange={e => setExpenseGrowth(e.target.value)} onWheel={handleWheel} />
-                  <p style={hintStyle}>소비 증가율 가정 · 명목 금액 기준</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 연 수입 ── */}
-            <div className="sim-field-section" style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '48px' }}>
-              <p style={sectionTitleStyle}>연 수입</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}> </p>
-              <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '32px' }}>
-                <div>
-                  <p style={labelStyle}>연 수입 (원)</p>
-                  <input className="sim-input" aria-label="연 수입 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 40,000,000" value={income} onChange={e => setIncome(formatInput(e.target.value))} />
-                </div>
-                <div>
-                  <p style={labelStyle}>연 수입 증가율 (%)</p>
-                  <input className="sim-input" aria-label="연 수입 증가율 (%)" style={inputStyle} type="number" placeholder="예: 3" value={incomeGrowth} onChange={e => setIncomeGrowth(e.target.value)} onWheel={handleWheel} />
-                  <p style={hintStyle}>연봉 인상률 기준</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ── 부채 ── */}
-            <div className="sim-field-section" style={{ borderTop: '1px solid #e8e8e8', paddingTop: '48px', marginBottom: '24px' }}>
-              <p style={sectionTitleStyle}>내 부채</p>
-              <p style={{ fontSize: '13px', color: '#aaa', marginBottom: '28px' }}>이자는 매년 초 대출 잔액에 적용합니다. 원금은 연말에 입력한 금액만큼 상환하며 잔액보다 많이 갚지 않습니다. 금리와 상환액을 비우면 0으로 계산합니다.</p>
-              <div className="sim-field-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px 48px' }}>
-                <div>
-                  <p style={labelStyle}>1. 주택담보대출 (원)</p>
-                  <input className="sim-input" aria-label="1. 주택담보대출 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 200,000,000" value={mortgage} onChange={e => setMortgage(formatInput(e.target.value))} />
-                </div>
-                <div>
-                  <p style={labelStyle}>2. 기타 대출 (원)</p>
-                  <input className="sim-input" aria-label="2. 기타 대출 (원)" style={inputStyle} type="text" inputMode="numeric" placeholder="예: 10,000,000" value={otherDebt} onChange={e => setOtherDebt(formatInput(e.target.value))} />
-                </div>
-              </div>
-            </div>
-
-            <div className="sim-field-grid" style={{ display:'grid', gridTemplateColumns:'repeat(2, minmax(0, 1fr))', gap:24, marginBottom:32 }}>
-              {[
-                { label:'주택담보대출 연 이자율 (%)', value:mortgageRate, set:setMortgageRate, money:false },
-                { label:'기타 대출 연 이자율 (%)', value:otherDebtRate, set:setOtherDebtRate, money:false },
-                { label:'주택담보대출 연 원금 상환액 (원)', value:mortgagePrincipal, set:setMortgagePrincipal, money:true },
-                { label:'기타 대출 연 원금 상환액 (원)', value:otherPrincipal, set:setOtherPrincipal, money:true },
-              ].map(field => <label key={field.label} style={labelStyle}>{field.label}
-                <input className="sim-input" style={inputStyle} type={field.money ? 'text' : 'number'} inputMode={field.money ? 'numeric' : 'decimal'} min="0" value={field.value}
-                  onChange={e => field.set(field.money ? formatInput(e.target.value) : e.target.value)} placeholder="0" />
-              </label>)}
-            </div>
-            <p style={{ fontSize:12, color:'#666', lineHeight:1.8 }}>연 소비에는 여기 입력한 대출 이자·원금 상환액을 중복 입력하지 마세요. 잉여자금은 같은 자산 비중으로 재투자합니다. 자산이 부족하면 부족자금을 별도 표시하고 순자산에서 차감합니다. 부족자금의 추가 대출 이자와 실제 대출 가능 여부는 반영하지 않습니다.</p>
-            {hasInput && !data.length && <p role="alert">나이는 0~100의 정수, 자산 수익률·소득 및 소비 증가율은 -100~1,000%, 대출 금리는 0~1,000% 범위로 입력해 주세요.</p>}
-            {firstGap && <p role="status" style={{ color:'#b42318' }}>{firstGap.age}세부터 자산만으로 지출·상환을 충당할 수 없습니다. 아래 부족자금은 추가 조달이 필요한 누적 금액입니다.</p>}
-            {/* ── 결과 ── */}
-            {!hasInput || !data.length ? (
-              <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px' }}>
-                <h2 style={{ fontSize: '28px', fontWeight: '400', marginBottom: '16px' }}>가정을 입력해 순자산 변화를 비교하세요</h2>
-                <p style={{ fontSize: '16px', lineHeight: '1.85', color: '#555', maxWidth: '560px', textAlign: 'justify', wordBreak: 'keep-all' }}>
-                  소득·소비·수익률과 대출 조건에 따라 결과가 달라집니다. 0원도 입력할 수 있으며, 나이별 금액은 해당 나이의 연초 기준입니다.
-                </p>
-              </div>
-            ) : (
-              <div style={{ borderTop: '1px solid #e8e8e8', paddingTop: '64px', display: 'flex', flexDirection: 'column', gap: '56px' }}>
-
-                {/* 연간 순 증가 */}
-                <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>첫해 상환 후 현금흐름</p>
-                  <div style={{ padding: '28px 32px', border: '1px solid #e8e8e8', borderRadius: '4px', display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-                    <span style={{ fontSize: '40px', fontWeight: '400', letterSpacing: '-0.02em', color: netIncrease >= 0 ? '#000' : '#ff3b30' }}>
-                      {netIncrease >= 0 ? '+' : ''}{netIncrease.toLocaleString()}
-                    </span>
-                    <span style={{ fontSize: '15px', color: '#aaa' }}>원 / 년</span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#bbb', marginTop: '8px' }}>
-                    은퇴 여부 반영 소득 − 소비 − 이자 {Math.round(data[0]?.interest ?? 0).toLocaleString()}원 − 원금 {Math.round(data[0]?.principal ?? 0).toLocaleString()}원 · 투자 수익 제외
-                  </p>
-                </div>
-
-                {/* 그래프 */}
-                <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>가정에 따른 순자산 추이</p>
-                  <p className="tool-scroll-hint">좌우로 밀어 차트 전체 보기 ↔</p><div className="tool-chart-scroll" tabIndex={0} role="region" aria-label="연령별 순자산 차트, 좌우로 스크롤">
-                    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', minWidth: '400px', height: 'auto' }}>
-                      {yTicks.map((v, i) => (
-                        <g key={i}>
-                          <line x1={PL} y1={yOf(v)} x2={W - PR} y2={yOf(v)} stroke="#f0f0f0" strokeWidth="1" />
-                          <text x={PL - 6} y={yOf(v) + 4} textAnchor="end" fontSize="10" fill="#bbb" fontFamily="var(--font-ui)">{formatKorean(v)}</text>
-                        </g>
-                      ))}
-                      {xGrids.map(a => (
-                        <line key={a} x1={xOf(a)} y1={PT} x2={xOf(a)} y2={PT + gH} stroke="#f0f0f0" strokeWidth="1" />
-                      ))}
-                      {minAsset < 0 && (
-                        <line x1={PL} y1={yOf(0)} x2={W - PR} y2={yOf(0)} stroke="#e0e0e0" strokeWidth="1" strokeDasharray="4 2" />
-                      )}
-                      <polyline points={polyline} fill="none" stroke="#000" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-                      {dots.map(d => (
-                        <circle key={d.age} cx={xOf(d.age)} cy={yOf(d.asset)} r="2.5" fill="#000" />
-                      ))}
-                      {xTicks.map(a => (
-                        <text key={a} x={xOf(a)} y={PT + gH + 18} textAnchor="middle" fontSize="10" fill="#aaa" fontFamily="var(--font-ui)">{a}세</text>
-                      ))}
-                      <line x1={PL} y1={PT} x2={PL} y2={PT + gH} stroke="#e8e8e8" strokeWidth="1" />
-                      <line x1={PL} y1={PT + gH} x2={W - PR} y2={PT + gH} stroke="#e8e8e8" strokeWidth="1" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* 테이블 */}
-                <div>
-                  <p style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#aaa', marginBottom: '16px' }}>나이별 연초 자산·부채</p>
-                  <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기 ↔</p><div className="tool-table-scroll" tabIndex={0} role="region" aria-label="나이별 연초 자산과 부채 표, 좌우로 스크롤"><table style={{ width: '100%', minWidth:600, borderCollapse: 'collapse', fontSize: '15px' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid #e8e8e8' }}>
-                        <th style={{ textAlign: 'left', padding: '12px 0', fontWeight: '400', color: '#aaa', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>나이</th>
-                        {['총자산', '대출 잔액', '부족자금', '순자산'].map(label => <th key={label} style={{ textAlign:'right', padding:'12px 0', fontWeight:400, color:'#666', fontSize:12 }}>{label}</th>)}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.map((row, i) => (
-                        <tr key={i} className="table-row" style={{ borderBottom: '1px solid #f4f4f4' }}>
-                          <td style={{ padding: '12px 0', color: '#000' }}>{row.age}세</td>
-                          {[row.grossAssets, row.debt, row.fundingGap].map((value, index) => <td key={index} style={{ padding:'12px 0', textAlign:'right', fontSize:12 }}>{Math.round(value).toLocaleString()}원</td>)}
-                          <td style={{ padding: '12px 0', textAlign: 'right', color: row.asset < 0 ? '#ff3b30' : '#000', fontVariantNumeric: 'tabular-nums' }}>
-                            {Math.round(row.asset).toLocaleString()}원
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table></div>
-                </div>
-
-              </div>
-            )}
+  return <ToolPage className="simulator-page" title="자산 시뮬레이터"
+    description="자산·소득·지출과 수익률 가정을 입력해 100세까지의 순자산 변화를 계산합니다. 실제 미래 수익을 예측하는 모델은 아닙니다.">
+    <div className="simulator-sections">
+      <section className="tool-card" aria-labelledby="sim-age-heading">
+        <div className="tool-card-heading"><h2 id="sim-age-heading">나이</h2></div>
+        <div className="sim-field-grid">
+          <SimulatorInput label="현재 나이" integer value={currentAge} onChange={setCurrentAge} placeholder="예: 25" />
+          <SimulatorInput label="은퇴 나이" integer value={retireAge} onChange={setRetireAge} placeholder="예: 60" hint="수입이 없어지는 나이 · 미입력 시 100세" />
+        </div>
+      </section>
+      <section className="tool-card" aria-labelledby="sim-assets-heading">
+        <div className="tool-card-heading"><h2 id="sim-assets-heading">금융·기타 자산</h2><span className="tool-meta">금액 단위: 원</span></div>
+        <p className="tool-section-note">부채를 차감하기 전 자산을 입력하세요. 주택담보대출이 있다면 대응하는 주택 가치도 기타 자산에 포함하세요.</p>
+        <div className="sim-field-rows">
+          <div className="sim-field-grid">
+            <SimulatorInput label="은행 저축 · 예금 (원)" money value={savings} onChange={setSavings} placeholder="예: 10,000,000" />
+            <SimulatorInput label="예금 연 수익률 (%)" value={savingsRate} onChange={setSavingsRate} placeholder="예: 3.5" hint="예금·적금 이율" />
+          </div>
+          <div className="sim-field-grid">
+            <SimulatorInput label="증권사 주식 · 펀드 (원)" money value={stocks} onChange={setStocks} placeholder="예: 30,000,000" />
+            <SimulatorInput label="주식·펀드 연 수익률 (%)" value={stocksRate} onChange={setStocksRate} placeholder="예: 8" hint="미래 수익률 가정 · 음수도 입력 가능" />
+          </div>
+          <div className="sim-field-grid">
+            <SimulatorInput label="기타 자산 · 부동산 등 (원)" money value={other} onChange={setOther} placeholder="예: 5,000,000" />
+            <SimulatorInput label="기타 자산 연 수익률 (%)" value={otherRate} onChange={setOtherRate} placeholder="예: 5" hint="미래 수익률 가정 · 음수도 입력 가능" />
           </div>
         </div>
-
-        <footer style={{ borderTop: '1px solid #e8e8e8', padding: '32px 48px', fontSize: '12px', color: '#aaa' }}>
-          <span>Anthracite © 2026</span>
-        </footer>
-      </div>
-    </>
-  )
+      </section>
+      <section className="tool-card" aria-labelledby="sim-cashflow-heading">
+        <div className="tool-card-heading"><h2 id="sim-cashflow-heading">연 소비·수입</h2></div>
+        <div className="sim-field-rows">
+          <div className="sim-field-grid">
+            <SimulatorInput label="연간 평균 소비 (원)" money value={expense} onChange={setExpense} placeholder="예: 24,000,000" />
+            <SimulatorInput label="연 소비 증가율 (%)" value={expenseGrowth} onChange={setExpenseGrowth} placeholder="예: 2" hint="명목 금액 기준" />
+          </div>
+          <div className="sim-field-grid">
+            <SimulatorInput label="연 수입 (원)" money value={income} onChange={setIncome} placeholder="예: 40,000,000" />
+            <SimulatorInput label="연 수입 증가율 (%)" value={incomeGrowth} onChange={setIncomeGrowth} placeholder="예: 3" hint="연봉 인상률 기준" />
+          </div>
+        </div>
+      </section>
+      <section className="tool-card" aria-labelledby="sim-debt-heading">
+        <div className="tool-card-heading"><h2 id="sim-debt-heading">부채·상환</h2></div>
+        <p className="tool-section-note">이자는 매년 초 대출 잔액에 적용합니다. 원금은 연말에 입력한 금액만큼 상환하며 잔액보다 많이 갚지 않습니다. 금리와 상환액을 비우면 0으로 계산합니다.</p>
+        <div className="sim-field-rows">
+          <div className="sim-field-grid sim-debt-grid">
+            <SimulatorInput label="주택담보대출 (원)" money value={mortgage} onChange={setMortgage} placeholder="예: 200,000,000" />
+            <SimulatorInput label="주택담보대출 연 이자율 (%)" value={mortgageRate} onChange={setMortgageRate} />
+            <SimulatorInput label="주택담보대출 연 원금 상환액 (원)" money value={mortgagePrincipal} onChange={setMortgagePrincipal} />
+          </div>
+          <div className="sim-field-grid sim-debt-grid">
+            <SimulatorInput label="기타 대출 (원)" money value={otherDebt} onChange={setOtherDebt} placeholder="예: 10,000,000" />
+            <SimulatorInput label="기타 대출 연 이자율 (%)" value={otherDebtRate} onChange={setOtherDebtRate} />
+            <SimulatorInput label="기타 대출 연 원금 상환액 (원)" money value={otherPrincipal} onChange={setOtherPrincipal} />
+          </div>
+        </div>
+        <p className="tool-section-note sim-debt-note">연 소비에는 여기 입력한 대출 이자·원금 상환액을 중복 입력하지 마세요.</p>
+      </section>
+      <details className="tool-card tool-disclosure">
+        <summary>계산 가정</summary>
+        <div className="tool-disclosure-content">
+          <p>연초 자산에 수익률을 적용하고 연말에 소득·소비·대출 이자·원금 상환을 반영합니다. 최초 자산 비중으로 매년 재조정한다고 가정하며 초기 자산이 0원이면 수익률은 0%입니다. 세금·수수료·수익률 변동은 반영하지 않습니다.</p>
+          <p>잉여자금은 같은 자산 비중으로 재투자합니다. 자산이 부족하면 부족자금을 별도 표시하고 순자산에서 차감합니다. 부족자금의 추가 대출 이자와 실제 대출 가능 여부는 반영하지 않습니다.</p>
+          <p>소득·소비·수익률과 대출 조건에 따라 결과가 달라집니다. 0원도 입력할 수 있으며, 나이별 금액은 해당 나이의 연초 기준입니다.</p>
+        </div>
+      </details>
+      {hasInput && !data.length && <p role="alert" className="tool-callout">나이는 0~100의 정수, 자산 수익률·소득 및 소비 증가율은 -100~1,000%, 대출 금리는 0~1,000% 범위로 입력해 주세요.</p>}
+      {firstGap && <p role="status" className="tool-callout">{firstGap.age}세부터 자산만으로 지출·상환을 충당할 수 없습니다. 아래 부족자금은 추가 조달이 필요한 누적 금액입니다.</p>}
+      {!hasInput || !data.length ? <section className="tool-card tool-empty" aria-labelledby="sim-empty-heading">
+        <h2 id="sim-empty-heading">가정을 입력해 순자산 변화를 비교하세요</h2>
+        <p>현재 나이·자산·연 소비·연 수입을 입력하면 결과가 표시됩니다. 0원도 입력할 수 있습니다.</p>
+      </section> : <>
+        <section className="tool-card sim-cashflow-result" aria-labelledby="sim-result-heading">
+          <div className="tool-card-heading"><h2 id="sim-result-heading">첫해 상환 후 현금흐름</h2></div>
+          <p className={`sim-result-value${netIncrease < 0 ? ' tool-negative' : ''}`}>
+            {netIncrease >= 0 ? '+' : ''}{netIncrease.toLocaleString('ko-KR')}<span>원 / 년</span>
+          </p>
+          <p className="tool-meta">은퇴 여부 반영 소득 − 소비 − 이자 {Math.round(data[0]?.interest ?? 0).toLocaleString('ko-KR')}원 − 원금 {Math.round(data[0]?.principal ?? 0).toLocaleString('ko-KR')}원 · 투자 수익 제외</p>
+        </section>
+        <section className="tool-card" aria-labelledby="sim-chart-heading">
+          <div className="tool-card-heading"><h2 id="sim-chart-heading">가정에 따른 순자산 추이</h2></div>
+          <p className="tool-scroll-hint">좌우로 밀어 차트 전체 보기</p>
+          <div className="tool-chart-scroll" tabIndex={0} role="region" aria-label="연령별 순자산 차트, 좌우로 스크롤">
+            <svg viewBox={`0 0 ${W} ${H}`} className="sim-chart" role="img" aria-label="입력한 가정에 따른 100세까지의 연초 순자산 추이">
+              {yTicks.map((value, index) => <g key={index}>
+                <line className="sim-gridline" x1={PL} y1={yOf(value)} x2={W - PR} y2={yOf(value)} />
+                <text x={PL - 6} y={yOf(value) + 4} textAnchor="end">{formatKorean(value)}</text>
+              </g>)}
+              {xGrids.map(age => <line key={age} className="sim-gridline" x1={xOf(age)} y1={PT} x2={xOf(age)} y2={PT + gH} />)}
+              {minAsset < 0 && <line className="sim-axis" x1={PL} y1={yOf(0)} x2={W - PR} y2={yOf(0)} strokeDasharray="4 2" />}
+              <polyline className="sim-trend" points={polyline} fill="none" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+              {dots.map(row => <circle key={row.age} className="sim-dot" cx={xOf(row.age)} cy={yOf(row.asset)} r="2.5" />)}
+              {xTicks.map(age => <text key={age} x={xOf(age)} y={PT + gH + 18} textAnchor="middle">{age}세</text>)}
+              <line className="sim-axis" x1={PL} y1={PT} x2={PL} y2={PT + gH} />
+              <line className="sim-axis" x1={PL} y1={PT + gH} x2={W - PR} y2={PT + gH} />
+            </svg>
+          </div>
+        </section>
+        <section className="tool-card" aria-labelledby="sim-table-heading">
+          <div className="tool-card-heading"><h2 id="sim-table-heading">나이별 연초 자산·부채</h2><span className="tool-meta">단위: 원</span></div>
+          <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기</p>
+          <div className="tool-table-scroll sim-table-scroll" tabIndex={0} role="region" aria-label="나이별 연초 자산과 부채 표, 좌우·상하로 스크롤">
+            <table className="tool-table sim-table">
+              <caption className="tool-sr-only">나이별 연초 총자산·대출 잔액·부족자금·순자산, 단위 원</caption>
+              <thead><tr><th scope="col">나이</th>{['총자산', '대출 잔액', '부족자금', '순자산'].map(label => <th key={label} scope="col" className="tool-numeric">{label}</th>)}</tr></thead>
+              <tbody>{data.map(row => <tr key={row.age}>
+                <th scope="row">{row.age}세</th>
+                {[row.grossAssets, row.debt, row.fundingGap].map((value, index) => <td key={index} className="tool-numeric">{Math.round(value).toLocaleString('ko-KR')}</td>)}
+                <td className={`tool-numeric${row.asset < 0 ? ' tool-negative' : ''}`}>{Math.round(row.asset).toLocaleString('ko-KR')}</td>
+              </tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+      </>}
+    </div>
+  </ToolPage>
 }

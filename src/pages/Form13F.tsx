@@ -1,6 +1,11 @@
-import './Tools.css'
+import { useEffect, useState } from 'react'
+import ToolPage from '../components/ToolPage'
+import ResourceState from '../components/ResourceState'
+import WidgetActions from '../components/WidgetActions'
 import { portfolioSlices } from '../lib/financialMath'
-import { useState, useEffect } from 'react'
+import { DEFAULT_HOLDING_SORT, formatHoldingValue, holdingRows, nextHoldingSort } from '../lib/form13fPresentation'
+import type { Holding, HoldingSort, HoldingSortKey } from '../lib/form13fPresentation'
+import { dataTime } from '../utils/dataTime'
 
 interface Manager {
   name: string
@@ -30,155 +35,137 @@ const INITIAL_MANAGERS: Manager[] = [
   { name: 'Third Point', nameKo: '서드 포인트', firm: 'Third Point LLC', cik: '0001040273' },
 ]
 
-const COLORS = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#EC4899','#06B6D4','#F97316','#84CC16','#6366F1']
 
-const NAME_TO_TICKER: Record<string, string> = {
-  'APPLE INC': 'AAPL', 'MICROSOFT CORP': 'MSFT', 'NVIDIA CORPORATION': 'NVDA',
-  'NVIDIA CORP': 'NVDA', 'AMAZON COM INC': 'AMZN', 'ALPHABET INC': 'GOOGL',
-  'META PLATFORMS INC': 'META', 'TESLA INC': 'TSLA', 'BERKSHIRE HATHAWAY INC': 'BRK.B',
-  'BROADCOM INC': 'AVGO', 'ELI LILLY & CO': 'LLY', 'JPMORGAN CHASE & CO': 'JPM',
-  'VISA INC': 'V', 'EXXON MOBIL CORP': 'XOM', 'UNITEDHEALTH GROUP INC': 'UNH',
-  'JOHNSON & JOHNSON': 'JNJ', 'WALMART INC': 'WMT', 'MASTERCARD INC': 'MA',
-  'PROCTER & GAMBLE CO': 'PG', 'HOME DEPOT INC': 'HD', 'BANK OF AMERICA CORP': 'BAC',
-  'CHEVRON CORP': 'CVX', 'MERCK & CO INC': 'MRK', 'ABBVIE INC': 'ABBV',
-  'COSTCO WHOLESALE CORP': 'COST', 'PEPSICO INC': 'PEP', 'COCA COLA CO': 'KO',
-  'COCA-COLA CO': 'KO', 'NETFLIX INC': 'NFLX', 'SALESFORCE INC': 'CRM',
-  'ADOBE INC': 'ADBE', 'ADVANCED MICRO DEVICES INC': 'AMD', 'QUALCOMM INC': 'QCOM',
-  'INTEL CORP': 'INTC', 'AMERICAN EXPRESS CO': 'AXP', 'WELLS FARGO & CO': 'WFC',
-  'MORGAN STANLEY': 'MS', 'GOLDMAN SACHS GROUP INC': 'GS', 'CITIGROUP INC': 'C',
-  'T MOBILE US INC': 'TMUS', 'VERIZON COMMUNICATIONS INC': 'VZ', 'BOEING CO': 'BA',
-  'CATERPILLAR INC': 'CAT', 'PALANTIR TECHNOLOGIES INC': 'PLTR',
-  'COINBASE GLOBAL INC': 'COIN', 'ROKU INC': 'ROKU', 'BLOCK INC': 'SQ',
-  'MOLINA HEALTHCARE INC': 'MOH', 'LULULEMON ATHLETICA INC': 'LULU',
-  'ALIBABA GROUP HOLDING LTD': 'BABA', 'BAIDU INC': 'BIDU',
-  'PFIZER INC': 'PFE', 'HALLIBURTON CO': 'HAL', 'SLM CORP': 'SLM',
-  'BLACKROCK INC': 'BLK', 'SPDR S&P 500 ETF TRUST': 'SPY',
-  'ISHARES CORE S&P 500 ETF': 'IVV', 'VANGUARD S&P 500 ETF': 'VOO',
-  'NATERA INC': 'NTRA', 'AMERICAN AIRLINES GROUP INC': 'AAL',
-  'DELTA AIR LINES INC': 'DAL', 'UNITED AIRLINES HOLDINGS INC': 'UAL',
-}
-
-function getTickerForLogo(name: string): string | null {
-  const upper = name.toUpperCase().trim()
-  for (const [key, ticker] of Object.entries(NAME_TO_TICKER)) {
-    if (upper === key || upper.startsWith(key)) return ticker
-  }
-  return null
-}
-
-function formatName(name: string): string {
-  return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
-}
-
-function StockLogo({ name }: { name: string }) {
-  const ticker = getTickerForLogo(name)
-  const [err, setErr] = useState(false)
-  if (!ticker || err) {
-    const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
-    return (
-      <div style={{ width:'36px', height:'36px', borderRadius:'8px', background:'#f0f0f0', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <span style={{ fontSize:'11px', fontWeight:'600', color:'#888', fontFamily:'var(--font-ui)' }}>{initials}</span>
-      </div>
-    )
-  }
-  return (
-    <img
-      src={`https://logo.clearbit.com/${ticker.toLowerCase().replace(/\./g,'')}.com`}
-      alt={name}
-      onError={() => setErr(true)}
-      style={{ width:'36px', height:'36px', borderRadius:'8px', objectFit:'contain', border:'1px solid #f0f0f0', flexShrink:0 }}
-    />
-  )
-}
-
-interface Holding {
-  name: string; shares: number; value: number; prevShares?: number; pct?: number; cusip: string; title: string
-}
 interface FilingData {
-  filedAt?: string; checkedAt?: number; stale?: boolean; verification?: string; reportedTotal?: number; excludedValue?: number; holdingCount?: number; refreshError?: string
+  period: string; filedAt?: string; checkedAt?: number; stale?: boolean; verification: string
+  totalValue: number; reportedTotal?: number; excludedValue?: number; holdingCount?: number
+  holdings: Holding[]
   sources?: { accession: string; form: string; indexUrl: string; reportedTotal: number; parsedTotal: number; reportedCount: number; parsedCount: number }[]
-  period: string; holdings: Holding[]; loading: boolean; error: string | null; totalValue: number
 }
 
-
-function formatValue(v: number): string {
-  if (v >= 1_000_000_000_000) return '$' + (v / 1_000_000_000_000).toFixed(1) + 'T'
-  if (v >= 1_000_000_000) return '$' + (v / 1_000_000_000).toFixed(1) + 'B'
-  if (v >= 1_000_000) return '$' + (v / 1_000_000).toFixed(1) + 'M'
-  if (v >= 1_000) return '$' + Math.round(v / 1_000).toLocaleString() + 'K'
-  return '$' + Math.round(v).toLocaleString()
+function isFiling(value: unknown): value is FilingData {
+  const data = value as FilingData | null
+  return !!data && data.verification === 'matched' && typeof data.period === 'string'
+    && Number.isFinite(data.totalValue) && data.totalValue >= 0
+    && Array.isArray(data.holdings) && data.holdings.every(holding => holding && typeof holding.name === 'string'
+      && typeof holding.cusip === 'string' && typeof holding.title === 'string'
+      && Number.isFinite(holding.shares) && holding.shares >= 0 && Number.isFinite(holding.value) && holding.value >= 0
+      && (holding.prevShares === undefined || Number.isFinite(holding.prevShares) && holding.prevShares >= 0))
 }
 
-function formatShares(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
-  if (n >= 1_000) return Math.round(n / 1_000).toLocaleString() + 'K'
-  return Math.round(n).toLocaleString()
-}
-
-function LastTransactionTag({ curr, prev }: { curr: number; prev?: number }) {
-  if (prev === undefined) return <span style={{ fontSize:'12px', color:'#666' }}>비교 자료 없음</span>
-  if (prev === 0) return <span style={{ fontSize:'12px', color:'#16a34a' }}>New holding</span>
-  if (curr === 0) return <span style={{ fontSize:'12px', color:'#ff3b30' }}>Sold out</span>
-  const pct = Math.round(((curr - prev) / prev) * 100)
-  if (pct > 0) return <span style={{ fontSize:'12px', color:'#16a34a' }}>+{pct}%</span>
-  if (pct < 0) return <span style={{ fontSize:'12px', color:'#ff3b30' }}>{pct}%</span>
-  return <span style={{ fontSize:'12px', color:'#aaa' }}>Unchanged</span>
-}
-
+const COLORS = ['#334155', '#52738f', '#8aacc2', '#5b8580', '#a3b9c5', '#76849b', '#70949d', '#bccbd7', '#97aaa2', '#d1dbe3']
 function DonutChart({ holdings, total }: { holdings: Holding[]; total: number }) {
   const slices = portfolioSlices(holdings, total)
   let offset = 0
-  return (
-    <div className="portfolio-donut" style={{ display:'flex', flexWrap:'wrap', gap:'24px', alignItems:'center', marginBottom:'32px' }}>
-      <svg viewBox="0 0 200 200" role="img" aria-label="수집된 13F 보유금액 기준 상위 10개와 기타 종목 비중" style={{ width:180, flexShrink:0 }}>
-        {slices.map((slice, i) => {
-          const start = offset; offset += slice.fraction * 100
-          return <circle key={i} cx="100" cy="100" r="66" fill="none" stroke={slice.other ? '#e8e8e8' : COLORS[i]}
-            strokeWidth="28" pathLength="100" strokeDasharray={`${slice.fraction * 100} ${100 - slice.fraction * 100}`}
-            strokeDashoffset={-start} transform="rotate(-90 100 100)">
-            <title>{slice.name}: {slice.pct}%</title>
-          </circle>
-        })}
-        <text x="100" y="94" textAnchor="middle" fontSize="13" fill="#000">{formatValue(total)}</text>
-        <text x="100" y="112" textAnchor="middle" fontSize="10" fill="#666">수집 보유금액 합계</text>
-      </svg>
-      <div style={{ display:'flex', flexDirection:'column', gap:8, flex:1, minWidth:180 }}>
-        {slices.map((slice, i) => <div key={i} style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <span style={{ width:10, height:10, background:slice.other ? '#e8e8e8' : COLORS[i], flexShrink:0 }} />
-          <span style={{ fontSize:12, color:'#333', flex:1 }}>{slice.other ? slice.name : formatName(slice.name)}</span>
-          <span style={{ fontSize:12, color:'#666' }}>{slice.pct}%</span>
-        </div>)}
-        {!slices.length && <p>표시할 보유금액이 없습니다.</p>}
-      </div>
+  return <div className="portfolio-donut">
+    <svg viewBox="0 0 200 200" role="img" aria-label="전체 수집 보유금액 기준 상위 10개와 기타 종목 비중">
+      {slices.map((slice, index) => {
+        const start = offset
+        offset += slice.fraction * 100
+        return <circle key={index} cx="100" cy="100" r="66" fill="none" stroke={slice.other ? '#e2e8f0' : COLORS[index]}
+          strokeWidth="26" pathLength="100" strokeDasharray={`${slice.fraction * 100} ${100 - slice.fraction * 100}`}
+          strokeDashoffset={-start} transform="rotate(-90 100 100)"><title>{slice.name}: {slice.pct}%</title></circle>
+      })}
+      <text x="100" y="96" textAnchor="middle" className="portfolio-donut-value">{formatHoldingValue(total)}</text>
+      <text x="100" y="114" textAnchor="middle" className="portfolio-donut-label">수집 보유금액</text>
+    </svg>
+    <ul className="portfolio-legend">{slices.map((slice, index) => <li key={index}>
+      <span className="portfolio-swatch" style={{ background: slice.other ? '#e2e8f0' : COLORS[index] }} aria-hidden="true" />
+      <span>{slice.name}</span><strong>{slice.pct}%</strong>
+    </li>)}</ul>
+  </div>
+}
+
+const COLUMNS: { key: HoldingSortKey; label: string }[] = [
+  { key: 'name', label: '종목' }, { key: 'pct', label: '비중' }, { key: 'shares', label: '보유 수량' },
+  { key: 'value', label: '평가액' }, { key: 'change', label: '수량 변화' },
+]
+
+function HoldingsTable({ filing, query, setQuery, sort, setSort }: {
+  filing: FilingData; query: string; setQuery: (query: string) => void; sort: HoldingSort; setSort: (sort: HoldingSort) => void
+}) {
+  const rows = holdingRows(filing.holdings, filing.totalValue, query, sort)
+  const reset = () => { setQuery(''); setSort(DEFAULT_HOLDING_SORT) }
+  return <section className="tool-card portfolio-holdings" aria-labelledby="holdings-heading">
+    <div className="tool-card-heading"><h3 id="holdings-heading">보유 종목</h3>
+      <span className="tool-meta" role="status">{rows.length} / {filing.holdings.length}개</span>
     </div>
-  )
+    <div className="holdings-toolbar">
+      <label className="holdings-search"><span className="tool-sr-only">보유 종목 검색</span>
+        <input type="search" value={query} maxLength={120} onChange={event => setQuery(event.target.value)}
+          placeholder="종목명·CUSIP 검색" aria-describedby="holdings-scope" />
+      </label>
+      <button type="button" className="tool-button" onClick={reset}
+        disabled={!query && sort.key === DEFAULT_HOLDING_SORT.key && sort.direction === DEFAULT_HOLDING_SORT.direction}>초기화</button>
+    </div>
+    <p className="tool-meta" id="holdings-scope">제공된 상위 {filing.holdings.length}개 종목 내 검색·정렬 · 비중은 전체 수집 보유금액 기준</p>
+    <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기</p>
+    <div className="tool-table-scroll holdings-scroll" tabIndex={0} role="region" aria-label="기관 보유 종목 표, 좌우·상하로 스크롤">
+      <table className="tool-table holdings-table">
+        <caption className="tool-sr-only">제목을 눌러 정렬할 수 있습니다. 수량 변화는 전 분기 대비입니다. 종목 앞 숫자는 원래 평가액 순위입니다.</caption>
+        <thead><tr>{COLUMNS.map(column => <th key={column.key} scope="col"
+          className={column.key === 'name' ? 'holding-identity' : 'tool-numeric'}
+          aria-sort={sort.key === column.key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+          <button type="button" className="holding-sort" onClick={() => setSort(nextHoldingSort(sort, column.key))}
+            title={column.key === 'change' ? '전 분기 대비 수량 증감률로 정렬. 신규·비교 자료 없음은 뒤에 표시합니다.' : `${column.label} 정렬`}>
+            {column.label}<span aria-hidden="true">{sort.key === column.key ? sort.direction === 'asc' ? '↑' : '↓' : '↕'}</span>
+          </button>
+        </th>)}</tr></thead>
+        <tbody>{rows.map(holding => <tr key={`${holding.cusip}:${holding.title}`}>
+          <th scope="row" className="holding-identity"><div className="holding-name">
+            <span className="holding-rank" aria-label={`평가액 ${holding.rank}위`}>{holding.rank}</span>
+            <div><strong>{holding.name}</strong><small>{holding.title} · {holding.cusip}</small></div>
+          </div></th>
+          <td className="tool-numeric">{holding.pct}%</td>
+          <td className="tool-numeric">{holding.shares.toLocaleString('en-US')}</td>
+          <td className="tool-numeric" title={`$${holding.value.toLocaleString('en-US')}`}>{formatHoldingValue(holding.value)}</td>
+          <td className="tool-numeric">{holding.change.kind === 'new' ? <span className="holding-badge">신규 보유</span>
+            : holding.change.percent === null ? <span className="tool-meta">비교 자료 없음</span>
+            : <span className={holding.change.percent > 0 ? 'tool-positive' : holding.change.percent < 0 ? 'tool-negative' : 'tool-meta'}>
+              {holding.change.percent > 0 ? '+' : ''}{Math.round(holding.change.percent)}%
+            </span>}</td>
+        </tr>)}</tbody>
+      </table>
+      {!rows.length && <div className="tool-empty" role="status"><p>검색 조건에 맞는 보유 종목이 없습니다.</p>
+        <button type="button" className="tool-button" onClick={reset}>검색·정렬 초기화</button></div>}
+    </div>
+  </section>
 }
 
 export default function Form13F() {
-  const managers = INITIAL_MANAGERS
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [cache, setCache] = useState<Record<string, FilingData>>({})
   const [refresh, setRefresh] = useState(0)
-  const [busy, setBusy] = useState(false)
-  const loadingAll = false
-  const selectedManager = managers[selectedIdx]
+  const [request, setRequest] = useState({ cik: '', busy: true, error: false })
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<HoldingSort>(DEFAULT_HOLDING_SORT)
+  const selectedManager = INITIAL_MANAGERS[selectedIdx]
+  const current = cache[selectedManager.cik]
+  const busy = request.cik !== selectedManager.cik || request.busy
+  const failed = request.cik === selectedManager.cik && request.error
+  const edgarUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`
+
+  function selectManager(index: number) {
+    setSelectedIdx(index); setQuery(''); setSort(DEFAULT_HOLDING_SORT)
+  }
 
   useEffect(() => {
     const controller = new AbortController()
     let active = true
     const cik = selectedManager.cik
-    setBusy(true)
+    setRequest({ cik, busy: true, error: false })
     async function load() {
       try {
         const response = await fetch(`/api/form13f?cik=${cik}`, { signal: controller.signal })
-        const result = await response.json()
-        if (!response.ok || result.verification !== 'matched') throw new Error(result.error || '공시 검증 실패')
-        if (active) setCache(prev => ({ ...prev, [cik]: { ...result, loading:false, error:null } }))
-      } catch (error) {
-        if (active) setCache(prev => ({ ...prev, [cik]: prev[cik]?.holdings.length
-          ? { ...prev[cik], stale:true, refreshError:'최신 공시를 다시 확인하지 못했습니다.' }
-          : { period:'', holdings:[], totalValue:0, loading:false, error: error instanceof Error ? error.message : '조회 실패' } }))
-      } finally { if (active) setBusy(false) }
+        const result: unknown = await response.json()
+        if (!response.ok || !isFiling(result)) throw new Error('공시 검증 실패')
+        if (active) {
+          setCache(previous => ({ ...previous, [cik]: result }))
+          setRequest({ cik, busy: false, error: false })
+        }
+      } catch {
+        if (active) setRequest({ cik, busy: false, error: true })
+      }
     }
     void load()
     const interval = setInterval(() => { if (!document.hidden) setRefresh(value => value + 1) }, 15 * 60000)
@@ -187,184 +174,68 @@ export default function Form13F() {
     return () => { active = false; controller.abort(); clearInterval(interval); document.removeEventListener('visibilitychange', visible) }
   }, [selectedManager.cik, refresh])
 
-  const current = cache[selectedManager?.cik]
-
-  return (
-    <>
-      <style>{`
-        @keyframes slideUp { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);} }
-        @keyframes spin { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
-        .page-title{opacity:0;animation:slideUp 0.7s ease forwards 0.1s;}
-        .page-desc{opacity:0;animation:slideUp 0.7s ease forwards 0.3s;}
-        .page-section{opacity:0;animation:slideUp 0.7s ease forwards 0.5s;}
-        .mgr-btn{transition:all 0.15s ease;cursor:pointer;}
-        .mgr-btn:hover{background:#f5f5f5 !important;}
-        .table-row:hover{background:#fafafa;}
-        .edgar-link{transition:opacity 0.15s;}
-        .edgar-link:hover{opacity:0.4;}
-      `}</style>
-
-      <div className="financial-tool-page portfolio-page" style={{ backgroundColor:'#fff', minHeight:'100vh', fontFamily:'var(--font-ui)', color:'#000' }}>
-
-        <div className="financial-tool-content" style={{ maxWidth:'1100px', margin:'0 auto', padding:'40px 24px 80px' }}>
-          <h1 className="page-title" style={{ fontSize:'52px', fontWeight:'400', letterSpacing:'-0.02em', marginBottom:'20px', lineHeight:'1.1' }}>기관 포트폴리오 · 13F</h1>
-          <p className="page-desc" style={{ fontSize:'18px', lineHeight:'1.85', color:'#444', maxWidth:'720px', marginBottom:'32px', textAlign:'justify', wordBreak:'keep-all' }}>
-            기관의 분기별 공시에서 보유 종목과 수량 변화를 확인합니다. 현재 보유나 실제 거래 시점과는 차이가 있습니다.
-          </p>
-
-          <details className="page-desc" style={{ padding:'16px 20px', border:'1px solid #e8e8e8', borderRadius:'4px', marginBottom:'28px', display:'flex', flexDirection:'column', gap:'10px' }}>
-            <summary style={{ cursor:'pointer', fontSize:14 }}>공시를 읽기 전에</summary>
-            {['분기말 보유 현황은 통상 분기 종료 후 45일 이내 제출됩니다. 보유 기준일과 제출일을 구분하세요.',
-              '미국 상장 주식 중심 - 현금, 채권, 공매도(Short), 비상장 투자, 해외 주식 상당수는 포함되지 않습니다.',
-              '복사 매매 주의 - 공시 데이터만으로 투자 결정을 내리는 것은 위험할 수 있습니다.',
-            ].map((t,i) => <p key={i} style={{ fontSize:'14px', color:'#666', lineHeight:'1.6' }}>{t}</p>)}
-            <a href="https://www.sec.gov/files/form13f.pdf" target="_blank" rel="noopener noreferrer">SEC Form 13F 안내 ↗</a>
-          </details>
-
-          <div className="page-section portfolio-layout" style={{ display:'grid', gridTemplateColumns:'300px 1fr', gap:'48px', alignItems:'start' }}>
-
-            {/* 왼쪽 */}
-            <div style={{ borderRight:'1px solid #e8e8e8', paddingRight:'40px' }}>
-              <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'20px' }}>Investors</p>
-
-              {loadingAll ? (
-                // 스켈레톤 + 스피너
-                <>
-                  <div style={{ display:'flex', justifyContent:'center', padding:'24px 0 20px' }}>
-                    <div style={{
-                      width:'24px', height:'24px', borderRadius:'50%',
-                      border:'2px solid #e8e8e8', borderTopColor:'#000',
-                      animation:'spin 0.8s linear infinite'
-                    }} />
-                  </div>
-                  {Array.from({ length: 14 }).map((_, i) => (
-                    <div key={i} style={{ padding:'14px 16px', marginBottom:'4px' }}>
-                      <div style={{ height:'14px', background:'#f0f0f0', borderRadius:'3px', marginBottom:'6px', width: i % 3 === 0 ? '80%' : i % 3 === 1 ? '65%' : '72%' }} />
-                      <div style={{ height:'11px', background:'#f7f7f7', borderRadius:'3px', width:'50%' }} />
-                    </div>
-                  ))}
-                </>
-              ) : (
-                managers.map((m, i) => (
-                  <div key={m.cik} className="mgr-btn" role="button" tabIndex={0} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedIdx(i) } }} onClick={() => setSelectedIdx(i)}
-                    style={{ padding:'14px 16px', borderRadius:'4px', marginBottom:'4px', background:selectedIdx===i?'#f5f5f5':'transparent', borderLeft:selectedIdx===i?'2px solid #000':'2px solid transparent' }}>
-                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
-                      <p style={{ fontSize:'14px', fontWeight:selectedIdx===i?'500':'400', color:'#000', marginBottom:'2px' }}>
-                        {m.name} ({m.nameKo})
-                      </p>
-                      {cache[m.cik]?.totalValue ? (
-                        <span style={{ fontSize:'11px', color:'#aaa', flexShrink:0, marginLeft:'8px' }}>{formatValue(cache[m.cik].totalValue)}</span>
-                      ) : null}
-                    </div>
-                    <p style={{ fontSize:'11px', color:'#aaa' }}>{m.firm}</p>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* 오른쪽 */}
-            <div>
-              {!loadingAll && (
-              <div style={{ marginBottom:'28px' }}>
-                <h2 style={{ fontSize:'28px', fontWeight:'400', marginBottom:'6px' }}>{selectedManager.firm}</h2>
-                {selectedManager.note && <p style={{ color:'#9a6700', fontSize:12, lineHeight:1.7 }}>{selectedManager.note}</p>}
-                {current?.period && Date.now() - Date.parse(current.period) > 180 * 86400000 && <p style={{ color:'#9a6700', fontSize:12 }}>보유 기준일로부터 6개월 이상 지난 공시입니다.</p>}
-                <button type="button" disabled={busy} onClick={() => setRefresh(value => value + 1)}>{busy ? '공시 확인 중…' : '새로고침'}</button>
-                <p style={{ fontSize:12, color:'#666', lineHeight:1.7 }}>선택한 기관은 페이지를 보는 동안 15분마다 확인합니다. 서버 캐시는 최대 15분이며 새 공시는 재배포 없이 반영됩니다.</p>
-                {current?.checkedAt && <p style={{ fontSize:12, color:'#666' }}>최근 검증: {new Date(current.checkedAt).toLocaleString('ko-KR', { timeZone:'Asia/Seoul' })} KST</p>}
-                {current?.stale && <p role="status" style={{ color:'#b42318' }}>최신 조회에 실패해 마지막 검증 자료를 표시합니다.</p>}
-                {current && !current.loading && !current.error && <p style={{ fontSize:'13px', color:'#aaa', marginTop:'4px' }}>보유 기준일: {current.period || '미확인'} · 제출일: {current.filedAt || '미확인'}</p>}
-              </div>
-              )}
-
-              {loadingAll ? null : !current || current.loading ? (
-                <div style={{ padding:'64px 0', display:'flex', justifyContent:'center' }}>
-                  <div style={{
-                    width:'28px', height:'28px', borderRadius:'50%',
-                    border:'2px solid #e8e8e8', borderTopColor:'#000',
-                    animation:'spin 0.8s linear infinite'
-                  }} />
-                </div>
-              ) : current.error ? (
-                <div style={{ padding:'32px', border:'1px solid #e8e8e8', borderRadius:'4px' }}>
-                  <p style={{ fontSize:'14px', color:'#aaa', marginBottom:'8px' }}>데이터를 불러오지 못했습니다.</p>
-                  <p style={{ fontSize:'12px', color:'#ccc', marginBottom:'16px' }}>{current.error}</p>
-                  <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none' }}>
-                    <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer' }}>
-                      SEC EDGAR에서 직접 보기 ↗
-                    </div>
-                  </a>
-                </div>
-              ) : (
-                <>
-                  <details style={{ fontSize:12, lineHeight:1.8, marginBottom:24 }}>
-                    <summary>SEC 원문 대조: 공시별 금액 합계·행 수 일치</summary>
-                    <p>옵션·원금 단위 항목 포함 공시 합계: {formatValue(current.reportedTotal ?? 0)} · 화면에서 제외한 금액: {formatValue(current.excludedValue ?? 0)}</p>
-                    {current.sources?.map(source => <p key={source.accession}>
-                      <a href={source.indexUrl} target="_blank" rel="noopener noreferrer">{source.form} · {source.accession} ↗</a><br />
-                      원문 / 수집: ${source.reportedTotal.toLocaleString()} / ${source.parsedTotal.toLocaleString()} · {source.reportedCount} / {source.parsedCount}행
-                    </p>)}
-                    <p>합계 대조는 파싱 검증이며 SEC가 투자 내용을 보증한다는 뜻은 아닙니다. 수정 공시는 재작성과 추가 보유 항목을 구분해 반영합니다.</p>
-                  </details>
-                  <p style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'#aaa', marginBottom:'16px' }}>Top 10 Holdings</p>
-                  <DonutChart holdings={current.holdings} total={current.totalValue} />
-                  <p style={{ fontSize:12, color:'#666', lineHeight:1.7, marginBottom:20 }}>차트와 표의 비중은 옵션·원금 단위 항목을 제외한 보유종목 전체 합계를 기준으로 합니다. 차트는 상위 10개와 기타, 표는 상위 30개를 표시합니다. 기타에는 표에 없는 종목도 포함됩니다. 옵션 등 제외 항목이 있어 기관의 전체 운용자산(AUM)과 다르며, 반올림으로 비중 합계가 100%와 다를 수 있습니다.</p>
-
-                  <p className="tool-scroll-hint">좌우로 밀어 보유 종목 표 전체 보기 ↔</p><div className="tool-table-scroll" tabIndex={0} role="region" aria-label="기관 보유 종목 표, 좌우로 스크롤"><table style={{ width:'100%', minWidth:620, borderCollapse:'collapse', fontSize:'14px', tableLayout:'fixed' }}>
-                    <colgroup>
-                      <col style={{ width:'32px' }} />
-                      <col />
-                      <col style={{ width:'110px' }} />
-                      <col style={{ width:'90px' }} />
-                      <col style={{ width:'110px' }} />
-                      <col style={{ width:'130px' }} />
-                    </colgroup>
-                    <thead>
-                      <tr style={{ borderBottom:'1px solid #e8e8e8' }}>
-                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>#</th>
-                        <th style={{ textAlign:'left', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Stock</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>% of Portfolio</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Shares</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>Market Value</th>
-                        <th style={{ textAlign:'right', padding:'10px 0', fontWeight:'400', color:'#aaa', fontSize:'11px' }}>전 분기 수량 변화</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {current.holdings.map((h,i) => (
-                        <tr key={i} className="table-row" style={{ borderBottom:'1px solid #f4f4f4' }}>
-                          <td style={{ padding:'12px 0', color:'#bbb', fontSize:'12px' }}>{i+1}</td>
-                          <td style={{ padding:'12px 0' }}>
-                            <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-                              <StockLogo name={h.name} />
-                              <span style={{ color:'#000', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'13px' }}>{formatName(h.name)}<small style={{ display:'block', color:'#666', fontSize:10 }}>{h.title} · {h.cusip}</small></span>
-                            </div>
-                          </td>
-                          <td style={{ padding:'12px 0', textAlign:'right', color:'#555' }}>{h.pct}%</td>
-                          <td style={{ padding:'12px 0', textAlign:'right', color:'#555', fontVariantNumeric:'tabular-nums' }}>{formatShares(h.shares)}</td>
-                          <td style={{ padding:'12px 0', textAlign:'right', color:'#000', fontVariantNumeric:'tabular-nums' }}>{formatValue(h.value)}</td>
-                          <td style={{ padding:'12px 0', textAlign:'right' }}><LastTransactionTag curr={h.shares} prev={h.prevShares} /></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table></div>
-
-                  <div style={{ marginTop:'32px' }}>
-                    <a href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none' }}>
-                      <div className="edgar-link" style={{ display:'inline-flex', alignItems:'center', gap:'6px', fontSize:'13px', color:'#000', borderBottom:'1px solid #000', paddingBottom:'2px', cursor:'pointer' }}>
-                        SEC EDGAR 원본 공시 보기 ↗
-                      </div>
-                    </a>
-                  </div>
-                </>
-              )}
-            </div>
+  return <ToolPage className="portfolio-page" title="기관 포트폴리오 · 13F"
+    description="기관의 분기별 공시에서 보유 종목과 수량 변화를 확인합니다. 현재 보유나 실제 거래 시점과는 차이가 있습니다.">
+    <div className="portfolio-layout">
+      <aside className="tool-card portfolio-managers" aria-label="기관 선택">
+        <div className="tool-card-heading"><h2>기관</h2><span className="tool-meta">{INITIAL_MANAGERS.length}</span></div>
+        <label className="portfolio-manager-select">기관 선택
+          <select value={selectedIdx} onChange={event => selectManager(Number(event.target.value))}>
+            {INITIAL_MANAGERS.map((manager, index) => <option key={manager.cik} value={index}>{manager.nameKo} · {manager.firm}</option>)}
+          </select>
+        </label>
+        <nav className="portfolio-manager-list" aria-label="13F 기관 목록">{INITIAL_MANAGERS.map((manager, index) => <button
+          key={manager.cik} type="button" className="portfolio-manager" aria-pressed={selectedIdx === index} onClick={() => selectManager(index)}>
+          <strong>{manager.nameKo}</strong><span>{manager.firm}</span>
+        </button>)}</nav>
+      </aside>
+      <div className="portfolio-main">
+        <section className="tool-card portfolio-overview" aria-labelledby="portfolio-heading" aria-busy={busy}>
+          <div className="tool-card-heading"><h2 id="portfolio-heading">{selectedManager.firm}</h2>
+            <WidgetActions label="13F 공시" refresh={{ loading: busy, onClick: () => setRefresh(value => value + 1) }} />
           </div>
-        </div>
-
-        <footer style={{ borderTop:'1px solid #e8e8e8', padding:'32px 48px', fontSize:'12px', color:'#aaa' }}>
-          <span>Anthracite © 2026</span>
-        </footer>
+          {selectedManager.note && <p className="tool-callout">{selectedManager.note}</p>}
+          {current?.period && Date.now() - Date.parse(current.period) > 180 * 86400000 && <p className="tool-callout">보유 기준일로부터 6개월 이상 지난 공시입니다.</p>}
+          <ResourceState label="13F 공시" loading={busy} error={failed} hasData={!!current} stale={current?.stale}
+            updatedAt={current?.checkedAt} onRetry={() => setRefresh(value => value + 1)} layout="rows"
+            failureMessage={failed && current ? '최신 조회에 실패해 마지막 검증 자료를 표시합니다.' : undefined} />
+          {current && <>
+            <dl className="portfolio-summary">
+              <div><dt>수집 보유금액</dt><dd>{formatHoldingValue(current.totalValue)}</dd></div>
+              <div><dt>보유 기준일</dt><dd>{current.period || '미확인'}</dd></div>
+              <div><dt>제출일</dt><dd>{current.filedAt || '미확인'}</dd></div>
+            </dl>
+            <p className="tool-meta portfolio-verified">SEC 원문 합계·행 수 대조 완료 · 최근 검증 {dataTime(current.checkedAt)}</p>
+          </>}
+          <a className="tool-text-link" href={edgarUrl} target="_blank" rel="noopener noreferrer">SEC EDGAR 원문 ↗</a>
+        </section>
+        {current && (current.holdings.length ? <>
+          <section className="tool-card" aria-labelledby="portfolio-allocation-heading">
+            <div className="tool-card-heading"><h3 id="portfolio-allocation-heading">상위 10개 보유 비중</h3><span className="tool-meta">기타 포함</span></div>
+            <DonutChart holdings={current.holdings} total={current.totalValue} />
+          </section>
+          <HoldingsTable filing={current} query={query} setQuery={setQuery} sort={sort} setSort={setSort} />
+        </> : <div className="tool-card tool-empty" role="status">표시할 주식 보유 종목이 없습니다.</div>)}
+        <details className="tool-card tool-disclosure">
+          <summary>공시·산정 기준</summary>
+          <div className="tool-disclosure-content">
+            <p>분기말 보유 현황은 통상 분기 종료 후 45일 이내 제출됩니다. 보유 기준일과 제출일을 구분하세요.</p>
+            <p>미국 상장 주식 중심이며 현금·채권·공매도·비상장 투자와 해외 주식 상당수는 포함되지 않습니다.</p>
+            <p>차트·표의 비중은 옵션·원금 단위 항목을 제외한 전체 보유금액 기준입니다. 차트는 상위 10개와 기타, 표는 평가액 상위 최대 30개를 표시합니다. 기관의 전체 운용자산(AUM)과 다르며 반올림으로 비중 합계가 100%와 다를 수 있습니다.</p>
+            <p>수량 변화는 전 분기 대비 증감률입니다. 신규 보유·비교 자료 없음은 숫자로 환산하지 않으며 증감률 정렬 시 수치가 있는 항목 뒤에 표시합니다.</p>
+            <p>선택한 기관은 화면을 보는 동안 15분마다 확인합니다. 서버 캐시는 최대 15분이며 새 공시는 재배포 없이 반영됩니다.</p>
+            {current?.sources && <div className="portfolio-sources">
+              <p>공시 합계: {formatHoldingValue(current.reportedTotal ?? 0)} · 표시 대상에서 제외한 금액: {formatHoldingValue(current.excludedValue ?? 0)}</p>
+              {current.sources.map(source => <p key={source.accession}>
+                <a className="tool-text-link" href={source.indexUrl} target="_blank" rel="noopener noreferrer">{source.form} · {source.accession} ↗</a><br />
+                원문 / 수집: ${source.reportedTotal.toLocaleString('en-US')} / ${source.parsedTotal.toLocaleString('en-US')} · {source.reportedCount} / {source.parsedCount}행
+              </p>)}
+              <p>합계 대조는 파싱 검증이며 SEC가 투자 내용을 보증한다는 뜻은 아닙니다. 수정 공시는 재작성과 추가 보유 항목을 구분해 반영합니다.</p>
+            </div>}
+            <a className="tool-text-link" href="https://www.sec.gov/files/form13f.pdf" target="_blank" rel="noopener noreferrer">SEC Form 13F 안내 ↗</a>
+          </div>
+        </details>
       </div>
-    </>
-  )
+    </div>
+  </ToolPage>
 }
