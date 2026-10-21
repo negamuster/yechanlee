@@ -103,8 +103,12 @@ test('native wheel or touch pinch zooms the actual chart and dragging moves its 
   await expect(ui.locator('.stock-chart-x-labels')).not.toHaveText(before)
   if (isMobile) {
     const cdp = await context.newCDPSession(page), priorScroll = await page.evaluate(() => scrollY)
-    await cdp.send('Input.synthesizeScrollGesture', { x, y, yDistance: -140, speed: 500, gestureSourceType: 'touch' })
-    console.log('Mobile scroll', { priorScroll, after: await page.evaluate(() => ({ scroll: scrollY, scale: visualViewport.scale, height: innerHeight, total: document.documentElement.scrollHeight })), x, y })
+    const current = await canvas.boundingBox(), sx = current.x + current.width * .4, sy = current.y + 140
+    await page.evaluate(() => { window.stockTouchEvents = []; for (const type of ['touchstart', 'touchmove', 'touchend']) document.addEventListener(type, event => { window.stockTouchEvents.push({ type, prevented: event.defaultPrevented, cancelable: event.cancelable, y: event.touches[0]?.clientY }) }, { passive: true }) })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: sx, y: sy }] })
+    for (let i = 1; i <= 6; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: sx, y: sy - i * 20 }] })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    console.log('Mobile scroll', { priorScroll, after: await page.evaluate(() => ({ scroll: scrollY, scale: visualViewport.scale, events: window.stockTouchEvents, height: innerHeight, total: document.documentElement.scrollHeight })), sx, sy })
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(priorScroll)
     await cdp.detach()
   }

@@ -78,7 +78,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       }
       if (instance.volume && !showVolume) { instance.chart.removeSeries(instance.volume); instance.volume = undefined }
       instance.volume?.setData(bars.map(p => ({ time: time(p), ...(p.v == null ? {} : { value: p.v, color: p.o != null ? p.c >= p.o ? '#7ab49d' : '#d49a96' : '#a9afb2' }) })))
-      container.current?.querySelectorAll('canvas').forEach(canvas => canvas.setAttribute('aria-hidden', 'true'))
+      container.current?.querySelectorAll('a').forEach(anchor => { anchor.tabIndex = -1 })
       instance.chart.timeScale().setVisibleLogicalRange(next)
     }
     rangeRef.current = next; setRange(next); previous.current = bars
@@ -105,7 +105,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       else if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); select(event.key === 'Home' ? 0 : bars.length - 1) }
       else if (['+', '=', '-', '0', 'PageUp', 'PageDown'].includes(event.key)) { event.preventDefault(); if (event.key === '0') fit(); else if (event.key.startsWith('Page')) navigate(moveChartRange(range, bars.length, event.key === 'PageUp' ? -1 : 1)); else navigate(zoomChartRange(range, bars.length, event.key === '-' ? 1 / .65 : .65)) }
     }}>
-      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={container} />
+      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={container} aria-hidden="true" />
       {!available && <p className="stock-chart-fallback">이 환경에서는 차트를 표시할 수 없습니다. 아래 조회 표에서 값을 확인하세요.</p>}
     </div>
     <div className="stock-chart-x-labels"><span>{first && chartPointTime(first.t, period)} ET</span><span>{last && chartPointTime(last.t, period)} ET</span></div>
