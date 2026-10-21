@@ -15,11 +15,11 @@ export function fixturePayload(kind, symbol = 'NVDA', period = '1M') {
     financials: { income_statement: { revenues: { value: 1000, unit: 'USD' }, net_income_loss: { value: -10, unit: 'USD' }, diluted_earnings_per_share: { value: 0, unit: 'USD/shares' } }, balance_sheet: { equity: { value: 50, unit: 'USD' }, liabilities: { value: 20, unit: 'USD' } } },
   })) }
   const points = period === '1D' ? [point('2026-10-20T13:30Z', price - 1), point('2026-10-20T13:35Z', price)] : period === 'ALL' ? [point('1980-12-12T15:00Z', 1), point('2026-10-20T15:00Z', price)] : [point('2026-10-19T15:00Z', price - 1), point('2026-10-20T15:00Z', price)]
-  return { symbol, period, points, currency: 'USD', interval: period === '1D' ? '5m' : period === '5D' ? '30m' : ['5Y', 'ALL'].includes(period) ? '1wk' : '1d', source: 'Yahoo Finance', fetchedAt: FIXED_AT, stale: false, baseline: { c: price - 1, label: 'Fixture first price' }, changePercent: 1 }
+  return { symbol, period, points: points.map((p, i) => ({ ...p, o: p.c - .25, h: p.c + .5, l: p.c - .5, v: i ? 2000 : 0 })), currency: 'USD', interval: period === '1D' ? '5m' : period === '5D' ? '30m' : ['5Y', 'ALL'].includes(period) ? '1wk' : '1d', source: 'Yahoo Finance', fetchedAt: FIXED_AT, stale: false, baseline: { c: price - 1, label: 'Fixture first price' }, changePercent: 1 }
 }
 
 export async function installStockFixtures(page) {
-  const state = { failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
+  const state = { denseChart: false, closeOnlyChart: false, partialChart: false, appendChart: false, failChart: false, failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
   await page.clock.setFixedTime(new Date(FIXED_AT))
   page.on('pageerror', error => state.pageErrors.push(error.message))
   await page.route('**/*', async route => {
@@ -40,6 +40,17 @@ export async function installStockFixtures(page) {
     const period = url.searchParams.get('period') || '1M'
     if (kind === 'chart' && state.delay?.symbol === symbol && state.delay.period === period) { state.delayed++; await new Promise(resolve => { state.release = resolve }) }
     const body = fixturePayload(kind, symbol, period)
+    if (kind === 'chart') {
+      if (state.failChart) return route.fulfill({ status: 503, json: { error: 'Simulated chart outage' } })
+      if (state.denseChart) {
+        const dates = []
+        for (let d = Date.parse('2026-10-19T15:00Z'); dates.length < 32; d -= 86400000) if (![0, 6].includes(new Date(d).getUTCDay())) dates.unshift(d)
+        body.points = dates.map((t, i) => ({ t, c: 100 + i / 2, o: 100 + i / 2 - .25, h: 101 + i / 2, l: 99 + i / 2, v: i * 1000 }))
+        if (state.appendChart) body.points.push({ t: Date.parse('2026-10-20T15:00Z'), c: 116, o: 115.75, h: 117, l: 115, v: 32000 })
+      }
+      if (state.closeOnlyChart) body.points = body.points.map(({ t, c }) => ({ t, c }))
+      if (state.partialChart) { const p = body.points.at(-1); delete p.o; delete p.h; delete p.l; p.v = 0 }
+    }
     if (kind === 'financials') {
       const data = financialHistory(financialFacts(), '1', FIXED_AT)
       body.results = data.annual; body.quarterly = state.annualOnly ? [] : data.quarterly; body.ttm = state.annualOnly ? [] : data.ttm

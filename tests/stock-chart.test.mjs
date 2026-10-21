@@ -68,3 +68,23 @@ test('chart endpoint bounds input to configured periods and cannot proxy user-se
   for (const query of ['ticker=AAPL&period=3M', 'ticker=AAPL&period=ALL&url=https://evil.test', 'ticker=AAPL&period=1D&period=5D', 'ticker=https://evil.test&period=1D', 'ticker=AAPL&period=1D&from=1900-01-01']) assert.equal((await handler(new Request(`https://example.com/api/stock-chart?${query}`))).status, 400)
   assert.equal(calls, 0)
 })
+
+test('OHLCV are preserved from the same quote row, including zero volume, without altering the close baseline', t => {
+  t.mock.timers.enable({ apis: ['Date'], now: at })
+  const points = [row('2026-10-19T15:00Z', 100), row('2026-10-20T15:00Z', 102)]
+  const raw = response(points); Object.assign(raw.indicators.quote[0], { open: [99, 103], high: [101, 104], low: [98, 101], volume: [0, 2500] })
+  const data = parseStockChart(raw, 'AAPL', '1M', at)
+  assert.deepEqual(data.points[0], { ...points[0], o: 99, h: 101, l: 98, v: 0 })
+  assert.deepEqual(data.points[1], { ...points[1], o: 103, h: 104, l: 101, v: 2500 })
+  assert.ok(Math.abs(data.changePercent - 2) < 1e-9); assert.equal(validStockChart(data), true)
+})
+test('missing/inconsistent OHLC and invalid volume preserve closes and never invent candles or zero volumes', t => {
+  t.mock.timers.enable({ apis: ['Date'], now: at })
+  const points = ['2026-10-16', '2026-10-19', '2026-10-20'].map(date => row(`${date}T15:00Z`, 100))
+  const raw = response(points); Object.assign(raw.indicators.quote[0], { open: [null, 99, 99], high: [101, 98, 101], low: [98, 98, 98], volume: [null, -1, 1.5] })
+  const data = parseStockChart(raw, 'AAPL', '1M', at)
+  assert.deepEqual(data.points[0], points[0]); assert.deepEqual(data.points[1], points[1])
+  assert.deepEqual(data.points[2], { ...points[2], o: 99, h: 101, l: 98 })
+  assert.equal(validStockChart(data), true)
+  for (const bad of [{ o: 99 }, { o: 99, h: 98, l: 97 }, { v: -1 }, { v: 1.5 }, { v: Infinity }]) assert.equal(validStockChart({ ...data, points: [{ ...points[0], ...bad }] }), false)
+})
