@@ -19,7 +19,7 @@ export function fixturePayload(kind, symbol = 'NVDA', period = '1M') {
 }
 
 export async function installStockFixtures(page) {
-  const state = { failReference: false, failOptional: false, failAllPrices: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
+  const state = { failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
   await page.clock.setFixedTime(new Date(FIXED_AT))
   page.on('pageerror', error => state.pageErrors.push(error.message))
   await page.route('**/*', async route => {
@@ -36,13 +36,20 @@ export async function installStockFixtures(page) {
     const symbol = url.searchParams.get('ticker') || (path.startsWith('/v3/reference/tickers/') ? path.split('/').at(-1) : path.startsWith('/v1/related-companies/') ? path.split('/').at(-1) : path.startsWith('/v2/reference/news') ? new URL(path, url.origin).searchParams.get('ticker') : path.split('/')[4])
     const kind = url.pathname === '/api/stock-chart' ? 'chart' : url.pathname === '/api/stock-financials' ? 'financials' : path.includes('/range/') ? 'history' : path.includes('/prev?') ? 'previous' : path.startsWith('/v3/') ? 'details' : path.startsWith('/v1/') ? 'related' : path.startsWith('/v2/reference/news') ? 'news' : null
     if (!kind || !companies[symbol]) return route.fulfill({ status: 503, json: { error: 'Unconfigured fixture' } })
-    if (kind === 'details' && state.failReference || ['news', 'related'].includes(kind) && state.failOptional || ['history', 'previous'].includes(kind) && state.failAllPrices) return route.fulfill({ status: 503, json: { error: 'Simulated outage' } })
+    if (kind === 'details' && state.failReference || ['news', 'related'].includes(kind) && state.failOptional || ['history', 'previous'].includes(kind) && state.failAllPrices || kind === 'financials' && state.failFinancials) return route.fulfill({ status: 503, json: { error: 'Simulated outage' } })
     const period = url.searchParams.get('period') || '1M'
     if (kind === 'chart' && state.delay?.symbol === symbol && state.delay.period === period) { state.delayed++; await new Promise(resolve => { state.release = resolve }) }
     const body = fixturePayload(kind, symbol, period)
+    if (kind === 'financials') {
+      const data = financialHistory(financialFacts(), '1', FIXED_AT)
+      body.results = data.annual; body.quarterly = state.annualOnly ? [] : data.quarterly; body.ttm = state.annualOnly ? [] : data.ttm
+      if (state.mixedCurrency) body.results[1].financials.income_statement.revenues = { value: 90, unit: 'EUR' }
+    }
     if (kind === 'details' && state.mismatchReference) body.results.ticker = symbol === 'NVDA' ? 'AAPL' : 'NVDA'
     if (['news', 'related'].includes(kind) && state.emptyLists) body.results = []
     await route.fulfill({ json: body }).catch(() => {})
   })
   return state
 }
+import { financialHistory } from '../../lib/financial-history.js'
+import { financialFacts } from '../fixtures/financial-history.mjs'

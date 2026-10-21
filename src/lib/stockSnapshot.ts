@@ -11,6 +11,7 @@ export interface StockResourceSource { fetchedAt: number; stale: boolean }
 export interface StockSnapshot {
   symbol: string; fetchedAt: number; details: any; bars: DailyBar[];
   news: any[]; financials: any[]; related: string[]; issues: string[]; historyAvailable: boolean;
+  quarterlyFinancials?: any[]; ttmFinancials?: any[];
   companySource: 'Polygon / Massive' | 'SEC EDGAR';
   resourceSources?: { details?: StockResourceSource; news?: StockResourceSource; related?: StockResourceSource };
   financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
@@ -138,7 +139,7 @@ export async function fetchStockSnapshot(symbol: string, signal: AbortSignal, fe
   if (!history.length) issues.unshift('가격 이력')
   return { symbol, fetchedAt: now, details, companySource: hasReference ? 'Polygon / Massive' : 'SEC EDGAR', bars, issues, historyAvailable: history.length > 0,
     resourceSources: { details: hasReference ? source(0) : undefined, news: Array.isArray(value(2)) ? source(2) : undefined, related: Array.isArray(value(4)) ? source(4) : undefined },
-    news: Array.isArray(value(2)) ? value(2) : [], financials: annualData?.results ?? [],
+    news: Array.isArray(value(2)) ? value(2) : [], financials: annualData?.results ?? [], quarterlyFinancials: annualData?.quarterly ?? [], ttmFinancials: annualData?.ttm ?? [],
     financialSource: annualData ? { source: annualData.source, fetchedAt: annualData.fetchedAt, stale: annualData.stale, status: annualData.status } : undefined,
     related: Array.isArray(value(4)) ? value(4).map((r: { ticker: string }) => r.ticker).filter((s: string) => /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(s)).slice(0, 8) : [] }
 }
