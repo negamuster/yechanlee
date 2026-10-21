@@ -12,6 +12,7 @@ import { nearestStockBar, stockMoney, stockNumber, stockPercent } from '../lib/s
 import { stockChartPeriods, chartIntervalLabel, chartPointTime } from '../lib/stockChart'
 import type { PricePoint, StockChartPeriod } from '../lib/stockChart'
 import ResourceState from '../components/ResourceState'
+import FinancialHistory from '../components/FinancialHistory'
 import { isWebUrl } from '../lib/watchlist'
 import ReturnToList from '../components/ReturnToList'
 import './Stock.css'
@@ -124,7 +125,7 @@ export default function Stock() {
   const roe = income !== null && equity !== null && equity > 0 && sameCurrency(incomeField, equityField) ? income / equity * 100 : null
   const debtEquity = liabilities !== null && equity !== null && equity > 0 && sameCurrency(liabilitiesField, equityField) ? liabilities / equity : null
   const previousGap = annual?.start_date && previousAnnual?.end_date ? Date.parse(annual.start_date) - Date.parse(previousAnnual.end_date) : NaN
-  const growth = revenue !== null && previousRevenue !== null && previousRevenue > 0 && sameCurrency(revenueField, previousRevenueField) && previousGap > 0 && previousGap <= 7 * 86400000 ? (revenue / previousRevenue - 1) * 100 : null
+  const growth = revenue !== null && previousRevenue !== null && previousRevenue > 0 && sameCurrency(revenueField, previousRevenueField) && annual.accounting_standard === previousAnnual.accounting_standard && previousGap > 0 && previousGap <= 7 * 86400000 ? (revenue / previousRevenue - 1) * 100 : null
   const hasFinancials = [eps, revenue, income, equity, liabilities].some(value => value !== null)
   const hasHistory = snapshot?.historyAvailable ?? false
   const rangePosition = hasHistory && quote.latest && quote.high !== null && quote.low !== null && quote.high > quote.low ? (quote.latest.c - quote.low) / (quote.high - quote.low) * 100 : null
@@ -174,6 +175,7 @@ export default function Stock() {
               {snapshot.issues.includes('상세 기업 정보') && <StockPartStatus label="기업 정보" source={snapshot.resourceSources?.details} unavailable loading={loading} onRetry={refreshSnapshot} />}
               {hasFinancials ? <><p className="stock-financial-period">SEC EDGAR · {annual.accounting_standard === 'ifrs-full' ? 'IFRS' : 'US GAAP'} 연간 공시 · 회계기간 {annual.start_date ?? '미확인'} ~ {annual.end_date ?? '미확인'} · 제출 {annual.filing_date ?? '미확인'}{isWebUrl(annual.source_filing_url) && <> · <a href={annual.source_filing_url} target="_blank" rel="noopener noreferrer">원문 공시 ↗</a></>}</p><Metrics items={financialMetrics} />{snapshot.financialSource?.stale && <p className="stock-alert" role="status">SEC 재조회에 실패해 이전에 확인한 연간 공시 자료를 표시합니다.</p>}</> : <div className="stock-empty-note" role="status"><strong>{snapshot.issues.includes('연간 재무') ? 'SEC 연간 재무 공시를 불러오지 못했습니다.' : '확인 가능한 표준 연간 재무 자료가 없습니다.'}</strong><p>{snapshot.issues.includes('연간 재무') ? '가격·뉴스는 계속 볼 수 있으며, 새로고침으로 공시를 다시 확인할 수 있습니다.' : 'ETF·비공시 종목이나 표준 XBRL 자료가 없는 기업은 연간 재무를 제공하지 않을 수 있습니다. 미확인 수치는 표시하지 않습니다.'}</p></div>}
               {snapshot.financialSource && <p className="stock-note">SEC 공시 조회 {new Date(snapshot.financialSource.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST · 연간 자료이며 TTM이 아닙니다. 공시 EPS는 이후 주식분할을 반영하지 않았을 수 있습니다.</p>}
+              <FinancialHistory key={symbol} annual={financials} quarterly={snapshot.quarterlyFinancials} ttm={snapshot.ttmFinancials} stale={snapshot.financialSource?.stale} unavailable={snapshot.issues.includes('연간 재무')} loading={loading} onRetry={refreshSnapshot} />
               <details className="stock-data-details"><summary>추가 비율·계산 기준</summary><dl className="stock-extra-metrics"><div><dt>총부채 / 자기자본</dt><dd>{debtEquity === null ? '—' : `${debtEquity.toFixed(2)}x`}</dd></div><div><dt>조회 범위 내 종가 위치</dt><dd>{stockPercent(rangePosition)}</dd></div></dl><p>P/E는 양수인 연간 희석 EPS로 계산합니다. ROE는 기말 자기자본 기준입니다. 총부채에는 이자부 차입금 외 부채도 포함합니다. 비율은 비교 가능한 통화·기간이 확인된 경우에 표시합니다.</p><p>고가·저가는 최대 1년 내 수집된 일별 자료 기준입니다. {hasHistory && bars[0] ? `조회 범위: ${tradingDate(bars[0].t)} ~ ${quote.tradingDate}. ` : ''}신규 상장이나 자료 누락으로 1년 전체가 아닐 수 있습니다. ‘—’는 미확인이거나 계산 조건을 충족하지 않은 값입니다.</p></details>
             </section>
             <section id="stock-news" className="stock-card" aria-labelledby="stock-news-title"><div className="stock-section-heading"><h2 id="stock-news-title">관련 뉴스</h2><span className="stock-note">{articles.length ? `${articles.length}건 · 원문으로 이동` : '종목별 기사'}</span></div>
