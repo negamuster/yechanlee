@@ -90,7 +90,7 @@ test('arrows change the accessible active option and Enter navigates with the or
   assert.equal(currentLocation.state.returnOrigin.href, '/saved')
   assert.equal(input(), null)
 })
-test('Korean IME Enter never opens a result; alias search reuses stock matching and supports exact-ticker fallback', async () => {
+test('Korean IME Enter never opens a result and alias search reuses confirmed stock matches', async () => {
   await open(); await edit('애플')
   assert.ok(options().some(row => row.getAttribute('href') === '/stock/AAPL'))
   await key(input(), 'Enter', { isComposing: true })
@@ -116,7 +116,21 @@ test('query changes cancel delayed searches and late remote responses cannot rep
   globalThis.fetch = async () => Response.json({}, { status: 503 })
   await debounce()
   assert.match(container.textContent, /정확한 티커로 직접 이동/)
-  await key(input(), 'Enter'); assert.equal(currentLocation.pathname, '/stock/BRK.B')
+  await key(input(), 'Enter'); assert.equal(currentLocation.pathname, '/saved')
+  await click(container.querySelector('.command-direct-stock button'))
+  assert.equal(currentLocation.pathname, '/stock/BRK.B')
+})
+test('company-name Enter waits for confirmed matches and selects the real ticker instead of inventing one', async () => {
+  await open(); await category('종목'); await edit('Tesla')
+  assert.equal(options().some(row => row.getAttribute('href') === '/stock/TESLA'), false)
+  assert.equal(container.querySelector('.command-direct-stock'), null)
+  await key(input(), 'Enter'); assert.equal(currentLocation.pathname, '/saved')
+  globalThis.fetch = async () => Response.json({ results: [{ ticker: 'TSLA', name: 'Tesla Inc.' }] })
+  await debounce()
+  assert.equal(options().length, 1)
+  assert.equal(options()[0].getAttribute('href'), '/stock/TSLA')
+  assert.equal(container.querySelector('.command-direct-stock'), null)
+  await key(input(), 'Enter'); assert.equal(currentLocation.pathname, '/stock/TSLA')
 })
 test('published briefing text, saved articles and news are searchable with separate categories and safe external links', async () => {
   await open(); await category('브리핑'); await edit(briefings[0].id)
