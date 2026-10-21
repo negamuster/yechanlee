@@ -8,7 +8,7 @@ async function search(page, query, symbol) {
   await page.getByRole('button', { name: '통합 검색·빠른 이동', exact: true }).click()
   const dialog = page.getByRole('dialog', { name: '통합 검색·빠른 이동' })
   await dialog.getByRole('combobox').fill(query)
-  await expect(dialog.getByRole('option').filter({ hasText: symbol })).toBeVisible()
+  await expect(dialog.getByRole('option').and(dialog.locator(`a[href="/stock/${symbol}"]`))).toBeVisible()
   await dialog.getByRole('combobox').press('Enter')
   await expect(page).toHaveURL(new RegExp(`/stock/${symbol}$`))
   await expect(page.locator('.stock-symbol')).toHaveText(symbol)
@@ -28,6 +28,9 @@ test('company search opens the verified stock and all eight chart periods work w
     await expect(page.locator('.stock-chart-readout time')).toContainText('Oct 20, 2026')
   }
   await expect(page.locator('.stock-chart-x-labels')).toContainText('Dec 12, 1980')
+  await search(page, '새틀로직', 'SATL')
+  await expect(page.locator('#stock-company-title')).toHaveText('Satellogic Inc.')
+  await expect(page.locator('.stock-current-price')).toHaveText('$5.50')
   const width = await page.evaluate(() => ({ content: document.documentElement.scrollWidth, viewport: window.innerWidth }))
   expect(width.content).toBeLessThanOrEqual(width.viewport)
 })

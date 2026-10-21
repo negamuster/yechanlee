@@ -36,4 +36,4 @@ npm run check:stocks -- --symbol AAPL
 node scripts/check-data-health.mjs # includes existing global feeds
 ```
 
-Reports appear in the Actions step summary and `production-data-health` JSON artifact (seven-day retention), including per-resource PASS/WARN/FAIL details without raw upstream bodies. Workflow failures remain visible in GitHub Actions; this change does not configure a separate notification channel. The new post-deployment trigger becomes active after merging to main.
+Reports appear in the Actions step summary and `production-data-health` JSON artifact (seven-day retention), including per-resource OK/WARN/FAIL/SKIP details without raw upstream bodies. Workflow failures remain visible in GitHub Actions; this change does not configure a separate notification channel. The new post-deployment trigger becomes active after merging to main.
