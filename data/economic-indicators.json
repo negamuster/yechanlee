@@ -3,8 +3,8 @@
   "series": [
     {
       "id": "cpi",
-      "collectedAt": "2026-10-21T10:02:30.555Z",
-      "attemptedAt": "2026-10-21T10:02:30.555Z",
+      "collectedAt": "2026-10-21T10:16:04.305Z",
+      "attemptedAt": "2026-10-21T10:16:04.305Z",
       "error": null,
       "observations": [
         {
@@ -336,8 +336,8 @@
     },
     {
       "id": "unemployment",
-      "collectedAt": "2026-10-21T10:02:30.555Z",
-      "attemptedAt": "2026-10-21T10:02:30.555Z",
+      "collectedAt": "2026-10-21T10:16:04.305Z",
+      "attemptedAt": "2026-10-21T10:16:04.305Z",
       "error": null,
       "observations": [
         {
@@ -670,8 +670,8 @@
     },
     {
       "id": "effr",
-      "collectedAt": "2026-10-21T10:02:30.555Z",
-      "attemptedAt": "2026-10-21T10:02:30.555Z",
+      "collectedAt": "2026-10-21T10:16:04.305Z",
+      "attemptedAt": "2026-10-21T10:16:04.305Z",
       "error": null,
       "observations": [
         {
