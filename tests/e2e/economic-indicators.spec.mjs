@@ -53,3 +53,14 @@ test('initial outage retries and failed refresh retains previous data with its s
   await expect(ui.locator('.economic-cards')).toContainText('4.00%')
   await expect(ui.locator('.economic-source time')).toHaveAttribute('datetime', '2026-10-21T12:00:00.000Z')
 })
+
+test('expired cached data is hidden from charts after time advances and refresh fails', async ({ page }) => {
+  await page.goto('/indicators')
+  const ui = dashboard(page)
+  await expect(ui.getByRole('img', { name: /CPI 전년동월비/ })).toBeVisible()
+  await page.clock.setFixedTime(new Date('2026-11-22T12:00:00Z'))
+  fail = true
+  await ui.getByRole('button', { name: '새로고침', exact: true }).click()
+  await expect(ui.locator('.economic-empty')).toHaveText('표시할 관측치가 없습니다.')
+  await expect(ui.getByRole('img')).toHaveCount(0)
+})

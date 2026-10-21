@@ -19,7 +19,8 @@ export default function EconomicDashboard() {
   const [revision, setRevision] = useState(0), [selected, setSelected] = useState<EconomicId>('cpi'), [years, setYears] = useState(3)
   const { data, loading, error } = useResource('/api/economic-indicators', validEconomicData, refreshPolicies.indicators, revision)
   const definition = economicDefinitions.find(d => d.id === selected)!, series = data?.series.find(s => s.id === selected)
-  const points = useMemo(() => series && economicStatus(series) !== 'unavailable' ? economicWindow(series, years) : [], [series, years])
+  const selectedStatus = series ? economicStatus(series) : 'unavailable'
+  const points = useMemo(() => series && selectedStatus !== 'unavailable' ? economicWindow(series, years) : [], [series, years, selectedStatus])
   const daily = definition.frequency === 'daily', comparison = series ? economicComparison(series) : null
   return <section className="economic-dashboard" aria-labelledby="economic-title">
     <div className="economic-heading"><div><p className="economic-kicker">U.S. ECONOMY</p><h2 id="economic-title">주요 경제지표</h2></div><button className="economic-refresh" type="button" disabled={loading} onClick={() => setRevision(n => n + 1)}>{loading ? '확인 중…' : '새로고침'}</button></div>
