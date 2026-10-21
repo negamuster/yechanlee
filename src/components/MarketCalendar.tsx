@@ -1,3 +1,4 @@
+import { refreshPolicies } from '../lib/refreshPolicy'
 import { exportCalendar } from '../lib/calendarExport'
 import { matchesCalendarFocus } from '../lib/calendarFilters'
 import type { CalendarFocus } from '../lib/calendarFilters'
@@ -26,7 +27,7 @@ function validCalendar(value: unknown): value is CalendarData {
   return !!data && Array.isArray(data.events) && Array.isArray(data.sources)
 }
 function useCalendarData(from: string, to: string, mode: 'month' | 'earnings' | 'earnings-week', reload: number) {
-  return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, 5 * 60000, reload)
+  return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, refreshPolicies.calendar, reload)
 }
 export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const { items } = useSavedItems()
@@ -61,8 +62,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const earnings = useCalendarData(view === 'week' ? weekFrom : selected, view === 'week' ? weekTo : selected, view === 'week' ? 'earnings-week' : 'earnings', reload)
   useEffect(() => {
     const clock = window.setInterval(() => setNow(Date.now()), 30000)
-    const refresh = window.setInterval(() => setReload(n => n + 1), 15 * 60000)
-    return () => { clearInterval(clock); clearInterval(refresh) }
+    return () => { clearInterval(clock) }
   }, [])
   const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => (category === 'All' || event.category === category) && matchesCalendarFocus(event, focus, watched))
   const selectedEvents = events.filter(event => event.date === selected).sort((a, b) => {

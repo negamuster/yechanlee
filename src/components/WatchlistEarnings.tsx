@@ -1,3 +1,4 @@
+import { refreshPolicies } from '../lib/refreshPolicy'
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,7 +18,7 @@ export default function WatchlistEarnings() {
   const [revision, setRevision] = useState(0)
   const from = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
   const to = new Date(Date.parse(`${from}T12:00:00Z`) + 6 * 86400000).toISOString().slice(0, 10)
-  const { data, loading, error } = useResource(`/api/calendar?from=${from}&to=${to}&mode=earnings-week`, validEarnings, 5 * 60000, revision)
+  const { data, loading, error } = useResource(`/api/calendar?from=${from}&to=${to}&mode=earnings-week`, validEarnings, refreshPolicies.calendar, revision)
   const watched = new Set(items.stocks.map(s => s.ticker))
   const events = (data?.events || []).filter(e => watched.has(e.ticker) && isWebUrl(e.sourceUrl))
   const incomplete = error || data?.sources.some(s => s.state === 'unavailable' || s.state === 'stale')

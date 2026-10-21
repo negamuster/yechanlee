@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { fetchStockSnapshot, freshSnapshot, usableSnapshot, STOCK_TTL } from '../lib/stockSnapshot'
+import { fetchStockSnapshot, freshSnapshot, usableSnapshot } from '../lib/stockSnapshot'
 import type { StockSnapshot } from '../lib/stockSnapshot'
+import { useRefreshSchedule } from './useRefreshSchedule'
+import { refreshAvailable, refreshPolicies } from '../lib/refreshPolicy'
 
 const cache = new Map<string, StockSnapshot>()
 export function useStockSnapshot(symbol: string) {
@@ -17,7 +19,7 @@ export function useStockSnapshot(symbol: string) {
     const usable = usableSnapshot(cached, symbol)
     setSnapshot(usable ? cached : undefined)
     setError('')
-    const shouldFetch = force.current || !freshSnapshot(cached, symbol)
+    const shouldFetch = force.current || refreshAvailable() && !freshSnapshot(cached, symbol)
     force.current = false
     setLoading(shouldFetch)
     const timer = window.setTimeout(() => controller.abort(), 30000)
@@ -32,12 +34,7 @@ export function useStockSnapshot(symbol: string) {
     else window.clearTimeout(timer)
     return () => { active = false; controller.abort(); window.clearTimeout(timer) }
   }, [symbol, revision])
-  useEffect(() => {
-    const check = () => { if (!document.hidden && !freshSnapshot(cache.get(symbol), symbol)) setRevision(n => n + 1) }
-    const timer = window.setInterval(check, STOCK_TTL)
-    document.addEventListener('visibilitychange', check)
-    return () => { window.clearInterval(timer); document.removeEventListener('visibilitychange', check) }
-  }, [symbol])
+  useRefreshSchedule(refreshPolicies.stock, () => cache.get(symbol)?.fetchedAt, () => setRevision(n => n + 1), symbol)
   // Never expose the previous symbol during the render before effect cleanup.
   return { snapshot: snapshot?.symbol === symbol ? snapshot : undefined, loading: loading || snapshot?.symbol !== symbol && !error, error, refresh }
 }

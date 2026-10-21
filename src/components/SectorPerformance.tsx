@@ -1,3 +1,4 @@
+import { refreshPolicies } from '../lib/refreshPolicy'
 import type { NewsSector } from './sectorNews'
 import { useResource } from '../hooks/useResource'
 import { useSessionState } from '../hooks/useSessionState'
@@ -24,7 +25,7 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
   const infoId = useId()
   const [relative, setRelative] = useSessionState('maps.relative', false, v => typeof v === 'boolean')
   const [retry, setRetry] = useState(0)
-  const { data, loading, error } = useResource('/api/sector-performance', validData, 5 * 60000, retry)
+  const { data, loading, error } = useResource('/api/sector-performance', validData, refreshPolicies.maps, retry)
   const rows = [...(data?.sectors || [])].sort((a, b) => (b.returns[period] ?? -Infinity) - (a.returns[period] ?? -Infinity))
   const unavailable = rows.filter(r => r.returns[period] == null).length
   const dataInfo = data && <>

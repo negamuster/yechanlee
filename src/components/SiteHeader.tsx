@@ -2,7 +2,7 @@ import MarketClocks from './MarketClocks'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import './SiteHeader.css'
-import StockSearch from './StockSearch'
+import SiteSearch from './SiteSearch'
 const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로'], ['/saved', '저장한 항목']]
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
@@ -13,7 +13,7 @@ export default function SiteHeader() {
     <div className="site-header-shell">
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
-      <StockSearch onSelect={close} />
+      <SiteSearch onSelect={close} />
       <MarketClocks />
       <div className="site-contact">
         <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>

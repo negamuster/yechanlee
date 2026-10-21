@@ -1,3 +1,4 @@
+import { refreshPolicies } from '../lib/refreshPolicy'
 import { useReadArticles } from '../hooks/useReadArticles'
 import { useState } from 'react'
 import { useResource } from '../hooks/useResource'
@@ -17,7 +18,7 @@ export default function WatchlistNews() {
   const ticker = items.stocks.some(s => s.ticker === choice) ? choice : items.stocks[0].ticker
   const [revision, setRevision] = useState(0)
   const path = `/v2/reference/news?ticker=${ticker}&limit=8&order=desc`
-  const { data, loading, error } = useResource(`/api/stock-data?path=${encodeURIComponent(path)}`, validNews, 5 * 60000, revision)
+  const { data, loading, error } = useResource(`/api/stock-data?path=${encodeURIComponent(path)}`, validNews, refreshPolicies.news, revision)
   const articles = (data?.results || []).filter(a => a && typeof a.title === 'string' && isWebUrl(a.article_url) && typeof a.publisher?.name === 'string' && Number.isFinite(Date.parse(a.published_utc)) && Array.isArray(a.tickers) && a.tickers.includes(ticker))
   return <section aria-labelledby="watch-news"><h2 id="watch-news">관심 종목 뉴스</h2>
     <div className="watch-toolbar"><label>종목 <select value={ticker} onChange={e => setChoice(e.target.value)}>{items.stocks.map(s => <option key={s.ticker} value={s.ticker}>{s.ticker}</option>)}</select></label><button type="button" disabled={loading} onClick={() => setRevision(n => n + 1)}>새로고침</button></div>
