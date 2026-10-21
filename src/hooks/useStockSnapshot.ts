@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { fetchStockSnapshot, freshSnapshot, usableSnapshot } from '../lib/stockSnapshot'
+import { fetchStockSnapshot, freshSnapshot, usableSnapshot, StockSnapshotError } from '../lib/stockSnapshot'
 import type { StockSnapshot } from '../lib/stockSnapshot'
 import { useRefreshSchedule } from './useRefreshSchedule'
 import { refreshAvailable, refreshPolicies } from '../lib/refreshPolicy'
@@ -30,9 +30,9 @@ export function useStockSnapshot(symbol: string) {
       }
       if (cache.size >= 50) cache.delete(cache.keys().next().value!)
       cache.set(symbol, data); setSnapshot(data)
-    }).catch(() => {
+    }).catch(error => {
       if (!active) return
-      setError(usable ? '갱신 실패 · 이전 조회 자료를 표시합니다.' : '종목 데이터를 불러오지 못했습니다. 티커와 데이터 제공 상태를 확인한 뒤 다시 시도해 주세요.')
+      setError(usable ? '갱신 실패 · 이전 조회 자료를 표시합니다.' : error instanceof StockSnapshotError ? error.message : '종목 조회가 중단되었거나 연결에 실패했습니다. 잠시 후 다시 조회해 주세요.')
     }).finally(() => { window.clearTimeout(timer); if (active) setLoading(false) })
     else window.clearTimeout(timer)
     return () => { active = false; controller.abort(); window.clearTimeout(timer) }

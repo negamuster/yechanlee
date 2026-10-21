@@ -15,7 +15,7 @@ const { MemoryRouter, Routes, Route, useNavigate } = await import('react-router-
 const { default: Stock } = await import('../src/pages/06_Stock.tsx')
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
 const originalFetch = globalThis.fetch, originalNow = Date.now
-let root, symbol, sequence = 0, now, calls, failFinancials, emptyFinancials, delayedChart
+let root, symbol, sequence = 0, now, calls, failFinancials, emptyFinancials, delayedChart, failDetails, failPrices, rateLimited
 const container = document.getElementById('root')
 const tick = () => new Promise(resolve => setTimeout(resolve, 0))
 const price = (date, c) => ({ t: Date.parse(date), c })
@@ -37,7 +37,7 @@ const buttons = () => [...container.querySelectorAll('.stock-periods button')]
 const period = value => buttons().find(button => button.textContent === value)
 beforeEach(() => {
   symbol = `TST${++sequence}`; now = Date.parse('2026-10-21T12:00:00Z'); Date.now = () => now
-  calls = []; failFinancials = false; emptyFinancials = false; delayedChart = null
+  calls = []; failFinancials = false; emptyFinancials = false; delayedChart = null; failDetails = false; failPrices = false; rateLimited = false
   localStorage.clear(); sessionStorage.clear()
   globalThis.fetch = async raw => {
     calls.push(raw); const url = new URL(raw, 'https://anthracite.test'), ticker = url.searchParams.get('ticker')
@@ -46,10 +46,10 @@ beforeEach(() => {
       if (delayedChart && ticker === symbol && selected === '5Y') return delayedChart()
       return Response.json(chart(ticker, selected))
     }
-    if (url.pathname === '/api/stock-financials') return failFinancials ? Response.json({}, { status: 503 }) : Response.json({ symbol: ticker, results: emptyFinancials ? [] : [annual()], source: 'SEC EDGAR', fetchedAt: now, stale: false })
+    if (url.pathname === '/api/stock-financials') return failFinancials ? Response.json({}, { status: 503 }) : Response.json({ symbol: ticker, company: 'SEC Test Company', status: 'ok', results: emptyFinancials ? [] : [annual()], source: 'SEC EDGAR', fetchedAt: now, stale: false })
     const path = url.searchParams.get('path') || ''
-    if (path.startsWith('/v3/reference/tickers/')) return Response.json({ results: { ticker: path.split('/').at(-1), name: 'Test Company', currency_name: 'usd' } })
-    if (path.includes('/range/')) return Response.json({ results: [bar('2026-10-19T04:00Z', 100), bar('2026-10-20T04:00Z', 102)] })
+    if (path.startsWith('/v3/reference/tickers/')) return failDetails ? Response.json({}, { status: rateLimited ? 429 : 503 }) : Response.json({ results: { ticker: path.split('/').at(-1), name: 'Test Company', currency_name: 'usd' } })
+    if (path.includes('/range/')) return failPrices ? Response.json({}, { status: 503 }) : Response.json({ results: [bar('2026-10-19T04:00Z', 100), bar('2026-10-20T04:00Z', 102)] })
     return Response.json({ results: [] })
   }
 })
@@ -108,4 +108,32 @@ test('no standard annual filings is a separate empty state that does not mark th
   assert.match(container.querySelector('#stock-financials').textContent, /확인 가능한 표준 연간 재무 자료가 없습니다/)
   assert.equal(container.querySelector('.stock-state').textContent, '조회 완료')
   assert.ok(container.querySelector('.stock-price-chart'))
+})
+
+test('a failed company reference keeps confirmed prices, SEC financials and charts visible and can recover on refresh', async () => {
+  failDetails = true; await render()
+  assert.equal(container.querySelector('#stock-company-title').textContent, 'SEC Test Company')
+  assert.equal(container.querySelector('.stock-current-price').textContent, '$102.00')
+  assert.ok(container.querySelector('.stock-price-chart'))
+  assert.equal(buttons().length, 8)
+  assert.match(container.querySelector('#stock-financials').textContent, /연간 순이익.*-\$10.00/)
+  assert.match(container.querySelector('.stock-hero').textContent, /기업명은 SEC EDGAR로 확인/)
+  assert.match(container.querySelector('.stock-hero').textContent, /상세 기업 정보/)
+  assert.equal(container.querySelector('.stock-state').textContent, '일부 자료 미확인')
+  assert.equal(container.querySelector('.stock-empty'), null)
+  failDetails = false
+  await click([...container.querySelectorAll('.stock-hero .stock-actions button')].find(button => button.textContent === '새로고침'))
+  assert.equal(container.querySelector('#stock-company-title').textContent, 'Test Company')
+  assert.equal(container.querySelector('.stock-state').textContent, '조회 완료')
+  assert.doesNotMatch(container.querySelector('.stock-hero').textContent, /기업명은 SEC EDGAR로 확인/)
+})
+
+test('when no fallback is confirmed, rate limits and missing prices explain the failed stage', async () => {
+  failDetails = true; rateLimited = true; failFinancials = true; await render()
+  assert.match(container.querySelector('.stock-empty').textContent, /일시적으로 제한/)
+  assert.equal(calls.filter(raw => new URL(raw, 'https://anthracite.test').searchParams.get('path')?.startsWith('/v3/')).length, 1)
+  failDetails = false; failFinancials = false; failPrices = true
+  await click([...container.querySelectorAll('.stock-empty button')].find(button => button.textContent === '다시 조회'))
+  assert.match(container.querySelector('.stock-empty').textContent, /기업 정보는 확인했지만 일별 시세/)
+  assert.equal(container.querySelector('.stock-current-price'), null)
 })

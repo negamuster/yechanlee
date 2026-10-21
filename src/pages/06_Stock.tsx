@@ -149,6 +149,7 @@ export default function Stock() {
             ]} />
             <div className="stock-refresh-status"><span className={`stock-state${error || partial ? ' is-partial' : ''}`}>{error ? '이전 조회 자료' : partial ? '일부 자료 미확인' : '조회 완료'}</span><span>조회 {new Date(snapshot.fetchedAt).toLocaleString('ko-KR', {timeZone:'Asia/Seoul',hour12:false})} KST</span></div>
             {error && <p className="stock-alert" role="status">{error}</p>}
+            {snapshot.companySource === 'SEC EDGAR' && <p className="stock-alert" role="status">기업명은 SEC EDGAR로 확인했습니다. 상세 기업 정보를 불러오지 못해 시가총액·사업 설명 등은 미확인으로 표시합니다. 가격과 연간 재무 자료는 확인된 응답 기준으로 표시합니다.</p>}
             {!hasHistory && <p className="stock-alert" role="status">가격 이력을 받지 못해 확인된 최근 종가를 표시합니다. 전일 대비와 조회 기간 고가·저가는 미확인입니다.</p>}
             <details className="stock-data-details"><summary>가격·자료 기준</summary><p>Polygon / Massive · 주식분할 조정 일별 집계 · {quote.previousDate ?? '미확인'} 종가와 비교 · 페이지가 열려 있는 동안 5분 간격 확인</p>{partial && <p>이번 조회에서 받지 못한 자료: {snapshot.issues.join(' · ')}</p>}<p>시가총액은 기업정보 응답 기준이며 위 종가와 관측 시점이 다를 수 있습니다.</p></details>
           </section>
