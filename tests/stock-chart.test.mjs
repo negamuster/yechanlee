@@ -16,7 +16,8 @@ test('browser and server expose exactly the requested eight periods and use real
   assert.equal(chartQuery('YTD', at).get('period1'), String(Date.parse('2025-12-20T00:00:00Z') / 1000))
   assert.throws(() => chartQuery('3M', at))
 })
-test('1D keeps genuine intraday timestamps and compares the last price with the confirmed prior close', () => {
+test('1D keeps genuine intraday timestamps and compares the last price with the confirmed prior close', t => {
+  t.mock.timers.enable({ apis: ['Date'], now: at })
   const points = [row('2026-10-19T20:00Z', 100), row('2026-10-20T13:30Z', 101), row('2026-10-20T13:35Z', 102)]
   const parsed = parseStockChart(response(points, { previousClose: 100, dataGranularity: '5m' }), 'AAPL', '1D', at)
   assert.equal(parsed.points.length, 2); assert.ok(Math.abs(parsed.changePercent - 2) < 1e-8)

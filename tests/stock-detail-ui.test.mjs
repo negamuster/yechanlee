@@ -20,7 +20,7 @@ const container = document.getElementById('root')
 const tick = () => new Promise(resolve => setTimeout(resolve, 0))
 const price = (date, c) => ({ t: Date.parse(date), c })
 const bar = (date, c) => ({ ...price(date, c), o: c, h: c + 1, l: c - 1 })
-const annual = () => ({ start_date: '2025-01-01', end_date: '2025-12-31', filing_date: '2026-02-01', accounting_standard: 'us-gaap', source_filing_url: 'https://www.sec.gov/Archives/edgar/data/1/000000000126000001/0000000001-26-000001-index.html', financials: {
+const annual = () => ({ fiscal_period: 'FY', start_date: '2025-01-01', end_date: '2025-12-31', filing_date: '2026-02-01', accounting_standard: 'us-gaap', source_filing_url: 'https://www.sec.gov/Archives/edgar/data/1/000000000126000001/0000000001-26-000001-index.html', financials: {
   income_statement: { revenues: { value: 100, unit: 'USD' }, net_income_loss: { value: -10, unit: 'USD' }, diluted_earnings_per_share: { value: 0, unit: 'USD/shares' } }, balance_sheet: { equity: { value: 50, unit: 'USD' }, liabilities: { value: 20, unit: 'USD' } },
 } })
 function chart(ticker, period) {
@@ -50,10 +50,10 @@ beforeEach(() => {
     if (url.pathname === '/api/stock-financials') return failFinancials ? Response.json({}, { status: 503 }) : Response.json({ symbol: ticker, company: 'SEC Test Company', status: 'ok', results: emptyFinancials ? [] : [annual()], source: 'SEC EDGAR', fetchedAt: now, stale: false })
     const path = url.searchParams.get('path') || ''
     if (path.startsWith('/v3/reference/tickers/')) return failDetails ? Response.json({}, { status: rateLimited ? 429 : 503 }) : Response.json({ results: { ticker: path.split('/').at(-1), name: 'Test Company', currency_name: 'usd', market_cap: 1000000, primary_exchange: 'XNAS', list_date: '1999-01-22' } })
-    if (path.includes('/range/')) return failPrices ? Response.json({}, { status: 503 }) : Response.json({ results: [bar('2026-10-19T04:00Z', 100), bar('2026-10-20T04:00Z', 102)] })
+    if (path.includes('/range/')) return failPrices ? Response.json({}, { status: 503 }) : Response.json({ ticker: path.split('/')[4], results: [bar('2026-10-19T04:00Z', 100), bar('2026-10-20T04:00Z', 102)] })
     if (path.includes('/news?')) return failNews ? Response.json({}, { status: 503 }) : Response.json({ results: extraData ? [{ id: 'story', title: 'Confirmed company news', article_url: 'https://example.com/story', published_utc: '2026-10-20T12:00Z', publisher: { name: 'Test Publisher' } }] : [] })
     if (path.includes('/related-companies/')) return failRelated ? Response.json({}, { status: 503 }) : Response.json({ results: extraData ? [{ ticker: 'MSFT' }] : [] })
-    return Response.json({ results: [] })
+    return Response.json({ ticker: path.split('/')[4] || ticker, results: [] })
   }
 })
 afterEach(async () => { await act(async () => { root?.unmount(); await tick() }); globalThis.fetch = originalFetch; Date.now = originalNow })

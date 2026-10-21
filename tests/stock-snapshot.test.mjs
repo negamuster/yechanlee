@@ -34,10 +34,10 @@ test('cache expires, rejects symbol mismatches and retries incomplete snapshots'
 })
 const mock = (failure = '') => async url => {
   const endpoint = new URL(url, 'https://example.com')
-  if (endpoint.pathname === '/api/stock-financials') return failure === '/financials' ? Response.json({}, { status: 503 }) : Response.json({ symbol: 'AAPL', results: [], source: 'SEC EDGAR', fetchedAt: now, stale: false })
+  if (endpoint.pathname === '/api/stock-financials') return failure === '/financials' ? Response.json({}, { status: 503 }) : Response.json({ symbol: 'AAPL', status: 'ok', results: [], source: 'SEC EDGAR', fetchedAt: now, stale: false })
   const path = endpoint.searchParams.get('path') || ''
   if (path.includes(failure) && failure) return Response.json({ error: 'unavailable' }, { status: 503 })
-  return Response.json({ results: path.includes('/range/') ? bars : path.includes('/v3/') ? { name: 'Apple', ticker: 'AAPL' } : [] })
+  return Response.json({ ticker: 'AAPL', results: path.includes('/range/') ? bars : path.includes('/v3/') ? { name: 'Apple', ticker: 'AAPL' } : [] })
 }
 test('optional data failure is visible while failed prices never become zero or a successful cache entry', async () => {
   const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, mock('/financials'), now)
@@ -50,7 +50,7 @@ test('optional data failure is visible while failed prices never become zero or 
 
 test('previous-day response supplements a lagging range only for the requested ticker and completed date', async () => {
   const fetcher = ticker => async url => new URL(url, 'https://example.com').searchParams.get('path')?.includes('/prev?')
-    ? Response.json({ results: [{ ...bar('2026-10-06', 110), T: ticker }, { ...bar('2026-10-07', 999), T: ticker }] })
+    ? Response.json({ ticker: 'AAPL', results: [{ ...bar('2026-10-06', 110), T: ticker }, { ...bar('2026-10-07', 999), T: ticker }] })
     : mock()(url)
   const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher('AAPL'), now)
   assert.equal(quoteFromBars(snapshot.bars).changePct, 10)
@@ -82,7 +82,7 @@ test('failed price history preserves a confirmed same-symbol close without inven
   const fetcher = async (url, options) => {
     const path = new URL(url, 'https://example.com').searchParams.get('path')
     if (path?.includes('/range/')) { historyCalls++; return new Response(null, {status:503}) }
-    if (path?.includes('/prev?')) return Response.json({results:[{...bars[1],T:'AAPL'}]})
+    if (path?.includes('/prev?')) return Response.json({ticker:'AAPL',results:[{...bars[1],T:'AAPL'}]})
     return mock()(url, options)
   }
   const snapshot = await fetchStockSnapshot('AAPL', new AbortController().signal, fetcher, now)
