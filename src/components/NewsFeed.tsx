@@ -5,7 +5,7 @@ import type { NewsSector } from './sectorNews'
 import './SectorNews.css'
 import { dataTime } from '../utils/dataTime'
 import { useSessionState } from '../hooks/useSessionState'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
 import NewsArticle from './NewsArticle'
@@ -13,42 +13,17 @@ import MobileNewsFilters from './MobileNewsFilters'
 import ResourceState from './ResourceState'
 import { countNewsFilters, matchingNews } from '../lib/newsFilters'
 import type { NewsFilters } from '../lib/newsFilters'
+import { applyNewsSnapshot, isNewsFeed, newsIdentity, newsUpdateSummary, NEWS_REFRESH_INTERVAL, NEWS_SNAPSHOT_KEY, readNewsSnapshot, receiveNewsSnapshot } from '../lib/newsRefresh'
+import type { NewsSnapshot } from '../lib/newsRefresh'
+import { captureNewsAnchor, restoreNewsAnchor } from '../lib/newsReadingAnchor'
+import type { NewsReadingAnchor } from '../lib/newsReadingAnchor'
 
 import { newsBatches, filterNews, TOPICS } from './newsSelection'
 import type { NewsItem, Region, TopicFilter } from './newsSelection'
 
-interface Feed {
-  items: NewsItem[]
-  fetchedAt: number
-  sources: { id: string; publisher: string; region: string; status: string; error?: string; checkedAt?: number | null; lastSuccessAt?: number; nextRetryAt?: number; eligibleItems?: number; latestPublishedAt?: string | null }[]
-}
-const CACHE_KEY = 'anthracite_curated_news_v6'
-const TTL = 10 * 60 * 1000
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
 ]
-
-function isFeed(value: unknown): value is Feed {
-  if (!value || typeof value !== 'object') return false
-  const data = value as Feed
-  return Number.isFinite(data.fetchedAt) && data.fetchedAt <= Date.now() + 300000
-    && Array.isArray(data.sources) && data.sources.every(source => source && typeof source.publisher === 'string' && typeof source.status === 'string')
-    && Array.isArray(data.items) && data.items.every(item => item && typeof item.id === 'string'
-      && typeof item.title === 'string' && typeof item.publisher === 'string'
-      && typeof item.article_url === 'string' && /^https?:\/\//.test(item.article_url)
-      && (item.image_url === undefined || (typeof item.image_url === 'string' && item.image_url.startsWith('https://')))
-      && (item.image_credit === undefined || typeof item.image_credit === 'string')
-      && Array.isArray(item.topics) && item.topics.length > 0
-      && item.topics.every(topic => TOPICS.some(known => known.value === topic))
-      && ['kr', 'global'].includes(item.region) && Number.isFinite(Date.parse(item.published_utc)))
-}
-
-function readCache(maxAge = TTL): Feed | null {
-  try {
-    const data: unknown = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null')
-    return isFeed(data) && data.items.length > 0 && Date.now() - data.fetchedAt < maxAge ? data : null
-  } catch { return null }
-}
 
 function relativeTime(timestamp: number) {
   const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000))
@@ -86,7 +61,9 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   const { isRead, mark } = useReadArticles()
   const [hideRead, setHideRead] = useSessionState('news.hideRead', false, v => typeof v === 'boolean')
   const [sectorFilter, setSectorFilter] = useSessionState<NewsSector | null>('news.sector', null, isNewsSector)
-  const [feed, setFeed] = useState<Feed | null>(() => readCache(6 * 60 * 60 * 1000))
+  const [snapshot, setSnapshot] = useState<NewsSnapshot>(() => readNewsSnapshot(typeof sessionStorage === 'undefined' ? null : sessionStorage))
+  const feed = snapshot.current
+  const latest = snapshot.latest
   const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
   const [topic, setTopic] = useSessionState<TopicFilter>('news.topic', 'all', v => v === 'all' || TOPICS.some(t => t.value === v))
   const [query, setQuery] = useSessionState('news.query', '', v => typeof v === 'string' && v.length <= 120)
@@ -99,8 +76,36 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   const [mobileDraft, setMobileDraft] = useState<NewsFilters | null>(null)
   const filtersId = useId()
   const searchId = useId()
+  const newsListId = useId()
   const searchInput = useRef<HTMLInputElement>(null)
   const [, setClock] = useState(0)
+  const root = useRef<HTMLDivElement>(null)
+  const anchor = useRef<NewsReadingAnchor | null>(null)
+  const showLatest = useRef(false)
+  const checkedAt = useRef(latest?.fetchedAt ?? 0)
+
+  function preservePosition() { anchor.current ??= captureNewsAnchor(root.current) }
+  useLayoutEffect(() => {
+    if (showLatest.current) {
+      showLatest.current = false
+      anchor.current = null
+      const article = root.current?.querySelector<HTMLElement>('.news-article')
+      const list = document.getElementById(newsListId)
+      const target = article ?? list
+      const focus = article?.querySelector<HTMLElement>('[data-focus-key]') ?? list
+      target?.scrollIntoView({ block: 'start', behavior: 'instant' })
+      focus?.focus({ preventScroll: true })
+    } else if (anchor.current) {
+      const position = anchor.current
+      anchor.current = null
+      restoreNewsAnchor(root.current, position)
+    }
+  })
+  useEffect(() => {
+    if (snapshot.current) {
+      try { sessionStorage.setItem(NEWS_SNAPSHOT_KEY, JSON.stringify(snapshot)) } catch { /* Reading also works without storage. */ }
+    }
+  }, [snapshot])
 
   useEffect(() => {
     const viewport = window.matchMedia('(max-width: 700px)')
@@ -110,32 +115,34 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   }, [])
 
   useEffect(() => {
-    const refresh = window.setInterval(() => { setRevision(value => value + 1) }, TTL)
-    const clock = window.setInterval(() => setClock(value => value + 1), 60000)
+    const refresh = window.setInterval(() => { setRevision(value => value + 1) }, NEWS_REFRESH_INTERVAL)
+    const clock = window.setInterval(() => { preservePosition(); setClock(value => value + 1) }, 60000)
     return () => { window.clearInterval(refresh); window.clearInterval(clock) }
   }, [])
 
   useEffect(() => {
-    if (revision === 0 && readCache()) return
+    if (revision === 0 && Date.now() - checkedAt.current < NEWS_REFRESH_INTERVAL) return
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), 18000)
     let active = true
     async function refresh() {
+      preservePosition()
       setLoading(true)
       setFailed(false)
       try {
         const response = await fetch('/api/news', { signal: controller.signal })
         if (!response.ok) throw new Error('News unavailable')
         const data: unknown = await response.json()
-        if (!isFeed(data)) throw new Error('Invalid news response')
+        if (!isNewsFeed(data)) throw new Error('Invalid news response')
         if (!active) return
-        setFeed(data)
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch { /* Storage is optional. */ }
+        preservePosition()
+        checkedAt.current = data.fetchedAt
+        setSnapshot(previous => receiveNewsSnapshot(previous, data))
       } catch {
-        if (active) setFailed(true)
+        if (active) { preservePosition(); setFailed(true) }
       } finally {
         window.clearTimeout(timeout)
-        if (active) setLoading(false)
+        if (active) { preservePosition(); setLoading(false) }
       }
     }
     void refresh()
@@ -143,17 +150,19 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   }, [revision])
 
   const currentFilters: NewsFilters = { region, topic, query, sector: sectorFilter, hideRead, view }
-  const matching = matchingNews(feed?.items || [], currentFilters, isRead)
-  const previewItems = filterNews(feed?.items || [], 'all', 'all').filter(item => matchesSector(item.title, previewSector?.symbol ?? null) && (!hideRead || !isRead(item.article_url))).sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc)).slice(0, 3)
+  const matching = matchingNews(feed?.items || [], currentFilters, isRead, snapshot.selectedAt)
+  const updates = newsUpdateSummary(snapshot, currentFilters, isRead)
+  const timeFeed = updates.available ? feed : latest
+  const previewItems = filterNews(feed?.items || [], 'all', 'all', '', snapshot.selectedAt).filter(item => matchesSector(item.title, previewSector?.symbol ?? null) && (!hideRead || !isRead(item.article_url))).sort((a, b) => Date.parse(b.published_utc) - Date.parse(a.published_utc)).slice(0, 3)
   function showRelated() {
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(previewSector); setVisibleBatches(1)
     requestAnimationFrame(() => { const heading = document.getElementById('home-news-title'); heading?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); heading?.focus({ preventScroll: true }) })
   }
-  const batches = newsBatches(matching, region)
+  const batches = newsBatches(matching, region, snapshot.selectedAt)
   const news = batches.slice(0, visibleBatches).flat()
-  const relevantSources = feed?.sources.filter(source => region === 'all' || source.region === region) || []
+  const relevantSources = latest?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
-  const previewPartial = feed?.sources.some(source => ['unavailable', 'stale'].includes(source.status)) ?? false
+  const previewPartial = latest?.sources.some(source => ['unavailable', 'stale'].includes(source.status)) ?? false
   const publishers = [...new Set(news.map(item => item.publisher))]
   const filterCount = countNewsFilters(currentFilters)
   function applyMobileFilters(filters: NewsFilters) {
@@ -164,9 +173,14 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(null); setHideRead(false); setVisibleBatches(1)
     searchInput.current?.focus({ preventScroll: true })
   }
-  function retryNews() { setRevision(value => value + 1); setVisibleBatches(1) }
+  function retryNews() { setRevision(value => value + 1) }
+  function applyUpdates() {
+    showLatest.current = true
+    setSnapshot(previous => applyNewsSnapshot(previous))
+    setVisibleBatches(1)
+  }
   function article(item: NewsItem) {
-    return <NewsArticle key={item.id} item={item} mobile={mobile} read={isRead(item.article_url)}
+    return <NewsArticle key={newsIdentity(item)} item={item} mobile={mobile} read={isRead(item.article_url)}
       timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)}
       image={view === 'cards' ? <NewsImage key={item.image_url || item.id} item={item} /> : undefined} />
   }
@@ -181,7 +195,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
       {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
-    <div className={`news-feed${mobile ? ' mobile-news-feed' : ''}`}>
+    <div ref={root} className={`news-feed${mobile ? ' mobile-news-feed' : ''}`}>
       <div className="news-controls">
         <div className="news-toolbar">
           <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
@@ -238,8 +252,13 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
       </div>
       {mobile && mobileDraft && <MobileNewsFilters id={filtersId} value={mobileDraft} items={feed?.items || []}
         available={Boolean(feed)} isRead={isRead} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
-      {feed && <p className="news-updated">최근 확인: <time dateTime={new Date(feed.fetchedAt).toISOString()}
-        title={new Date(feed.fetchedAt).toLocaleString('ko-KR')}>{relativeTime(feed.fetchedAt)}</time></p>}
+      {timeFeed && <p className="news-updated">{updates.available ? '목록 기준:' : '최근 확인:'} <time dateTime={new Date(timeFeed.fetchedAt).toISOString()}
+        title={`최근 조회 ${dataTime(latest?.fetchedAt)} · 표시 목록 수집 ${dataTime(feed?.fetchedAt)}`}>{relativeTime(timeFeed.fetchedAt)}</time></p>}
+      {updates.available && <div className="news-update-notice" role="status" aria-live="polite">
+        <button type="button" className="news-apply-updates" aria-controls={newsListId} onClick={applyUpdates}>
+          {updates.count > 0 ? `새 기사 ${updates.count}건 보기` : '뉴스 목록 업데이트 보기'}<span aria-hidden="true">↑</span>
+        </button>
+      </div>}
       <ResourceState label="뉴스" loading={loading} error={failed} hasData={!!feed} stale={partial} updatedAt={failed ? feed?.fetchedAt : undefined}
         failureMessage={failed ? feed ? '갱신 실패 · 이전 수집 기사 표시 중' : '뉴스를 불러오지 못했습니다.' : '일부 매체를 확인하지 못했습니다.'}
         onRetry={retryNews} layout="news" />
@@ -254,7 +273,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
         </li>)}</ul>
         <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
       </details>}
-      <div aria-busy={loading}>
+      <div id={newsListId} className="news-results" tabIndex={-1} aria-busy={loading && !feed}>
         {loading && !feed ? null : news.length ? <>
           <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 묶음별 최신순 · 묶음당 매체별 최대 3개</p>
           <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
