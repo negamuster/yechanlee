@@ -1,6 +1,7 @@
 import { validMarketData } from '../lib/marketQuotes'
 import SectorPerformance from './SectorPerformance'
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { useResource } from '../hooks/useResource'
 import { refreshPolicies } from '../lib/refreshPolicy'
 import ResourceState from './ResourceState'
@@ -20,11 +21,12 @@ function Snapshot({ symbols }: { symbols: readonly string[] }) {
       <small>{q?.asOf ? new Date(q.asOf).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) + ' KST' : '기준 시각 미제공'}</small></div>
   })}</div></>
 }
-export default function MarketGuide({ id }: { id: GuideId }) {
+export default function MarketGuide({ id, children }: { id: GuideId; children?: ReactNode }) {
   const guide = marketGuides[id]
   return <main className="market-guide">
     <p className="guide-eyebrow">Market Explorer</p>
     <h1>{guide.title}</h1><p className="guide-description">{guide.description}</p>
+    {children}
     {!!guide.symbols.length && <section aria-label="주요 시세"><Snapshot key={id} symbols={guide.symbols} /><p className="guide-source">Yahoo Finance · 조회 시점에 수집한 지연 시세 포함 · 항목별 기준 시각 표시</p></section>}
     {id === 'equity' && <SectorPerformance />}
     <section className="guide-resources" aria-labelledby="guide-resources-title"><h2 id="guide-resources-title">데이터와 차트 확인</h2>

@@ -1,3 +1,5 @@
+// @ts-expect-error Shared economic dashboard server handler.
+import economicAPI from './api/economic-indicators.js'
 // @ts-expect-error Shared calendar server handler.
 import calendarAPI from './api/calendar.js'
 // @ts-expect-error Shared JavaScript server handler.
@@ -34,6 +36,7 @@ export default defineConfig({
       const filingHandler = create13FHandler()
       const handlers: Record<string, (req: Request) => Promise<Response>> = {
         '/api/calendar': calendarAPI.fetch,
+        '/api/economic-indicators': economicAPI.fetch,
         '/api/form13f': filingHandler,
         '/api/stock-chart': createStockChartHandler(),
         '/api/stock-financials': createFinancialsHandler(),

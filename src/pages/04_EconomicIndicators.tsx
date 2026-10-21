@@ -1,2 +1,3 @@
 import MarketGuide from '../components/MarketGuide'
-export default function Page() { return <MarketGuide id="indicators" /> }
+import EconomicDashboard from '../components/EconomicDashboard'
+export default function Page() { return <MarketGuide id="indicators"><EconomicDashboard /></MarketGuide> }

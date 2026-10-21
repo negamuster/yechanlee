@@ -122,7 +122,7 @@ export const marketGuides = {
   },
   "indicators": {
     "title": "경제지표",
-    "description": "물가·고용·성장 지표가 이전보다 어떻게 달라졌는지 확인합니다. 발표치의 대상 기간과 수정 여부도 함께 살펴보세요.",
+    "description": "미국 물가·고용·금리의 최신 관측치와 흐름을 살펴봅니다. 지표별 대상 기간, 조정 기준과 수집 시각을 함께 확인하세요.",
     "symbols": [],
     "links": [
       [
