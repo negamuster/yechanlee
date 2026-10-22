@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import './helpers/register-tsx.mjs'
-import { holdingRows, holdingChange, nextHoldingSort, DEFAULT_HOLDING_SORT } from '../src/lib/form13fPresentation.ts'
+import { holdingRows, holdingChange, nextHoldingSort, DEFAULT_HOLDING_SORT, compareFilings, csvDocument, csvIdentifier, filteredHoldings, formatHoldingPercent, isFiling } from '../src/lib/form13fPresentation.ts'
+import { filingFixture } from './fixtures/form13f.mjs'
 
 const holding = (name, value, shares, prevShares, cusip = name, title = 'COM') => ({ name, value, shares, prevShares, cusip, title })
 
@@ -39,4 +40,40 @@ test('new and unavailable holdings never become a numeric zero or an infinite pe
   assert.deepEqual(holdingChange(data[1]), { kind: 'new', percent: null })
   assert.deepEqual(holdingChange(data[2]), { kind: 'percent', percent: 0 })
   assert.deepEqual(holdingChange(holding('Sold', 0, 0, 5)), { kind: 'percent', percent: -100 })
+})
+
+test('comparison uses same-quarter complete CUSIP coverage, keeping share classes and independent weights', () => {
+  const left = filingFixture({ holdings: [holding('Alphabet', 300, 30, 20, '02079K305', 'CL A'), holding('Alphabet', 100, 10, 10, '02079K107', 'CL C')] })
+  const right = filingFixture({ holdings: [holding('ALPHABET INC', 100, 10, 10, '02079K305', 'COMMON CLASS A'), holding('Other', 900, 90, 90, '000000001')] })
+  const rows = compareFilings(left, right), common = rows.find(h => h.cusip === '02079K305')
+  assert.equal(rows.length, 3); assert.equal(common.leftPct, 75); assert.equal(common.rightPct, 10); assert.equal(common.difference, 65)
+  assert.equal(rows.find(h => h.cusip === '02079K107').right, null)
+  assert.throws(() => compareFilings(left, { ...right, period: '2026-03-31' }), /incomparable/)
+  assert.throws(() => compareFilings(left, { ...right, holdingsComplete: false }), /incomparable/)
+  assert.throws(() => compareFilings(left, { ...right, holdingCount: 30 }), /incomparable/)
+  assert.equal(isFiling({ ...left, totalValue: 1 }), false)
+})
+
+test('quarter filters distinguish exits, decreases, new and unavailable data', () => {
+  const data = filingFixture({ closedHoldings: [holding('Exited', 0, 0, 10, '999999999')] })
+  assert.equal(filteredHoldings(data, 'current').length, 3)
+  assert.deepEqual(filteredHoldings(data, 'closed').map(h => h.name), ['Exited'])
+  assert.deepEqual(filteredHoldings(data, 'decreased').map(h => h.name), ['BETA INC'])
+  assert.deepEqual(filteredHoldings(data, 'new').map(h => h.name), ['NEW INC'])
+  assert.equal(filteredHoldings(data, 'all').length, 4)
+  assert.equal(isFiling({ ...data, previousAvailable: false }), false)
+})
+
+test('CSV preserves UTF-8 names, raw numbers, identifiers and safely escapes spreadsheet formulas', () => {
+  const csv = csvDocument([['name', 'CUSIP', 'amount'], ['한글, "Issuer"', csvIdentifier('000000001'), 1234567.25], [' =HYPERLINK("bad")', '@danger', -5], ['\tSUM(1)', '+evil', 0]])
+  assert.ok(csv.startsWith('\uFEFF')); assert.ok(csv.includes('\r\n'))
+  assert.ok(csv.includes('"한글, ""Issuer"""')); assert.ok(csv.includes('"\'000000001"')); assert.ok(csv.includes('"1234567.25"'))
+  assert.ok(csv.includes('"\' =HYPERLINK')); assert.ok(csv.includes('"\'@danger"')); assert.ok(csv.includes('"\'\tSUM')); assert.ok(csv.includes('"-5"'))
+})
+test('small positive holdings never display as a zero allocation', () => {
+  assert.equal(formatHoldingPercent(0.0001), '<0.01%')
+  assert.equal(formatHoldingPercent(0), '0%')
+  assert.equal(formatHoldingPercent(33.333333), '33.33%')
+  const rows = holdingRows([holding('Larger', 2, 1, 1), holding('Smaller', 1, 1, 1)], 1e6, '', { key: 'pct', direction: 'asc' })
+  assert.deepEqual(rows.map(h => h.name), ['Smaller', 'Larger'])
 })

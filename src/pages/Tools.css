@@ -65,8 +65,22 @@
 .portfolio-swatch { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 2px; }
 .portfolio-legend li > span:nth-child(2) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .portfolio-legend strong { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ui-text); }
-.holdings-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
-.holdings-search { flex: 1; min-width: 0; }
+.holdings-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.holdings-filter select { max-width: 100%; min-height: 44px; padding: 8px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-text); font: inherit; font-size: 13px; }
+.holdings-pagination { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.holdings-pagination > div, .portfolio-mode { display: flex; gap: 8px; }
+.portfolio-mode .tool-button[aria-pressed="true"] { color: #fff; background: var(--ui-selected); }
+.financial-tool-page .portfolio-mode .tool-button[aria-pressed="true"]:hover { background: var(--ui-selected); }
+.comparison-controls select { width: 100%; min-width: 0; min-height: 44px; padding: 9px 12px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-text); font: inherit; }
+.comparison-controls { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+.comparison-summary { display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; }
+.comparison-summary dt { color: var(--ui-muted); font-size: 12px; }
+.comparison-summary dd { margin: 6px 0 0; font-size: 20px; font-weight: 600; }
+.comparison-source { margin: 16px 0; padding-bottom: 12px; border-bottom: 1px solid var(--ui-border); overflow-wrap: anywhere; }
+.comparison-source > strong { display: block; margin-bottom: 8px; }
+.comparison-table td small { display: block; color: var(--ui-muted); font-size: 11px; margin-top: 4px; }
+@media (max-width: 700px) { .comparison-controls { grid-template-columns: minmax(0, 1fr); } .holdings-search { flex-basis: 100%; } }
+.holdings-search { flex: 1 1 200px; min-width: 0; }
 .holdings-scroll { max-height: 560px; margin-top: 16px; border: 1px solid var(--ui-border); }
 .holdings-table { min-width: 760px; table-layout: fixed; }
 .holdings-table .holding-identity { position: sticky; left: 0; width: 240px; z-index: 1; box-shadow: 1px 0 0 var(--ui-border); }
