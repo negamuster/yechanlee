@@ -2,6 +2,7 @@ import test, { after, afterEach, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { JSDOM } from 'jsdom'
 import './helpers/register-tsx.mjs'
+import { filingFixture as filing } from './fixtures/form13f.mjs'
 
 // DOM interactions validate data and controls; sticky layout still needs browser QA.
 const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: 'https://anthracite.test/', pretendToBeVisual: true })
@@ -27,12 +28,6 @@ async function edit(input, value) {
     await tick()
   })
 }
-const filing = overrides => ({ verification: 'matched', period: '2026-06-30', filedAt: '2026-08-14', checkedAt: Date.parse('2026-10-21T00:00:00Z'), totalValue: 1000, holdingCount: 40,
-  holdings: [
-    { name: 'ALPHA INC', cusip: '001', title: 'COM', shares: 30, prevShares: 20, value: 300 },
-    { name: 'BETA INC', cusip: '002', title: 'CL A', shares: 100, prevShares: 200, value: 200 },
-    { name: 'NEW INC', cusip: '003', title: 'COM', shares: 50, prevShares: 0, value: 100 },
-  ], ...overrides })
 const rowNames = () => [...container.querySelectorAll('.holdings-table tbody .holding-name strong')].map(element => element.textContent)
 beforeEach(() => { for (const cik of ['0001067983', '0002012383']) invalidateResource(`/api/form13f?cik=${cik}`); root = createRoot(container); globalThis.fetch = async () => Response.json(filing()) })
 afterEach(async () => { await act(async () => root.unmount()); globalThis.fetch = originalFetch })
@@ -49,7 +44,7 @@ test('13F header sorting, multi-field search and reset preserve the chart and or
   assert.deepEqual(rowNames(), ['BETA INC'])
   const row = container.querySelector('.holdings-table tbody tr')
   assert.equal(row.querySelector('.holding-rank').textContent, '2')
-  assert.equal(row.querySelector('td').textContent, '20%')
+  assert.equal(row.querySelector('td').textContent, '33.33%')
   assert.equal(container.querySelector('.portfolio-donut').textContent, chart)
   await edit(container.querySelector('input[type=search]'), 'no such holding')
   assert.equal(rowNames().length, 0)
@@ -78,7 +73,7 @@ test('late responses cannot replace another institution and switching institutio
   globalThis.fetch = () => new Promise(resolve => { finishFirst = resolve })
   await render(Form13F)
   assert.ok(container.querySelector('.data-skeleton'))
-  globalThis.fetch = async () => Response.json(filing({ holdings: [{ name: 'BLACKROCK HOLDING', cusip: '099', title: 'COM', shares: 1, value: 1 }] }))
+  globalThis.fetch = async () => Response.json(filing({ holdings: [{ name: 'BLACKROCK HOLDING', cusip: '099', title: 'COM', shares: 1, prevShares: 0, value: 1 }] }))
   await click(container.querySelectorAll('.portfolio-manager')[1])
   assert.deepEqual(rowNames(), ['BLACKROCK HOLDING'])
   await act(async () => { finishFirst(Response.json(filing())); await tick() })
