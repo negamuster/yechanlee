@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { DEFAULT_HOLDING_SORT, HOLDING_FILTERS, csvDocument, csvIdentifier, downloadCsv, filteredHoldings, formatHoldingPercent, formatHoldingValue, holdingRows, holdingStatus, nextHoldingSort } from '../lib/form13fPresentation'
 import type { FilingData, HoldingFilter, HoldingSort, HoldingSortKey } from '../lib/form13fPresentation'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { holdingEvidence } from '../lib/evidenceSources'
 
 export function TablePagination({ page, pages, count, onPage }: { page: number; pages: number; count: number; onPage: (page: number) => void }) {
   return <nav className="holdings-pagination" aria-label="표 페이지 이동">
@@ -49,7 +51,7 @@ export default function FullHoldingsTable({ filing, cik, query, setQuery, sort, 
           <button type="button" className="holding-sort" onClick={() => setSort(nextHoldingSort(sort, column.key))}>{column.label}<span aria-hidden="true">{sort.key === column.key ? sort.direction === 'asc' ? '↑' : '↓' : '↕'}</span></button>
         </th>)}</tr></thead>
         <tbody>{rows.slice((page - 1) * 50, page * 50).map(h => <tr key={h.cusip}>
-          <th scope="row" className="holding-identity"><div className="holding-name"><span className="holding-rank">{holdingStatus(h) === 'closed' ? '—' : h.rank}</span><div><strong>{h.name}</strong><small>{h.title} · {h.cusip}</small></div></div></th>
+          <th scope="row" className="holding-identity"><div className="holding-name"><span className="holding-rank">{holdingStatus(h) === 'closed' ? '—' : h.rank}</span><div><strong>{h.name}</strong><small>{h.title} · {h.cusip}</small><EvidenceAttachButton source={holdingEvidence(filing,h,cik)} /></div></div></th>
           <td className="tool-numeric">{formatHoldingPercent(filing.totalValue ? h.value / filing.totalValue * 100 : 0)}</td><td className="tool-numeric">{h.shares.toLocaleString('en-US')}</td>
           <td className="tool-numeric" title={`$${h.value.toLocaleString('en-US')}`}>{formatHoldingValue(h.value)}</td>
           <td className="tool-numeric">{holdingStatus(h) === 'closed' ? <span className="tool-negative">전량 미기재</span> : h.change.kind === 'new' ? <span className="holding-badge">신규</span> : h.change.kind === 'unknown' ? <span className="tool-meta">비교 자료 없음</span> : <span className={h.change.percent! > 0 ? 'tool-positive' : h.change.percent! < 0 ? 'tool-negative' : ''}>{h.change.percent! > 0 ? '+' : ''}{h.change.percent!.toFixed(1)}%</span>}</td>

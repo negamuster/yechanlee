@@ -1,6 +1,8 @@
 import { parseTheses } from './thesis.ts'
+import { parseEvidence } from './evidence.ts'
 import type { Thesis } from './thesis.ts'
-export const SAVED_KEY = 'anthracite:saved:v2'
+export const SAVED_KEY = 'anthracite:saved:v3'
+export const PREVIOUS_SAVED_KEY = 'anthracite:saved:v2'
 export const LEGACY_SAVED_KEY = 'anthracite:saved:v1'
 export interface SavedStock { ticker: string; name: string }
 export interface SavedArticle { article_url: string; title: string; publisher: string; published_utc: string }
@@ -23,7 +25,7 @@ export function parseSaved(raw: string | null): SavedItems {
   return { version: 1, stocks: [...stocks.values()], articles: [...articles.values()], ...(data.theses !== undefined ? { theses: parseTheses(data.theses) } : {}) }
 }
 export function readSaved(storage: Pick<Storage, 'getItem'>): SavedItems {
-  return parseSaved(storage.getItem(SAVED_KEY) ?? storage.getItem(LEGACY_SAVED_KEY))
+  return parseSaved(storage.getItem(SAVED_KEY) ?? storage.getItem(PREVIOUS_SAVED_KEY) ?? storage.getItem(LEGACY_SAVED_KEY))
 }
 // Read before each change so sequential changes from another tab are preserved.
 // Only report success after the browser has accepted the write.
@@ -37,13 +39,15 @@ export function updateSaved(storage: Pick<Storage, 'getItem' | 'setItem'>, chang
 
 
 export function exportSaved(items: SavedItems, now = new Date()) {
-  return JSON.stringify({ app: 'Anthracite', backupVersion: 2, exportedAt: now.toISOString(), data: parseSaved(JSON.stringify(items)) }, null, 2)
+  const backup = { app: 'Anthracite', backupVersion: 3, exportedAt: now.toISOString(), data: parseSaved(JSON.stringify(items)) }
+  const readable = JSON.stringify(backup, null, 2)
+  return new TextEncoder().encode(readable).length <= 5 * 1024 * 1024 ? readable : JSON.stringify(backup)
 }
 export function importSaved(raw: string): SavedItems {
   if (new TextEncoder().encode(raw).length > 5 * 1024 * 1024) throw new Error('백업 파일은 5MB 이하만 불러올 수 있습니다.')
   let backup
   try { backup = JSON.parse(raw.replace(/^\uFEFF/, '')) } catch { throw new Error('JSON 백업 파일을 읽을 수 없습니다.') }
-  if (backup?.app !== 'Anthracite' || ![1, 2].includes(backup.backupVersion) || backup.data?.version !== 1 || !Array.isArray(backup.data.stocks) || !Array.isArray(backup.data.articles)) throw new Error('지원되는 Anthracite 백업 파일이 아닙니다.')
+  if (backup?.app !== 'Anthracite' || ![1, 2, 3].includes(backup.backupVersion) || backup.data?.version !== 1 || !Array.isArray(backup.data.stocks) || !Array.isArray(backup.data.articles)) throw new Error('지원되는 Anthracite 백업 파일이 아닙니다.')
   const data = backup.data
   if (data.stocks.length > 200 || data.articles.length > 500) throw new Error('백업의 항목 수가 저장 한도를 초과합니다.')
   // Reject a damaged file as a whole rather than silently dropping records.
@@ -56,8 +60,19 @@ export function mergeSaved(current: SavedItems, imported: SavedItems): SavedItem
   const articles = new Set(current.articles.map(a => articleKey(a.article_url)))
   const merged: SavedItems = { version: 1, stocks: [...current.stocks, ...imported.stocks.filter(s => !stocks.has(s.ticker))], articles: [...current.articles, ...imported.articles.filter(a => !articles.has(articleKey(a.article_url)))] }
   if (current.theses !== undefined || imported.theses !== undefined) {
-    const tickers = new Set((current.theses || []).map(n => n.ticker))
-    merged.theses = parseTheses([...(current.theses || []), ...(imported.theses || []).filter(n => !tickers.has(n.ticker))])
+    const notes = [...(current.theses || [])]
+    for (const incoming of imported.theses || []) {
+      const index = notes.findIndex(n => n.ticker === incoming.ticker)
+      if (index < 0) { notes.push(incoming); continue }
+      const existing = notes[index], evidence = [...(existing.evidence || [])]
+      for (const e of incoming.evidence || []) {
+        const prior = evidence.find(p => p.id === e.id)
+        if (prior && JSON.stringify({ ...prior, archivedAt: undefined }) !== JSON.stringify({ ...e, archivedAt: undefined })) throw new Error('같은 식별자의 근거 내용이 다릅니다. 기존 자료를 보존하기 위해 백업 합치기를 중단했습니다.')
+        if (!prior) evidence.push(e)
+      }
+      if (evidence.length !== (existing.evidence?.length ?? 0)) notes[index] = { ...existing, evidence: parseEvidence(evidence) }
+    }
+    merged.theses = parseTheses(notes)
   }
   if (merged.stocks.length > 200 || merged.articles.length > 500) throw new Error('합친 목록이 한도를 초과합니다. 관심 종목 200개·기사 500개 이내로 정리한 뒤 다시 불러와 주세요.')
   return merged

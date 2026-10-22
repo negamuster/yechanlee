@@ -1,12 +1,13 @@
-import { saveThesis } from '../lib/thesis'
+import { saveThesis, attachEvidence, archiveEvidence } from '../lib/thesis'
+import type { EvidenceSource, EvidenceRole } from '../lib/evidence'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { motion, useAnimationControls, useReducedMotion } from 'motion/react'
 import { Toaster, toast } from 'sonner'
-import { SAVED_KEY, LEGACY_SAVED_KEY, articleKey, emptySaved, readSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
+import { SAVED_KEY, PREVIOUS_SAVED_KEY, LEGACY_SAVED_KEY, articleKey, emptySaved, readSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
 import './SavedItems.css'
-interface SavedContext { saveNote: (input: Parameters<typeof saveThesis>[1]) => string; removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => boolean }
+interface SavedContext { connectEvidence: (input: { ticker: string; name: string; source: EvidenceSource; role: EvidenceRole; reason: string }) => string; setEvidenceArchived: (ticker: string, id: string, archived: boolean) => void; saveNote: (input: Parameters<typeof saveThesis>[1]) => string; removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => boolean }
 type Deletion = { before: SavedItems; removed: SavedItems; expires: number }
 const Context = createContext<SavedContext | null>(null)
 export function useSavedItems() { const value = useContext(Context); if (!value) throw new Error('SavedItemsProvider missing'); return value }
@@ -32,7 +33,7 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
   useEffect(() => {
     function read() { try { setItems(readSaved(localStorage)) } catch { setMessage('저장 목록을 읽을 수 없습니다. 브라우저 저장 설정을 확인해 주세요.') } }
     read()
-    function sync(event: StorageEvent) { if (event.key === SAVED_KEY || event.key === LEGACY_SAVED_KEY || event.key === null) read() }
+    function sync(event: StorageEvent) { if ([SAVED_KEY, PREVIOUS_SAVED_KEY, LEGACY_SAVED_KEY, null].includes(event.key)) read() }
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [])
@@ -74,7 +75,20 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
     const next = updateSaved(localStorage, current => mergeSaved(current, imported))
     setItems(next); setMessage('')
   }
-  return <Context.Provider value={{ saveNote, removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
+  function connectEvidence(input: { ticker: string; name: string; source: EvidenceSource; role: EvidenceRole; reason: string }) {
+    const at = new Date().toISOString(), id = crypto.randomUUID()
+    let connected: string = id
+    const next = updateSaved(localStorage, current => {
+      const result = attachEvidence(current.theses || [], { ticker: input.ticker, name: input.name, evidence: { ...input.source, id, attachedAt: at, role: input.role, reason: input.reason } }, crypto.randomUUID())
+      connected = result.id; return { ...current, theses: result.notes }
+    })
+    setItems(next); setMessage(''); return connected
+  }
+  function setEvidenceArchived(ticker: string, id: string, archived: boolean) {
+    const next = updateSaved(localStorage, current => ({ ...current, theses: archiveEvidence(current.theses || [], ticker, id, new Date().toISOString(), archived) }))
+    setItems(next); setMessage('')
+  }
+  return <Context.Provider value={{ connectEvidence, setEvidenceArchived, saveNote, removeSelected, items, toggleStock, toggleArticle, mergeBackup }}>{children}
     <Toaster position="bottom-right" theme="light" className="anthracite-toaster" closeButton expand visibleToasts={3}
       offset={{ bottom: 'calc(var(--mobile-nav-clearance, 18px) + 8px)', right: '18px' }}
       mobileOffset={{ bottom: 'calc(var(--mobile-nav-clearance, 18px) + 8px)', left: '14px', right: '14px' }}

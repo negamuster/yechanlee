@@ -36,3 +36,4 @@
   .financial-table-scroll th:first-child { min-width: 102px; }
   .financial-audit summary { min-height: 44px; }
 }
+.financial-evidence-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; }

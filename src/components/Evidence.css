@@ -1,0 +1,36 @@
+.evidence-attach { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; max-width: 100%; }
+.news-evidence-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
+.evidence-attach-button { min-height: 36px; padding: 6px 10px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-selected); font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.evidence-attach-button:hover { background: var(--ui-hover); }
+.evidence-dialog { box-sizing: border-box; width: min(640px, calc(100% - 28px)); max-height: calc(100dvh - 36px); overflow: auto; margin: auto; padding: 24px; border: 1px solid var(--ui-border); border-radius: 12px; color: var(--ui-text); background: #fff; font: 14px var(--font-ui); line-height: 1.7; }
+.evidence-dialog::backdrop { background: rgb(15 23 42 / .45); }
+.evidence-dialog h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.evidence-dialog h3 { margin: 12px 0; font-size: 16px; overflow-wrap: anywhere; }
+.evidence-dialog-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.evidence-dialog button { min-height: 44px; padding: 8px 14px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); color: var(--ui-selected); background: var(--ui-surface); font: inherit; cursor: pointer; }
+.evidence-dialog label { display: grid; gap: 6px; margin: 16px 0; }
+.evidence-dialog :is(select,textarea) { box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: inherit; font: inherit; }
+.evidence-dialog textarea { resize: vertical; }
+.evidence-dialog a, .evidence-card a { color: var(--ui-selected); text-decoration: underline; text-underline-offset: 3px; }
+.evidence-dialog details { padding: 12px; border: 1px solid var(--ui-border); border-radius: 6px; }
+.evidence-dialog summary { cursor: pointer; }
+.evidence-meta { margin: 8px 0; color: var(--ui-muted); font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.evidence-warning { color: #984c32; font-size: 13px; line-height: 1.8; }
+.evidence-facts { display: grid; gap: 8px; margin: 14px 0; font-size: 12px; }
+.evidence-facts > div { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(0, 2fr); gap: 12px; }
+.evidence-facts dt { color: var(--ui-muted); }
+.evidence-facts dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.evidence-list { list-style: none; padding: 0; display: grid; gap: 14px; }
+.evidence-card { border: 1px solid var(--ui-border); border-radius: 8px; padding: 16px; overflow-wrap: anywhere; scroll-margin-top: 100px; }
+.evidence-card h3 { margin: 10px 0; font-size: 15px; font-weight: 600; }
+.evidence-card:target { outline: 2px solid var(--ui-focus); }
+.evidence-card details { margin-top: 10px; font-size: 12px; }
+.evidence-card .evidence-reason { white-space: pre-wrap; font-size: 13px; line-height: 1.7; }
+.evidence-tags { display: flex; flex-wrap: wrap; gap: 6px; color: var(--ui-muted); font-size: 11px; }
+.evidence-tags span { padding: 3px 7px; background: var(--ui-surface); border-radius: 4px; }
+.evidence-pick { padding: 12px; border: 1px solid var(--ui-border); border-radius: 6px; }
+.thesis-page .evidence-pick label { display: flex; flex-direction: row; align-items: flex-start; margin: 8px 0; }
+.thesis-page .evidence-pick input { min-height: 20px; margin: 0; flex: 0 0 auto; }
+.thesis-history .evidence-history-links { display: grid; gap: 6px; margin-top: 10px; font-size: 12px; }
+.evidence-dialog :is(button,select,textarea,a,summary):focus-visible, .evidence-attach-button:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+@media(max-width:700px) { .evidence-attach-button { min-height: 44px; } .evidence-dialog { padding: 18px; } .evidence-dialog :is(select,textarea) { font-size: 16px; } .evidence-dialog h2 { font-size: 18px; } .evidence-facts > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }

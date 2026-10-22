@@ -2,6 +2,8 @@ import type { Briefing } from '../lib/briefings'
 import { eventTime, trendClass } from '../lib/briefingPresentation'
 import type { BriefingSection } from '../lib/briefingPresentation'
 import { SourceRefs } from './BriefingReferences'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { briefingEvidence } from '../lib/evidenceSources'
 export default function BriefingDetails({ item, section, mobile = false }: { item: Briefing; section?: BriefingSection | null; mobile?: boolean }) {
   const home = item.homepage
   if (!home) return null
@@ -11,6 +13,7 @@ export default function BriefingDetails({ item, section, mobile = false }: { ite
       <div className="briefing-stock-heading"><strong>{stock.name} <span>{stock.ticker}</span></strong><b className={trendClass(stock.change)}>{stock.change}</b></div>
       <p>{stock.reason}<SourceRefs item={item} ids={stock.sourceIds} /></p>
       <small>{stock.basis}</small>
+      <EvidenceAttachButton source={briefingEvidence(item, stock)} stock={{ticker:stock.ticker,name:stock.name}} />
     </li>)}</ul>
   </section>
   if (section === 'assets') return <section className="briefing-section" aria-labelledby="briefing-assets-title">
