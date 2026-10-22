@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { SAVED_KEY, LEGACY_SAVED_KEY, emptySaved, parseSaved, articleKey, updateSaved } from '../src/lib/savedItems.ts'
+import { SAVED_KEY, PREVIOUS_SAVED_KEY, LEGACY_SAVED_KEY, emptySaved, parseSaved, articleKey, updateSaved } from '../src/lib/savedItems.ts'
 const article = { title:'Market news', publisher:'Reuters', article_url:'https://example.com/news', published_utc:'2026-01-01T00:00:00Z' }
-function memory() { let raw=null; return { getItem:key=>{if(key===LEGACY_SAVED_KEY)return null;assert.equal(key,SAVED_KEY);return raw}, setItem:(key,value)=>{assert.equal(key,SAVED_KEY);raw=value} } }
+function memory() { let raw=null; return { getItem:key=>{if([LEGACY_SAVED_KEY,PREVIOUS_SAVED_KEY].includes(key))return null;assert.equal(key,SAVED_KEY);return raw}, setItem:(key,value)=>{assert.equal(key,SAVED_KEY);raw=value} } }
 test('persists stocks and older bookmarked articles across reloads',()=>{
  const storage=memory()
  updateSaved(storage,value=>({...value,stocks:[{ticker:'AAPL',name:'Apple'}],articles:[article]}))

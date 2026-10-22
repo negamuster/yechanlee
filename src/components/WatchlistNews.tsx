@@ -6,6 +6,8 @@ import { useSessionState } from '../hooks/useSessionState'
 import { isWebUrl } from '../lib/watchlist'
 import { dataTime } from '../utils/dataTime'
 import { BookmarkButton, useSavedItems } from './SavedItemsProvider'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { newsEvidence } from '../lib/evidenceSources'
 
 type Article = { id: string; title: string; article_url: string; published_utc: string; publisher: { name: string }; tickers: string[] }
 function validNews(value: unknown): value is { results: Article[] } {
@@ -26,6 +28,6 @@ export default function WatchlistNews() {
     {loading && <p role="status" className="saved-note">{ticker} 뉴스를 조회하고 있습니다.</p>}
     {error && <p role="status" className="watch-notice">뉴스 조회 실패{articles.length ? ' · 이전에 조회한 기사를 표시합니다.' : ' · 잠시 후 다시 시도해 주세요.'}</p>}
     {!loading && !error && !articles.length && <div className="saved-empty">제공된 기사 중 {ticker}에 연결된 기사가 없습니다.</div>}
-    <ul className="saved-list watch-news-list">{articles.map(a => <li key={a.id || a.article_url}><a className={`saved-content${isRead(a.article_url) ? ' is-read' : ''}`} onClick={() => mark(a.article_url)} onAuxClick={e => { if (e.button === 1) mark(a.article_url) }} href={a.article_url} target="_blank" rel="noopener noreferrer"><small>{a.publisher.name} · {dataTime(a.published_utc)}</small><strong>{a.title}</strong><span>{isRead(a.article_url) ? '읽음 · ' : ''}원문 읽기 ↗</span></a><BookmarkButton article={{ ...a, publisher: a.publisher.name }} /></li>)}</ul>
+    <ul className="saved-list watch-news-list">{articles.map(a => <li key={a.id || a.article_url}><a className={`saved-content${isRead(a.article_url) ? ' is-read' : ''}`} onClick={() => mark(a.article_url)} onAuxClick={e => { if (e.button === 1) mark(a.article_url) }} href={a.article_url} target="_blank" rel="noopener noreferrer"><small>{a.publisher.name} · {dataTime(a.published_utc)}</small><strong>{a.title}</strong><span>{isRead(a.article_url) ? '읽음 · ' : ''}원문 읽기 ↗</span></a><div className="news-evidence-actions"><EvidenceAttachButton source={newsEvidence({...a,publisher:a.publisher.name},error)} stock={items.stocks.find(s=>s.ticker===ticker)} /><BookmarkButton article={{ ...a, publisher: a.publisher.name }} /></div></li>)}</ul>
   </section>
 }

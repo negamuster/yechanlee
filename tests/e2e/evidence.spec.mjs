@@ -1,0 +1,124 @@
+import { test, expect } from '@playwright/test'
+import { readFile } from 'node:fs/promises'
+import { installStockFixtures, fixturePayload } from './stock-fixtures.mjs'
+import { filingFixture } from '../fixtures/form13f.mjs'
+const key = 'anthracite:saved:v3'
+let state, newsTitle
+const dialog = page => page.getByRole('dialog', { name: '투자 노트에 근거 연결', exact: true })
+const noteEvidence = page => page.locator('[aria-labelledby="thesis-evidence-heading"]')
+const saved = page => page.evaluate(storageKey => JSON.parse(localStorage.getItem(storageKey)), key)
+test.beforeEach(async ({ page }) => {
+  state = await installStockFixtures(page); newsTitle = 'Original NVDA evidence news'
+  await page.route('**/api/stock-data?*', async route => {
+    const url = new URL(route.request().url()), path = url.searchParams.get('path') || ''
+    if (!path.startsWith('/v2/reference/news')) return route.fallback()
+    const payload = fixturePayload('news', 'NVDA')
+    payload.results[0] = { ...payload.results[0], title: newsTitle, article_url: 'https://example.com/research', tickers: ['NVDA'] }
+    return route.fulfill({ json: payload })
+  })
+  await page.route('**/api/form13f?*', route => route.fulfill({ json: filingFixture() }))
+})
+test.afterEach(() => { if (state) expect(state.pageErrors).toEqual([]) })
+async function connectNews(page) {
+  await page.goto('/stock/NVDA')
+  await page.getByRole('button', { name: `${newsTitle} 노트에 연결`, exact: true }).click()
+  await expect(dialog(page).getByLabel('연결할 종목', {exact:true})).toHaveValue('NVDA')
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true}).click()
+}
+test('news remains frozen, judgments retain archived evidence and backup restores sources with the note', async ({ page }) => {
+  await connectNews(page)
+  await expect(noteEvidence(page)).toContainText('Original NVDA evidence news')
+  await page.getByLabel('판단 이유', {exact:true}).fill('Retain the original published basis')
+  await page.getByRole('checkbox', {name:/Original NVDA evidence news/}).check()
+  await page.getByRole('button', {name:'노트 저장 · 판단 기록 추가',exact:true}).click()
+  await expect(page.locator('.thesis-status')).toContainText('판단 기록을 저장')
+  await noteEvidence(page).getByRole('button', {name:'근거 보관',exact:true}).click()
+  await page.getByText('이 판단에 연결한 근거 (1)', {exact:true}).click()
+  await expect(page.locator('.thesis-history')).toContainText('Original NVDA evidence news')
+  await expect(page.locator('.thesis-history')).toContainText('보관됨')
+  newsTitle = 'Updated provider headline'
+  await page.goto('/stock/NVDA'); await expect(page.locator('.stock-news-list')).toContainText(newsTitle)
+  const data = await saved(page)
+  expect(data.theses[0].evidence[0].title).toBe('Original NVDA evidence news')
+  expect(data.theses[0].history[0].evidenceIds).toEqual([data.theses[0].evidence[0].id])
+  await page.goto('/saved'); await page.getByText('백업 · 다른 기기로 옮기기', {exact:true}).click()
+  const downloading = page.waitForEvent('download')
+  await page.getByRole('button', {name:'백업 내보내기',exact:true}).click()
+  const file = await downloading, bytes = await readFile(await file.path())
+  expect(JSON.parse(bytes.toString()).backupVersion).toBe(3)
+  await page.evaluate(() => { localStorage.clear(); sessionStorage.clear() }); await page.reload()
+  await page.getByText('백업 · 다른 기기로 옮기기', {exact:true}).click()
+  await page.locator('.saved-backup input[type=file]').setInputFiles({name:'evidence-backup.json',mimeType:'application/json',buffer:bytes})
+  await page.getByRole('button', {name:'기존 목록에 합치기',exact:true}).click()
+  expect((await saved(page)).theses).toEqual(data.theses)
+})
+test('financial evidence saves the selected annual or discrete-quarter period, units and original source links', async ({ page }) => {
+  await page.goto('/stock/NVDA')
+  const history = page.locator('.financial-history')
+  await history.locator('.financial-evidence-row').getByRole('button', {name:/노트에 연결/}).click()
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('button', {name:'계속 둘러보기',exact:true}).click()
+  await history.getByRole('button', {name:'분기',exact:true}).click()
+  await history.locator('.financial-evidence-row').getByRole('button', {name:/노트에 연결/}).click()
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true}).click()
+  const evidence = (await saved(page)).theses[0].evidence
+  expect(evidence).toHaveLength(2);expect(evidence[0].kind).toBe('filing');expect(evidence[0].period).not.toBe(evidence[1].period)
+  expect(evidence[0].facts.some(f=>f.label==='매출' && f.value.includes('USD'))).toBe(true)
+  expect(evidence[1].links.length).toBeGreaterThan(0)
+  await expect(noteEvidence(page)).toContainText('SEC EDGAR')
+})
+test('13F requires an explicit target note and preserves CUSIP plus both institutions comparison basis', async ({ page }) => {
+  await page.addInitScript(storageKey=>localStorage.setItem(storageKey,JSON.stringify({version:1,stocks:[{ticker:'AAPL',name:'Apple'}],articles:[]})),key)
+  await page.goto('/form13f')
+  await page.locator('.holdings-table tbody tr').first().getByRole('button', {name:/노트에 연결/}).click()
+  await expect(dialog(page).getByLabel('연결할 종목', {exact:true})).toHaveValue('')
+  await dialog(page).getByLabel('연결할 종목', {exact:true}).selectOption('AAPL')
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('button', {name:'계속 둘러보기',exact:true}).click()
+  await page.getByRole('button', {name:'기관 비교',exact:true}).click()
+  await page.locator('.comparison-table tbody tr').first().getByRole('button', {name:/노트에 연결/}).click()
+  await dialog(page).getByLabel('연결할 종목', {exact:true}).selectOption('AAPL')
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true}).click()
+  const evidence=(await saved(page)).theses[0].evidence
+  expect(evidence[0].facts.find(f=>f.label==='CUSIP').value).toBe('000000001')
+  expect(evidence[1].facts.some(f=>f.label==='B 수집 보유금액 (USD)')).toBe(true)
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+})
+test('a briefing links its fixed cutoff, summary and cited sources to the chosen note', async ({ page }) => {
+  await page.addInitScript(storageKey=>localStorage.setItem(storageKey,JSON.stringify({version:1,stocks:[{ticker:'AAPL',name:'Apple'}],articles:[]})),key)
+  await page.goto('/briefings/2026-10-22')
+  await page.locator('.briefing-article > .evidence-attach').getByRole('button').click()
+  await dialog(page).getByLabel('연결할 종목', {exact:true}).selectOption('AAPL')
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true}).click()
+  const e=(await saved(page)).theses[0].evidence[0]
+  expect(e.kind).toBe('briefing');expect(e.observedAt).toBeTruthy();expect(e.links.length).toBeGreaterThan(0)
+  expect(e.facts.some(f=>f.label==='정보 기준 시각')).toBe(true)
+})
+test('connecting evidence does not discard an existing unsaved note draft, and Escape restores focus', async ({ page }) => {
+  await page.addInitScript(storageKey=>localStorage.setItem(storageKey,JSON.stringify({version:1,stocks:[{ticker:'NVDA',name:'NVIDIA'}],articles:[]})),key)
+  await page.goto('/saved/thesis/NVDA')
+  await page.getByLabel('근거 1', {exact:true}).fill('Keep my unsaved thesis')
+  await page.getByRole('link', {name:'종목 자료 보기 →',exact:true}).click()
+  const trigger=page.getByRole('button', {name:`${newsTitle} 노트에 연결`,exact:true})
+  await trigger.click();await page.keyboard.press('Escape')
+  await expect(dialog(page)).toHaveCount(0);await expect(trigger).toBeFocused()
+  await trigger.click();await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true}).click()
+  await expect(page.getByLabel('근거 1', {exact:true})).toHaveValue('Keep my unsaved thesis')
+  await expect(page.getByText(/다른 탭에서 노트가 변경/)).toHaveCount(0)
+  await page.getByRole('button', {name:'노트 저장',exact:true}).click()
+  const note=(await saved(page)).theses[0]
+  expect(note.reasons[0]).toBe('Keep my unsaved thesis');expect(note.evidence).toHaveLength(1)
+})
+test('quota failure remains in the dialog without false success or a partial note', async ({ page }) => {
+  await page.addInitScript(() => { const original=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k==='anthracite:saved:v3')throw new DOMException('No space','QuotaExceededError');return original.call(this,k,v)} })
+  await page.goto('/stock/NVDA');await page.getByRole('button', {name:`${newsTitle} 노트에 연결`,exact:true}).click()
+  await dialog(page).getByRole('button', {name:'근거 연결 저장',exact:true}).click()
+  await expect(dialog(page).getByRole('alert')).toContainText('저장 공간이 부족')
+  await expect(dialog(page).getByRole('link', {name:'노트에서 확인 →',exact:true})).toHaveCount(0)
+  expect(await saved(page)).toBeNull()
+})

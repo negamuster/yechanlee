@@ -5,6 +5,8 @@ import { compareFilings, csvDocument, csvIdentifier, downloadCsv, formatHoldingP
 import type { FilingData } from '../lib/form13fPresentation'
 import ResourceState from './ResourceState'
 import { TablePagination } from './FullHoldingsTable'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { comparisonEvidence } from '../lib/evidenceSources'
 
 interface Manager { firm: string; cik: string; note?: string }
 const filingUrl = (cik: string, period?: string) => `/api/form13f?cik=${cik}${period ? `&period=${period}` : ''}`
@@ -40,7 +42,7 @@ function ComparisonTable({ left, right, a, b }: { left: FilingData; right: Filin
       <table className="tool-table holdings-table comparison-table"><caption className="tool-sr-only">{left.period} 기준 두 기관의 비중, 보유 수량과 평가액</caption>
         <thead><tr><th className="holding-identity" scope="col">종목</th><th className="tool-numeric" scope="col">A 비중 · 수량 · 평가액</th><th className="tool-numeric" scope="col">B 비중 · 수량 · 평가액</th><th className="tool-numeric" scope="col">비중 차이</th></tr></thead>
         <tbody>{rows.slice((page - 1) * 50, page * 50).map(h => <tr key={h.cusip}>
-          <th className="holding-identity" scope="row"><div className="holding-name"><div><strong>{h.name}</strong><small>{h.cusip} · {h.title}{h.right && h.right.title !== h.title ? ` / ${h.right.title}` : ''}</small></div></div></th>
+          <th className="holding-identity" scope="row"><div className="holding-name"><div><strong>{h.name}</strong><small>{h.cusip} · {h.title}{h.right && h.right.title !== h.title ? ` / ${h.right.title}` : ''}</small><EvidenceAttachButton source={comparisonEvidence(left,right,h,a,b)} /></div></div></th>
           {(['left', 'right'] as const).map(side => <td key={side} className="tool-numeric">{h[side] ? <><strong>{formatHoldingPercent(side === 'left' ? h.leftPct : h.rightPct, true)}</strong><small>{h[side]!.shares.toLocaleString('en-US')}주</small><small title={`$${h[side]!.value.toLocaleString('en-US')}`}>{formatHoldingValue(h[side]!.value)}</small></> : <span className="tool-meta">미기재</span>}</td>)}
           <td className="tool-numeric">{h.difference > 0 ? '+' : ''}{h.difference.toFixed(2)}%p</td>
         </tr>)}</tbody>

@@ -1,6 +1,8 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { BookmarkButton } from './SavedItemsProvider'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { newsEvidence } from '../lib/evidenceSources'
 import { TOPICS } from './newsSelection'
 import type { NewsItem } from './newsSelection'
 import './NewsArticle.css'
@@ -31,7 +33,7 @@ export default function NewsArticle({ item, read, timeLabel, onRead, image, mobi
         </p>
         {item.feedStale && <p className="news-article-stale">이전 수집 기사</p>}
       </div>
-      <BookmarkButton article={item} iconOnly={!mobile} />
+      <BookmarkButton article={item} iconOnly={!mobile} /><EvidenceAttachButton source={newsEvidence(item, !!item.feedStale)} />
     </div>
   </article>
 }

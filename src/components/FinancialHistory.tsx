@@ -3,6 +3,8 @@ import { financialMetrics, financialValue, financialDate, financialBasis } from 
 import type { FinancialPeriod, FinancialMetric } from '../lib/financialHistory'
 import { stockMoney } from '../lib/stockPresentation'
 import { isWebUrl } from '../lib/watchlist'
+import EvidenceAttachButton from './EvidenceAttachButton'
+import { financialEvidence } from '../lib/evidenceSources'
 import './FinancialHistory.css'
 
 const modes = [{ key: 'annual', label: '연간' }, { key: 'quarterly', label: '분기' }, { key: 'ttm', label: 'TTM' }] as const
@@ -31,7 +33,7 @@ function TrendChart({ rows, metric, label }: { rows: FinancialPeriod[]; metric: 
   </figure>
 }
 
-export default function FinancialHistory({ annual, quarterly = [], ttm = [], stale = false, unavailable = false, loading = false, onRetry }: { annual: FinancialPeriod[]; quarterly?: FinancialPeriod[]; ttm?: FinancialPeriod[]; stale?: boolean; unavailable?: boolean; loading?: boolean; onRetry?: () => void }) {
+export default function FinancialHistory({ annual, quarterly = [], ttm = [], stale = false, unavailable = false, loading = false, onRetry, stock, fetchedAt }: { annual: FinancialPeriod[]; quarterly?: FinancialPeriod[]; ttm?: FinancialPeriod[]; stale?: boolean; unavailable?: boolean; loading?: boolean; onRetry?: () => void; stock?: {ticker:string;name:string}; fetchedAt?:number }) {
   const [mode, setMode] = useState<'annual' | 'quarterly' | 'ttm'>('annual')
   const [metricKey, setMetricKey] = useState('revenues'), [auditEnd, setAuditEnd] = useState('')
   const id = useId(), rows = { annual, quarterly, ttm }[mode], label = modes.find(m => m.key === mode)!.label
@@ -50,6 +52,7 @@ export default function FinancialHistory({ annual, quarterly = [], ttm = [], sta
           <tr><th scope="row">회계기간</th>{rows.map(row => <td key={row.end_date}><small>{financialDate(row.start_date)}<br />~ {financialDate(row.end_date)}</small></td>)}</tr></tbody>
         </table>
       </div>
+      {stock && <div className="financial-evidence-row"><span className="stock-note">연결 대상: {financialDate(audit.end_date)} 종료 · {label}</span><EvidenceAttachButton source={financialEvidence(audit,stock.ticker,fetchedAt,stale)} stock={stock} /></div>}
       <details className="financial-audit"><summary>계산·공시 근거 확인</summary>
         <div><label htmlFor={`${id}-audit`}>확인할 기간</label><select id={`${id}-audit`} value={audit.end_date} onChange={event => setAuditEnd(event.target.value)}>{rows.map(row => <option key={row.end_date} value={row.end_date}>{financialDate(row.end_date)} 종료</option>)}</select></div>
         <p>{financialDate(audit.start_date)} ~ {financialDate(audit.end_date)} · 제출 {financialDate(audit.filing_date)}{audit.amended ? ' · 수정 공시' : ''} · {isWebUrl(audit.source_filing_url) && <a href={audit.source_filing_url} target="_blank" rel="noopener noreferrer">기간 기준 원문 공시 ↗</a>}</p>
