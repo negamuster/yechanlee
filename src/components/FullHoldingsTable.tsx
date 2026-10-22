@@ -34,13 +34,13 @@ export default function FullHoldingsTable({ filing, cik, query, setQuery, sort, 
     <div className="holdings-toolbar">
       <label className="holdings-search"><span className="tool-sr-only">보유 종목 검색</span>
         <input type="search" value={query} maxLength={120} onChange={event => setQuery(event.target.value)} placeholder="종목명·CUSIP 검색" aria-describedby="holdings-scope" /></label>
-      <label className="holdings-filter"><span className="tool-sr-only">분기 변동 필터</span><select value={filter} onChange={e => setFilter(e.target.value as HoldingFilter)}>
+      <label className="holdings-filter"><span className="tool-sr-only">분기 변동 필터</span><select aria-label="분기 변동 필터" value={filter} onChange={e => setFilter(e.target.value as HoldingFilter)}>
         {HOLDING_FILTERS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
       </select></label>
       <button type="button" className="tool-button" onClick={reset} disabled={!query && filter === 'current' && sort.key === 'value' && sort.direction === 'desc'}>초기화</button>
       <button type="button" className="tool-button" disabled={!rows.length} onClick={exportRows}>CSV 저장 ({rows.length})</button>
     </div>
-    <p className="tool-meta" id="holdings-scope">전체 내역 검색·정렬 · 50개씩 표시 · CSV는 검색·필터 결과 전체를 저장합니다. 비중은 전체 수집 보유금액 기준입니다.</p>
+    <p className="tool-meta" id="holdings-scope">옵션 제외 SH 전체 내역 검색·정렬 · 50개씩 표시 · CSV는 검색·필터 결과 전체를 저장합니다. 비중은 전체 수집 보유금액 기준입니다.</p>
     <p className="tool-meta">전 분기 {filing.previousPeriod}{filing.previousAvailable ? '와 수량 비교' : ' 자료를 검증하지 못해 변동을 표시하지 않습니다.'} · 신규·전량 미기재는 공시 간 차이이며 매매 확정을 뜻하지 않습니다.</p>
     <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기</p>
     <div className="tool-table-scroll holdings-scroll" tabIndex={0} role="region" aria-label="기관 보유 종목 표, 좌우·상하로 스크롤">

@@ -95,16 +95,16 @@ export function nextHoldingSort(current: HoldingSort, key: HoldingSortKey): Hold
   return { key, direction: current.key === key ? (current.direction === 'desc' ? 'asc' : 'desc') : key === 'name' ? 'asc' : 'desc' }
 }
 
-export function holdingRows(holdings: Holding[], total: number, query: string, sort: HoldingSort) {
+export function holdingMatchesQuery(holding: Pick<Holding, 'name' | 'title' | 'cusip'>, query: string) {
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
+  const text = `${holding.name} ${holding.title} ${holding.cusip}`.toLocaleLowerCase()
+  const tokens = text.split(/[^\p{L}\p{N}]+/u)
+  return words.every(word => words.length > 1 && word.length === 1 ? tokens.includes(word) : text.includes(word))
+}
+export function holdingRows(holdings: Holding[], total: number, query: string, sort: HoldingSort) {
   // Keep the original portfolio rank and denominator through filtering and sorting.
   const rows = holdings.map((holding, index) => ({ ...holding, rank: index + 1, pct: portfolioPercent(holding.value, total), change: holdingChange(holding) }))
-    .filter(holding => {
-      const text = `${holding.name} ${holding.title} ${holding.cusip}`.toLocaleLowerCase()
-      const tokens = text.split(/[^\p{L}\p{N}]+/u)
-      // A class letter in a multi-word query must not match a letter inside INC.
-      return words.every(word => words.length > 1 && word.length === 1 ? tokens.includes(word) : text.includes(word))
-    })
+    .filter(holding => holdingMatchesQuery(holding, query))
   return rows.sort((a, b) => {
     let comparison: number
     if (sort.key === 'change') {

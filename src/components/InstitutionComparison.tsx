@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useResource } from '../hooks/useResource'
 import { refreshPolicies } from '../lib/refreshPolicy'
-import { compareFilings, csvDocument, csvIdentifier, downloadCsv, formatHoldingPercent, formatHoldingValue, isFiling } from '../lib/form13fPresentation'
+import { compareFilings, csvDocument, csvIdentifier, downloadCsv, formatHoldingPercent, formatHoldingValue, holdingMatchesQuery, isFiling } from '../lib/form13fPresentation'
 import type { FilingData } from '../lib/form13fPresentation'
 import ResourceState from './ResourceState'
 import { TablePagination } from './FullHoldingsTable'
@@ -15,8 +15,7 @@ function ComparisonTable({ left, right, a, b }: { left: FilingData; right: Filin
   const all = compareFilings(left, right)
   const common = all.filter(h => h.left && h.right).length
   const rows = all.filter(h => {
-    const text = `${h.name} ${h.title} ${h.right?.name ?? ''} ${h.right?.title ?? ''} ${h.cusip}`.toLocaleLowerCase()
-    return query.trim().toLocaleLowerCase().split(/\s+/).every(word => text.includes(word))
+    return holdingMatchesQuery({ name: `${h.name} ${h.right?.name ?? ''}`, title: `${h.title} ${h.right?.title ?? ''}`, cusip: h.cusip }, query)
       && (filter === 'all' || filter === 'common' && h.left && h.right || filter === 'left' && h.left && !h.right || filter === 'right' && h.right && !h.left)
   }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) || a.cusip.localeCompare(b.cusip)
     : (sort === 'left' ? b.leftPct - a.leftPct : sort === 'right' ? b.rightPct - a.rightPct : sort === 'difference' ? Math.abs(b.difference) - Math.abs(a.difference) : Math.max(b.leftPct, b.rightPct) - Math.max(a.leftPct, a.rightPct)) || a.cusip.localeCompare(b.cusip))
@@ -31,11 +30,11 @@ function ComparisonTable({ left, right, a, b }: { left: FilingData; right: Filin
     <dl className="comparison-summary"><div><dt>공통 종목</dt><dd>{common}개</dd></div><div><dt>A에만 기재</dt><dd>{all.filter(h => h.left && !h.right).length}개</dd></div><div><dt>B에만 기재</dt><dd>{all.filter(h => h.right && !h.left).length}개</dd></div></dl>
     <div className="holdings-toolbar">
       <label className="holdings-search"><span className="tool-sr-only">비교 종목 검색</span><input type="search" maxLength={120} value={query} onChange={e => setQuery(e.target.value)} placeholder="종목명·CUSIP 검색" /></label>
-      <label className="holdings-filter"><span className="tool-sr-only">비교 범위</span><select value={filter} onChange={e => setFilter(e.target.value)}><option value="all">전체 종목</option><option value="common">공통 종목</option><option value="left">A에만 기재</option><option value="right">B에만 기재</option></select></label>
-      <label className="holdings-filter"><span className="tool-sr-only">비교 정렬</span><select value={sort} onChange={e => setSort(e.target.value)}><option value="weight">높은 비중 순</option><option value="left">A 비중 순</option><option value="right">B 비중 순</option><option value="difference">비중 차이 큰 순</option><option value="name">종목명 순</option></select></label>
+      <label className="holdings-filter"><span className="tool-sr-only">비교 범위</span><select aria-label="비교 범위" value={filter} onChange={e => setFilter(e.target.value)}><option value="all">전체 종목</option><option value="common">공통 종목</option><option value="left">A에만 기재</option><option value="right">B에만 기재</option></select></label>
+      <label className="holdings-filter"><span className="tool-sr-only">비교 정렬</span><select aria-label="비교 정렬" value={sort} onChange={e => setSort(e.target.value)}><option value="weight">높은 비중 순</option><option value="left">A 비중 순</option><option value="right">B 비중 순</option><option value="difference">비중 차이 큰 순</option><option value="name">종목명 순</option></select></label>
       <button type="button" className="tool-button" disabled={!rows.length} onClick={exportRows}>비교 CSV 저장 ({rows.length})</button>
     </div>
-    <p className="tool-meta">같은 CUSIP의 증권을 비교합니다. 다른 주식 클래스는 별도 종목입니다. 비중은 각 기관의 수집 보유금액 기준이며 차이는 A − B입니다. 미기재는 해당 공개 자료에 없다는 의미입니다.</p>
+    <p className="tool-meta">옵션을 제외한 SH 항목을 같은 CUSIP으로 비교합니다. 다른 주식 클래스는 별도 종목입니다. 비중은 각 기관의 수집 보유금액 기준이며 차이는 A − B입니다. 미기재는 표시 대상 SH 항목에 없다는 의미입니다.</p>
     <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기</p>
     <div className="tool-table-scroll holdings-scroll" role="region" aria-label="기관 간 비교 표" tabIndex={0}>
       <table className="tool-table holdings-table comparison-table"><caption className="tool-sr-only">{left.period} 기준 두 기관의 비중, 보유 수량과 평가액</caption>
@@ -77,8 +76,8 @@ export default function InstitutionComparison({ manager, managers, filing, revis
   const period = periods.includes(requestedPeriod) ? requestedPeriod : periods[0]
   return <section className="tool-card institution-comparison" aria-labelledby="comparison-heading">
     <div className="tool-card-heading"><h3 id="comparison-heading">기관 간 비교</h3><button type="button" className="tool-button" onClick={onRefresh}>비교 자료 새로고침</button></div>
-    <div className="comparison-controls"><label className="tool-field"><span>비교 기관 B</span><select value={peer.cik} onChange={e => { setPeerCik(e.target.value); setRequestedPeriod('') }}>{managers.filter(m => m.cik !== manager.cik).map(m => <option key={m.cik} value={m.cik}>{m.firm}</option>)}</select></label>
-      <label className="tool-field"><span>공통 보고 분기</span><select value={period ?? ''} disabled={!periods.length} onChange={e => setRequestedPeriod(e.target.value)}>{!periods.length && <option value="">공통 분기 확인 중</option>}{periods.map(p => <option key={p} value={p}>{p}</option>)}</select></label></div>
+    <div className="comparison-controls"><label className="tool-field"><span>비교 기관 B</span><select aria-label="비교 기관 B" value={peer.cik} onChange={e => { setPeerCik(e.target.value); setRequestedPeriod('') }}>{managers.filter(m => m.cik !== manager.cik).map(m => <option key={m.cik} value={m.cik}>{m.firm}</option>)}</select></label>
+      <label className="tool-field"><span>공통 보고 분기</span><select aria-label="공통 보고 분기" value={period ?? ''} disabled={!periods.length} onChange={e => setRequestedPeriod(e.target.value)}>{!periods.length && <option value="">공통 분기 확인 중</option>}{periods.map(p => <option key={p} value={p}>{p}</option>)}</select></label></div>
     <p className="tool-meta">A는 위에서 선택한 기관입니다. 각 기관의 최근 8개 보고 분기 범위에서 같은 기준일의 자료를 비교합니다.</p>
     <ResourceState label="비교 기관 분기 목록" loading={latest.loading} error={latest.error} hasData={!!latest.data} stale={latest.data?.stale} layout="rows" onRetry={onRefresh} />
     {latest.data && !periods.length && <p className="tool-callout" role="status">두 기관에 공통으로 공개된 보고 분기가 없습니다. 다른 기관을 선택해 주세요.</p>}
