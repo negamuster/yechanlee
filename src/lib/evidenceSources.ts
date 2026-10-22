@@ -5,6 +5,7 @@ import type { FinancialPeriod } from './financialHistory'
 import type { FilingData, Holding } from './form13fPresentation'
 
 const observed = (value?: number) => value != null && Number.isFinite(value) ? { observedAt: new Date(value).toISOString() } : {}
+const calculationNames = { difference: '누적 공시 차액', sum: '최근 4개 분기 합계', ocf_minus_capex: '영업현금흐름 − Capex' }
 export function newsEvidence(article: { title: string; article_url: string; publisher: string; published_utc: string }, stale = false): EvidenceSource {
   return { kind: 'news', title: article.title, url: article.article_url, publisher: article.publisher, publishedAt: article.published_utc, stale, facts: [], links: [], caveat: '기사 제목·출처·발행일을 연결했습니다. 기사 본문은 저장하지 않습니다.' }
 }
@@ -15,7 +16,7 @@ export function financialEvidence(row: FinancialPeriod, symbol: string, fetchedA
   for (const metric of metrics) {
     const value = row.financials[metric.statement]?.[metric.key]
     if (!value || !Number.isFinite(value.value)) continue
-    facts.push({ label: metric.label, value: `${value.value} ${value.unit}${value.basis ? ` · ${financialBasis(value.basis)}` : ''}${value.calculation ? ` · ${value.calculation}` : ''}` })
+    facts.push({ label: metric.label, value: `${value.value} ${value.unit}${value.basis ? ` · ${financialBasis(value.basis)}` : ''}${value.calculation ? ` · ${calculationNames[value.calculation]}` : ''}` })
     for (const s of value.sources ?? []) links.set(`${s.url}|${s.tag}|${s.start_date}|${s.end_date}`, { label: `${s.form} ${s.start_date ?? ''}~${s.end_date} · ${s.tag}: ${s.value} ${s.unit}${s.revised ? ' · 비교값 변경' : ''}`.slice(0, 300), url: s.url })
   }
   const sourceLinks = [...links.values()]
