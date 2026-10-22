@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
-import { installStockFixtures } from './stock-fixtures.mjs'
+import { installStockFixtures, fixturePayload } from './stock-fixtures.mjs'
 import { filingFixture } from '../fixtures/form13f.mjs'
 const key = 'anthracite:saved:v3'
 let state, newsTitle
@@ -12,7 +12,9 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/stock-data?*', async route => {
     const url = new URL(route.request().url()), path = url.searchParams.get('path') || ''
     if (!path.startsWith('/v2/reference/news')) return route.fallback()
-    return route.fulfill({ json: { results: [{ id:'news1',title:newsTitle,article_url:'https://example.com/research',published_utc:'2026-10-20T12:00:00Z',publisher:{name:'Fixture News'},tickers:['NVDA'] }], sourceInfo:{source:'Fixture News',fetchedAt:Date.parse('2026-10-21T12:00:00Z'),stale:false} } })
+    const payload = fixturePayload('news', 'NVDA')
+    payload.results[0] = { ...payload.results[0], title: newsTitle, article_url: 'https://example.com/research', tickers: ['NVDA'] }
+    return route.fulfill({ json: payload })
   })
   await page.route('**/api/form13f?*', route => route.fulfill({ json: filingFixture() }))
 })
