@@ -70,6 +70,8 @@
 .holdings-pagination { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
 .holdings-pagination > div, .portfolio-mode { display: flex; gap: 8px; }
 .portfolio-mode .tool-button[aria-pressed="true"] { color: #fff; background: var(--ui-selected); }
+.financial-tool-page .portfolio-mode .tool-button[aria-pressed="true"]:hover { background: var(--ui-selected); }
+.comparison-controls select { width: 100%; min-width: 0; min-height: 44px; padding: 9px 12px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-text); font: inherit; }
 .comparison-controls { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
 .comparison-summary { display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; }
 .comparison-summary dt { color: var(--ui-muted); font-size: 12px; }
