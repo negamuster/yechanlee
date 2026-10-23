@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { collectNews } from '../lib/news.js'
+import { collectNews, currentNewsPayload } from '../lib/news.js'
 const at = Date.parse('2026-10-07T05:00:00Z')
 const source = { id: 'example', publisher: 'Example', region: 'global', url: 'https://example.com/feed', hosts: ['example.com'] }
 const xml = (date = at) => `<rss><channel><item><title>Stocks and markets rise</title><link>https://example.com/article</link><pubDate>${new Date(date).toUTCString()}</pubDate></item></channel></rss>`
@@ -49,4 +49,31 @@ test('successful empty feeds replace old articles; stateless briefing collection
   await collectNews(fetcher, [source], at)
   await collectNews(fetcher, [source], at + 1)
   assert.equal(calls, 2)
+})
+
+test('news honors Retry-After, backs off repeated failures, and resets after recovery', async () => {
+  const cache=new Map();let calls=0
+  const fail=async()=>{calls++;return new Response(null,{status:503,headers:{'retry-after':'120'}})}
+  let body=await collectNews(fail,[source],at,100,cache)
+  assert.equal(body.sources[0].nextRetryAt,at+120000)
+  await collectNews(fail,[source],at+60000,100,cache);assert.equal(calls,1)
+  await collectNews(fail,[source],at+120000,100,cache);assert.equal(calls,2)
+  body=await collectNews(fail,[source],at+240000,100,cache)
+  assert.equal(body.sources[0].nextRetryAt,at+480000)
+  await collectNews(async()=>new Response(xml()),[source],at+480000,100,cache)
+  body=await collectNews(async()=>new Response(null,{status:500}),[source],at+480001,100,cache)
+  assert.equal(body.sources[0].nextRetryAt,at+540001)
+  assert.ok(!JSON.stringify(body).includes('retryAfter'))
+})
+
+test('cached news responses expire both articles and retained-source status at original deadlines', async () => {
+  const cache=new Map()
+  await collectNews(async()=>new Response(xml()),[source],at,100,cache)
+  const stale=await collectNews(async()=>new Response(null,{status:404}),[source],at+1,100,cache)
+  const expired=currentNewsPayload(stale,at+6*3600000+1)
+  assert.deepEqual(expired.items,[]);assert.equal(expired.sources[0].status,'unavailable')
+  assert.equal(expired.sources[0].lastSuccessAt,at);assert.equal(expired.sources[0].eligibleItems,0)
+  const fresh=await collectNews(async()=>new Response(xml(at-72*3600000+1)),[source],at)
+  const old=currentNewsPayload(fresh,at+2)
+  assert.equal(old.items.length,0);assert.equal(old.sources[0].status,'empty')
 })

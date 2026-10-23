@@ -6,6 +6,12 @@ export interface CalendarEvent {
 }
 export interface CalendarSource {
   name: string; date: string | null; state: 'ok' | 'snapshot' | 'stale' | 'unavailable'; updatedAt: string | null; url: string
+  error?: string; checkedAt?: string; nextRetryAt?: string
+}
+export function calendarFailureLabel(code: string) {
+  return code === 'http_403' ? '출처 서버 접근 거부 (403)' : /^http_(404|410)$/.test(code) ? '출처 주소 확인 필요'
+    : code === 'http_429' ? '출처 요청 한도 초과 (429)' : code === 'timeout' ? '출처 응답 시간 초과'
+      : code === 'snapshot_out_of_range' ? '보완 일정의 조회 범위 밖' : '출처 갱신 실패'
 }
 export interface CalendarData { events: CalendarEvent[]; sources: CalendarSource[]; fetchedAt: string }
 export const calendarLabels: Record<CalendarCategory, string> = { All: '전체', Economic: '경제지표', Earnings: '실적', Fed: '연준', Events: '행사' }

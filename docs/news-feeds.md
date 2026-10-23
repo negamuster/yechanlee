@@ -150,3 +150,9 @@ References:
 - https://github.com/KoNananachan/Neuberg/blob/main/client/src/components/panels/news-feed.tsx
 - https://github.com/KoNananachan/Neuberg/blob/main/server/src/services/scraper/neuberg-scraper.ts
 - https://github.com/KoNananachan/Neuberg/blob/main/LICENSE
+
+## Retry deadlines and response expiry (2026-10-23)
+
+The existing per-feed backoff now respects Retry-After on 429/503, bounded to 24 hours, and doubles repeated transient failures from one minute to at most 15 minutes. Existing 403/404 floors remain; 410 uses the six-hour address-error floor. A successful collection, including a validated empty feed, resets the failure count. Briefing collection remains live-only; it does not reuse failed-feed cache entries.
+
+API cache hits also prune articles past 72 hours and failed-source articles past six hours from the original successful receipt. CDN freshness plus stale-while-revalidate never exceeds the earliest article deadline; responses within one second of expiry and retained stale responses use no-store. Expired retained sources become unavailable with zero eligible items; a healthy feed whose articles have all aged out is empty. Source errors/last-attempt/last-success/retry timestamps remain distinct. The operational checker now warns on retained stale feeds as well as unavailable ones. No feed endpoint or host allowlist changed; Yahoo 404 and environment-specific Hankyung 403 remain visible.

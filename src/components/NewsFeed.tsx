@@ -272,7 +272,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
           {source.lastSuccessAt && source.status === 'stale' && <small>마지막 정상 수집: {dataTime(source.lastSuccessAt)} · 최대 6시간 유지</small>}
           {source.nextRetryAt && <small>재시도 가능 시각: {dataTime(source.nextRetryAt)}</small>}
         </li>)}</ul>
-        <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
+        <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 일시 오류가 반복되면 확인 간격이 길어지며, 출처가 요청한 대기 시간도 적용됩니다. 재시도 가능 시각 이후 다음 요청에서 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
       </details>}
       <div id={newsListId} className="news-results" tabIndex={-1} aria-busy={loading && !feed}>
         {loading && !feed ? null : news.length ? <>
