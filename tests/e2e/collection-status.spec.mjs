@@ -12,7 +12,7 @@ test('calendar exposes retained source time, failed attempt and next retry witho
   await page.goto('/calendar')
   await expect(page.getByText('일정 일부를 확인하지 못했습니다.',{exact:true})).toBeVisible()
   await expect(page.getByText('선택한 날짜에 등록된 일정이 없어요.',{exact:true})).toHaveCount(0)
-  await page.getByRole('button',{name:'캘린더 출처와 조회 범위'}).click()
+  await page.locator('.calendar-help summary[aria-label="캘린더 출처와 조회 범위"]').click()
   const source=page.locator('.calendar-source-status')
   await expect(source).toContainText('저장 일정 사용')
   await expect(source).toContainText('출처 서버 접근 거부 (403)')
