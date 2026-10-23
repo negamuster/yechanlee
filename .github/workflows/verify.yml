@@ -23,15 +23,52 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record checked revision
+        id: revision
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6.0.0
         with:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
+        id: dependencies
       - run: node --test tests/*.test.mjs
+        id: node_tests
       - run: npm run build
+        id: build
       - run: npx playwright install --with-deps chromium
+        id: browser_install
       - run: npm run test:e2e
+        id: browser_tests
+      - name: Summarize revision and checks
+        if: always()
+        env:
+          CHECKED_SHA: ${{ steps.revision.outputs.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DEPENDENCIES: ${{ steps.dependencies.outcome }}
+          NODE_TESTS: ${{ steps.node_tests.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          BROWSER_INSTALL: ${{ steps.browser_install.outcome }}
+          BROWSER_TESTS: ${{ steps.browser_tests.outcome }}
+        run: |
+          {
+            printf '## Verification evidence\n\n'
+            printf '| Revision | SHA |\n| --- | --- |\n'
+            printf '| Checked checkout (PR: integrated merge) | %s |\n' "${CHECKED_SHA:-unavailable}"
+            printf '| PR head | %s |\n' "${PR_HEAD_SHA:-not a PR run}"
+            printf '| PR base | %s |\n\n' "${PR_BASE_SHA:-not a PR run}"
+            printf '| Check | Outcome |\n| --- | --- |\n'
+            printf '| Dependencies | %s |\n' "$DEPENDENCIES"
+            printf '| Node regression tests | %s |\n' "$NODE_TESTS"
+            printf '| Production build | %s |\n' "$BUILD"
+            printf '| Chromium installation | %s |\n' "$BROWSER_INSTALL"
+            printf '| Desktop/mobile Chromium tests | %s |\n\n' "$BROWSER_TESTS"
+            printf 'This run does not verify a Vercel preview, production deployment, physical mobile device, or Safari.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
