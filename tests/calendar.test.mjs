@@ -42,7 +42,7 @@ test('Handler validates ranges, caches successes and exposes stale/failing sourc
   assert.equal((await handler(new Request('https://example.com/api/calendar?from=2026-10-01&to=2026-10-10'))).status,400)
   const first = await (await handler(request())).json()
   assert.equal(first.sources.find(s=>s.name==='Nasdaq').state, 'unavailable')
-  await handler(request()); assert.equal(calls,5) // 3 successful caches + a failed Nasdaq retry
+  await handler(request()); assert.equal(calls,4) // Failed Nasdaq requests now also wait before retrying.
   clock += 16 * 60000; fail = true
   const stale = await (await handler(request())).json()
   assert.equal(stale.sources[0].state, 'stale')
@@ -82,7 +82,7 @@ test('BLS fallback preserves verification time, caches fallback honestly, and ex
   assert.equal(result.sources[0].state, 'snapshot')
   assert.equal(result.sources[0].updatedAt, snapshotAt)
   result = await (await handler(monthRequest())).json()
-  assert.equal(calls, 5)
+  assert.equal(calls, 3) // Neither failed BEA/Fed nor BLS is refetched during backoff.
   assert.equal(result.sources[0].state, 'snapshot')
   clock += 16 * 60000
   result = await (await handler(monthRequest())).json()

@@ -25,3 +25,10 @@ test('names restricted and unconfigured feeds without calling them healthy', () 
  assert.ok(result.warnings.some(w=>w.includes('hankyung-economy (http_403)')))
  assert.ok(result.warnings.some(w=>w.includes('reuters')))
 })
+
+test('retained news and fallback calendars still warn when a live refresh fails', () => {
+ const news=inspectHealth('news',{items:[{published_utc:new Date(now).toISOString()}],fetchedAt:now,sources:[{id:'example',status:'stale',error:'http_503'}]},now)
+ assert.equal(news.errors.length,0);assert.ok(news.warnings.some(w=>w.includes('example (http_503)')))
+ const calendar=inspectHealth('calendar',{events:[],sources:[{name:'BLS',state:'snapshot',updatedAt:new Date(now).toISOString(),error:'http_403'}]},now)
+ assert.equal(calendar.errors.length,0);assert.ok(calendar.warnings.some(w=>w.includes('http_403')))
+})
