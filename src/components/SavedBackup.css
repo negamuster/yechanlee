@@ -8,3 +8,7 @@
 .saved-backup button:disabled { opacity: .5; cursor: default; }
 .saved-backup-preview { border-top: 1px solid #dededb; padding-top: 12px; margin-top: 14px; }
 .saved-backup-error { color: #944f40; }
+.saved-backup-area { margin: 20px 0; }
+.saved-backup-status { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid #dededb; border-radius: 6px; background: #f7f8f4; color: #404737; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.saved-backup-status strong { font-weight: 500; }
+.saved-backup-status span { color: #64685d; }
