@@ -2,7 +2,7 @@
 
 ## Pull request checks
 
-`Verify site changes` runs Node regression tests, a production build, and Playwright in Chromium. The five browser scenarios run at desktop and Pixel 7 viewport sizes (10 cases):
+`Verify site changes` runs `npm test`, a production build, and Playwright in Chromium. The browser suite covers stock lookup plus charts, economic indicators, collection status, 13F, investment evidence, note discovery and backup status. Each scenario runs at desktop and Pixel 7 viewport sizes. Stock lookup scenarios include:
 
 - Search for a company, open its stock page and select all eight chart periods; check English dates and horizontal overflow.
 - Recover missing company metadata and news while confirmed prices and SEC financials remain available.
@@ -14,11 +14,11 @@ These browser tests use synthetic AAPL/NVDA/SATL responses and a fixed clock. Ex
 
 ```sh
 npm ci
-node --test tests/*.test.mjs
-npm run build
-npx playwright install --with-deps chromium
-npm run test:e2e
+npm run setup:browsers
+npm run verify:all
 ```
+
+For Node tests and build only, use `npm run verify`. After a successful build of the same revision, `npm run test:e2e` adds browser checks without repeating Node tests and build. Browser installation is separate from verification and must succeed before browser results can be reported. See the [README](../README.md) for Node version, development setup, static-preview limitations and the command reference. CI retains separate steps so each outcome remains visible.
 
 ## Production checks
 
@@ -33,7 +33,9 @@ Shared Zod contracts validate ticker identity, numeric values, annual periods/un
 ```sh
 npm run check:stocks
 npm run check:stocks -- --symbol AAPL
-node scripts/check-data-health.mjs # includes existing global feeds
+npm run check:data # includes existing global feeds
 ```
+
+These commands call the deployed production site, not the local development or preview server. They are deliberately excluded from `verify` and `verify:all`, because they can consume upstream quota and depend on live source availability. Unlike the deployment workflow, these direct commands do not first wait for a specific deployed SHA; check `/build-info.json` separately when verifying a deployment.
 
 Reports appear in the Actions step summary and `production-data-health` JSON artifact (seven-day retention), including per-resource OK/WARN/FAIL/SKIP details without raw upstream bodies. Workflow failures remain visible in GitHub Actions; this change does not configure a separate notification channel. The new post-deployment trigger becomes active after merging to main.
