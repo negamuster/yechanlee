@@ -26,12 +26,12 @@
 
 ```sh
 npm ci
-node --test tests/*.test.mjs
-npm run build
 # Chromium이 없는 환경에서 최초 브라우저 검사 전에 설치
-npx playwright install --with-deps chromium
-npm run test:e2e
+npm run setup:browsers
+npm run verify:all
 ```
+
+명령별 범위와 개발 서버·정적 미리보기·운영 API 점검의 차이는 [README](README.md)를 따른다. 이미 `verify`를 실행한 동일 SHA에서 브라우저 검사만 추가할 때는 `npm run test:e2e`를 사용해 Node·빌드를 중복 실행하지 않아도 된다. 운영 API를 호출하는 `check:data`·`check:stocks`는 로컬 검증에 포함하지 않는다.
 
 - 병렬 결과를 합친 뒤 실제 통합 커밋 SHA를 기준으로 검사한다. PR CI는 기본 브랜치와 합쳐진 임시 merge SHA를 검사하며 PR head SHA와 다르다. 로컬 SHA·PR head SHA·CI의 실제 검사 SHA를 구분한다.
 - 검사 후 코드·설정·의존성·데이터/생성물이 바뀌거나 base가 변경되면 영향받는 검사를 새 통합 SHA에서 다시 실행한다. 어떤 검사를 유지하거나 생략했는지 이유를 남기고 이전 SHA의 결과를 새 SHA의 통과로 표시하지 않는다.

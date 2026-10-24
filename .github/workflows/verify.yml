@@ -35,11 +35,11 @@ jobs:
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
         id: dependencies
-      - run: node --test tests/*.test.mjs
+      - run: npm test
         id: node_tests
       - run: npm run build
         id: build
-      - run: npx playwright install --with-deps chromium
+      - run: npm run setup:browsers
         id: browser_install
       - run: npm run test:e2e
         id: browser_tests
