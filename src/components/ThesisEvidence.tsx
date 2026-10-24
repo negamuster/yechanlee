@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { useSessionState } from '../hooks/useSessionState'
+import { defaultEvidenceFilters, findEvidence, validEvidenceFilters } from '../lib/noteDiscovery'
 import { EVIDENCE_KINDS, EVIDENCE_ROLES } from '../lib/evidence'
 import type { Evidence } from '../lib/evidence'
 import { useSavedItems } from './SavedItemsProvider'
@@ -26,13 +29,25 @@ export function EvidenceHistory({ evidence }: { evidence: Evidence[] }) {
 }
 export default function ThesisEvidence({ ticker, evidence }: { ticker: string; evidence: Evidence[] }) {
   const { setEvidenceArchived } = useSavedItems()
+  const { hash } = useLocation()
+  const [filters, setFilters] = useSessionState(`thesis.${ticker}.evidenceFilters`, defaultEvidenceFilters, validEvidenceFilters)
   const [error, setError] = useState('')
-  const active = evidence.filter(e => !e.archivedAt), archived = evidence.filter(e => e.archivedAt)
+  const active = evidence.filter(e => !e.archivedAt), visible = findEvidence(evidence, filters)
+  const linked = evidence.find(e => hash === `#evidence-${e.id}`)
+  const outside = linked && !visible.some(e => e.id === linked.id) ? linked : null
   function archive(e: Evidence) { try { setEvidenceArchived(ticker, e.id, !e.archivedAt); setError('') } catch (error) { setError((error as Error).message) } }
   return <section aria-labelledby="thesis-evidence-heading"><h2 id="thesis-evidence-heading">연결된 근거 자료 <small>{active.length}개 · 보관 포함 {evidence.length}/100</small></h2>
     <p className="thesis-help">뉴스·SEC 재무·Daily Briefing·13F의 ‘노트에 연결’로 추가합니다. 연결 당시 내용은 자동 갱신되지 않습니다. 보관한 자료도 과거 판단 이력과 백업에 남습니다.</p>
+    {!!evidence.length && <><div className="research-filters" role="group" aria-label="근거 자료 검색과 필터">
+      <label className="research-query">근거 검색<input type="search" maxLength={120} placeholder="제목·출처·연결 이유" value={filters.query} onChange={e => setFilters({ ...filters, query: e.target.value })} /></label>
+      <label>자료 유형<select value={filters.kind} onChange={e => setFilters({ ...filters, kind: e.target.value as typeof filters.kind })}><option value="all">전체 유형</option>{Object.entries(EVIDENCE_KINDS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
+      <label>근거 역할<select value={filters.role} onChange={e => setFilters({ ...filters, role: e.target.value as typeof filters.role })}><option value="all">전체 역할</option>{Object.entries(EVIDENCE_ROLES).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
+      <label>보관 상태<select value={filters.archive} onChange={e => setFilters({ ...filters, archive: e.target.value as typeof filters.archive })}><option value="active">활성 자료</option><option value="archived">보관된 자료</option><option value="all">보관 포함 전체</option></select></label>
+      <label>근거 정렬<select value={filters.sort} onChange={e => setFilters({ ...filters, sort: e.target.value as typeof filters.sort })}><option value="newest">연결일 최신순</option><option value="oldest">연결일 오래된순</option></select></label>
+      <button type="button" onClick={() => setFilters(defaultEvidenceFilters())}>근거 조건 초기화</button>
+    </div><p className="thesis-help" role="status">근거 {visible.length}개 표시 · 보관 포함 전체 {evidence.length}개</p></>}
     {error && <p className="thesis-error" role="alert">{error}</p>}
-    {active.length ? <ul className="evidence-list">{[...active].reverse().map(e => <li key={e.id}><EvidenceCard evidence={e} onArchive={() => archive(e)} linkable /></li>)}</ul> : <p className="thesis-help">연결된 근거 자료가 없습니다.</p>}
-    {!!archived.length && <details><summary>보관된 자료 ({archived.length})</summary><ul className="evidence-list">{archived.map(e => <li key={e.id}><EvidenceCard evidence={e} onArchive={() => archive(e)} /></li>)}</ul></details>}
+    {outside && <div className="evidence-linked"><p className="thesis-help">바로 연결한 근거입니다. 현재 검색·필터 조건과 별도로 표시합니다.</p><EvidenceCard evidence={outside} onArchive={() => archive(outside)} linkable /></div>}
+    {visible.length ? <ul className="evidence-list">{visible.map(e => <li key={e.id}><EvidenceCard evidence={e} onArchive={() => archive(e)} linkable /></li>)}</ul> : <p className="thesis-help">{evidence.length ? '조건에 맞는 근거 자료가 없습니다. 검색어나 필터를 바꿔보세요.' : '연결된 근거 자료가 없습니다.'}</p>}
   </section>
 }
