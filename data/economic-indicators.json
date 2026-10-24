@@ -4,8 +4,8 @@
     {
       "id": "cpi",
       "collectedAt": "2026-10-23T20:01:47.852Z",
-      "attemptedAt": "2026-10-23T20:01:47.852Z",
-      "error": null,
+      "attemptedAt": "2026-10-24T18:55:37.754Z",
+      "error": "unavailable",
       "observations": [
         {
           "date": "2020-01-01",
@@ -337,8 +337,8 @@
     {
       "id": "unemployment",
       "collectedAt": "2026-10-23T20:01:47.852Z",
-      "attemptedAt": "2026-10-23T20:01:47.852Z",
-      "error": null,
+      "attemptedAt": "2026-10-24T18:55:37.754Z",
+      "error": "unavailable",
       "observations": [
         {
           "date": "2020-01-01",
@@ -670,8 +670,8 @@
     },
     {
       "id": "effr",
-      "collectedAt": "2026-10-23T20:01:47.852Z",
-      "attemptedAt": "2026-10-23T20:01:47.852Z",
+      "collectedAt": "2026-10-24T18:55:37.754Z",
+      "attemptedAt": "2026-10-24T18:55:37.754Z",
       "error": null,
       "observations": [
         {
