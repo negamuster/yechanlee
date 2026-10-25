@@ -10,6 +10,8 @@ on:
       - 'scripts/refresh-economic-indicators.mjs'
       - 'lib/economic-indicators.js'
       - 'lib/economic-series.js'
+      - 'lib/fred-economic.js'
+      - 'lib/economic-collection-report.js'
 permissions:
   contents: write
 concurrency:
@@ -30,7 +32,7 @@ jobs:
           node-version: '24'
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
-      - run: node --test tests/economic-indicators.test.mjs
+      - run: node --test tests/economic-indicators.test.mjs tests/economic-fallback.test.mjs
       - name: Collect official observations
         id: collect
         run: |
