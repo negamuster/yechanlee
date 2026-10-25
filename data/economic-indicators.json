@@ -4,7 +4,7 @@
     {
       "id": "cpi",
       "collectedAt": "2026-10-23T20:01:47.852Z",
-      "attemptedAt": "2026-10-24T18:55:37.754Z",
+      "attemptedAt": "2026-10-25T07:00:11.257Z",
       "error": "unavailable",
       "observations": [
         {
@@ -332,12 +332,13 @@
           "date": "2026-09-01",
           "value": 336.94
         }
-      ]
+      ],
+      "failureReason": "http_503"
     },
     {
       "id": "unemployment",
       "collectedAt": "2026-10-23T20:01:47.852Z",
-      "attemptedAt": "2026-10-24T18:55:37.754Z",
+      "attemptedAt": "2026-10-25T07:00:11.257Z",
       "error": "unavailable",
       "observations": [
         {
@@ -666,13 +667,15 @@
           "date": "2026-09-01",
           "value": 4.2
         }
-      ]
+      ],
+      "failureReason": "http_503"
     },
     {
       "id": "effr",
-      "collectedAt": "2026-10-24T18:55:37.754Z",
-      "attemptedAt": "2026-10-24T18:55:37.754Z",
+      "collectedAt": "2026-10-25T07:00:11.257Z",
+      "attemptedAt": "2026-10-25T07:00:11.257Z",
       "error": null,
+      "failureReason": null,
       "observations": [
         {
           "date": "2021-01-04",
