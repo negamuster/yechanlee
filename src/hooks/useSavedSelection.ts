@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSavedItems } from '../components/SavedItemsProvider'
+import { useSavedItems } from './useSavedItems'
 export function useSavedSelection(kind: 'stocks' | 'articles', ids: string[]) {
   const { removeSelected } = useSavedItems()
   const [picked, setPicked] = useState<string[]>([])

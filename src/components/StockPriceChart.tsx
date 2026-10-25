@@ -1,6 +1,6 @@
 // TradingView Lightweight Charts™
 // Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useId, useRef, useState } from 'react'
 import { createChart, LineSeries, CandlestickSeries, HistogramSeries, ColorType, CrosshairMode, TrackingModeExitMode } from 'lightweight-charts'
 import type { IChartApi, ISeriesApi, UTCTimestamp, Time } from 'lightweight-charts'
 import type { PricePoint, StockChartPeriod } from '../lib/stockChart'
@@ -20,24 +20,32 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
   mode: StockChartMode; onModeChange: (mode: StockChartMode) => void; volume: boolean; onVolumeChange: (value: boolean) => void
 }) {
   const id = useId(), container = useRef<HTMLDivElement>(null), engine = useRef<Engine | null>(null)
-  const previous = useRef(bars), latestBars = useRef(bars), manual = useRef(false)
-  latestBars.current = bars
+  const latestBars = useRef(bars)
+  const updatingData = useRef(false)
+  const [previousBars, setPreviousBars] = useState(bars), [manual, setManual] = useState(false)
   const [activeTime, setActiveTime] = useState<number | null>(null), [range, setRange] = useState(() => chartFullRange(bars.length)), [available, setAvailable] = useState(true), [tablePage, setTablePage] = useState(0)
   const rangeRef = useRef(range)
+  if (previousBars !== bars) {
+    setPreviousBars(bars)
+    setRange(current => manual ? preserveChartRange(previousBars, bars, current) : chartFullRange(bars.length))
+  }
+  useLayoutEffect(() => { latestBars.current = bars; rangeRef.current = range }, [bars, range])
   const candlesAvailable = bars.some(hasCandle), volumeAvailable = bars.some(p => p.v != null)
   const effectiveMode = candlesAvailable ? mode : 'line', showVolume = volume && volumeAvailable
   const activeIndex = activeTime == null ? bars.length - 1 : nearestChartIndex(bars, activeTime), selected = bars[activeIndex]
   const visible = visibleChartPoints(bars, clampChartRange(range, bars.length)), first = visible[0], last = visible.at(-1)
   const setView = (value: ChartRange) => { const next = clampChartRange(value, bars.length); rangeRef.current = next; setRange(next); engine.current?.chart.timeScale().setVisibleLogicalRange(next) }
-  const navigate = (next: ChartRange) => { manual.current = true; setView(next) }
-  const fit = () => { manual.current = false; engine.current?.chart.priceScale('right').applyOptions({ autoScale: true }); setView(chartFullRange(bars.length)) }
-  useEffect(() => {
+  const navigate = (next: ChartRange) => { setManual(true); setView(next) }
+  const fit = () => { setManual(false); engine.current?.chart.priceScale('right').applyOptions({ autoScale: true }); setView(chartFullRange(bars.length)) }
+  const attachChart = useCallback((node: HTMLDivElement | null) => {
+    container.current = node
     // Canvas may be unavailable in assistive/static renderers. Native controls,
     // the readout and table remain usable instead of crashing the detail page.
-    if (!container.current || typeof window.CanvasRenderingContext2D === 'undefined') { setAvailable(false); return }
+    if (!node) return
+    if (typeof window.CanvasRenderingContext2D === 'undefined') { setAvailable(false); return }
     let chart: IChartApi | undefined
     try {
-      chart = createChart(container.current, {
+      chart = createChart(node, {
         autoSize: true, layout: { background: { type: ColorType.Solid, color: '#ffffff' }, textColor: '#777777', fontFamily: 'Arial, sans-serif', fontSize: 11, attributionLogo: true, panes: { enableResize: false } },
         grid: { vertLines: { visible: false }, horzLines: { color: '#eeeeee' } },
         rightPriceScale: { borderColor: '#e5e5e5', autoScale: true, minimumWidth: 64 },
@@ -54,9 +62,9 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       const candles = chart.addSeries(CandlestickSeries, { upColor: '#16845b', downColor: '#c34b45', wickUpColor: '#16845b', wickDownColor: '#c34b45', borderVisible: false, visible: false, priceFormat, priceLineVisible: false, lastValueVisible: false })
       engine.current = { chart, line, candles }
       chart.timeScale().subscribeVisibleLogicalRangeChange(value => {
-        if (!value) return
+        if (!value || updatingData.current) return
         const next = clampChartRange(value, latestBars.current.length)
-        rangeRef.current = next; setRange(next); setTablePage(0)
+        rangeRef.current = next; setRange(previous => previous.from === next.from && previous.to === next.to ? previous : next); setTablePage(0)
         if (value.to - value.from < Math.min(7, latestBars.current.length - 1) - .01) chart?.timeScale().setVisibleLogicalRange(next)
       })
       chart.subscribeCrosshairMove(event => { if (typeof event.time === 'number') setActiveTime(event.time * 1000) })
@@ -65,9 +73,13 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     return () => { engine.current = null; chart?.remove() }
   }, [currency, period])
   useEffect(() => {
-    const next = manual.current ? preserveChartRange(previous.current, bars, rangeRef.current) : chartFullRange(bars.length)
+    const next = rangeRef.current
     const instance = engine.current
     if (instance) {
+      // A series replacement may synchronously publish an intermediate range.
+      // Only accept user/settled chart events, then restore the chosen range.
+      updatingData.current = true
+      try {
       instance.line.setData(bars.map(p => ({ time: time(p), value: p.c })))
       instance.line.applyOptions({ visible: effectiveMode === 'line', color: changePercent == null || changePercent === 0 ? '#334c59' : changePercent > 0 ? '#16845b' : '#c34b45' })
       instance.candles.setData(bars.map(p => hasCandle(p) ? { time: time(p), open: p.o!, high: p.h!, low: p.l!, close: p.c } : { time: time(p) }))
@@ -80,9 +92,9 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       instance.volume?.setData(bars.map(p => ({ time: time(p), ...(p.v == null ? {} : { value: p.v, color: p.o != null ? p.c >= p.o ? '#7ab49d' : '#d49a96' : '#a9afb2' }) })))
       container.current?.querySelectorAll('a').forEach(anchor => { anchor.tabIndex = -1 })
       instance.chart.timeScale().setVisibleLogicalRange(next)
+      } finally { updatingData.current = false }
     }
-    rangeRef.current = next; setRange(next); previous.current = bars
-  }, [bars, effectiveMode, showVolume, changePercent])
+  }, [bars, effectiveMode, showVolume, changePercent, currency, period])
   function select(index: number) {
     const i = Math.max(0, Math.min(bars.length - 1, index)); setActiveTime(bars[i].t)
     const instance = engine.current
@@ -100,12 +112,12 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     {(!candlesAvailable || !volumeAvailable) && <p className="stock-note">{!candlesAvailable && '시가·고가·저가 미제공 · 선형 차트 표시. '}{!volumeAvailable && '거래량 미제공.'}</p>}
     <div className="stock-chart-readout" role="status" aria-live="polite"><time dateTime={new Date(selected.t).toISOString()}>{chartPointTime(selected.t, period)} ET</time><strong>{stockMoney(selected.c, currency)}</strong><span>{chartIntervalLabel(interval)} 종가</span></div>
     <dl className="stock-chart-ohlcv">{[['시가', selected.o], ['고가', selected.h], ['저가', selected.l], ['종가', selected.c]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value == null ? '미제공' : stockMoney(value, currency)}</dd></div>)}<div><dt>거래량 (주)</dt><dd>{formatVolume(selected.v)}</dd></div></dl>
-    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${id}-help`} onPointerDownCapture={() => { manual.current = true }} onWheelCapture={() => { manual.current = true }} onTouchStartCapture={() => { manual.current = true }} onKeyDown={event => {
+    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${id}-help`} onPointerDownCapture={() => setManual(true)} onWheelCapture={() => setManual(true)} onTouchStartCapture={() => setManual(true)} onKeyDown={event => {
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); select(activeIndex + (event.key === 'ArrowLeft' ? -1 : 1)) }
       else if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); select(event.key === 'Home' ? 0 : bars.length - 1) }
       else if (['+', '=', '-', '0', 'PageUp', 'PageDown'].includes(event.key)) { event.preventDefault(); if (event.key === '0') fit(); else if (event.key.startsWith('Page')) navigate(moveChartRange(range, bars.length, event.key === 'PageUp' ? -1 : 1)); else navigate(zoomChartRange(range, bars.length, event.key === '-' ? 1 / .65 : .65)) }
     }}>
-      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={container} aria-hidden="true" />
+      <div className={`stock-chart-canvas${showVolume ? ' with-volume' : ''}`} ref={attachChart} aria-hidden="true" />
       {!available && <p className="stock-chart-fallback">이 환경에서는 차트를 표시할 수 없습니다. 아래 조회 표에서 값을 확인하세요.</p>}
     </div>
     <div className="stock-chart-x-labels"><span>{first && chartPointTime(first.t, period)} ET</span><span>{last && chartPointTime(last.t, period)} ET</span></div>

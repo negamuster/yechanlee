@@ -8,7 +8,7 @@ export function originLabel(href: string) {
 export function readReturnOrigin(state: unknown): ReturnOrigin | null {
   const candidate = (state as { returnOrigin?: ReturnOrigin } | null)?.returnOrigin
   if (!candidate || typeof candidate.href !== 'string' || candidate.href.length > 2500
-    || !candidate.href.startsWith('/') || candidate.href.startsWith('//') || /[\\\u0000-\u001f]/.test(candidate.href)
+    || !candidate.href.startsWith('/') || candidate.href.startsWith('//') || candidate.href.includes('\\') || [...candidate.href].some(char => char.charCodeAt(0) < 32)
     || !originLabel(candidate.href) || typeof candidate.key !== 'string' || candidate.key.length > 100
     || !(candidate.index === null || (Number.isSafeInteger(candidate.index) && candidate.index >= 0))) return null
   return candidate

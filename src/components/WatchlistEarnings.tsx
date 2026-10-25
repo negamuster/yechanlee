@@ -3,7 +3,7 @@ import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useResource } from '../hooks/useResource'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import { isWebUrl } from '../lib/watchlist'
 import { dataTime } from '../utils/dataTime'
 type Event = { id: string; ticker: string; title: string; date: string; sourceUrl: string; session: string | null }

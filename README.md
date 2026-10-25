@@ -49,17 +49,17 @@ npm run verify:all
 | --- | --- |
 | `npm test` | `tests/*.test.mjs`의 전체 Node 회귀 검사 |
 | `npm run build` | 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드 → 커밋 표식 생성 |
-| `npm run verify` | Node 회귀 검사 + 빌드 |
+| `npm run verify` | lint + Node 회귀 검사 + 빌드 |
 | `npm run setup:browsers` | Playwright Chromium과 필요한 시스템 의존성 설치 |
 | `npm run test:e2e` | 이미 빌드한 결과로 PC·모바일 Chromium 검사 |
-| `npm run verify:all` | Node 회귀 검사 + 빌드 + PC·모바일 Chromium 검사 |
-| `npm run lint` | 별도 ESLint 점검. 기존 오류가 남아 있어 현재 CI 통과 조건에는 포함하지 않음 |
+| `npm run verify:all` | lint + Node 회귀 검사 + 빌드 + PC·모바일 Chromium 검사 |
+| `npm run lint` | ESLint 검사 · 경고도 실패 처리 · verify 및 CI에 포함 |
 
 브라우저 검사는 고정된 시각과 합성 API 응답을 사용하며 외부 요청을 차단합니다. 실제 API 키나 운영 API 할당량을 쓰지 않습니다. `test:e2e`가 `127.0.0.1:4173`에 preview 서버를 직접 실행하므로 해당 포트를 비워 둡니다. 모바일 검사는 Pixel 7 크기의 Chromium 에뮬레이션이며 실제 기기·Safari 검사는 아닙니다.
 
 ## GitHub CI와 운영 점검
 
-[Verify site changes](.github/workflows/verify.yml)는 PR의 통합 커밋에서 의존성 설치, `npm test`, 빌드, 브라우저 설치, PC·모바일 검사를 실행합니다. 결과를 구분해 볼 수 있도록 단계별로 실행하며 실제 검사 SHA와 성공·실패·건너뜀을 요약합니다. 실패 시 화면·trace·HTML 보고서를 7일간 보관합니다.
+[Verify site changes](.github/workflows/verify.yml)는 PR의 통합 커밋에서 의존성 설치, `npm test`, lint, 빌드, 브라우저 설치, PC·모바일 검사를 실행합니다. 결과를 구분해 볼 수 있도록 단계별로 실행하며 실제 검사 SHA와 성공·실패·건너뜀을 요약합니다. 실패 시 화면·trace·HTML 보고서를 7일간 보관합니다.
 
 로컬 검증, GitHub CI, Vercel 미리보기, 운영 배포는 별도 결과입니다. 작업 범위·리뷰·검증한 SHA·남은 제한은 [PR 양식](.github/pull_request_template.md)에 기록합니다. 병합·운영 배포는 요청받은 범위에서 진행하며, 배포 후 `/build-info.json`의 커밋과 화면 동작을 확인합니다. 자세한 작업 원칙은 [AGENTS.md](AGENTS.md)를 따릅니다.
 

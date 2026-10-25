@@ -10,7 +10,8 @@ import { cachedResource, loadResource } from '../utils/resourceCache'
 import { dataTime } from '../utils/dataTime'
 import { sortStocks, isQuotes } from '../lib/watchlist'
 import type { Quote, Sort } from '../lib/watchlist'
-import { useSavedItems, WatchButton } from './SavedItemsProvider'
+import { WatchButton } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import './Watchlist.css'
 
 export default function WatchlistPanel() {

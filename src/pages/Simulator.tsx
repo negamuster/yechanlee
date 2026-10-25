@@ -18,13 +18,13 @@ function formatKorean(value: number): string {
 }
 const handleWheel = (event: WheelEvent<HTMLInputElement>) => event.currentTarget.blur()
 
-function SimulatorInput({ label, value, onChange, money = false, placeholder = '0', hint, integer = false }: {
-  label: string; value: string; onChange: (value: string) => void; money?: boolean; placeholder?: string; hint?: string; integer?: boolean
+function SimulatorInput({ label, value, onChange, money = false, placeholder = '0', hint, integer = false, min, max }: {
+  label: string; value: string; onChange: (value: string) => void; money?: boolean; placeholder?: string; hint?: string; integer?: boolean; min?: number; max?: number
 }) {
   return <label className="tool-field">
     <span>{label}</span>
     <input className="sim-input" type={money ? 'text' : 'number'} inputMode={money || integer ? 'numeric' : 'decimal'}
-      step={integer ? 1 : 'any'} value={value} placeholder={placeholder}
+      step={integer ? 1 : 'any'} min={min} max={max} value={value} placeholder={placeholder}
       onChange={event => onChange(money ? formatInput(event.target.value) : event.target.value)} onWheel={money ? undefined : handleWheel} />
     {hint && <small>{hint}</small>}
   </label>
@@ -52,6 +52,7 @@ export default function Simulator() {
   const [otherPrincipal, setOtherPrincipal] = useState('')
 
   const hasInput = currentAge && (savings || stocks || other) && expense && income
+  const invalidAge = [currentAge, retireAge].some(value => value !== '' && (!Number.isInteger(Number(value)) || Number(value) < 0 || Number(value) > 100))
 
   const data = useMemo(() => hasInput ? projectAssets({
     age: Number(currentAge), retireAge: retireAge ? Number(retireAge) : 100,
@@ -73,21 +74,17 @@ export default function Simulator() {
   const W = 620, H = 280, PL = 64, PR = 20, PT = 20, PB = 44
   const gW = W - PL - PR
   const gH = H - PT - PB
-  const startAge = parseInt(currentAge) || 20
+  // The projection has already validated ages and contains at most 101 rows.
+  // Never iterate over raw input: even an incomplete invalid age must stay bounded.
+  const startAge = data[0]?.age ?? 0
   const totalYears = 100 - startAge || 1
   const maxAsset = data.length ? Math.max(...data.map(d => d.asset), 0) : 0
   const minAsset = data.length ? Math.min(...data.map(d => d.asset), 0) : 0
   const range = maxAsset - minAsset || 1
   const xOf = (a: number) => PL + ((a - startAge) / totalYears) * gW
   const yOf = (v: number) => PT + gH - ((v - minAsset) / range) * gH
-  const xTicks: number[] = []
-  for (let a = startAge; a <= 100; a++) {
-    if ((a - startAge) % 10 === 0 || a === 100) xTicks.push(a)
-  }
-  const xGrids: number[] = []
-  for (let a = startAge; a <= 100; a++) {
-    if ((a - startAge) % 5 === 0) xGrids.push(a)
-  }
+  const xTicks = data.filter(row => (row.age - startAge) % 10 === 0 || row.age === 100).map(row => row.age)
+  const xGrids = data.filter(row => (row.age - startAge) % 5 === 0).map(row => row.age)
   const yTicks = [0, 1, 2, 3, 4].map(i => minAsset + (range * i) / 4)
   const polyline = data.map(d => `${xOf(d.age)},${yOf(d.asset)}`).join(' ')
   const dots = data.filter((_, i) => i % 5 === 0)
@@ -99,8 +96,8 @@ export default function Simulator() {
       <section className="tool-card" aria-labelledby="sim-age-heading">
         <div className="tool-card-heading"><h2 id="sim-age-heading">나이</h2></div>
         <div className="sim-field-grid">
-          <SimulatorInput label="현재 나이" integer value={currentAge} onChange={setCurrentAge} placeholder="예: 25" />
-          <SimulatorInput label="은퇴 나이" integer value={retireAge} onChange={setRetireAge} placeholder="예: 60" hint="수입이 없어지는 나이 · 미입력 시 100세" />
+          <SimulatorInput label="현재 나이" integer min={0} max={100} value={currentAge} onChange={setCurrentAge} placeholder="예: 25" />
+          <SimulatorInput label="은퇴 나이" integer min={0} max={100} value={retireAge} onChange={setRetireAge} placeholder="예: 60" hint="수입이 없어지는 나이 · 미입력 시 100세" />
         </div>
       </section>
       <section className="tool-card" aria-labelledby="sim-assets-heading">
@@ -159,7 +156,7 @@ export default function Simulator() {
           <p>소득·소비·수익률과 대출 조건에 따라 결과가 달라집니다. 0원도 입력할 수 있으며, 나이별 금액은 해당 나이의 연초 기준입니다.</p>
         </div>
       </details>
-      {hasInput && !data.length && <p role="alert" className="tool-callout">나이는 0~100의 정수, 자산 수익률·소득 및 소비 증가율은 -100~1,000%, 대출 금리는 0~1,000% 범위로 입력해 주세요.</p>}
+      {(invalidAge || hasInput && !data.length) && <p role="alert" className="tool-callout">나이는 0~100의 정수, 자산 수익률·소득 및 소비 증가율은 -100~1,000%, 대출 금리는 0~1,000% 범위로 입력해 주세요.</p>}
       {firstGap && <p role="status" className="tool-callout">{firstGap.age}세부터 자산만으로 지출·상환을 충당할 수 없습니다. 아래 부족자금은 추가 조달이 필요한 누적 금액입니다.</p>}
       {!hasInput || !data.length ? <section className="tool-card tool-empty" aria-labelledby="sim-empty-heading">
         <h2 id="sim-empty-heading">가정을 입력해 순자산 변화를 비교하세요</h2>

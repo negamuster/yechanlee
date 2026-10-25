@@ -51,10 +51,12 @@ test('refresh and source failures preserve the selected timestamps; display pref
   await ui.getByRole('button', { name: '캔들', exact: true }).click()
   const original = await ui.locator('.stock-chart-x-labels').textContent()
   state.appendChart = true
-  await refresh(page)
-  await expect(page.locator('.stock-state')).toHaveText('조회 완료')
-  await expect(ui.locator('.stock-chart-readout time')).toContainText('Oct 20, 2026')
-  await expect(ui.locator('.stock-chart-x-labels')).toHaveText(original)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await refresh(page)
+    await expect(page.locator('.stock-state')).toHaveText('조회 완료')
+    await expect(ui.locator('.stock-chart-readout time')).toContainText('Oct 20, 2026')
+    await expect(ui.locator('.stock-chart-x-labels')).toHaveText(original)
+  }
   state.failChart = true
   await refresh(page)
   await expect(ui).toContainText('갱신 실패 · 이전 데이터 표시 중')

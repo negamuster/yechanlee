@@ -113,3 +113,36 @@ test('simulator inputs still produce the same complete projection after the shar
   assert.ok(container.querySelector('[role=alert]'))
   assert.equal(container.querySelector('.sim-table'), null)
 })
+
+test('simulator chart and table share validated ages, including zero and 100; invalid ages recover', async () => {
+  await render(Simulator)
+  const input = label => [...container.querySelectorAll('.tool-field')].find(field => field.querySelector('span').textContent === label)?.querySelector('input')
+  // Check invalid input before other required fields too: axis work must be bounded.
+  await edit(input('현재 나이'), '-1000000000')
+  assert.ok(container.querySelector('[role=alert]'))
+  for (const label of ['은행 저축 · 예금 (원)', '연간 평균 소비 (원)', '연 수입 (원)']) await edit(input(label), '0')
+  for (const age of ['0', '25', '100']) {
+    await edit(input('현재 나이'), age)
+    const rows = container.querySelectorAll('.sim-table tbody tr')
+    assert.equal(rows.length, 101 - Number(age))
+    assert.equal(rows[0].querySelector('th').textContent, `${age}세`)
+    const labels = [...container.querySelectorAll('.sim-chart text')].map(el => el.textContent).filter(text => text.endsWith('세'))
+    assert.equal(labels[0], `${age}세`); assert.equal(labels.at(-1), '100세')
+    assert.doesNotMatch(container.querySelector('.sim-chart').outerHTML, /NaN|Infinity/)
+  }
+  for (const age of ['-1000000000', '101', '25.5']) {
+    await edit(input('현재 나이'), age)
+    assert.ok(container.querySelector('[role=alert]'))
+    assert.equal(container.querySelector('.sim-chart'), null)
+    assert.equal(container.querySelector('.sim-table'), null)
+  }
+  await edit(input('현재 나이'), '')
+  assert.equal(container.querySelector('[role=alert]'), null)
+  assert.equal(container.querySelector('.sim-chart'), null)
+  await edit(input('현재 나이'), '25')
+  await edit(input('은퇴 나이'), '101')
+  assert.ok(container.querySelector('[role=alert]'))
+  assert.equal(container.querySelector('.sim-table'), null)
+  await edit(input('은퇴 나이'), '')
+  assert.equal(container.querySelectorAll('.sim-table tbody tr').length, 76)
+})

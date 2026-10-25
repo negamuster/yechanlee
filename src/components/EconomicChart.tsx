@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { init, use } from 'echarts/core'
+import { init, use as registerCharts } from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, AriaComponent } from 'echarts/components'
 import { SVGRenderer } from 'echarts/renderers'
 import { economicDate } from '../lib/economicIndicators'
 import type { EconomicPoint } from '../lib/economicIndicators'
-use([LineChart, GridComponent, TooltipComponent, AriaComponent, SVGRenderer])
+registerCharts([LineChart, GridComponent, TooltipComponent, AriaComponent, SVGRenderer])
 export default function EconomicChart({ points, label, daily }: { points: EconomicPoint[]; label: string; daily: boolean }) {
   const container = useRef<HTMLDivElement>(null)
   const first = points[0], last = points.at(-1)

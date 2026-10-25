@@ -4,14 +4,14 @@ import { presentModal, outsideDialog } from '../lib/modal'
 import { siteSearchResults, searchGroups } from '../lib/siteSearch'
 import type { SearchGroup, SearchResult } from '../lib/siteSearch'
 import { briefings } from '../lib/briefings'
-import { cachedSearch, searchStocks, stockSearchQuery } from '../lib/stockSearch'
-import type { StockMatch } from '../lib/stockSearch'
+import { stockSearchQuery } from '../lib/stockSearch'
+import { useStockMatches } from '../hooks/useStockMatches'
 import { isNewsFeed, readNewsSnapshot } from '../lib/newsRefresh'
 import { refreshPolicies } from '../lib/refreshPolicy'
 import { useResource } from '../hooks/useResource'
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useReadArticles } from '../hooks/useReadArticles'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 
 export default function CommandPalette({ onClose, onSelect }: { onClose: () => void; onSelect: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)
@@ -22,7 +22,6 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   const [query, setQuery] = useState('')
   const [group, setGroup] = useState<SearchGroup | 'all'>('all')
   const [selection, setSelection] = useState('')
-  const [remote, setRemote] = useState<{ query: string; stocks: StockMatch[]; status: string; pending: boolean }>({ query: '', stocks: [], status: '', pending: false })
   const [newsRevision, setNewsRevision] = useState(0)
   const [snapshot] = useState(() => { try { return readNewsSnapshot(sessionStorage).latest } catch { return null } })
   const { data, loading, error } = useResource('/api/news', isNewsFeed, refreshPolicies.news, newsRevision)
@@ -34,14 +33,16 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   const hintId = useId()
   const search = stockSearchQuery(query)
   const stockEnabled = group === 'all' || group === 'stocks'
-  const stocks = remote.query === search ? remote.stocks : []
+  const { stocks, pending, failed, invalid, ready } = useStockMatches(search, stockEnabled)
+  const stockStatus = invalid ? group === 'stocks' ? '60자 이내의 종목명 또는 티커를 입력해 주세요.' : ''
+    : pending ? '종목 검색 중…' : failed ? '종목 검색을 불러오지 못했습니다. 정확한 티커로 직접 이동하거나 다시 입력해 주세요.' : ready && !stocks.length ? '일치하는 종목이 없습니다.' : ''
   const feed = data && (!snapshot || data.fetchedAt >= snapshot.fetchedAt) ? data : snapshot
   const results = useMemo(() => siteSearchResults(query, items, briefings, feed, stocks, group), [query, items, feed, stocks, group])
   const selected = results.find(row => row.id === selection) ?? results[0]
   const index = selected ? results.indexOf(selected) : -1
   const directTicker = search.toUpperCase()
   // Unverified input is an explicit recovery action, never a default search hit.
-  const showDirect = stockEnabled && remote.query === search && !remote.pending && !remote.stocks.length
+  const showDirect = ready && !stocks.length
     && /^[A-Z0-9][A-Z0-9.:-]{0,19}$/.test(directTicker) && !results.some(row => row.id === `stock:${directTicker}`)
   useEffect(() => {
     const element = dialog.current!
@@ -52,28 +53,6 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
   useEffect(() => {
     list.current?.querySelector<HTMLElement>('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' })
   }, [selected?.id])
-  useEffect(() => {
-    if (!stockEnabled || !search) return
-    if (search.length > 60 || !/^[\p{L}\p{N} .&':-]+$/u.test(search)) {
-      setRemote({ query: search, stocks: [], status: group === 'stocks' ? '60자 이내의 종목명 또는 티커를 입력해 주세요.' : '', pending: false })
-      return
-    }
-    const cached = cachedSearch(search)
-    if (cached) { setRemote({ query: search, stocks: cached, status: cached.length ? '' : '일치하는 종목이 없습니다.', pending: false }); return }
-    const controller = new AbortController()
-    let active = true
-    let timeout: number | undefined
-    setRemote({ query: search, stocks: [], status: '종목 검색 중…', pending: true })
-    const timer = window.setTimeout(async () => {
-      timeout = window.setTimeout(() => controller.abort(), 10000)
-      try {
-        const found = await searchStocks(search, controller.signal)
-        if (active) setRemote({ query: search, stocks: found, status: found.length ? '' : '일치하는 종목이 없습니다.', pending: false })
-      } catch { if (active) setRemote({ query: search, stocks: [], status: '종목 검색을 불러오지 못했습니다. 정확한 티커로 직접 이동하거나 다시 입력해 주세요.', pending: false }) }
-      finally { window.clearTimeout(timeout) }
-    }, 350)
-    return () => { active = false; controller.abort(); window.clearTimeout(timer); window.clearTimeout(timeout) }
-  }, [search, stockEnabled, group])
   function choose(event: React.MouseEvent<HTMLAnchorElement>, row: SearchResult) {
     if (row.external) mark(row.href)
     else if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { event.preventDefault(); navigate(row.href, { state: returnState }) }
@@ -103,8 +82,8 @@ export default function CommandPalette({ onClose, onSelect }: { onClose: () => v
         })}</div> : null
       })}
     </div>
-    {!results.length && <p className="command-notice" role="status">검색 결과가 없습니다. 검색어를 줄이거나 다른 범위를 선택해 주세요.</p>}
-    {stockEnabled && query.trim() && remote.query === search && remote.status && <p className="command-notice" role="status">{remote.status}</p>}
+    {!results.length && !pending && <p className="command-notice" role="status">검색 결과가 없습니다. 검색어를 줄이거나 다른 범위를 선택해 주세요.</p>}
+    {stockEnabled && query.trim() && stockStatus && <p className="command-notice" role="status">{stockStatus}</p>}
     {showDirect && <div className="command-direct-stock"><button type="button" onClick={() => {
       navigate(`/stock/${encodeURIComponent(directTicker)}`, { state: returnState }); onSelect(); onClose()
     }}>‘{directTicker}’ 티커로 직접 이동</button><small>종목 존재를 확인하지 못했습니다. 정확한 티커를 알고 있을 때 사용하세요.</small></div>}

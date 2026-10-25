@@ -6,5 +6,5 @@ try { previous = JSON.parse(await readFile(path, 'utf8')) } catch (error) { if (
 const snapshot = await collectEconomicSnapshot({ previous })
 await writeFile(new URL('../data/economic-indicators.json.tmp', import.meta.url), JSON.stringify(snapshot, null, 2) + '\n')
 await rename(new URL('../data/economic-indicators.json.tmp', import.meta.url), path)
-for (const s of snapshot.series) console.log(`${s.id}: ${s.error ? 'collection failed; preserved previous data' : s.observations.length + ' observations'}; collected ${s.collectedAt || 'never'}`)
+for (const s of snapshot.series) console.log(`${s.id}: ${s.error ? `collection failed (${s.failureReason || 'unavailable'}); preserved previous data` : s.observations.length + ' observations'}; collected ${s.collectedAt || 'never'}; attempted ${s.attemptedAt || 'never'}`)
 process.exitCode = snapshot.series.some(s => s.error) ? 1 : 0

@@ -60,7 +60,96 @@ test('partial provider failure preserves original collection time while other se
 test('invalid or regressed single series cannot replace a good history', async () => {
   const previous = economicFixture(), raw = blsFixture(); raw.Results.series[0].data.shift()
   const data = await collectEconomicSnapshot({ previous, now: now + DAY, fetchImpl: async url => response(url.includes('bls.gov') ? raw : effrFixture()) })
-  assert.equal(data.series[0].error, 'unavailable'); assert.deepEqual(data.series[0].observations, previous.series[0].observations); assert.equal(data.series[1].error, null)
+  assert.equal(data.series[0].error, 'unavailable'); assert.equal(data.series[0].failureReason, 'invalid_or_regressed_series'); assert.deepEqual(data.series[0].observations, previous.series[0].observations); assert.equal(data.series[1].error, null)
+})
+
+test('transient provider errors retry twice at most, then recover without losing official history', async () => {
+  const delays = [], calls = { bls: 0, fed: 0 }, previous = economicFixture()
+  previous.series[0].error = 'unavailable'; previous.series[0].failureReason = 'http_503'
+  const data = await collectEconomicSnapshot({ previous, now: now + DAY, wait: async ms => delays.push(ms), fetchImpl: async url => {
+    if (!url.includes('bls.gov')) { calls.fed++; return response(effrFixture()) }
+    calls.bls++; return calls.bls < 3 ? new Response('', { status: 503 }) : response(blsFixture())
+  } })
+  assert.deepEqual(calls, { bls: 3, fed: 1 }); assert.deepEqual(delays, [1000, 2000])
+  assert.equal(data.series[0].error, null); assert.equal(data.series[0].failureReason, null)
+  assert.equal(data.series[0].collectedAt, new Date(now + DAY).toISOString())
+  assert.equal(validEconomicSnapshot(data, now + DAY), true)
+})
+
+test('exhausted retries preserve original values and timestamps with sanitized HTTP reason', async () => {
+  const previous = economicFixture(), delays = []; let calls = 0
+  const data = await collectEconomicSnapshot({ previous, now: now + DAY, wait: async ms => delays.push(ms), fetchImpl: async url => {
+    if (!url.includes('bls.gov')) return response(effrFixture())
+    calls++; return new Response('private upstream body must not be stored', { status: 502 })
+  } })
+  assert.equal(calls, 3); assert.deepEqual(delays, [1000, 2000])
+  for (let i = 0; i < 2; i++) {
+    assert.equal(data.series[i].failureReason, 'http_502')
+    assert.equal(data.series[i].collectedAt, previous.series[i].collectedAt)
+    assert.deepEqual(data.series[i].observations, previous.series[i].observations)
+    assert.equal(economicStatus(data.series[i], now + DAY), 'stale')
+  }
+  assert.equal(data.series[2].error, null)
+  assert.doesNotMatch(JSON.stringify(data), /private upstream/)
+})
+
+test('access denial, daily quotas, invalid JSON and oversized data do not retry', async () => {
+  for (const [makeResponse, reason] of [
+    [() => new Response('', { status: 403 }), 'http_403'],
+    [() => new Response('', { status: 429 }), 'http_429'],
+    [() => new Response('secret invalid body'), 'invalid_json'],
+    [() => new Response(' '.repeat(3000001)), 'response_too_large'],
+    [() => response({ status: 'REQUEST_NOT_PROCESSED', message: ['Daily request limit reached: private detail'] }), 'bls_rate_limited'],
+  ]) {
+    let calls = 0
+    const data = await collectEconomicSnapshot({ previous: economicFixture(), now, wait: async () => assert.fail('must not retry'), fetchImpl: async url => {
+      if (!url.includes('bls.gov')) return response(effrFixture())
+      calls++; return makeResponse()
+    } })
+    assert.equal(calls, 1); assert.equal(data.series[0].failureReason, reason)
+    assert.doesNotMatch(JSON.stringify(data), /secret|private detail/)
+  }
+})
+
+test('short Retry-After is honored; long or malformed instructions defer to a later run', async () => {
+  for (const [status, header, count, expectedDelay] of [
+    [429, '3', 2, 3000], [503, new Date(now + 5000).toUTCString(), 2, 5000],
+    [429, '86400', 1, null], [503, 'invalid', 1, null], [403, '1', 1, null],
+  ]) {
+    let calls = 0; const delays = []
+    const data = await collectEconomicSnapshot({ now, wait: async ms => delays.push(ms), fetchImpl: async url => {
+      if (!url.includes('bls.gov')) return response(effrFixture())
+      calls++; return calls === 1 ? new Response('', { status, headers: { 'Retry-After': header } }) : response(blsFixture())
+    } })
+    assert.equal(calls, count); assert.deepEqual(delays, expectedDelay === null ? [] : [expectedDelay])
+    assert.equal(data.series[0].failureReason, count === 1 ? `http_${status}` : null)
+  }
+})
+
+test('network, timeout and interrupted bodies are bounded and receive safe reason codes', async () => {
+  for (const [fail, reason] of [
+    [() => { throw new TypeError('private network details') }, 'network_error'],
+    [() => { throw new DOMException('private timeout details', 'TimeoutError') }, 'timeout'],
+    [() => ({ ok: true, text: async () => { throw new DOMException('private body details', 'TimeoutError') } }), 'timeout'],
+  ]) {
+    let calls = 0
+    const data = await collectEconomicSnapshot({ previous: economicFixture(), now, wait: async () => {}, fetchImpl: async url => {
+      if (!url.includes('bls.gov')) return response(effrFixture())
+      calls++; return fail()
+    } })
+    assert.equal(calls, 3); assert.equal(data.series[0].failureReason, reason)
+    assert.doesNotMatch(JSON.stringify(data), /private/)
+  }
+})
+
+test('legacy snapshots remain valid; arbitrary diagnostic text and success with failure reason are rejected', () => {
+  const legacy = economicFixture(); assert.equal(validEconomicSnapshot(legacy, now), true)
+  legacy.series[0].error = 'unavailable'; legacy.series[0].failureReason = 'http_503'
+  assert.equal(validEconomicSnapshot(legacy, now), true)
+  legacy.series[0].failureReason = 'unexpected sensitive message'
+  assert.equal(validEconomicSnapshot(legacy, now), false)
+  legacy.series[0].failureReason = 'http_503'; legacy.series[0].error = null
+  assert.equal(validEconomicSnapshot(legacy, now), false)
 })
 test('snapshot handler coalesces requests, refreshes with original timestamps and refuses rollback', async () => {
   let calls = 0, current = now, candidate = economicFixture()

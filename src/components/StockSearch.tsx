@@ -1,11 +1,10 @@
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { cachedSearch, searchStocks, stockSearchQuery } from '../lib/stockSearch'
-import type { StockMatch as Match } from '../lib/stockSearch'
+import { stockSearchQuery } from '../lib/stockSearch'
+import { useStockMatches } from '../hooks/useStockMatches'
 export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const [query, setQuery] = useState('')
-  const [matches, setMatches] = useState<Match[]>([])
   const [opened, setOpened] = useState(false)
   const [active, setActive] = useState(-1)
   const [status, setStatus] = useState('')
@@ -13,28 +12,10 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
   const navigate = useNavigate()
   const returnState = useReturnOrigin()
   const search = stockSearchQuery(query)
-  useEffect(() => {
-    const controller = new AbortController()
-    let live = true
-    setMatches([]); setActive(-1)
-    if (!opened || search.length < 1) { setStatus(''); return }
-    const cached = cachedSearch(search)
-    const display = (results: Match[]) => { setMatches(results); setStatus(results.length ? '' : '검색 결과가 없습니다. 영문 회사명이나 티커를 입력해 주세요.') }
-    if (cached) { display(cached); return }
-    setStatus('검색 중…')
-    let timeout: number | undefined
-    const timer = window.setTimeout(async () => {
-      timeout = window.setTimeout(() => controller.abort(), 10000)
-      try {
-        const results = await searchStocks(search, controller.signal)
-        if (live) display(results)
-      } catch { if (live) setStatus('검색을 불러오지 못했습니다. 정확한 티커를 입력하고 Enter를 눌러 주세요.') }
-      finally { window.clearTimeout(timeout) }
-    }, 350)
-    return () => { live = false; controller.abort(); window.clearTimeout(timer); window.clearTimeout(timeout) }
-  }, [search, opened])
+  const { stocks: matches, pending, failed, invalid, ready } = useStockMatches(search, opened)
+  const searchStatus = status || (pending ? '검색 중…' : invalid && search ? '60자 이내의 종목명 또는 티커를 입력해 주세요.' : failed ? '검색을 불러오지 못했습니다. 정확한 티커를 입력하고 Enter를 눌러 주세요.' : ready && !matches.length ? '검색 결과가 없습니다. 영문 회사명이나 티커를 입력해 주세요.' : '')
   function select(ticker: string) { setQuery(ticker); setOpened(false); input.current?.blur(); navigate(`/stock/${encodeURIComponent(ticker)}`, { state: returnState }); onSelect() }
-  return <form className="site-search" onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setOpened(false) }} onSubmit={e => {
+  return <form className="site-search" onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) { setOpened(false); setActive(-1) } }} onSubmit={e => {
     e.preventDefault()
     const selected = matches[active] || matches.find(row => row.ticker === search.toUpperCase())
     if (selected) select(selected.ticker)
@@ -45,7 +26,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
     <input ref={input} id="site-stock-search" role="combobox" aria-autocomplete="list" aria-expanded={opened && !!query.trim()} aria-controls="stock-search-options"
       aria-activedescendant={active >= 0 && opened ? `stock-option-${active}` : undefined}
       autoComplete="off" maxLength={60} value={query} placeholder="티커·종목명 검색"
-      onFocus={() => setOpened(true)} onChange={e => { setQuery(e.target.value); setOpened(true); setMatches([]); setActive(-1) }}
+      onFocus={() => { setOpened(true); setActive(-1); setStatus('') }} onChange={e => { setQuery(e.target.value); setOpened(true); setStatus(''); setActive(-1) }}
       onKeyDown={e => {
         if (e.nativeEvent.isComposing) { if (e.key === 'Enter') e.preventDefault(); return }
         if (e.key === 'ArrowDown') { e.preventDefault(); setOpened(true); setActive(value => Math.min(value + 1, matches.length - 1)) }
@@ -61,7 +42,7 @@ export default function StockSearch({ onSelect }: { onSelect: () => void }) {
           <strong>{row.ticker}</strong><span>{row.name}</span><small>{row.primary_exchange}</small>
         </div>)}
       </div>
-      {status && <p role="status" className="stock-search-hint">{status}</p>}
+      {searchStatus && <p role="status" className="stock-search-hint">{searchStatus}</p>}
     </div>}
   </form>
 }

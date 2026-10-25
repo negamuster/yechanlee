@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { useSavedItems } from '../components/SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import { blankFields, validFields, JUDGMENTS, thesisRevisionMatches } from '../lib/thesis'
 import ThesisEvidence, { EvidenceHistory } from '../components/ThesisEvidence'
 import type { ThesisFields, Judgment } from '../lib/thesis'
