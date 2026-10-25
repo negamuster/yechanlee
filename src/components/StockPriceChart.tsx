@@ -89,7 +89,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       container.current?.querySelectorAll('a').forEach(anchor => { anchor.tabIndex = -1 })
       instance.chart.timeScale().setVisibleLogicalRange(next)
     }
-  }, [bars, effectiveMode, showVolume, changePercent])
+  }, [bars, effectiveMode, showVolume, changePercent, currency, period])
   function select(index: number) {
     const i = Math.max(0, Math.min(bars.length - 1, index)); setActiveTime(bars[i].t)
     const instance = engine.current
