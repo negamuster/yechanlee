@@ -3,12 +3,12 @@
   "series": [
     {
       "id": "cpi",
-      "collectedAt": "2026-10-25T07:57:46.261Z",
-      "attemptedAt": "2026-10-25T07:57:46.261Z",
+      "collectedAt": "2026-10-25T19:10:44.628Z",
+      "attemptedAt": "2026-10-25T19:10:44.628Z",
       "error": null,
       "failureReason": null,
-      "retrievedVia": "fred",
-      "primaryFailureReason": "http_503",
+      "retrievedVia": "bls",
+      "primaryFailureReason": null,
       "fallbackFailureReason": null,
       "observations": [
         {
@@ -290,11 +290,7 @@
         {
           "date": "2025-10-01",
           "value": null,
-          "priorNote": {
-            "text": "Data unavailable due to the 2025 lapse in appropriations",
-            "value": null,
-            "collectedAt": "2026-10-23T20:01:47.852Z"
-          }
+          "note": "Data unavailable due to the 2025 lapse in appropriations"
         },
         {
           "date": "2025-11-01",
@@ -344,12 +340,12 @@
     },
     {
       "id": "unemployment",
-      "collectedAt": "2026-10-25T07:57:46.261Z",
-      "attemptedAt": "2026-10-25T07:57:46.261Z",
+      "collectedAt": "2026-10-25T19:10:44.628Z",
+      "attemptedAt": "2026-10-25T19:10:44.628Z",
       "error": null,
       "failureReason": null,
-      "retrievedVia": "fred",
-      "primaryFailureReason": "http_503",
+      "retrievedVia": "bls",
+      "primaryFailureReason": null,
       "fallbackFailureReason": null,
       "observations": [
         {
@@ -631,11 +627,7 @@
         {
           "date": "2025-10-01",
           "value": null,
-          "priorNote": {
-            "text": "Data unavailable due to the 2025 lapse in appropriations.",
-            "value": null,
-            "collectedAt": "2026-10-23T20:01:47.852Z"
-          }
+          "note": "Data unavailable due to the 2025 lapse in appropriations."
         },
         {
           "date": "2025-11-01",
@@ -648,11 +640,7 @@
         {
           "date": "2026-01-01",
           "value": 4.3,
-          "priorNote": {
-            "text": "January 2026 estimates were revised to incorporate updated population controls. For more information, see www.bls.gov/cps/documentation.htm#pop.",
-            "value": 4.3,
-            "collectedAt": "2026-10-23T20:01:47.852Z"
-          }
+          "note": "January 2026 estimates were revised to incorporate updated population controls. For more information, see www.bls.gov/cps/documentation.htm#pop."
         },
         {
           "date": "2026-02-01",
@@ -690,8 +678,8 @@
     },
     {
       "id": "effr",
-      "collectedAt": "2026-10-25T07:57:46.261Z",
-      "attemptedAt": "2026-10-25T07:57:46.261Z",
+      "collectedAt": "2026-10-25T19:10:44.628Z",
+      "attemptedAt": "2026-10-25T19:10:44.628Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "nyfed",
