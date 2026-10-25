@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import { useSessionState } from '../hooks/useSessionState'
 import { JUDGMENTS } from '../lib/thesis'
 import { defaultNoteFilters, findNotes, validNoteFilters, REVIEW_FILTERS } from '../lib/noteDiscovery'

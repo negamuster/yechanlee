@@ -2,7 +2,7 @@
 
 ## Pull request checks
 
-`Verify site changes` runs `npm test`, a production build, and Playwright in Chromium. The browser suite covers stock lookup plus charts, economic indicators, collection status, 13F, investment evidence, note discovery and backup status. Each scenario runs at desktop and Pixel 7 viewport sizes. Stock lookup scenarios include:
+`Verify site changes` runs `npm test`, zero-warning ESLint, a production build, and Playwright in Chromium. The browser suite covers stock lookup plus charts, economic indicators, collection status, 13F, investment evidence, note discovery, backup status and simulator age boundaries. Each scenario runs at desktop and Pixel 7 viewport sizes. Stock lookup scenarios include:
 
 - Search for a company, open its stock page and select all eight chart periods; check English dates and horizontal overflow.
 - Recover missing company metadata and news while confirmed prices and SEC financials remain available.
@@ -18,7 +18,7 @@ npm run setup:browsers
 npm run verify:all
 ```
 
-For Node tests and build only, use `npm run verify`. After a successful build of the same revision, `npm run test:e2e` adds browser checks without repeating Node tests and build. Browser installation is separate from verification and must succeed before browser results can be reported. See the [README](../README.md) for Node version, development setup, static-preview limitations and the command reference. CI retains separate steps so each outcome remains visible.
+For lint, Node tests and build, use `npm run verify`. After a successful build of the same revision, `npm run test:e2e` adds browser checks without repeating Node tests and build. Browser installation is separate from verification and must succeed before browser results can be reported. See the [README](../README.md) for Node version, development setup, static-preview limitations and the command reference. CI retains separate steps so each outcome remains visible.
 
 ## Production checks
 

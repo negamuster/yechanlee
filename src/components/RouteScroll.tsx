@@ -80,6 +80,6 @@ export default function RouteScroll() {
       onExit(callback) { window.addEventListener('pagehide', callback); return () => window.removeEventListener('pagehide', callback) },
       deadline(callback, milliseconds) { const timer = window.setTimeout(callback, milliseconds); return () => window.clearTimeout(timer) },
     }, position => { store!.set(keys.entry, position); store!.set(keys.route, position) })
-  }, [location.key, location.pathname, location.search, location.hash, location.state, navigation])
+  }, [location, navigation])
   return null
 }

@@ -4,7 +4,7 @@ import { useSessionState } from '../hooks/useSessionState'
 import { defaultEvidenceFilters, findEvidence, validEvidenceFilters } from '../lib/noteDiscovery'
 import { EVIDENCE_KINDS, EVIDENCE_ROLES } from '../lib/evidence'
 import type { Evidence } from '../lib/evidence'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import './Evidence.css'
 
 const time = (value: string) => /^\d{4}-\d\d-\d\d$/.test(value) ? value : new Date(value).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false }) + ' KST'

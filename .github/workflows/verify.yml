@@ -12,6 +12,7 @@ on:
       - 'vite.config.ts'
       - 'tsconfig*.json'
       - 'playwright.config.mjs'
+      - 'eslint.config.js'
       - '.github/workflows/verify.yml'
       - '.github/workflows/check-data-health.yml'
   pull_request:
@@ -37,6 +38,8 @@ jobs:
         id: dependencies
       - run: npm test
         id: node_tests
+      - run: npm run lint
+        id: lint
       - run: npm run build
         id: build
       - run: npm run setup:browsers
@@ -51,6 +54,7 @@ jobs:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           DEPENDENCIES: ${{ steps.dependencies.outcome }}
           NODE_TESTS: ${{ steps.node_tests.outcome }}
+          LINT: ${{ steps.lint.outcome }}
           BUILD: ${{ steps.build.outcome }}
           BROWSER_INSTALL: ${{ steps.browser_install.outcome }}
           BROWSER_TESTS: ${{ steps.browser_tests.outcome }}
@@ -64,6 +68,7 @@ jobs:
             printf '| Check | Outcome |\n| --- | --- |\n'
             printf '| Dependencies | %s |\n' "$DEPENDENCIES"
             printf '| Node regression tests | %s |\n' "$NODE_TESTS"
+            printf '| ESLint (zero warnings) | %s |\n' "$LINT"
             printf '| Production build | %s |\n' "$BUILD"
             printf '| Chromium installation | %s |\n' "$BROWSER_INSTALL"
             printf '| Desktop/mobile Chromium tests | %s |\n\n' "$BROWSER_TESTS"

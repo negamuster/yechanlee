@@ -1,16 +1,14 @@
 import { saveThesis, attachEvidence, archiveEvidence } from '../lib/thesis'
 import type { EvidenceSource, EvidenceRole } from '../lib/evidence'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { motion, useAnimationControls, useReducedMotion } from 'motion/react'
 import { Toaster, toast } from 'sonner'
 import { SAVED_KEY, PREVIOUS_SAVED_KEY, LEGACY_SAVED_KEY, articleKey, emptySaved, readSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
+import { SavedItemsContext as Context, useSavedItems } from '../hooks/useSavedItems'
 import './SavedItems.css'
-interface SavedContext { connectEvidence: (input: { ticker: string; name: string; source: EvidenceSource; role: EvidenceRole; reason: string }) => string; setEvidenceArchived: (ticker: string, id: string, archived: boolean) => void; saveNote: (input: Parameters<typeof saveThesis>[1]) => string; removeSelected: (kind: 'stocks' | 'articles', ids: string[]) => boolean; mergeBackup: (imported: SavedItems) => void; items: SavedItems; toggleStock: (stock: SavedStock) => void; toggleArticle: (article: SavedArticle) => boolean }
 type Deletion = { before: SavedItems; removed: SavedItems; expires: number }
-const Context = createContext<SavedContext | null>(null)
-export function useSavedItems() { const value = useContext(Context); if (!value) throw new Error('SavedItemsProvider missing'); return value }
 export default function SavedItemsProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<SavedItems>(() => { try { return readSaved(localStorage) } catch { return emptySaved() } })
   const [message, setMessage] = useState('')

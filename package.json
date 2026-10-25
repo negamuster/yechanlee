@@ -9,11 +9,11 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build-briefings.mjs && tsc -b && vite build && node scripts/write-build-info.mjs",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings=0",
     "preview": "vite preview",
     "predev": "node scripts/build-briefings.mjs",
     "test": "node --test tests/*.test.mjs",
-    "verify": "npm test && npm run build",
+    "verify": "npm run lint && npm test && npm run build",
     "verify:all": "npm run verify && npm run test:e2e",
     "setup:browsers": "playwright install --with-deps chromium",
     "test:e2e": "playwright test",

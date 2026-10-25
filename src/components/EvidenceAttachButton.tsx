@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { EVIDENCE_KINDS, EVIDENCE_ROLES, parseEvidenceSource } from '../lib/evidence'
 import type { EvidenceRole, EvidenceSource } from '../lib/evidence'
 import { presentModal, outsideDialog } from '../lib/modal'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import './Evidence.css'
 
 function EvidenceDialog({ source, stock, onClose }: { source: EvidenceSource; stock?: { ticker: string; name: string }; onClose: () => void }) {

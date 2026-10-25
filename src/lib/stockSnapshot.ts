@@ -4,14 +4,19 @@ import { latestDailyDate, nyDate } from '../../lib/trading-session.js'
 import { stockPayloadIssue } from '../../lib/stock-contracts.js'
 
 import { refreshPolicies } from './refreshPolicy.ts'
+import type { FinancialPeriod } from './financialHistory'
 export const STOCK_TTL = refreshPolicies.stock.staleTime
 export const STOCK_MAX_AGE = 24 * 3600000
 export interface DailyBar { t: number; o: number; h: number; l: number; c: number }
 export interface StockResourceSource { fetchedAt: number; stale: boolean }
+export interface StockDetails {
+  ticker: string; name: string; currency_name?: string; primary_exchange?: string; sic_description?: string;
+  market_cap?: number; list_date?: string; total_employees?: number; description?: string; homepage_url?: string
+}
 export interface StockSnapshot {
-  symbol: string; fetchedAt: number; details: any; bars: DailyBar[];
-  news: any[]; financials: any[]; related: string[]; issues: string[]; historyAvailable: boolean;
-  quarterlyFinancials?: any[]; ttmFinancials?: any[];
+  symbol: string; fetchedAt: number; details: StockDetails; bars: DailyBar[];
+  news: unknown[]; financials: FinancialPeriod[]; related: string[]; issues: string[]; historyAvailable: boolean;
+  quarterlyFinancials?: FinancialPeriod[]; ttmFinancials?: FinancialPeriod[];
   companySource: 'Polygon / Massive' | 'SEC EDGAR';
   resourceSources?: { details?: StockResourceSource; news?: StockResourceSource; related?: StockResourceSource };
   financialSource?: { source: string; fetchedAt: number; stale: boolean; status?: string }
@@ -38,7 +43,9 @@ export function retainStockResources(previous: StockSnapshot | undefined, incomi
   for (const [part, issue, maxAge] of [['news', '뉴스', 6 * 3600000], ['related', '관련 종목', 7 * 86400000]] as const) {
     const original = source(part, maxAge)
     if (incoming.issues.includes(issue) && previous[part].length && original) {
-      result[part] = previous[part]; result.resourceSources[part] = original
+      if (part === 'news') result.news = previous.news
+      else result.related = previous.related
+      result.resourceSources[part] = original
     }
   }
   return result

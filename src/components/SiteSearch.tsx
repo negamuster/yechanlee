@@ -6,7 +6,8 @@ import './SiteSearch.css'
 export default function SiteSearch({ onSelect }: { onSelect: () => void }) {
   const [opened, setOpened] = useState(false)
   const location = useLocation()
-  useEffect(() => { setOpened(false) }, [location.key])
+  const [routeKey, setRouteKey] = useState(location.key)
+  if (routeKey !== location.key) { setRouteKey(location.key); setOpened(false) }
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if (event.isComposing || event.repeat || event.altKey || !(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return

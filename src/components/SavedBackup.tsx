@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSavedItems } from './SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 import { readSaved, exportSaved, importSaved, mergeSaved } from '../lib/savedItems'
 import type { SavedItems } from '../lib/savedItems'
 import { BACKUP_STATUS_KEY, backupComparison, readBackupRequest, savedDigest } from '../lib/backupStatus'
@@ -15,7 +15,7 @@ export default function SavedBackup() {
   const [error, setError] = useState('')
   const [statusWarning, setStatusWarning] = useState('')
   const [refresh, setRefresh] = useState(0)
-  const [requestStatus, setRequestStatus] = useState<{ request: BackupRequest | null; comparison: ReturnType<typeof backupComparison> | 'checking' }>({ request: null, comparison: 'checking' })
+  const [requestStatus, setRequestStatus] = useState<{ items?: SavedItems; refresh?: number; request: BackupRequest | null; comparison: ReturnType<typeof backupComparison> | 'checking' }>({ request: null, comparison: 'checking' })
   useEffect(() => {
     function sync(event: StorageEvent) { if (event.key === BACKUP_STATUS_KEY || event.key === null) setRefresh(n => n + 1) }
     window.addEventListener('storage', sync)
@@ -23,14 +23,13 @@ export default function SavedBackup() {
   }, [])
   useEffect(() => {
     let cancelled = false
-    setRequestStatus(previous => ({ ...previous, comparison: 'checking' }))
     async function check() {
       let request: BackupRequest | null = null
       try {
         request = readBackupRequest(localStorage)
         const digest = request ? await savedDigest(readSaved(localStorage)) : null
-        if (!cancelled) setRequestStatus({ request, comparison: backupComparison(request, digest) })
-      } catch { if (!cancelled) setRequestStatus({ request, comparison: 'unknown' }) }
+        if (!cancelled) setRequestStatus({ items, refresh, request, comparison: backupComparison(request, digest) })
+      } catch { if (!cancelled) setRequestStatus({ items, refresh, request, comparison: 'unknown' }) }
     }
     void check()
     return () => { cancelled = true }
@@ -81,7 +80,8 @@ export default function SavedBackup() {
       setError((e as Error).message.includes('한도') ? (e as Error).message : '목록을 저장하지 못했습니다. 기존 목록은 유지됩니다. 브라우저 저장 설정과 여유 공간을 확인해 주세요.')
     }
   }
-  const statusText = { checking: '저장 내용과 내보내기 요청 기록을 확인 중입니다.', none: '이 브라우저에 내보내기 요청 기록이 없습니다.', same: '현재 저장 내용은 마지막 내보내기 요청 파일에 포함한 내용과 같습니다.', changed: '마지막 내보내기 요청 이후 저장 내용이 달라졌습니다.', unknown: '내보내기 요청 기록 또는 저장 내용의 변경 여부를 확인할 수 없습니다.' }[requestStatus.comparison]
+  const comparison = requestStatus.items === items && requestStatus.refresh === refresh ? requestStatus.comparison : 'checking'
+  const statusText = { checking: '저장 내용과 내보내기 요청 기록을 확인 중입니다.', none: '이 브라우저에 내보내기 요청 기록이 없습니다.', same: '현재 저장 내용은 마지막 내보내기 요청 파일에 포함한 내용과 같습니다.', changed: '마지막 내보내기 요청 이후 저장 내용이 달라졌습니다.', unknown: '내보내기 요청 기록 또는 저장 내용의 변경 여부를 확인할 수 없습니다.' }[comparison]
   return <section className="saved-backup-area" aria-label="백업 상태">
     <div className="saved-backup-status" role="status"><strong>{statusText}</strong>{requestStatus.request && <span>마지막 내보내기 요청: {new Date(requestStatus.request.requestedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST</span>}</div>
     <p className="saved-note">이 브라우저의 요청 기록입니다. 실제 파일 저장 완료는 다운로드 목록에서 확인하세요. 작성 중인 초안은 노트 저장 전까지 백업에 포함되지 않습니다.</p>

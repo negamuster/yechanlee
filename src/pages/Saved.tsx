@@ -11,7 +11,8 @@ import WatchlistPanel from '../components/WatchlistPanel'
 import WatchlistNews from '../components/WatchlistNews'
 import WatchlistEarnings from '../components/WatchlistEarnings'
 import { Link } from 'react-router-dom'
-import { BookmarkButton, useSavedItems } from '../components/SavedItemsProvider'
+import { BookmarkButton } from '../components/SavedItemsProvider'
+import { useSavedItems } from '../hooks/useSavedItems'
 export default function Saved() {
   const { isRead, mark } = useReadArticles()
   const { items } = useSavedItems()

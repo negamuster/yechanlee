@@ -23,6 +23,11 @@ const INDEX_LIST: IndexItem[] = [
 ]
 
 interface Row { o: number; c: number; prevClose?: number; series: number[] }
+interface GroupedRow { T: string; o: number; c: number }
+function isGroupedRow(value: unknown): value is GroupedRow {
+  const row = value as Partial<GroupedRow> | null
+  return !!row && typeof row.T === 'string' && typeof row.o === 'number' && Number.isFinite(row.o) && row.o > 0 && typeof row.c === 'number' && Number.isFinite(row.c) && row.c > 0
+}
 type DataMap = Record<string, Row>
 
 // 1,000 이상 숫자에 천 단위 콤마 자동 적용 (비트코인처럼 큰 값 대응, 다른 곳에서도 재사용 가능)
@@ -41,7 +46,7 @@ function dateStr(daysAgo: number): string {
 }
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
 
-async function fetchStocksGrouped(date: string, retry = true): Promise<any[] | null> {
+async function fetchStocksGrouped(date: string, retry = true): Promise<GroupedRow[] | null> {
   try {
     const res = await fetch(poly(`/v2/aggs/grouped/locale/us/market/stocks/${date}?adjusted=true`))
     if (!res.ok) {
@@ -49,18 +54,18 @@ async function fetchStocksGrouped(date: string, retry = true): Promise<any[] | n
       return null
     }
     const data = await res.json()
-    return data?.results || null
+    return Array.isArray(data?.results) ? data.results.filter(isGroupedRow) : null
   } catch {
     return null
   }
 }
 
-async function fetchCryptoGrouped(date: string): Promise<any[] | null> {
+async function fetchCryptoGrouped(date: string): Promise<GroupedRow[] | null> {
   try {
     const res = await fetch(poly(`/v2/aggs/grouped/locale/global/market/crypto/${date}?adjusted=true`))
     if (!res.ok) return null
     const data = await res.json()
-    return data?.results || null
+    return Array.isArray(data?.results) ? data.results.filter(isGroupedRow) : null
   } catch {
     return null
   }
@@ -74,17 +79,17 @@ async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
       const parsed = JSON.parse(cached)
       if (Date.now() - parsed.ts < CACHE_TTL) return parsed
     }
-  } catch {}
+  } catch { /* Storage may be unavailable; collect from the provider instead. */ }
 
   const wantedTickers = new Set(INDEX_LIST.filter(t => !t.isCrypto).map(t => t.ticker))
-  const validDays: { date: string; rows: any[] }[] = []
+  const validDays: { date: string; rows: GroupedRow[] }[] = []
 
   // 최근 거래일 15개(3주) 수집, 순차 호출 + 딜레이 → 스파크라인이 직선처럼 보이지 않고 실제 등락을 반영
   for (let i = 1; i <= 25 && validDays.length < 15; i++) {
     const date = dateStr(i)
     const rows = await fetchStocksGrouped(date)
     if (rows && rows.length > 0) {
-      const filtered = rows.filter((r: any) => wantedTickers.has(r.T))
+      const filtered = rows.filter(r => wantedTickers.has(r.T))
       if (filtered.length > 0) validDays.push({ date, rows: filtered })
     }
     await sleep(400)
@@ -99,11 +104,11 @@ async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
   const map: DataMap = {}
   for (const item of INDEX_LIST) {
     if (item.isCrypto) continue
-    const latestRow = latest.rows.find((r: any) => r.T === item.ticker)
+    const latestRow = latest.rows.find(r => r.T === item.ticker)
     if (!latestRow) continue
-    const prevRow = prev?.rows.find((r: any) => r.T === item.ticker)
+    const prevRow = prev?.rows.find(r => r.T === item.ticker)
     const series = validDays
-      .map(d => d.rows.find((r: any) => r.T === item.ticker)?.c)
+      .map(d => d.rows.find(r => r.T === item.ticker)?.c)
       .filter((v): v is number => v != null)
     map[item.ticker] = { o: latestRow.o, c: latestRow.c, prevClose: prevRow?.c, series }
   }
@@ -112,14 +117,14 @@ async function loadMarketData(): Promise<{ data: DataMap; ts: number } | null> {
   await sleep(400)
   const cryptoRows = await fetchCryptoGrouped(latest.date)
   if (cryptoRows) {
-    const btc = cryptoRows.find((r: any) => r.T === 'X:BTCUSD')
+    const btc = cryptoRows.find(r => r.T === 'X:BTCUSD')
     if (btc) map['X:BTCUSD'] = { o: btc.o, c: btc.c, series: [btc.o, btc.c] }
   }
 
   if (Object.keys(map).length === 0) return null
 
   const result = { data: map, ts: Date.now() }
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(result)) } catch {}
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(result)) } catch { /* Display the collected data even if caching fails. */ }
   return result
 }
 
