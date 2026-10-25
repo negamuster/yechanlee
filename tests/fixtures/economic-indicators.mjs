@@ -10,3 +10,8 @@ export function economicFixture() {
 }
 export const blsFixture = () => ({ status: 'REQUEST_SUCCEEDED', message: [], Results: { series: economicFixture().series.slice(0, 2).map((s, i) => ({ seriesID: ['CUUR0000SA0', 'LNS14000000'][i], data: s.observations.map(p => ({ year: p.date.slice(0, 4), period: `M${p.date.slice(5, 7)}`, value: String(p.value), footnotes: [{}] })).reverse() })) } })
 export const effrFixture = () => ({ refRates: economicFixture().series[2].observations.map(p => ({ effectiveDate: p.date, percentRate: p.value, type: 'EFFR', revisionIndicator: '' })).reverse() })
+
+export function fredFixture() {
+  const [cpi, unemployment] = economicFixture().series
+  return 'observation_date,CPIAUCNS,UNRATE\n' + cpi.observations.map((p, i) => `${p.date},${p.value ?? ''},${unemployment.observations[i].value ?? ''}`).join('\n') + '\n'
+}

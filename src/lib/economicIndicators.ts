@@ -1,13 +1,14 @@
 // @ts-expect-error Shared runtime validation and transformations also used by the collector/API.
-import { economicDefinitions as definitions, validEconomicSnapshot, economicStatus as status, economicComparison as comparison, economicWindow as windowPoints } from '../../lib/economic-series.js'
+import { economicDefinitions as definitions, economicRetrieval as retrieval, validEconomicSnapshot, economicStatus as status, economicComparison as comparison, economicWindow as windowPoints } from '../../lib/economic-series.js'
 export type EconomicId = 'cpi' | 'unemployment' | 'effr'
-export interface EconomicPoint { date: string; value: number | null; index?: number | null; note?: string }
-export interface EconomicSeries { id: EconomicId; collectedAt: string | null; attemptedAt: string | null; error: 'unavailable' | null; failureReason?: string | null; observations: EconomicPoint[] }
+export interface EconomicPoint { date: string; value: number | null; index?: number | null; note?: string; priorNote?: { text: string; value: number | null; collectedAt: string } }
+export interface EconomicSeries { id: EconomicId; collectedAt: string | null; attemptedAt: string | null; error: 'unavailable' | null; failureReason?: string | null; retrievedVia?: 'bls' | 'fred' | 'nyfed'; primaryFailureReason?: string | null; fallbackFailureReason?: string | null; observations: EconomicPoint[] }
 export interface EconomicData { version: 1; series: EconomicSeries[] }
 export interface EconomicDefinition { id: EconomicId; label: string; seriesId: string; provider: string; url: string; frequency: 'monthly' | 'daily'; adjustment: string; description: string }
 export const economicDefinitions = definitions as EconomicDefinition[]
 export const validEconomicData = (value: unknown): value is EconomicData => validEconomicSnapshot(value)
 export const economicStatus = (series: EconomicSeries): 'ok' | 'stale' | 'unavailable' => status(series)
+export const economicRetrieval = (series: EconomicSeries): { via: 'bls' | 'fred' | 'nyfed'; label: string; url: string; seriesId: string } => retrieval(series)
 export const economicComparison = (series: EconomicSeries): { latest?: EconomicPoint; previous?: EconomicPoint; change: number | null } => comparison(series)
 export const economicWindow = (series: EconomicSeries, years: number): EconomicPoint[] => windowPoints(series, years)
 export const economicDate = (date: string, daily = false) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', year: 'numeric', month: 'short', ...(daily ? { day: 'numeric' } : {}) }).format(new Date(`${date}T00:00:00Z`))

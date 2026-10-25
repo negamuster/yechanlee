@@ -64,3 +64,47 @@ test('expired cached data is hidden from charts after time advances and refresh 
   await expect(ui.locator('.economic-empty')).toHaveText('표시할 관측치가 없습니다.')
   await expect(ui.getByRole('img')).toHaveCount(0)
 })
+
+test('verified FRED fallback shows both source identities and its receipt without inventing a BLS success', async ({ page }) => {
+  payload.series[0] = { ...payload.series[0], retrievedVia: 'fred', primaryFailureReason: 'http_503', fallbackFailureReason: null, failureReason: null }
+  payload.series[0].observations.at(-1).priorNote = { text: '보존한 BLS 각주', value: 103, collectedAt: '2026-10-20T12:00:00.000Z' }
+  await page.goto('/indicators')
+  const ui = dashboard(page), cpi = ui.getByRole('button', { name: /CPI 전년동월비/ })
+  await expect(cpi).toContainText('FRED 경유')
+  await expect(cpi).toContainText('4.00%')
+  await expect(cpi).not.toContainText('갱신 지연')
+  await expect(ui.locator('.economic-fallback-note')).toContainText('FRED에서 수집한 BLS 통계')
+  await expect(ui.locator('.economic-source')).toContainText('CUUR0000SA0')
+  await expect(ui.locator('.economic-source')).toContainText('CPIAUCNS')
+  await expect(ui.locator('.economic-source a').filter({ hasText: 'FRED (BLS 통계)' })).toHaveAttribute('href', 'https://fred.stlouisfed.org/series/CPIAUCNS')
+  await expect(ui.locator('.economic-source time')).toHaveAttribute('datetime', '2026-10-21T12:00:00.000Z')
+  await ui.getByRole('button', { name: '5Y', exact: true }).click()
+  await expect(ui.getByText('조회 표 · 60개 관측 기간', { exact: true })).toBeVisible()
+  await ui.getByText('조회 표 · 60개 관측 기간', { exact: true }).click()
+  await expect(ui.getByRole('table')).toContainText('보존한 BLS 각주')
+  await expect(ui.getByRole('table')).toContainText('당시 원자료 값 103')
+  await ui.getByRole('button', { name: /실업률/ }).click()
+  await expect(ui.locator('.economic-fallback-note')).toHaveCount(0)
+  await expect(ui.locator('.economic-source')).toContainText('LNS14000000')
+  await expect(ui.getByRole('button', { name: /실업률/ })).toContainText('수집 정상')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+test('both routes failing retain the last FRED receipt with a stale label; BLS recovery removes the fallback route', async ({ page }) => {
+  payload.series[1] = { ...payload.series[1], retrievedVia: 'fred', primaryFailureReason: 'http_503', failureReason: null }
+  await page.goto('/indicators')
+  const ui = dashboard(page)
+  await ui.getByRole('button', { name: /실업률/ }).click()
+  await expect(ui.getByRole('button', { name: /실업률/ })).toContainText('FRED 경유')
+  payload.series[1] = { ...payload.series[1], error: 'unavailable', attemptedAt: '2026-10-21T12:00:30.000Z', failureReason: 'http_403', fallbackFailureReason: 'http_403' }
+  await ui.getByRole('button', { name: '새로고침', exact: true }).click()
+  await expect(ui.getByRole('button', { name: /실업률/ })).toContainText('갱신 지연')
+  await expect(ui.locator('.economic-source time')).toHaveAttribute('datetime', '2026-10-21T12:00:00.000Z')
+  await expect(ui.locator('.economic-source a').filter({ hasText: 'FRED (BLS 통계)' })).toHaveAttribute('href', 'https://fred.stlouisfed.org/series/UNRATE')
+  await expect(ui.locator('.economic-latest')).toContainText('4.20%')
+  payload.series[1] = { ...payload.series[1], error: null, retrievedVia: 'bls', failureReason: null, primaryFailureReason: null, fallbackFailureReason: null }
+  await ui.getByRole('button', { name: '새로고침', exact: true }).click()
+  await expect(ui.getByRole('button', { name: /실업률/ })).toContainText('수집 정상')
+  await expect(ui.locator('.economic-fallback-note')).toHaveCount(0)
+  await expect(ui.locator('.economic-source a').filter({ hasText: 'BLS API' })).toHaveAttribute('href', 'https://www.bls.gov/cps/')
+})

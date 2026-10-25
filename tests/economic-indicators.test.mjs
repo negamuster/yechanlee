@@ -2,11 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { economicPoints, economicComparison, economicWindow, validEconomicSnapshot, economicStatus, DAY } from '../lib/economic-series.js'
-import { parseBLS, parseEFFR, collectEconomicSnapshot, createEconomicHandler, emptyEconomicSnapshot } from '../lib/economic-indicators.js'
+import { parseBLS, parseEFFR, collectEconomicSnapshot as collect, createEconomicHandler, emptyEconomicSnapshot } from '../lib/economic-indicators.js'
 import { inspectHealth } from '../lib/data-health.js'
 import { economicFixture, blsFixture, effrFixture, ECONOMIC_NOW as now } from './fixtures/economic-indicators.mjs'
 const request = (method = 'GET', suffix = '') => new Request(`https://example.test/api/economic-indicators${suffix}`, { method })
 const response = value => new Response(JSON.stringify(value))
+// Keep these primary-provider regressions isolated; the fallback suite exercises FRED.
+const collectEconomicSnapshot = ({ fetchImpl = fetch, ...options }) => collect({ ...options, fetchImpl: (url, init) => url.startsWith('https://fred.stlouisfed.org/') ? Promise.resolve(new Response('', { status: 403 })) : fetchImpl(url, init) })
 test('BLS parser selects exact series, sorts monthly data and preserves missing-value footnotes', () => {
   const raw = blsFixture(); raw.Results.series[0].data[0].value = '-'; raw.Results.series[0].data[0].footnotes = [{ text: 'Not available' }]
   const rows = parseBLS(raw, 'CUUR0000SA0')
@@ -60,7 +62,7 @@ test('partial provider failure preserves original collection time while other se
 test('invalid or regressed single series cannot replace a good history', async () => {
   const previous = economicFixture(), raw = blsFixture(); raw.Results.series[0].data.shift()
   const data = await collectEconomicSnapshot({ previous, now: now + DAY, fetchImpl: async url => response(url.includes('bls.gov') ? raw : effrFixture()) })
-  assert.equal(data.series[0].error, 'unavailable'); assert.equal(data.series[0].failureReason, 'invalid_or_regressed_series'); assert.deepEqual(data.series[0].observations, previous.series[0].observations); assert.equal(data.series[1].error, null)
+  assert.equal(data.series[0].error, 'unavailable'); assert.equal(data.series[0].primaryFailureReason, 'invalid_or_regressed_series'); assert.deepEqual(data.series[0].observations, previous.series[0].observations); assert.equal(data.series[1].error, null)
 })
 
 test('transient provider errors retry twice at most, then recover without losing official history', async () => {
@@ -71,7 +73,7 @@ test('transient provider errors retry twice at most, then recover without losing
     calls.bls++; return calls.bls < 3 ? new Response('', { status: 503 }) : response(blsFixture())
   } })
   assert.deepEqual(calls, { bls: 3, fed: 1 }); assert.deepEqual(delays, [1000, 2000])
-  assert.equal(data.series[0].error, null); assert.equal(data.series[0].failureReason, null)
+  assert.equal(data.series[0].error, null); assert.equal(data.series[0].failureReason, null); assert.equal(data.series[0].primaryFailureReason, null)
   assert.equal(data.series[0].collectedAt, new Date(now + DAY).toISOString())
   assert.equal(validEconomicSnapshot(data, now + DAY), true)
 })
@@ -84,7 +86,7 @@ test('exhausted retries preserve original values and timestamps with sanitized H
   } })
   assert.equal(calls, 3); assert.deepEqual(delays, [1000, 2000])
   for (let i = 0; i < 2; i++) {
-    assert.equal(data.series[i].failureReason, 'http_502')
+    assert.equal(data.series[i].primaryFailureReason, 'http_502')
     assert.equal(data.series[i].collectedAt, previous.series[i].collectedAt)
     assert.deepEqual(data.series[i].observations, previous.series[i].observations)
     assert.equal(economicStatus(data.series[i], now + DAY), 'stale')
@@ -106,7 +108,7 @@ test('access denial, daily quotas, invalid JSON and oversized data do not retry'
       if (!url.includes('bls.gov')) return response(effrFixture())
       calls++; return makeResponse()
     } })
-    assert.equal(calls, 1); assert.equal(data.series[0].failureReason, reason)
+    assert.equal(calls, 1); assert.equal(data.series[0].primaryFailureReason, reason)
     assert.doesNotMatch(JSON.stringify(data), /secret|private detail/)
   }
 })
@@ -122,7 +124,7 @@ test('short Retry-After is honored; long or malformed instructions defer to a la
       calls++; return calls === 1 ? new Response('', { status, headers: { 'Retry-After': header } }) : response(blsFixture())
     } })
     assert.equal(calls, count); assert.deepEqual(delays, expectedDelay === null ? [] : [expectedDelay])
-    assert.equal(data.series[0].failureReason, count === 1 ? `http_${status}` : null)
+    assert.equal(data.series[0].primaryFailureReason, count === 1 ? `http_${status}` : null)
   }
 })
 
@@ -137,7 +139,7 @@ test('network, timeout and interrupted bodies are bounded and receive safe reaso
       if (!url.includes('bls.gov')) return response(effrFixture())
       calls++; return fail()
     } })
-    assert.equal(calls, 3); assert.equal(data.series[0].failureReason, reason)
+    assert.equal(calls, 3); assert.equal(data.series[0].primaryFailureReason, reason)
     assert.doesNotMatch(JSON.stringify(data), /private/)
   }
 })
