@@ -21,6 +21,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
 }) {
   const id = useId(), container = useRef<HTMLDivElement>(null), engine = useRef<Engine | null>(null)
   const latestBars = useRef(bars)
+  const updatingData = useRef(false)
   const [previousBars, setPreviousBars] = useState(bars), [manual, setManual] = useState(false)
   const [activeTime, setActiveTime] = useState<number | null>(null), [range, setRange] = useState(() => chartFullRange(bars.length)), [available, setAvailable] = useState(true), [tablePage, setTablePage] = useState(0)
   const rangeRef = useRef(range)
@@ -61,7 +62,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       const candles = chart.addSeries(CandlestickSeries, { upColor: '#16845b', downColor: '#c34b45', wickUpColor: '#16845b', wickDownColor: '#c34b45', borderVisible: false, visible: false, priceFormat, priceLineVisible: false, lastValueVisible: false })
       engine.current = { chart, line, candles }
       chart.timeScale().subscribeVisibleLogicalRangeChange(value => {
-        if (!value) return
+        if (!value || updatingData.current) return
         const next = clampChartRange(value, latestBars.current.length)
         rangeRef.current = next; setRange(previous => previous.from === next.from && previous.to === next.to ? previous : next); setTablePage(0)
         if (value.to - value.from < Math.min(7, latestBars.current.length - 1) - .01) chart?.timeScale().setVisibleLogicalRange(next)
@@ -71,11 +72,14 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     } catch { chart?.remove(); chart = undefined; engine.current = null; setAvailable(false) }
     return () => { engine.current = null; chart?.remove() }
   }, [currency, period])
-  useEffect(() => { engine.current?.chart.timeScale().setVisibleLogicalRange(range) }, [range])
   useEffect(() => {
     const next = rangeRef.current
     const instance = engine.current
     if (instance) {
+      // A series replacement may synchronously publish an intermediate range.
+      // Only accept user/settled chart events, then restore the chosen range.
+      updatingData.current = true
+      try {
       instance.line.setData(bars.map(p => ({ time: time(p), value: p.c })))
       instance.line.applyOptions({ visible: effectiveMode === 'line', color: changePercent == null || changePercent === 0 ? '#334c59' : changePercent > 0 ? '#16845b' : '#c34b45' })
       instance.candles.setData(bars.map(p => hasCandle(p) ? { time: time(p), open: p.o!, high: p.h!, low: p.l!, close: p.c } : { time: time(p) }))
@@ -88,6 +92,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
       instance.volume?.setData(bars.map(p => ({ time: time(p), ...(p.v == null ? {} : { value: p.v, color: p.o != null ? p.c >= p.o ? '#7ab49d' : '#d49a96' : '#a9afb2' }) })))
       container.current?.querySelectorAll('a').forEach(anchor => { anchor.tabIndex = -1 })
       instance.chart.timeScale().setVisibleLogicalRange(next)
+      } finally { updatingData.current = false }
     }
   }, [bars, effectiveMode, showVolume, changePercent, currency, period])
   function select(index: number) {
