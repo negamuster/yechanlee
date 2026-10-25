@@ -2,7 +2,7 @@
 import { economicDefinitions as definitions, validEconomicSnapshot, economicStatus as status, economicComparison as comparison, economicWindow as windowPoints } from '../../lib/economic-series.js'
 export type EconomicId = 'cpi' | 'unemployment' | 'effr'
 export interface EconomicPoint { date: string; value: number | null; index?: number | null; note?: string }
-export interface EconomicSeries { id: EconomicId; collectedAt: string | null; attemptedAt: string | null; error: 'unavailable' | null; observations: EconomicPoint[] }
+export interface EconomicSeries { id: EconomicId; collectedAt: string | null; attemptedAt: string | null; error: 'unavailable' | null; failureReason?: string | null; observations: EconomicPoint[] }
 export interface EconomicData { version: 1; series: EconomicSeries[] }
 export interface EconomicDefinition { id: EconomicId; label: string; seriesId: string; provider: string; url: string; frequency: 'monthly' | 'daily'; adjustment: string; description: string }
 export const economicDefinitions = definitions as EconomicDefinition[]
