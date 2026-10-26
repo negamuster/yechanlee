@@ -1,5 +1,246 @@
 [
   {
+    "id": "2026-10-27",
+    "reviewMode": "automated",
+    "title": "미국 증시 요약 | 2026년 10월 26일",
+    "sessionDate": "2026-10-26",
+    "cutoffAt": "2026-10-26T22:01:08.000Z",
+    "publishedAt": "2026-10-26T22:07:20.906Z",
+    "summary": [
+      "미국장은 S&P500 +0.70%, 다우 +0.28%, 나스닥 종합 +0.83%로 반등했습니다. Anthropic의 IPO 서류 공개가 AI 투자심리를 북돋웠다는 보도 속에 반도체지수가 2.8% 올라 기술주가 상승을 이끌었습니다.[1][2]",
+      "Meta는 AI 인프라 확장을 위한 최대 950억달러의 주식 조달 계획을 내놓았지만 주가는 1.9% 하락했습니다. 약 350억달러의 공모와 향후 600억달러 프로그램을 합친 계획으로, 전액 조달을 완료한 것은 아닙니다.[1][3]",
+      "10년물 파 수익률은 5.00%로 전 거래일과 같았고, WTI 선물 결제가는 1.46% 내렸습니다. 중동 긴장 완화 조짐이 유가 하락 배경으로 보도됐으며, 29일 03:00 KST FOMC 결과 발표를 앞두고 있습니다.[4][5][7]"
+    ],
+    "blocks": [
+      {
+        "kind": "metadata",
+        "text": "작성 기준 2026-10-27 07:01:08 KST · 최근 24시간: 2026-10-26 07:01:08~10월 27일 07:01:08 KST · 직전 미국 정규장 거래일 2026-10-26 · 정규장 마감 10월 27일 05:00 KST · NYSE 공식 휴장일표상 26일은 정상 거래일입니다. 아래 주가 반응은 정규장 종가 기준이며 기준 시각 이후 정보는 제외했습니다.[6]"
+      },
+      {
+        "kind": "heading",
+        "text": "IPO 기대가 기술주 반등 견인…Meta 조달 발표에는 부담"
+      },
+      {
+        "kind": "paragraph",
+        "text": "26일 미국장은 주요 지수가 모두 올랐습니다. 나스닥 종합의 상승폭이 다우보다 컸고, S&P500 기술업종은 1.5%, 필라델피아 반도체지수는 2.8% 상승해 기술주가 반등을 주도했습니다. Reuters는 Anthropic의 IPO 서류 공개가 AI 관련주 투자심리를 북돋웠다고 전했습니다.[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "정책 재료는 이번 주 연준 회의와 성장·물가 지표를 앞둔 대기 국면이었습니다. Reuters는 시장이 이번 회의의 금리 동결을 예상하면서도 지속되는 물가 압력을 의식하고 있다고 보도했습니다. 공식 일정상 FOMC는 현지 27~28일 열리며, 한국에서는 29일 새벽에 결정과 의장의 설명을 확인하게 됩니다.[1][7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "Anthropic이 공개한 S-1에는 2026년 2분기 매출의 전년 동기 대비 1,368% 증가와 함께 큰 순손실도 담겼는데, 상반기 손실에는 전환증권 등의 공정가치 재평가가 크게 반영됐습니다. 성장세와 개발·컴퓨팅 비용이 함께 드러난 가운데 관련주의 반등이 나타났다는 것이 Reuters의 설명입니다.[1][2]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "반면 Meta는 약 350억달러의 보통주·전환우선주 공모와 향후 약 600억달러의 시장매각 프로그램을 포함한 조달 계획을 발표한 뒤 1.9% 하락했습니다. AI 인프라 확대를 위한 자금 마련이지만 향후 프로그램은 계약·시기·조건이 미정이며, Reuters는 투자자들이 자금 조달과 추가 발행 가능성을 계속 따져볼 것이라는 평가를 전했습니다.[1][3]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "테슬라는 Barclays가 투자의견을 중립(equal-weight)에서 비중확대(overweight)로 올린 뒤 5.2% 상승했습니다.[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "자산시장에서는 재무부 10년물 파 수익률이 전 거래일과 같고 2년물은 1bp 낮아졌습니다. Reuters 종합 보도에서는 달러지수가 0.34%, 금 현물이 0.46% 상승한 반면 WTI 선물은 1.46% 하락해 결제됐습니다. 유가에는 중동 적대행위 완화 조짐이 반영됐다는 설명과 함께 사우디에 대한 공격이 공급 우려를 남긴다는 보도가 이어졌습니다.[4][5]"
+      },
+      {
+        "kind": "heading",
+        "text": "시장 수치"
+      },
+      {
+        "kind": "metadata",
+        "text": "주가지수 · 2026-10-26 미국 정규장 종가 · 단위: 포인트 · 10월 23일 대비"
+      },
+      {
+        "kind": "paragraph",
+        "text": "S&P500 7,676.77 (+0.70%) · 다우 52,361.58 (+0.28%) · 나스닥 종합 26,169.38 (+0.83%) · 러셀2000 2,786.42 (+0.4%).[1]"
+      },
+      {
+        "kind": "metadata",
+        "text": "국채 · 재무부 호가 기반 파 수익률 · 2026-10-26 약 15:30 EDT / 10월 27일 04:30 KST 관측 · 10월 23일 대비 · 실거래 종가 아님"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2년물 4.68% (−1bp) · 10년물 5.00% (0bp).[4]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "달러지수 +0.34% · 금 현물 4,013.79미국달러/트로이온스 (+0.46%) · 2026-10-26 Reuters 뉴욕장 마감 종합 보도의 관측치, 전 거래일 대비. 정확한 호가 시각과 달러지수 수준은 본문에 제시되지 않았습니다.[5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "WTI 원유 선물 · 2026-10-26 결제 변화 −1.46% · 보도 본문에 계약월이 없어 가격 수준은 제외했습니다.[5]"
+      },
+      {
+        "kind": "heading",
+        "text": "기준 시각 이후 72시간 공식 일정"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-10-29 03:00 KST · FOMC 회의 결과 발표. 확인할 항목: 정책금리 결정과 성명 내용.[7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-10-29 03:30 KST · FOMC 의장 기자회견. 확인할 항목: 정책 판단에 대한 의장의 설명.[7]"
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "Reuters·AP · 10월 26일 미국장 마감·지수",
+        "url": "https://www.reuters.com/business/us-stock-futures-edge-up-oil-falls-heading-into-earnings-barrage-2026-10-26/",
+        "links": [
+          {
+            "label": "AP · 4대 지수 종가",
+            "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-693ac6c4e67da0332045e66804780be7"
+          }
+        ],
+        "accessNote": "Reuters 최종 마감 본문과 AP 지수 마감 본문을 읽었습니다. 최초 게시 10:02 UTC 이후 갱신된 마감 수치이며 갱신 분초는 표시되지 않았습니다. 정규장 종가·업종·Meta·Tesla 반응을 사용하고 장중 수치를 대체하지 않았습니다. 러셀2000은 AP의 원문 반올림 +0.4%를 유지했습니다."
+      },
+      {
+        "id": 2,
+        "label": "Anthropic · SEC S-1 및 관련 Reuters 보도",
+        "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/anthropicpbc-sx1.htm",
+        "links": [
+          {
+            "label": "SEC · 접수일·등록 서류 목록",
+            "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/0001628280-26-067168-index.html"
+          },
+          {
+            "label": "Reuters · IPO 공개와 성장·비용",
+            "url": "https://www.reuters.com/legal/transactional/anthropic-opens-books-ais-explosive-growth-staggering-costs-2026-10-26/"
+          }
+        ],
+        "accessNote": "SEC 접수 목록과 공개 S-1의 사업·재무 요약 및 순손실 주석을 직접 읽고 Reuters 본문과 대조했습니다. 매출 성장률은 6월 30일 종료 3개월의 전년 동기 대비, 공정가치 손실 설명은 6월 30일 종료 상반기 기준입니다. IPO 서류 제출과 상장 완료를 구분했습니다."
+      },
+      {
+        "id": 3,
+        "label": "Meta IR·SEC · 주식 공모와 향후 ATM 계획",
+        "url": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Announces-Launch-of-Offering-of-Depositary-Shares-Representing-Series-A-Mandatory-Convertible-Preferred-Stock-and-Offering-of-Class-A-Common-Stock-in-Connection-with-Forward-Sale-Agreements/default.aspx",
+        "links": [
+          {
+            "label": "SEC · 보통주 예비 투자설명서",
+            "url": "https://www.sec.gov/Archives/edgar/data/1326801/000119312526431040/d94886d424b5.htm"
+          },
+          {
+            "label": "Reuters · 조달 계획과 투자자 평가",
+            "url": "https://www.reuters.com/legal/transactional/meta-launches-35-billion-stock-offering-fund-ai-expansion-2026-10-26/"
+          }
+        ],
+        "accessNote": "Meta IR 발표 원문, SEC 예비 투자설명서, Reuters 본문을 읽었습니다. 약 35 billion USD는 350억달러, 향후 약 60 billion USD는 600억달러로 검산했습니다. ATM은 아직 계약·시기·규모·조건 미정이며 공모 및 선도계약의 현금 수령도 완료로 쓰지 않았습니다. 종가 −1.9%는 마감 기사[1] 기준이며 이 기사 장중 −1.4%와 구분했습니다."
+      },
+      {
+        "id": 4,
+        "label": "미국 재무부 · 10월 23·26일 파 수익률",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "accessNote": "표 머리말·23/26일 행·방법론을 읽었습니다. 약 15:30 ET 매수호가 기반 보간 파 수익률이며 실거래 종가가 아닙니다. 2년물 4.69→4.68%, 10년물 5.00→5.00%를 같은 계열로 비교해 −1bp·0bp로 검산했습니다."
+      },
+      {
+        "id": 5,
+        "label": "Reuters · 10월 26일 글로벌 시장·달러·금·원유",
+        "url": "https://www.reuters.com/world/asia-pacific/global-markets-pix-2026-10-26/",
+        "accessNote": "뉴욕장 마감 수치를 담은 본문을 읽었습니다. 달러·금 현물은 기사 관측값으로 정확한 호가 시각이 표시되지 않아 해당 행에 한계를 유지했습니다. 달러지수 수준은 미제시, WTI 계약월은 미확인이므로 각각 수준을 생략했습니다. 기사의 시장 국채금리 4.988%와 재무부 파 수익률을 섞어 비교하지 않았습니다."
+      },
+      {
+        "id": 6,
+        "label": "NYSE · 공식 휴장일·정규장 시간",
+        "url": "https://www.nyse.com/trade/hours-calendars",
+        "accessNote": "2026년 휴장일표와 09:30~16:00 ET 정규장 시간을 읽었습니다. 10월 26일은 휴장일이 아니며 EDT→KST 13시간 차이로 마감을 27일 05:00 KST로 변환했습니다."
+      },
+      {
+        "id": 7,
+        "label": "연준 · 2026년 10월 공식 일정",
+        "url": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+        "accessNote": "공식 달력의 27~28일 회의, 28일 14:00 ET 결과 발표·14:30 ET 기자회견을 읽었습니다. 29일 03:00·03:30 KST로 변환해 cutoff 이후 72시간 범위를 확인했습니다."
+      }
+    ],
+    "dataNote": "동일 모델이 원문과 자체 대조했으며 독립 검증이나 사람 승인이 아닙니다. 달러·금은 마감 종합 보도의 관측값이며 정확한 호가 시각이 표시되지 않았습니다.",
+    "corrections": [],
+    "homepage": {
+      "headline": "Anthropic IPO 공개에 기술주 반등…Meta는 대규모 조달 발표 뒤 하락[1][2][3]",
+      "stocks": [
+        {
+          "name": "메타",
+          "ticker": "META",
+          "change": "−1.9%",
+          "reason": "AI 인프라용 약 350억달러 공모와 향후 약 600억달러 주식매각 계획을 발표했습니다. Reuters는 자금 조달·추가 발행에 대한 투자자 평가가 이어질 것이라고 전했습니다.",
+          "basis": "2026-10-26 미국 정규장 종가 · 10월 23일 대비 · 조달 계획의 전액 완료 아님",
+          "sourceIds": [
+            1,
+            3
+          ]
+        },
+        {
+          "name": "테슬라",
+          "ticker": "TSLA",
+          "change": "+5.2%",
+          "reason": "Barclays가 투자의견을 중립(equal-weight)에서 비중확대(overweight)로 올린 뒤 상승했다고 Reuters가 보도했습니다.",
+          "basis": "2026-10-26 미국 정규장 종가 · 10월 23일 대비",
+          "sourceIds": [
+            1
+          ]
+        }
+      ],
+      "assets": [
+        {
+          "label": "미국 10년물",
+          "value": "5.00%",
+          "change": "0bp",
+          "basis": "2026-10-26 약 15:30 EDT / 10월 27일 04:30 KST · 10월 23일 대비 · 재무부 호가 기반 파 수익률 · 실거래 종가 아님",
+          "sourceIds": [
+            4
+          ]
+        },
+        {
+          "label": "달러지수",
+          "value": "지수 수준 미제시",
+          "change": "+0.34%",
+          "basis": "2026-10-26 Reuters 뉴욕장 마감 종합 보도 관측 · 전 거래일 대비 · 정확한 호가 시각 미표기",
+          "sourceIds": [
+            5
+          ]
+        },
+        {
+          "label": "금 현물",
+          "value": "4,013.79미국달러/트로이온스",
+          "change": "+0.46%",
+          "basis": "2026-10-26 Reuters 뉴욕장 마감 종합 보도 관측 · 전 거래일 대비 · 정확한 호가 시각 미표기 · 선물 결제값 아님",
+          "sourceIds": [
+            5
+          ]
+        },
+        {
+          "label": "WTI 원유 선물",
+          "value": "가격 수준 제외 · 계약월 미확인",
+          "change": "−1.46%",
+          "basis": "2026-10-26 결제 변화 · Reuters 본문에 계약월 미표기",
+          "sourceIds": [
+            5
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-10-29T03:00:00+09:00",
+          "label": "FOMC 회의 결과 발표",
+          "detail": "정책금리 결정과 성명 내용 확인",
+          "sourceIds": [
+            7
+          ]
+        },
+        {
+          "at": "2026-10-29T03:30:00+09:00",
+          "label": "FOMC 의장 기자회견",
+          "detail": "정책 판단에 대한 의장의 설명 확인",
+          "sourceIds": [
+            7
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "2026-10-26",
     "reviewMode": "automated",
     "title": "미국 증시 요약 | 2026년 10월 23일",
