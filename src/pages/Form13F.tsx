@@ -5,10 +5,12 @@ import ToolPage from '../components/ToolPage'
 import ResourceState from '../components/ResourceState'
 import WidgetActions from '../components/WidgetActions'
 import { portfolioSlices } from '../lib/financialMath'
-import { DEFAULT_HOLDING_SORT, formatHoldingValue, isFiling } from '../lib/form13fPresentation'
+import { formatHoldingValue, isFiling } from '../lib/form13fPresentation'
+import { DEFAULT_HOLDINGS_SORTING } from '../lib/holdingsTable'
+import type { SortingState } from '@tanstack/react-table'
 import FullHoldingsTable from '../components/FullHoldingsTable'
 import InstitutionComparison from '../components/InstitutionComparison'
-import type { Holding, HoldingSort } from '../lib/form13fPresentation'
+import type { Holding } from '../lib/form13fPresentation'
 import { dataTime } from '../utils/dataTime'
 
 interface Manager {
@@ -67,13 +69,13 @@ export default function Form13F() {
   const [refresh, setRefresh] = useState(0)
   const [compare, setCompare] = useState(false)
   const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<HoldingSort>(DEFAULT_HOLDING_SORT)
+  const [sort, setSort] = useState<SortingState>(DEFAULT_HOLDINGS_SORTING)
   const selectedManager = INITIAL_MANAGERS[selectedIdx]
   const { data: current, loading: busy, error: failed } = useResource(`/api/form13f?cik=${selectedManager.cik}`, isFiling, refreshPolicies.filings, refresh)
   const edgarUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${selectedManager.cik}&type=13F-HR&dateb=&owner=include&count=10`
 
   function selectManager(index: number) {
-    setSelectedIdx(index); setQuery(''); setSort(DEFAULT_HOLDING_SORT)
+    setSelectedIdx(index); setQuery(''); setSort(DEFAULT_HOLDINGS_SORTING)
   }
 
   return <ToolPage className="portfolio-page" title="기관 포트폴리오 · 13F"
