@@ -105,7 +105,7 @@ test('column visibility keeps identity pinned and exports all columns and rows o
   expect(Math.abs(before.x - after.x)).toBeLessThanOrEqual(1)
 })
 
-test('touch-friendly multi-sort uses raw values, stable share-class identities and a visible priority order', async ({ page }) => {
+test('touch-friendly multi-sort uses raw values, stable share-class identities and a visible priority order', async ({ page, isMobile }) => {
   a = filingFixture({ holdings: [
     { name: 'ALPHA', title: 'CL C', cusip: '000000001', shares: 10, prevShares: 20, value: 950e6 },
     { name: 'ALPHA', title: 'CL A', cusip: '000000002', shares: 30, prevShares: 20, value: 1.1e9 },
@@ -127,6 +127,12 @@ test('touch-friendly multi-sort uses raw values, stable share-class identities a
   expect(csv.indexOf("'000000002")).toBeLessThan(csv.indexOf("'000000001"))
   expect(csv).toContain('1100000000'); expect(csv).toContain('950000000')
   await table.getByRole('button', { name: '다중 정렬', exact: true }).click()
+  if (!isMobile) {
+    await table.getByRole('button', { name: '초기화', exact: true }).click()
+    await table.getByRole('columnheader').getByRole('button', { name: '종목', exact: true }).press('Enter')
+    await table.getByRole('columnheader').getByRole('button', { name: '보유 수량', exact: true }).click({ modifiers: ['Shift'] })
+    await expect(table.locator('.holdings-sort-order')).toHaveText('정렬: 1. 종목 오름차순 → 2. 보유 수량 내림차순')
+  }
   const change = table.getByRole('columnheader').getByRole('button', { name: '수량 변화', exact: true })
   await change.click(); await expect(table.locator('.holding-rank').last()).toHaveText('4')
   await change.click(); await expect(table.locator('.holding-rank').last()).toHaveText('4')
@@ -143,7 +149,7 @@ test('manager changes reset table controls and a failed refresh preserves the fi
   await table.locator('.holdings-columns summary').click()
   await table.getByRole('checkbox', { name: '평가액', exact: true }).uncheck()
   await table.getByRole('button', { name: '다중 정렬', exact: true }).click()
-  if (isMobile) await page.getByLabel('기관 선택', { exact: true }).selectOption('1')
+  if (isMobile) await page.getByRole('combobox', { name: '기관 선택', exact: true }).selectOption('1')
   else await page.getByRole('button', { name: /블랙록/ }).click()
   await expect(table.locator('tbody tr')).toHaveCount(2)
   await expect(table.getByRole('columnheader')).toHaveCount(5)

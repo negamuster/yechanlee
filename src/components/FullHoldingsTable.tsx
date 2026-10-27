@@ -94,7 +94,7 @@ export default function FullHoldingsTable({ filing, cik, query, setQuery, sort, 
     <p className="tool-meta">전 분기 {filing.previousPeriod}{filing.previousAvailable ? '와 수량 비교' : ' 자료를 검증하지 못해 변동을 표시하지 않습니다.'} · 신규·전량 미기재는 공시 간 차이이며 매매 확정을 뜻하지 않습니다.</p>
     <p className="tool-scroll-hint">좌우로 밀어 표 전체 보기</p>
     <div className="tool-table-scroll holdings-scroll" tabIndex={0} role="region" aria-label="기관 보유 종목 표, 좌우·상하로 스크롤">
-      <table className="tool-table holdings-table" style={{ '--holding-numeric-columns': visibleColumns.length - 1 } as CSSProperties}><caption className="tool-sr-only">제목을 눌러 정렬할 수 있습니다. 수량 변화는 전 분기 대비입니다. 종목 앞 숫자는현재 평가액 순위입니다. 종목 열은 항상 표시하며 고정합니다.</caption>
+      <table className="tool-table holdings-table" style={{ '--holding-numeric-columns': visibleColumns.length - 1 } as CSSProperties}><caption className="tool-sr-only">제목을 눌러 정렬할 수 있습니다. 수량 변화는 전 분기 대비입니다. 종목 앞 숫자는 현재 평가액 순위입니다. 종목 열은 항상 표시하며 고정합니다.</caption>
         <thead><tr>{visibleColumns.map(column => {
           const index = sort.findIndex(s => s.id === column.id), direction = column.getIsSorted()
           return <th key={column.id} scope="col" data-column={column.id} className={column.id === 'name' ? 'holding-identity' : 'tool-numeric'} aria-sort={index === 0 ? direction === 'asc' ? 'ascending' : 'descending' : undefined}>
