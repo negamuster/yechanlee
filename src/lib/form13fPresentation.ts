@@ -101,23 +101,27 @@ export function holdingMatchesQuery(holding: Pick<Holding, 'name' | 'title' | 'c
   const tokens = text.split(/[^\p{L}\p{N}]+/u)
   return words.every(word => words.length > 1 && word.length === 1 ? tokens.includes(word) : text.includes(word))
 }
-export function holdingRows(holdings: Holding[], total: number, query: string, sort: HoldingSort) {
+export interface HoldingRow extends Holding {
+  rank: number; pct: number; change: ReturnType<typeof holdingChange>
+}
+// Return ties as zero so a table can apply a secondary sort before portfolio rank.
+export function compareHoldingRows(a: HoldingRow, b: HoldingRow, sort: HoldingSort) {
+  let comparison: number
+  if (sort.key === 'change') {
+    const group = { percent: 0, new: 1, unknown: 2 }
+    const category = group[a.change.kind] - group[b.change.kind]
+    if (category) return category
+    comparison = (a.change.percent ?? 0) - (b.change.percent ?? 0)
+  } else if (sort.key === 'name') comparison = a.name.localeCompare(b.name)
+  else if (sort.key === 'pct') comparison = a.value - b.value
+  else comparison = a[sort.key] - b[sort.key]
+  return sort.direction === 'desc' ? -comparison : comparison
+}
+export function holdingRows(holdings: Holding[], total: number, query: string, sort?: HoldingSort): HoldingRow[] {
   // Keep the original portfolio rank and denominator through filtering and sorting.
   const rows = holdings.map((holding, index) => ({ ...holding, rank: index + 1, pct: portfolioPercent(holding.value, total), change: holdingChange(holding) }))
     .filter(holding => holdingMatchesQuery(holding, query))
-  return rows.sort((a, b) => {
-    let comparison: number
-    if (sort.key === 'change') {
-      // New holdings have no percentage denominator; never treat them as 0% or infinity.
-      const group = { percent: 0, new: 1, unknown: 2 }
-      const category = group[a.change.kind] - group[b.change.kind]
-      if (category) return category
-      comparison = (a.change.percent ?? 0) - (b.change.percent ?? 0)
-    } else if (sort.key === 'name') comparison = a.name.localeCompare(b.name)
-    else if (sort.key === 'pct') comparison = a.value - b.value
-    else comparison = a[sort.key] - b[sort.key]
-    return (sort.direction === 'desc' ? -comparison : comparison) || a.rank - b.rank
-  })
+  return sort ? rows.sort((a, b) => compareHoldingRows(a, b, sort) || a.rank - b.rank) : rows
 }
 
 export function formatHoldingValue(value: number): string {

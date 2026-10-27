@@ -3,16 +3,16 @@ import { readFile } from 'node:fs/promises'
 import { filingFixture, manyHoldings } from '../fixtures/form13f.mjs'
 import { installStockFixtures } from './stock-fixtures.mjs'
 
-let state, a, b, failHistorical, requests
+let state, a, b, failHistorical, failLatest, requests
 test.beforeEach(async ({ page }) => {
-  state = await installStockFixtures(page); requests = []; failHistorical = false
+  state = await installStockFixtures(page); requests = []; failHistorical = false; failLatest = false
   a = filingFixture({ holdings: manyHoldings(), closedHoldings: [{ name: 'PREVIOUS ONLY', cusip: '999999999', title: 'COM', shares: 0, prevShares: 25, value: 0 }] })
   b = filingFixture({ holdings: [a.holdings[0], { name: 'B ONLY', cusip: '888888888', title: 'COM', shares: 5, prevShares: 5, value: 100 }] })
   await page.route('**/api/form13f?*', async route => {
     const url = new URL(route.request().url()); requests.push(url.search)
     const data = url.searchParams.get('cik') === '0001067983' ? a : b
     const period = url.searchParams.get('period')
-    if (period && failHistorical) return route.fulfill({ status: 503, json: { error: 'No verified filing' } })
+    if ((!period && failLatest) || period && failHistorical) return route.fulfill({ status: 503, json: { error: 'No verified filing' } })
     return route.fulfill({ json: period ? { ...data, period, previousPeriod: '2025-12-31', filedAt: '2026-05-15' } : data })
   })
 })
@@ -76,4 +76,96 @@ test('different latest quarters load a common historical quarter and errors neve
   await comparison.getByRole('button', { name: '비교 자료 새로고침', exact: true }).click()
   await expect(comparison.getByRole('table')).toBeVisible()
   expect(requests.some(q => q.includes('cik=0001067983') && q.includes('period=2026-03-31'))).toBe(true)
+})
+
+
+test('column visibility keeps identity pinned and exports all columns and rows on both viewport sizes', async ({ page }) => {
+  await page.goto('/form13f')
+  const table = page.locator('.portfolio-holdings')
+  await table.locator('.holdings-columns summary').click()
+  await expect(table.getByRole('checkbox', { name: /종목/ })).toBeDisabled()
+  await table.getByRole('checkbox', { name: '평가액', exact: true }).uncheck()
+  await expect(table.getByRole('columnheader')).toHaveCount(4)
+  await expect(table.locator('.holdings-sort-order')).toHaveText('정렬: 1. 종목 오름차순')
+  const downloading = page.waitForEvent('download')
+  await table.getByRole('button', { name: 'CSV 저장 (67)', exact: true }).click()
+  const csv = await readFile(await (await downloading).path(), 'utf8')
+  expect(csv.trim().split('\r\n')).toHaveLength(68)
+  expect(csv).toContain('value_usd'); expect(csv).toContain("'000000067")
+  expect(csv.indexOf('HOLDING 001')).toBeLessThan(csv.indexOf('HOLDING 067'))
+  for (const name of ['비중', '보유 수량', '수량 변화']) await table.getByRole('checkbox', { name, exact: true }).uncheck()
+  await expect(table.getByRole('columnheader')).toHaveCount(1)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await table.getByRole('button', { name: '초기화', exact: true }).click()
+  await expect(table.getByRole('columnheader')).toHaveCount(5)
+  const scroll = table.getByRole('region', { name: /기관 보유 종목 표/ })
+  const before = await table.locator('tbody .holding-identity').first().boundingBox()
+  await scroll.evaluate(el => { el.scrollLeft = 200 })
+  const after = await table.locator('tbody .holding-identity').first().boundingBox()
+  expect(Math.abs(before.x - after.x)).toBeLessThanOrEqual(1)
+})
+
+test('touch-friendly multi-sort uses raw values, stable share-class identities and a visible priority order', async ({ page, isMobile }) => {
+  a = filingFixture({ holdings: [
+    { name: 'ALPHA', title: 'CL C', cusip: '000000001', shares: 10, prevShares: 20, value: 950e6 },
+    { name: 'ALPHA', title: 'CL A', cusip: '000000002', shares: 30, prevShares: 20, value: 1.1e9 },
+    { name: 'BETA', title: 'COM', cusip: '000000003', shares: 40, prevShares: 20, value: 1.1e9 },
+    { name: 'NEW', title: 'COM', cusip: '000000004', shares: 50, prevShares: 0, value: 100 },
+  ] })
+  await page.goto('/form13f')
+  const table = page.locator('.portfolio-holdings')
+  await expect(table.locator('.holding-rank')).toHaveText(['2', '3', '1', '4'])
+  await table.getByRole('columnheader').getByRole('button', { name: '종목', exact: true }).click()
+  await table.getByRole('button', { name: '다중 정렬', exact: true }).click()
+  await table.getByRole('columnheader').getByRole('button', { name: '보유 수량', exact: true }).click()
+  await expect(table.locator('.holding-rank')).toHaveText(['2', '1', '3', '4'])
+  await expect(table.locator('.holdings-sort-order')).toHaveText('정렬: 1. 종목 오름차순 → 2. 보유 수량 내림차순')
+  await expect(table.locator('[aria-sort]')).toHaveCount(1)
+  const downloading = page.waitForEvent('download')
+  await table.getByRole('button', { name: 'CSV 저장 (4)', exact: true }).click()
+  const csv = await readFile(await (await downloading).path(), 'utf8')
+  expect(csv.indexOf("'000000002")).toBeLessThan(csv.indexOf("'000000001"))
+  expect(csv).toContain('1100000000'); expect(csv).toContain('950000000')
+  await table.getByRole('button', { name: '다중 정렬', exact: true }).click()
+  if (!isMobile) {
+    await table.getByRole('button', { name: '초기화', exact: true }).click()
+    await table.getByRole('columnheader').getByRole('button', { name: '종목', exact: true }).press('Enter')
+    await table.getByRole('columnheader').getByRole('button', { name: '보유 수량', exact: true }).click({ modifiers: ['Shift'] })
+    await expect(table.locator('.holdings-sort-order')).toHaveText('정렬: 1. 종목 오름차순 → 2. 보유 수량 내림차순')
+  }
+  const change = table.getByRole('columnheader').getByRole('button', { name: '수량 변화', exact: true })
+  await change.click(); await expect(table.locator('.holding-rank').last()).toHaveText('4')
+  await change.click(); await expect(table.locator('.holding-rank').last()).toHaveText('4')
+  await table.getByRole('searchbox', { name: '보유 종목 검색' }).fill('ALPHA CL C')
+  await expect(table.locator('tbody tr')).toHaveCount(1)
+  await expect(table.locator('.holding-rank')).toHaveText('1')
+  await expect(table.locator('tbody')).toContainText((950e6 / a.totalValue * 100).toLocaleString('en-US', { maximumFractionDigits: 2 }) + '%')
+})
+
+test('manager changes reset table controls and a failed refresh preserves the filing, CSV provenance and original receipt', async ({ page, isMobile }) => {
+  await page.goto('/form13f')
+  const table = page.locator('.portfolio-holdings')
+  await table.getByRole('button', { name: '다음', exact: true }).click()
+  await table.locator('.holdings-columns summary').click()
+  await table.getByRole('checkbox', { name: '평가액', exact: true }).uncheck()
+  await table.getByRole('button', { name: '다중 정렬', exact: true }).click()
+  if (isMobile) await page.getByRole('combobox', { name: '기관 선택', exact: true }).selectOption('1')
+  else await page.getByRole('button', { name: /블랙록/ }).click()
+  await expect(table.locator('tbody tr')).toHaveCount(2)
+  await expect(table.getByRole('columnheader')).toHaveCount(5)
+  await expect(table.locator('.holdings-sort-order')).toHaveText('정렬: 1. 평가액 내림차순')
+  await expect(table.getByRole('button', { name: '다중 정렬', exact: true })).toHaveAttribute('aria-pressed', 'false')
+  const receipt = await page.locator('.portfolio-verified').innerText()
+  failLatest = true
+  await page.getByRole('button', { name: '13F 공시 새로고침', exact: true }).click()
+  await expect(page.locator('.portfolio-overview')).toContainText('최신 조회에 실패해 마지막 검증 자료를 표시합니다.')
+  await expect(table.locator('tbody tr')).toHaveCount(2)
+  const downloading = page.waitForEvent('download')
+  await table.getByRole('button', { name: 'CSV 저장 (2)', exact: true }).click()
+  const csv = await readFile(await (await downloading).path(), 'utf8')
+  expect(csv.split('\r\n')[1]).toMatch(/^"'0002012383","2026-06-30","2026-08-14","2026-03-31","true","true",/)
+  expect(csv).toContain('https://www.sec.gov/Archives/example-index.htm')
+  await expect(page.locator('.portfolio-verified')).toHaveText(receipt)
+  await expect(page.locator('.portfolio-overview time')).toHaveAttribute('datetime', new Date(b.checkedAt).toISOString())
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })

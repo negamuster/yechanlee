@@ -21,6 +21,7 @@
     "check:stocks": "node scripts/check-data-health.mjs --stocks-only"
   },
   "dependencies": {
+    "@tanstack/react-table": "9.3.1",
     "cheerio": "1.2.0",
     "echarts": "6.1.0",
     "fast-xml-parser": "^5.11.1",

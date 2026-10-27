@@ -75,3 +75,36 @@ The model ignores taxes, fees, market volatility, sale constraints and actual mo
 `node --test tests/financial-math.test.mjs tests/filing-dates.test.mjs`
 
 `npm run build`
+
+## Full holdings table (TanStack Table)
+
+Only the institution's full holdings table uses `@tanstack/react-table` 9.3.1
+(MIT). Institution comparison and the SEC collector retain their existing code.
+The v9 sorting, visibility and pagination features are explicitly registered;
+no additional table UI framework is installed.
+
+- Default order remains raw USD value descending, with the original portfolio
+  rank as the final tie breaker. Sort by up to three columns using the visible
+  multi-sort button or Shift-click. Priorities and directions appear above the
+  table; only the primary header has `aria-sort`.
+- New positions and unavailable prior shares stay after numeric share changes
+  in both directions. They are never assigned a zero/infinite change. Secondary
+  sorting applies only when the earlier criterion ties.
+- The name/class/CUSIP and evidence button column is always visible and pinned.
+  Other columns can be hidden. Hiding an active sorting column removes that
+  criterion; if none remains, use visible value descending or name ascending.
+- Search, quarter-change filters and full-portfolio weights retain their existing
+  semantics. Fifty rows render per page. Search/filter/sort changes reset to the
+  first page; a new receipt or smaller response cannot strand an empty page.
+- CSV retains the existing schema, raw numeric precision, leading-zero identifiers,
+  formula protection, reporting periods, stale flag and current/prior SEC links.
+  It includes all matched rows in the current sort order and every export column,
+  regardless of pagination or column visibility. The UI states this explicitly.
+- Reset restores the default order, all columns, current holdings, empty search,
+  single-sort interaction and page one. Changing institution remounts the table
+  and clears its view settings. No browser storage or financial records migrate.
+
+Regression coverage: `tests/holdings-table-ui.test.mjs` mounts the real component
+in jsdom; `tests/e2e/form13f.spec.mjs` exercises desktop and Pixel 7 Chromium
+emulation with synthetic filings. The existing 13F parsing, presentation,
+institution comparison and evidence tests remain applicable.
