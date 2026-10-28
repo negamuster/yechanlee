@@ -209,6 +209,13 @@ test('mismatched currency, interval and nonmatching timestamps leave a usable pr
   await expect(ui.locator('.stock-comparison-unavailable')).toContainText('공통 관측치가 2개 이상')
   await expect(ui.locator('.stock-chart-comparison-readout')).toHaveCount(0)
   await expect(ui.locator('.stock-chart-ohlcv')).toContainText('$115.50')
+  state.benchmarkOffset = 0; state.benchmarkSkip = true
+  await refresh(page)
+  await expect(ui.locator('.stock-chart-analysis-basis')).toContainText('16개 공통 관측치')
+  const frame = ui.getByRole('group', { name: '시점별 주가 차트' })
+  await frame.press('Home'); await expect(ui.locator('.stock-chart-readout strong')).toHaveText('0.00%')
+  await frame.press('ArrowRight'); await expect(ui.locator('.stock-chart-readout strong')).toHaveText('—')
+  await expect(ui.locator('.stock-chart-comparison-readout')).toContainText('미제공')
 })
 
 test('a late VOO response cannot replace the newly selected period comparison', async ({ page }) => {

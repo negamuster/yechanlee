@@ -128,6 +128,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     const instance = engine.current
     const selectedValue = percentMode ? comparisonPoints.get(bars[i].t)?.stock : bars[i].c
     if (selectedValue != null) instance?.chart.setCrosshairPosition(selectedValue, time(bars[i]), effectiveMode === 'candles' ? instance.candles : instance.line)
+    else instance?.chart.clearCrosshairPosition()
     if (i < range.from || i > range.to) navigate(clampChartRange({ from: i - (range.to - range.from) / 2, to: i + (range.to - range.from) / 2 }, bars.length))
   }
   if (!selected) return null

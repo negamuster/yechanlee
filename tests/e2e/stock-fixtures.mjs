@@ -19,7 +19,7 @@ export function fixturePayload(kind, symbol = 'NVDA', period = '1M') {
 }
 
 export async function installStockFixtures(page) {
-  const state = { denseChart: false, closeOnlyChart: false, partialChart: false, appendChart: false, failChart: false, failBenchmark: false, benchmarkCurrency: 'USD', benchmarkInterval: null, benchmarkOffset: 0, failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
+  const state = { denseChart: false, closeOnlyChart: false, partialChart: false, appendChart: false, failChart: false, failBenchmark: false, benchmarkCurrency: 'USD', benchmarkInterval: null, benchmarkOffset: 0, benchmarkSkip: false, failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
   await page.clock.setFixedTime(new Date(FIXED_AT))
   page.on('pageerror', error => state.pageErrors.push(error.message))
   await page.route('**/*', async route => {
@@ -48,7 +48,7 @@ export async function installStockFixtures(page) {
         body.points = dates.map((t, i) => { const c = symbol === 'VOO' ? 200 + i / 4 : 100 + i / 2; return { t, c, o: c - .25, h: c + 1, l: c - 1, v: i * 1000 } })
         if (state.appendChart) { const c = symbol === 'VOO' ? 208 : 116; body.points.push({ t: Date.parse('2026-10-20T15:00Z'), c, o: c - .25, h: c + 1, l: c - 1, v: 32000 }) }
       }
-      if (symbol === 'VOO') { body.currency = state.benchmarkCurrency; body.interval = state.benchmarkInterval || body.interval; body.points = body.points.map(p => ({ ...p, t: p.t + state.benchmarkOffset })) }
+      if (symbol === 'VOO') { body.currency = state.benchmarkCurrency; body.interval = state.benchmarkInterval || body.interval; body.points = body.points.filter((_, i) => !state.benchmarkSkip || i % 2 === 0).map(p => ({ ...p, t: p.t + state.benchmarkOffset })) }
       if (state.closeOnlyChart) body.points = body.points.map(({ t, c }) => ({ t, c }))
       if (state.partialChart) { const p = body.points.at(-1); delete p.o; delete p.h; delete p.l; p.v = 0 }
     }
