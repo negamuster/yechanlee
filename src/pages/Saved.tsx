@@ -27,6 +27,7 @@ export default function Saved() {
     <SavedBackup />
     <ThesisOverview />
     <WatchlistPanel />
+    <p><Link to="/filings">SEC 공시 모니터에서 관심 종목 공시 확인 →</Link></p>
     {!!items.stocks.length && <><WatchlistNews /><WatchlistEarnings /></>}
     <section aria-labelledby="saved-articles"><h2 id="saved-articles">기사 북마크 <span>{items.articles.length}</span></h2>
       {!!items.articles.length && <><div className="saved-manage-toolbar"><label>기사 검색 <input type="search" maxLength={120} value={query} onChange={e => setQuery(e.target.value)} placeholder="제목·언론사" /></label><label>정렬 <select value={sort} onChange={e => setSort(e.target.value)}><option value="saved">저장순</option><option value="latest">발행일 최신순</option><option value="publisher">언론사순</option></select></label></div><SelectionTools selection={selection} visible={articles.map(a => a.article_url)} />{!articles.length && <p role="status">검색 결과가 없습니다.</p>}</>}

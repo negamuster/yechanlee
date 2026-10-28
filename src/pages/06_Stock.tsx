@@ -1,3 +1,4 @@
+import FilingMonitor from '../components/FilingMonitor'
 import { useReturnOrigin } from '../hooks/useReturnOrigin'
 import { useId, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -145,6 +146,7 @@ export default function Stock() {
               <FinancialHistory key={symbol} stock={{ticker:symbol,name:details.name}} fetchedAt={snapshot.financialSource?.fetchedAt} annual={financials} quarterly={snapshot.quarterlyFinancials} ttm={snapshot.ttmFinancials} stale={snapshot.financialSource?.stale} unavailable={snapshot.issues.includes('연간 재무')} loading={loading} onRetry={refreshSnapshot} />
               <details className="stock-data-details"><summary>추가 비율·계산 기준</summary><dl className="stock-extra-metrics"><div><dt>총부채 / 자기자본</dt><dd>{debtEquity === null ? '—' : `${debtEquity.toFixed(2)}x`}</dd></div><div><dt>조회 범위 내 종가 위치</dt><dd>{stockPercent(rangePosition)}</dd></div></dl><p>P/E는 양수인 연간 희석 EPS로 계산합니다. ROE는 기말 자기자본 기준입니다. 총부채에는 이자부 차입금 외 부채도 포함합니다. 비율은 비교 가능한 통화·기간이 확인된 경우에 표시합니다.</p><p>고가·저가는 최대 1년 내 수집된 일별 자료 기준입니다. {hasHistory && bars[0] ? `조회 범위: ${tradingDate(bars[0].t)} ~ ${quote.tradingDate}. ` : ''}신규 상장이나 자료 누락으로 1년 전체가 아닐 수 있습니다. ‘—’는 미확인이거나 계산 조건을 충족하지 않은 값입니다.</p></details>
             </section>
+            <FilingMonitor key={symbol} symbol={symbol} />
             <section id="stock-news" className="stock-card" aria-labelledby="stock-news-title"><div className="stock-section-heading"><h2 id="stock-news-title">관련 뉴스</h2><span className="stock-note">{articles.length ? `${articles.length}건 · 원문으로 이동` : '종목별 기사'}</span></div>
               <StockPartStatus label="뉴스" source={snapshot.resourceSources?.news} unavailable={snapshot.issues.includes('뉴스')} loading={loading} onRetry={refreshSnapshot} />
               {articles.length ? <ul className="stock-news-list">{articles.map(article => <li key={article.id ?? article.article_url} className={isRead(article.article_url) ? 'is-read' : undefined}>

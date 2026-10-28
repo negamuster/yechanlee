@@ -1,0 +1,52 @@
+name: Refresh SEC filing monitor
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-sec-filings.yml'
+      - 'scripts/refresh-sec-filings.py'
+      - 'requirements-edgar.txt'
+      - 'config/sec-monitor.json'
+permissions:
+  contents: write
+concurrency:
+  group: refresh-sec-filings
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --no-audit --no-fund
+      - run: pip install -r requirements-edgar.txt
+      - run: python -m unittest discover -s tests -p 'test_sec_monitor.py'
+      - name: Collect bounded SEC metadata
+        id: collect
+        continue-on-error: true
+        run: python scripts/refresh-sec-filings.py
+      - run: node scripts/validate-sec-filings.mjs
+      - name: Save confirmed metadata and explicit source failures
+        run: |
+          git add public/data/sec-filings.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh SEC filing monitor snapshot'
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Report incomplete collection
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo '::error::Some SEC sources failed. Prior verified snapshots were retained with original receipts.'
+          exit 1

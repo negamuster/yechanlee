@@ -1,0 +1,16 @@
+.filing-monitor { margin:24px 0; border:1px solid #e2e3e5; border-radius:14px; padding:20px; min-width:0; }
+.filing-toolbar,.filing-controls,.filing-row-heading { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.filing-toolbar { justify-content:space-between; } .filing-toolbar h2 { margin:0; font-size:20px; }
+.filing-monitor button,.filing-monitor select,.filing-monitor input[type=search] { min-height:44px; border:1px solid #d6d8da; background:white; border-radius:7px; padding:8px 12px; color:inherit; max-width:100%; }
+.filing-monitor input[type=checkbox] { width:20px; height:20px; vertical-align:middle; margin-right:8px; }
+.filing-controls { margin:16px 0; } .filing-controls label { min-height:44px; display:flex; align-items:center; gap:8px; }
+.filing-form { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:12px 0; }
+.filing-note,.filing-source,.filing-list small { color:#686c71; font-size:12px; line-height:1.7; overflow-wrap:anywhere; }
+.filing-warning { color:#80571e; background:#fff9ed; padding:8px; border-radius:6px; }
+.filing-coverage { margin:16px 0; font-size:13px; } .filing-coverage summary { cursor:pointer; min-height:44px; padding:10px 0; }
+.filing-list { padding:0; list-style:none; margin:20px 0 0; } .filing-list li { padding:16px 0; border-top:1px solid #ececef; overflow-wrap:anywhere; }
+.filing-row-heading a { font-weight:700; } .filing-list p { font-size:13px; margin:8px 0; }
+.filing-primary,.filing-all { display:inline-block; padding:12px 0; min-height:44px; }
+.filing-amendment { background:#f1edf6; padding:3px 6px; border-radius:4px; font-size:12px; color:#65467d; }
+.filings-page { max-width:1100px; margin:auto; padding:28px 24px; } .filings-page h1 { font-size:28px; }
+@media(max-width:640px) { .filings-page { padding:20px 12px; } .filing-monitor { padding:14px; } .filing-controls label:first-child { width:100%; } .filing-controls input[type=search] { min-width:0; width:100%; } }

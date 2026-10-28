@@ -1,0 +1,540 @@
+{
+  "version": 1,
+  "source": "SEC EDGAR",
+  "collector": "EdgarTools 5.62.1",
+  "attemptedAt": "2026-10-28T03:14:30.455917Z",
+  "lookbackDays": 180,
+  "maxFilings": 40,
+  "companies": [
+    {
+      "symbol": "AAPL",
+      "cik": "0000320193",
+      "name": "Apple Inc.",
+      "attemptedAt": "2026-10-28T03:14:27.189765Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:27.189765Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001140361-26-035325",
+          "form": "8-K/A",
+          "filed": "2026-09-01",
+          "reportDate": "2026-04-17",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000114036126035325/0001140361-26-035325-index.html"
+        },
+        {
+          "accession": "0000320193-26-000020",
+          "form": "10-Q",
+          "filed": "2026-07-31",
+          "reportDate": "2026-06-27",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html"
+        },
+        {
+          "accession": "0000320193-26-000018",
+          "form": "8-K",
+          "filed": "2026-07-30",
+          "reportDate": "2026-07-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/0000320193-26-000018-index.html"
+        },
+        {
+          "accession": "0000320193-26-000013",
+          "form": "10-Q",
+          "filed": "2026-05-01",
+          "reportDate": "2026-03-28",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "cik": "0000789019",
+      "name": "Microsoft Corporation",
+      "attemptedAt": "2026-10-28T03:14:27.254171Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:27.254171Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001193125-26-380280",
+          "form": "8-K",
+          "filed": "2026-09-02",
+          "reportDate": "2026-09-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526380280/0001193125-26-380280-index.html"
+        },
+        {
+          "accession": "0001193125-26-323660",
+          "form": "10-K",
+          "filed": "2026-07-29",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html"
+        },
+        {
+          "accession": "0001193125-26-323632",
+          "form": "8-K",
+          "filed": "2026-07-29",
+          "reportDate": "2026-07-29",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323632/0001193125-26-323632-index.html"
+        },
+        {
+          "accession": "0001193125-26-258667",
+          "form": "8-K",
+          "filed": "2026-06-05",
+          "reportDate": "2026-06-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526258667/0001193125-26-258667-index.html"
+        },
+        {
+          "accession": "0001193125-26-224155",
+          "form": "8-K",
+          "filed": "2026-05-14",
+          "reportDate": "2026-05-13",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526224155/0001193125-26-224155-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "cik": "0001045810",
+      "name": "NVIDIA Corporation",
+      "attemptedAt": "2026-10-28T03:14:27.403456Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:27.403456Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001045810-26-000078",
+          "form": "8-K",
+          "filed": "2026-09-03",
+          "reportDate": "2026-09-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000078/0001045810-26-000078-index.html"
+        },
+        {
+          "accession": "0001045810-26-000075",
+          "form": "10-Q",
+          "filed": "2026-08-26",
+          "reportDate": "2026-07-26",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/0001045810-26-000075-index.html"
+        },
+        {
+          "accession": "0001045810-26-000073",
+          "form": "8-K",
+          "filed": "2026-08-26",
+          "reportDate": "2026-08-26",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/0001045810-26-000073-index.html"
+        },
+        {
+          "accession": "0001045810-26-000069",
+          "form": "8-K",
+          "filed": "2026-08-17",
+          "reportDate": "2026-08-17",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000069/0001045810-26-000069-index.html"
+        },
+        {
+          "accession": "0001045810-26-000060",
+          "form": "8-K",
+          "filed": "2026-07-02",
+          "reportDate": "2026-06-28",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/0001045810-26-000060-index.html"
+        },
+        {
+          "accession": "0001045810-26-000056",
+          "form": "8-K",
+          "filed": "2026-06-30",
+          "reportDate": "2026-06-24",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000056/0001045810-26-000056-index.html"
+        },
+        {
+          "accession": "0001193125-26-275783",
+          "form": "8-K",
+          "filed": "2026-06-18",
+          "reportDate": "2026-06-15",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000119312526275783/0001193125-26-275783-index.html"
+        },
+        {
+          "accession": "0001045810-26-000052",
+          "form": "10-Q",
+          "filed": "2026-05-20",
+          "reportDate": "2026-04-26",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/0001045810-26-000052-index.html"
+        },
+        {
+          "accession": "0001045810-26-000051",
+          "form": "8-K",
+          "filed": "2026-05-20",
+          "reportDate": "2026-05-20",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000051/0001045810-26-000051-index.html"
+        },
+        {
+          "accession": "0001045810-26-000028",
+          "form": "8-K",
+          "filed": "2026-05-08",
+          "reportDate": "2026-05-07",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000028/0001045810-26-000028-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "cik": "0001018724",
+      "name": "Amazon.com, Inc.",
+      "attemptedAt": "2026-10-28T03:14:28.296930Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:28.296930Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001104659-26-107526",
+          "form": "8-K",
+          "filed": "2026-09-14",
+          "reportDate": "2026-09-14",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926107526/0001104659-26-107526-index.html"
+        },
+        {
+          "accession": "0001018724-26-000036",
+          "form": "8-K",
+          "filed": "2026-09-09",
+          "reportDate": "2026-09-08",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000036/0001018724-26-000036-index.html"
+        },
+        {
+          "accession": "0001018724-26-000026",
+          "form": "10-Q",
+          "filed": "2026-07-31",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html"
+        },
+        {
+          "accession": "0001018724-26-000024",
+          "form": "8-K",
+          "filed": "2026-07-30",
+          "reportDate": "2026-07-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/0001018724-26-000024-index.html"
+        },
+        {
+          "accession": "0001104659-26-082293",
+          "form": "8-K",
+          "filed": "2026-07-09",
+          "reportDate": "2026-07-09",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926082293/0001104659-26-082293-index.html"
+        },
+        {
+          "accession": "0001104659-26-073562",
+          "form": "8-K",
+          "filed": "2026-06-12",
+          "reportDate": "2026-06-12",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926073562/0001104659-26-073562-index.html"
+        },
+        {
+          "accession": "0001104659-26-072140",
+          "form": "8-K",
+          "filed": "2026-06-10",
+          "reportDate": "2026-06-08",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926072140/0001104659-26-072140-index.html"
+        },
+        {
+          "accession": "0001104659-26-065717",
+          "form": "8-K",
+          "filed": "2026-05-22",
+          "reportDate": "2026-05-20",
+          "url": "https://www.sec.gov/Archives/edgar/data/1018724/000110465926065717/0001104659-26-065717-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "cik": "0001652044",
+      "name": "Alphabet Inc.",
+      "attemptedAt": "2026-10-28T03:14:28.401173Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:28.401173Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001193125-26-342390",
+          "form": "8-K",
+          "filed": "2026-08-10",
+          "reportDate": "2026-08-10",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526342390/0001193125-26-342390-index.html"
+        },
+        {
+          "accession": "0001652044-26-000071",
+          "form": "10-Q",
+          "filed": "2026-07-23",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/0001652044-26-000071-index.html"
+        },
+        {
+          "accession": "0001652044-26-000066",
+          "form": "8-K",
+          "filed": "2026-07-22",
+          "reportDate": "2026-07-22",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/0001652044-26-000066-index.html"
+        },
+        {
+          "accession": "0001193125-26-267578",
+          "form": "8-K",
+          "filed": "2026-06-11",
+          "reportDate": "2026-06-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526267578/0001193125-26-267578-index.html"
+        },
+        {
+          "accession": "0001652044-26-000059",
+          "form": "8-K",
+          "filed": "2026-06-05",
+          "reportDate": "2026-06-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000059/0001652044-26-000059-index.html"
+        },
+        {
+          "accession": "0001193125-26-259830",
+          "form": "8-K",
+          "filed": "2026-06-05",
+          "reportDate": "2026-06-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526259830/0001193125-26-259830-index.html"
+        },
+        {
+          "accession": "0001193125-26-257724",
+          "form": "8-K",
+          "filed": "2026-06-04",
+          "reportDate": "2026-06-04",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526257724/0001193125-26-257724-index.html"
+        },
+        {
+          "accession": "0001193125-26-234488",
+          "form": "8-K",
+          "filed": "2026-05-21",
+          "reportDate": "2026-05-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526234488/0001193125-26-234488-index.html"
+        },
+        {
+          "accession": "0001193125-26-216986",
+          "form": "8-K",
+          "filed": "2026-05-11",
+          "reportDate": "2026-05-11",
+          "url": "https://www.sec.gov/Archives/edgar/data/1652044/000119312526216986/0001193125-26-216986-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "META",
+      "cik": "0001326801",
+      "name": "Meta Platforms, Inc.",
+      "attemptedAt": "2026-10-28T03:14:29.401404Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:29.401404Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001628280-26-066773",
+          "form": "10-Q",
+          "filed": "2026-10-22",
+          "reportDate": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026066773/0001628280-26-066773-index.html"
+        },
+        {
+          "accession": "0001628280-26-066700",
+          "form": "8-K",
+          "filed": "2026-10-21",
+          "reportDate": "2026-10-19",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026066700/0001628280-26-066700-index.html"
+        },
+        {
+          "accession": "0001628280-26-050705",
+          "form": "10-Q",
+          "filed": "2026-07-30",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050705/0001628280-26-050705-index.html"
+        },
+        {
+          "accession": "0001628280-26-050596",
+          "form": "8-K",
+          "filed": "2026-07-29",
+          "reportDate": "2026-07-29",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026050596/0001628280-26-050596-index.html"
+        },
+        {
+          "accession": "0001628280-26-039193",
+          "form": "8-K",
+          "filed": "2026-05-29",
+          "reportDate": "2026-05-27",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026039193/0001628280-26-039193-index.html"
+        },
+        {
+          "accession": "0001193125-26-204128",
+          "form": "8-K",
+          "filed": "2026-05-04",
+          "reportDate": "2026-04-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1326801/000119312526204128/0001193125-26-204128-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "cik": "0001318605",
+      "name": "Tesla, Inc.",
+      "attemptedAt": "2026-10-28T03:14:29.464204Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:29.464204Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001628280-26-066775",
+          "form": "10-Q",
+          "filed": "2026-10-22",
+          "reportDate": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/0001628280-26-066775-index.html"
+        },
+        {
+          "accession": "0001628280-26-066738",
+          "form": "8-K",
+          "filed": "2026-10-21",
+          "reportDate": "2026-10-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/0001628280-26-066738-index.html"
+        },
+        {
+          "accession": "0001628280-26-064366",
+          "form": "8-K",
+          "filed": "2026-10-02",
+          "reportDate": "2026-10-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/0001628280-26-064366-index.html"
+        },
+        {
+          "accession": "0001628280-26-063820",
+          "form": "8-K",
+          "filed": "2026-09-29",
+          "reportDate": "2026-09-29",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026063820/0001628280-26-063820-index.html"
+        },
+        {
+          "accession": "0001628280-26-049270",
+          "form": "10-Q",
+          "filed": "2026-07-23",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/0001628280-26-049270-index.html"
+        },
+        {
+          "accession": "0001628280-26-049213",
+          "form": "8-K",
+          "filed": "2026-07-22",
+          "reportDate": "2026-07-22",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049213/0001628280-26-049213-index.html"
+        },
+        {
+          "accession": "0001628280-26-046717",
+          "form": "8-K",
+          "filed": "2026-07-02",
+          "reportDate": "2026-07-02",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026046717/0001628280-26-046717-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "SATL",
+      "cik": "0001874315",
+      "name": "Satellogic Inc.",
+      "attemptedAt": "2026-10-28T03:14:30.455902Z",
+      "status": "ok",
+      "fetchedAt": "2026-10-28T03:14:30.455902Z",
+      "coverageFrom": "2026-05-01",
+      "coverageTo": "2026-10-28",
+      "filings": [
+        {
+          "accession": "0001874315-26-000050",
+          "form": "8-K/A",
+          "filed": "2026-10-09",
+          "reportDate": "2026-08-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000050/0001874315-26-000050-index.html"
+        },
+        {
+          "accession": "0001874315-26-000042",
+          "form": "8-K",
+          "filed": "2026-09-08",
+          "reportDate": "2026-09-04",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000042/0001874315-26-000042-index.html"
+        },
+        {
+          "accession": "0001874315-26-000035",
+          "form": "8-K",
+          "filed": "2026-08-27",
+          "reportDate": "2026-08-21",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000035/0001874315-26-000035-index.html"
+        },
+        {
+          "accession": "0001874315-26-000032",
+          "form": "10-Q",
+          "filed": "2026-08-06",
+          "reportDate": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html"
+        },
+        {
+          "accession": "0001437749-26-025939",
+          "form": "8-K",
+          "filed": "2026-08-05",
+          "reportDate": "2026-08-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926025939/0001437749-26-025939-index.html"
+        },
+        {
+          "accession": "0001874315-26-000028",
+          "form": "8-K",
+          "filed": "2026-07-28",
+          "reportDate": "2026-07-22",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000028/0001874315-26-000028-index.html"
+        },
+        {
+          "accession": "0001437749-26-020977",
+          "form": "10-Q/A",
+          "filed": "2026-06-17",
+          "reportDate": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926020977/0001437749-26-020977-index.html"
+        },
+        {
+          "accession": "0001437749-26-020976",
+          "form": "10-K/A",
+          "filed": "2026-06-17",
+          "reportDate": "2025-12-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926020976/0001437749-26-020976-index.html"
+        },
+        {
+          "accession": "0001437749-26-019864",
+          "form": "8-K",
+          "filed": "2026-06-08",
+          "reportDate": "2026-06-08",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926019864/0001437749-26-019864-index.html"
+        },
+        {
+          "accession": "0001874315-26-000024",
+          "form": "8-K",
+          "filed": "2026-06-04",
+          "reportDate": "2026-06-03",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000024/0001874315-26-000024-index.html"
+        },
+        {
+          "accession": "0001874315-26-000023",
+          "form": "8-K",
+          "filed": "2026-06-04",
+          "reportDate": "2026-06-01",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000023/0001874315-26-000023-index.html"
+        },
+        {
+          "accession": "0001874315-26-000016",
+          "form": "10-Q",
+          "filed": "2026-05-12",
+          "reportDate": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000016/0001874315-26-000016-index.html"
+        },
+        {
+          "accession": "0001437749-26-016159",
+          "form": "8-K",
+          "filed": "2026-05-11",
+          "reportDate": "2026-05-11",
+          "url": "https://www.sec.gov/Archives/edgar/data/1874315/000143774926016159/0001437749-26-016159-index.html"
+        }
+      ]
+    }
+  ]
+}

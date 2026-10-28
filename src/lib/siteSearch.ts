@@ -13,7 +13,7 @@ export interface SearchResult { id: string; group: SearchGroup; title: string; d
 export const searchPages = [
   ['/', '홈 · 최신 뉴스', '뉴스 news home'], ['/markets', '시장 · Market Movers', '시세 상승 하락 거래대금 market movers'],
   ['/briefings', 'Daily Market Briefing', '브리핑 지난 브리핑 daily briefing'], ['/saved', '저장한 항목 · 관심 종목', '북마크 저장 기사 투자 노트 watchlist saved bookmarks'],
-  ['/calendar', '경제·실적 캘린더', '일정 calendar earnings'], ['/form13f', '기관 포트폴리오 · 13F', '13f 기관 보유 공시 institutional holdings'],
+  ['/filings', 'SEC 공시 모니터', '공시 보고서 sec edgar filings 10-k 10-q 8-k'], ['/calendar', '경제·실적 캘린더', '일정 calendar earnings'], ['/form13f', '기관 포트폴리오 · 13F', '13f 기관 보유 공시 institutional holdings'],
   ['/simulator', '자산 시뮬레이터', '복리 자산 경제적 자유 simulator'], ['/equity', '주식시장 · Maps', '주식 업종 히트맵 섹터 equity maps sectors'],
   ['/rates', '금리·채권', '채권 국채 수익률 bond rates treasury'], ['/fed', '연준·통화정책', 'fed fomc 금리'],
   ['/indicators', '경제지표', '지표 경제 cpi 물가 실업률 고용 금리 effr economic indicators'], ['/macro', '글로벌 매크로', '환율 원자재 거시 macro'],
