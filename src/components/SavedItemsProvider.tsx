@@ -3,6 +3,7 @@ import type { EvidenceSource, EvidenceRole } from '../lib/evidence'
 import { useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { motion, useAnimationControls, useReducedMotion } from 'motion/react'
+import { Bookmark, Star } from 'lucide-react'
 import { Toaster, toast } from 'sonner'
 import { SAVED_KEY, PREVIOUS_SAVED_KEY, LEGACY_SAVED_KEY, articleKey, emptySaved, readSaved, updateSaved, mergeSaved, removeSaved, removedItems, restoreRemoved } from '../lib/savedItems'
 import type { SavedItems, SavedStock, SavedArticle } from '../lib/savedItems'
@@ -97,7 +98,7 @@ export default function SavedItemsProvider({ children }: { children: ReactNode }
 export function WatchButton({ ticker, name = ticker }: SavedStock | { ticker: string; name?: string }) {
   const { items, toggleStock } = useSavedItems()
   const saved = items.stocks.some(row => row.ticker === ticker)
-  return <button type="button" className="save-button" aria-pressed={saved} aria-label={`${ticker} 관심 종목 ${saved ? '해제' : '저장'}`} onClick={() => toggleStock({ ticker, name })}><span aria-hidden="true">{saved ? '★' : '☆'}</span> {saved ? '관심 종목' : '관심 저장'}</button>
+  return <button type="button" className="save-button" aria-pressed={saved} aria-label={`${ticker} 관심 종목 ${saved ? '해제' : '저장'}`} onClick={() => toggleStock({ ticker, name })}><span aria-hidden="true"><Star size={18} fill={saved ? 'currentColor' : 'none'} strokeWidth={1.8} focusable="false" /></span> {saved ? '관심 종목' : '관심 저장'}</button>
 }
 export function BookmarkButton({ article, iconOnly = false }: { article: SavedArticle; iconOnly?: boolean }) {
   const { items, toggleArticle } = useSavedItems()
@@ -109,7 +110,7 @@ export function BookmarkButton({ article, iconOnly = false }: { article: SavedAr
     initial={false} animate={animation} onClick={() => {
       if (toggleArticle(article) && !reduced) void animation.start({ scale: [1, 0.9, 1], transition: { duration: 0.18 } })
     }}>
-    {iconOnly ? <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z" /></svg> : saved ? '✓ 저장됨' : '+ 기사 저장'}
+    {iconOnly ? <Bookmark aria-hidden="true" focusable="false" fill={saved ? 'currentColor' : 'none'} strokeWidth={1.8} /> : saved ? '✓ 저장됨' : '+ 기사 저장'}
   </motion.button>
 }
 

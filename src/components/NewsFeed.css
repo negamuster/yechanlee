@@ -55,7 +55,7 @@
 .news-row { display: flex; flex: 1; flex-direction: column; min-width: 0; text-decoration: none; color: inherit; }
 .news-row:hover h3 { text-decoration: underline; text-underline-offset: .2em; }
 .news-title { overflow-wrap: anywhere; }
-.news-grid .news-title { font-family: Georgia, 'Times New Roman', 'Noto Serif KR', serif; font-size: 19px; line-height: 1.4; font-weight: 600; margin: 7px 0 0; letter-spacing: -.02em; }
+.news-grid .news-title { font-family: var(--font-ui); font-size: 19px; line-height: 1.5; font-weight: 600; margin: 7px 0 0; letter-spacing: -.015em; }
 .news-topic-tags { display: flex; flex-wrap: wrap; gap: 4px 7px; margin-top: 5px; align-content: start; }
 .news-topic-tags:empty { display: none; }
 .news-topic-tags span { color: var(--ui-muted); font-size:var(--ui-font-meta); line-height: 1.5; }

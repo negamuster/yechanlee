@@ -37,6 +37,7 @@ export default function Home() {
     {!mobile && <MarketTicker />}
     <MarketSessionStatus />
     <main className="home-content home-overview" ref={content}>
+      <div className="home-section-heading"><h1>오늘의 시장</h1><p>브리핑과 주요 소식을 한눈에 살펴보세요.</p></div>
       <div className="home-primary">
         <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></LinkedWidget>
         <section className="home-news" aria-labelledby="home-news-title">

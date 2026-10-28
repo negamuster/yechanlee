@@ -61,6 +61,15 @@ jobs:
         id: browser_install
       - run: npm run test:e2e
         id: browser_tests
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: home-ui-review
+          path: |
+            test-results/**/home-ui*.png
+            test-results/**/home-ui-metrics.json
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Summarize revision and checks
         if: always()
         env:

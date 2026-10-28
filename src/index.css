@@ -1,47 +1,51 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --font-ui: Arial, "Helvetica Neue", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --ui-text: #242a33;
-  --ui-muted: #626b77;
-  --ui-border: #dde2e8;
-  --ui-surface: #f8fafc;
-  --ui-hover: #f1f5f9;
-  --ui-selected: #334155;
-  --ui-focus: #64748b;
-  --ui-accent-soft: #eef2f6;
-  --ui-accent-border: #cbd5e1;
-  --ui-focus-ring: #64748b26;
-  --ui-selected-hover: #475569;
-  --ui-radius: 8px;
-  --ui-card-radius: 12px;
-  --ui-font-page: 28px;
-  --ui-font-section: 17px;
-  --ui-font-body: 14px;
-  --ui-font-control: 12px;
-  --ui-font-meta: 11px;
-  --ui-font-caption: 10px;
+  --font-ui: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --ui-text: #191f28;
+  --ui-muted: #596474;
+  --ui-border: #e5e9ef;
+  --ui-page: #f5f6f8;
+  --ui-card: #fff;
+  --ui-surface: #f8f9fb;
+  --ui-hover: #edf1f6;
+  --ui-selected: #2563eb;
+  --ui-focus: #2563eb;
+  --ui-accent-soft: #eff5ff;
+  --ui-accent-border: #b8cef7;
+  --ui-focus-ring: #2563eb26;
+  --ui-selected-hover: #1d4ed8;
+  --ui-radius: 12px;
+  --ui-card-radius: 20px;
+  --ui-font-page: 30px;
+  --ui-font-section: 19px;
+  --ui-font-body: 15px;
+  --ui-font-control: 14px;
+  --ui-font-meta: 13px;
+  --ui-font-caption: 12px;
   --ui-space-xs: 4px;
   --ui-space-sm: 8px;
-  --ui-space-md: 12px;
-  --ui-space-lg: 16px;
-  --ui-space-xl: 24px;
-  --ui-card-padding: 16px;
-  --ui-page-gutter: 18px;
+  --ui-space-md: 16px;
+  --ui-space-lg: 24px;
+  --ui-space-xl: 32px;
+  --ui-card-padding: 24px;
+  --ui-page-gutter: 24px;
   --ui-layout-gap: 24px;
-  --ui-control-height: 36px;
-  --ui-chip-height: 28px;
-  --ui-chip-padding: 4px 8px;
-  --ui-chip-radius: 6px;
+  --ui-control-height: 40px;
+  --ui-chip-height: 36px;
+  --ui-chip-padding: 7px 12px;
+  --ui-chip-radius: 10px;
 }
 @media (max-width: 700px) {
-  :root { --ui-control-height: 44px; --ui-card-padding: 12px; --ui-page-gutter: 14px; --ui-layout-gap: 18px; }
+  :root { --ui-control-height: 44px; --ui-card-padding: 18px; --ui-page-gutter: 16px; --ui-layout-gap: 20px; }
 }
 @media (max-width: 700px), (pointer: coarse) {
   :root { --ui-chip-height: 44px; --ui-chip-padding: 8px 10px; --ui-chip-radius: 8px; }
 }
-body { font-family: var(--font-ui); font-size: var(--ui-font-body); color: var(--ui-text); }
+body { font-family: var(--font-ui); font-size: var(--ui-font-body); line-height: 1.55; color: var(--ui-text); text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font-family: inherit; }
 :where(button, input, select, textarea, a, summary):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+.save-button > span > svg { display: block; width: 18px; height: 18px; }
