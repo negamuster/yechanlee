@@ -40,3 +40,5 @@
   .command-help span { display: block; margin-left: 0; }
   .site-search-trigger kbd { font-size: 10px; }
 }
+
+.command-result mark { color: inherit; background: #fff0af; border-radius: 2px; text-decoration: underline; text-underline-offset: 2px; }

@@ -51,3 +51,38 @@ test('category filters keep results in their category and multiword matching req
   assert.equal(find('반도체 외계인', [], 'news').length, 0)
   assert.equal(find('애플', [], 'saved').length, 1)
 })
+
+test('reviewed catalog supplies typo-tolerant names and Korean aliases without inventing a ticker', async () => {
+  const { searchCompanies, searchCompanyCount } = await import('../src/lib/searchCompanies.ts')
+  const items = { version: 1, stocks: [], articles: [] }
+  assert.equal(searchCompanyCount, 516)
+  assert.equal(new Set(searchCompanies.map(c => c.ticker)).size, searchCompanies.length)
+  for (const [query, ticker] of [['nvida', 'NVDA'], ['엔비디야', 'NVDA'], ['Tesla', 'TSLA']]) {
+    const rows = siteSearchResults(query, items, [], null, [], 'stocks', searchCompanies)
+    assert.equal(rows[0].href, `/stock/${ticker}`)
+    assert.equal(rows.some(r => r.href === `/stock/${query.toUpperCase()}`), false)
+  }
+  assert.equal(siteSearchResults('zzzzzzzz', items, [], null, [], 'stocks', searchCompanies).length, 0)
+  assert.equal(siteSearchResults('NVIDIA 외계인', items, [], null, [], 'stocks', searchCompanies).length, 0)
+})
+test('exact share-class and dotted tickers are first across categories and never merged into another route', async () => {
+  const { searchCompanies } = await import('../src/lib/searchCompanies.ts')
+  for (const ticker of ['NVDA', 'GOOG', 'GOOGL', 'BRK.B']) {
+    const rows = siteSearchResults(ticker.toLowerCase(), saved, briefings, news, [], 'all', searchCompanies)
+    assert.equal(rows[0].href, `/stock/${ticker}`)
+    assert.equal(rows.filter(r => r.group === 'stocks').length, 1)
+    assert.ok(rows[0].highlights.length)
+  }
+})
+test('fuzzy title highlights use bounded original-text ranges and preserve source strings', async () => {
+  const { searchCompanies } = await import('../src/lib/searchCompanies.ts')
+  const { mergeSearchHighlights } = await import('../src/lib/siteSearch.ts')
+  const row = siteSearchResults('nvida', { version: 1, stocks: [], articles: [] }, [], null, [], 'stocks', searchCompanies)[0]
+  assert.ok(row.highlights.length)
+  assert.ok(row.highlights.every(([a, b]) => a >= 0 && b < row.title.length && b >= a))
+  const ranges = [[0, 2], [2, 4], [-1, 1], [8, 99]], before = structuredClone(ranges)
+  assert.deepEqual(mergeSearchHighlights('abcdef', ranges), [[0, 4]])
+  assert.deepEqual(ranges, before)
+  const titles = [{ ...saved.articles[0], title: '<img src=x onerror=alert(1)> Nvidia' }]
+  assert.equal(siteSearchResults('nvida', { ...saved, articles: titles }, [], null, [], 'saved')[0].title, titles[0].title)
+})
