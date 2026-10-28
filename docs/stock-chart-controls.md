@@ -17,7 +17,7 @@ The chart endpoint reads `open`, `high`, `low`, `close`, and `volume` from the s
 
 Optional fields keep cached older close-only API responses compatible. The shared API/browser/production-health contract rejects partial OHLC triples, impossible candle ranges, negative/fractional/nonfinite volume, ordering errors, wrong identities and future observations. Health checks name OHLCV gaps as warnings while preserving usable close data. The source request guard, single-flight/cache, stale receipt timestamps and partial-page failure behavior remain in force.
 
-Candles use green for close >= open and red for close < open. Volume uses the same direction when open is known. It does not label zero/missing volume as a market gain or loss. Current/incomplete bars may change, intervals are provider aggregates, and the chart is not a dividend-inclusive total return. VOO comparison and technical-indicator overlays are outside this implementation.
+Candles use green for close >= open and red for close < open. Volume uses the same direction when open is known. It does not label zero/missing volume as a market gain or loss. Current/incomplete bars may change, intervals are provider aggregates, and the chart is not a dividend-inclusive total return. Optional VOO comparison and 20/50-bar SMA overlays are specified in [stock-chart-analysis.md](stock-chart-analysis.md).
 
 ## Attribution and validation
 

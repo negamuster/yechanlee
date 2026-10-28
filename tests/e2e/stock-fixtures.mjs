@@ -1,7 +1,7 @@
 export const FIXED_AT = Date.parse('2026-10-21T12:00:00Z')
 const point = (date, c) => ({ t: Date.parse(date), c })
 const bar = (date, c) => ({ ...point(date, c), o: c, h: c + 1, l: c - 1 })
-const companies = { AAPL: ['Apple Inc.', 102, 3e12], NVDA: ['NVIDIA Corporation', 204, 5e12], SATL: ['Satellogic Inc.', 5.5, 7e8] }
+const companies = { AAPL: ['Apple Inc.', 102, 3e12], NVDA: ['NVIDIA Corporation', 204, 5e12], SATL: ['Satellogic Inc.', 5.5, 7e8], VOO: ['Vanguard S&P 500 ETF', 500, 1e12] }
 const info = () => ({ source: 'Polygon / Massive', fetchedAt: FIXED_AT, stale: false })
 export function fixturePayload(kind, symbol = 'NVDA', period = '1M') {
   const [name, price, marketCap] = companies[symbol]
@@ -19,7 +19,7 @@ export function fixturePayload(kind, symbol = 'NVDA', period = '1M') {
 }
 
 export async function installStockFixtures(page) {
-  const state = { denseChart: false, closeOnlyChart: false, partialChart: false, appendChart: false, failChart: false, failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
+  const state = { denseChart: false, closeOnlyChart: false, partialChart: false, appendChart: false, failChart: false, failBenchmark: false, benchmarkCurrency: 'USD', benchmarkInterval: null, benchmarkOffset: 0, failReference: false, failOptional: false, failAllPrices: false, failFinancials: false, annualOnly: false, mixedCurrency: false, mismatchReference: false, emptyLists: false, delay: null, delayed: 0, release: null, requests: [], pageErrors: [] }
   await page.clock.setFixedTime(new Date(FIXED_AT))
   page.on('pageerror', error => state.pageErrors.push(error.message))
   await page.route('**/*', async route => {
@@ -41,13 +41,14 @@ export async function installStockFixtures(page) {
     if (kind === 'chart' && state.delay?.symbol === symbol && state.delay.period === period) { state.delayed++; await new Promise(resolve => { state.release = resolve }) }
     const body = fixturePayload(kind, symbol, period)
     if (kind === 'chart') {
-      if (state.failChart) return route.fulfill({ status: 503, json: { error: 'Simulated chart outage' } })
+      if (state.failChart || symbol === 'VOO' && state.failBenchmark) return route.fulfill({ status: 503, json: { error: 'Simulated chart outage' } })
       if (state.denseChart) {
         const dates = []
         for (let d = Date.parse('2026-10-19T15:00Z'); dates.length < 32; d -= 86400000) if (![0, 6].includes(new Date(d).getUTCDay())) dates.unshift(d)
-        body.points = dates.map((t, i) => ({ t, c: 100 + i / 2, o: 100 + i / 2 - .25, h: 101 + i / 2, l: 99 + i / 2, v: i * 1000 }))
-        if (state.appendChart) body.points.push({ t: Date.parse('2026-10-20T15:00Z'), c: 116, o: 115.75, h: 117, l: 115, v: 32000 })
+        body.points = dates.map((t, i) => { const c = symbol === 'VOO' ? 200 + i / 4 : 100 + i / 2; return { t, c, o: c - .25, h: c + 1, l: c - 1, v: i * 1000 } })
+        if (state.appendChart) { const c = symbol === 'VOO' ? 208 : 116; body.points.push({ t: Date.parse('2026-10-20T15:00Z'), c, o: c - .25, h: c + 1, l: c - 1, v: 32000 }) }
       }
+      if (symbol === 'VOO') { body.currency = state.benchmarkCurrency; body.interval = state.benchmarkInterval || body.interval; body.points = body.points.map(p => ({ ...p, t: p.t + state.benchmarkOffset })) }
       if (state.closeOnlyChart) body.points = body.points.map(({ t, c }) => ({ t, c }))
       if (state.partialChart) { const p = body.points.at(-1); delete p.o; delete p.h; delete p.l; p.v = 0 }
     }

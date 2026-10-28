@@ -74,3 +74,25 @@ test('manual refresh bypasses a fresh application cache', async () => {
   await act(async () => { container.querySelector('[data-widget-action=refresh]').click(); await tick() }); await act(tick)
   assert.equal(requests, 2)
 })
+
+function OptionalProbe({ enabled, resource = '/test/optional-benchmark', revision = 0 }) {
+  const state = useResource(resource, valid, refreshPolicies.maps, revision, enabled)
+  return h('p', null, JSON.stringify(state))
+}
+test('disabled resources neither request nor poll; re-enable loads once and disabling rejects late UI publication', async () => {
+  invalidateResource('/test/optional-benchmark')
+  await render(h(OptionalProbe, { enabled: false }))
+  assert.equal(requests, 0); assert.equal(timers.size, 0)
+  assert.deepEqual(JSON.parse(container.textContent), { data: null, loading: false, error: false })
+  let finish
+  globalThis.fetch = () => { requests++; return new Promise(resolve => { finish = resolve }) }
+  await render(h(OptionalProbe, { enabled: true })); assert.equal(requests, 1)
+  await render(h(OptionalProbe, { enabled: false })); assert.equal(timers.size, 0)
+  await act(async () => { finish(Response.json({ name: 'VOO' })); await tick() })
+  assert.equal(JSON.parse(container.textContent).data, null)
+  globalThis.fetch = async () => { requests++; return Response.json({ name: 'current VOO' }) }
+  await render(h(OptionalProbe, { enabled: true, revision: 1 }))
+  assert.equal(requests, 2); assert.equal(JSON.parse(container.textContent).data.name, 'current VOO')
+  await render(h(OptionalProbe, { enabled: false, revision: 2 })); assert.equal(requests, 2)
+  await event(window, 'focus'); await poll(); assert.equal(requests, 2)
+})

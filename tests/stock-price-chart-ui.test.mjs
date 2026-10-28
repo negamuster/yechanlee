@@ -6,7 +6,7 @@ import './helpers/register-tsx.mjs'
 
 // Reproduce an imperative chart emitting transient range changes during setData.
 // Native rendering/gestures remain covered by stock-chart-controls browser tests.
-const chartSource = "export const LineSeries='line', CandlestickSeries='candles', HistogramSeries='volume'\nexport const ColorType={Solid:0}, CrosshairMode={Normal:0}, TrackingModeExitMode={OnTouchEnd:0}\nexport const created=[]\nexport function createChart() {\n  let listener\n  const chart={range:{from:0,to:31},series:[],removed:false}\n  const scale={\n    subscribeVisibleLogicalRangeChange(fn){listener=fn},\n    setVisibleLogicalRange(value){chart.range={...value};listener?.(value)},\n  }\n  chart.timeScale=()=>scale\n  chart.addSeries=()=>{const series={data:[],applyOptions(){},setData(data){\n    const previous=series.data.length;series.data=data\n    if(previous && previous!==data.length) listener?.({from:chart.range.from+1,to:chart.range.to+1})\n  }};chart.series.push(series);return series}\n  chart.removeSeries=()=>{}\n  chart.panes=()=>[{}, {setHeight(){}}]\n  chart.priceScale=()=>({applyOptions(){}})\n  chart.setCrosshairPosition=()=>{}\n  chart.subscribeCrosshairMove=()=>{}\n  chart.remove=()=>{chart.removed=true}\n  created.push(chart);return chart\n}\n"
+const chartSource = "export const LineSeries='line', CandlestickSeries='candles', HistogramSeries='volume'\nexport const ColorType={Solid:0}, CrosshairMode={Normal:0}, TrackingModeExitMode={OnTouchEnd:0}\nexport const created=[]\nexport function createChart() {\n  let listener\n  const chart={range:{from:0,to:31},series:[],removed:false}\n  const scale={\n    subscribeVisibleLogicalRangeChange(fn){listener=fn},\n    setVisibleLogicalRange(value){chart.range={...value};listener?.(value)},\n  }\n  chart.timeScale=()=>scale\n  chart.addSeries=(type,options)=>{const series={type,options:{...options},data:[],applyOptions(value){Object.assign(series.options,value)},setData(data){\n    const previous=series.data.length;series.data=data\n    if(previous && previous!==data.length) listener?.({from:chart.range.from+1,to:chart.range.to+1})\n  }};chart.series.push(series);return series}\n  chart.removeSeries=()=>{}\n  chart.panes=()=>[{}, {setHeight(){}}]\n  chart.priceScale=()=>({applyOptions(){}})\n  chart.setCrosshairPosition=()=>{}\n  chart.subscribeCrosshairMove=()=>{}\n  chart.remove=()=>{chart.removed=true}\n  created.push(chart);return chart\n}\n"
 registerHooks({
   resolve(specifier, context, next) { return specifier === 'lightweight-charts' ? { url: 'mock:stock-price-chart', shortCircuit: true } : next(specifier, context) },
   load(url, context, next) { return url === 'mock:stock-price-chart' ? { format: 'module', source: chartSource, shortCircuit: true } : next(url, context) },
@@ -44,5 +44,35 @@ test('data replacement ignores intermediate chart ranges and keeps the selected 
     assert.equal(created.at(-2).removed, true)
     assert.equal(created.at(-1).series[0].data.length, 36)
     assert.equal(container.querySelector('.stock-chart-x-labels').textContent, before)
+  } finally { await act(async () => root.unmount()) }
+})
+
+
+test('moving averages and normalized comparison keep the price grid and manual viewport, then restore price formatting', async () => {
+  const root = createRoot(container)
+  const button = name => [...container.querySelectorAll('button')].find(el => el.textContent === name)
+  const benchmark = { symbol: 'VOO', period: '1M', currency: 'USD', interval: '1d', points: bars.map((p, i) => ({ t: p.t, c: 200 + i })), fetchedAt: 1, stale: false }
+  try {
+    await act(async () => root.render(h(StockPriceChart, defaults)))
+    await act(async () => container.querySelector('[aria-label="차트 확대"]').click())
+    const before = { ...created.at(-1).range }
+    await act(async () => button('20봉 SMA').click())
+    const average = created.at(-1).series.find(s => s.options.title === '20봉 SMA')
+    assert.ok(average.data.slice(0, 19).every(p => !('value' in p)))
+    assert.equal(average.data.at(-1).value, 121.5)
+    assert.deepEqual(created.at(-1).range, before)
+    await act(async () => root.render(h(StockPriceChart, { ...defaults, comparison: { enabled: true, benchmark, onToggle() {} } })))
+    const current = created.at(-1)
+    assert.equal(current.series[0].data.length, bars.length)
+    assert.equal(current.series[0].data[0].value, 0)
+    assert.ok(Math.abs(current.series[0].data.at(-1).value - 31) < 1e-10)
+    assert.equal(current.series[0].options.priceFormat.formatter(1), '+1.00%')
+    assert.equal(average.options.visible, false)
+    assert.deepEqual(current.range, before)
+    assert.match(container.querySelector('.stock-chart-analysis-basis').textContent, /공통 관측치/)
+    await act(async () => root.render(h(StockPriceChart, defaults)))
+    assert.equal(current.series[0].options.priceFormat.formatter(1), '$1.00')
+    assert.equal(average.options.visible, true)
+    assert.deepEqual(current.range, before)
   } finally { await act(async () => root.unmount()) }
 })
