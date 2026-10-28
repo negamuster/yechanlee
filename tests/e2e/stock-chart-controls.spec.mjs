@@ -159,7 +159,9 @@ test('VOO uses common closes at zero percent, preserves zoom and restores the or
   await expect(ui.locator('.stock-chart-x-labels')).toHaveText(window)
   await ui.locator('.stock-chart-table summary').click()
   await expect(ui.getByRole('table')).toContainText('VOO 변화 (%)')
-  await expect(ui.getByRole('table')).toContainText('11.63%p')
+  // The table follows the retained zoom window, whose newest visible close is $112.50.
+  await expect(ui.getByRole('table').getByRole('row').nth(1)).toContainText('$112.50')
+  await expect(ui.getByRole('table').getByRole('row').nth(1)).toContainText('9.38%p')
   await ui.getByRole('button', { name: '전체 구간', exact: true }).click()
   await ui.getByRole('group', { name: '시점별 주가 차트' }).press('Home')
   await expect(ui.locator('.stock-chart-comparison-readout')).toContainText('NVDA0.00%')
