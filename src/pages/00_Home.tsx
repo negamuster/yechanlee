@@ -5,6 +5,7 @@ import type { NewsSector } from '../components/sectorNews'
 import MarketCalendar from '../components/MarketCalendar'
 import SectorPerformance from '../components/SectorPerformance'
 import MarketTicker from '../components/MarketTicker'
+import MarketSessionStatus from '../components/MarketSessionStatus'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
@@ -34,6 +35,7 @@ export default function Home() {
   }, [])
   return <div className="home-page">
     {!mobile && <MarketTicker />}
+    <MarketSessionStatus />
     <main className="home-content home-overview" ref={content}>
       <div className="home-primary">
         <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></LinkedWidget>

@@ -56,6 +56,7 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
       <p>미국 상장 종목 · USD · ETF 포함 · 장외 제외<br />종가 $1 이상, 일 거래량 1만 주 이상</p>
       <p>거래대금 ≈ 거래량 가중 평균가격(VWAP) × 거래량<br />K = 천 · M = 백만 · B = 십억 달러</p>
       <p>출처: Polygon / Massive · 실시간 순위가 아닙니다. 미국 동부시간 21시 이후 당일 집계를 확인하며, 수집 범위가 부족하면 이전 거래일을 유지합니다.</p>
+      <p>거래일 후보는 NYSE 현물 주식 예정 일정을 기준으로 휴장일을 제외합니다. 정규장 폐장과 제공자의 일별 집계 완료는 별도로 확인합니다.</p>
     </div>
   </>
   return (

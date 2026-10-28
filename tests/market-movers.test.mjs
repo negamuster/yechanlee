@@ -29,14 +29,15 @@ test('turnover uses VWAP times volume, percent change uses prior close, with hon
   assert.equal(rankMovers(latest, [], 1).turnover.length, 1)
 })
 
-test('holiday gaps are skipped, but upstream failures never become false daily comparisons', async () => {
+test('a verified holiday is skipped before requests, but upstream failures never become false daily comparisons', async () => {
   const calls = []
-  const result = await collectMovers({ key: 'test', now: at, fetchImpl: async url => {
+  const result = await collectMovers({ key: 'test', now: Date.parse('2026-09-08T12:00:00Z'), fetchImpl: async url => {
     calls.push(url)
-    return calls.length === 1 ? payload([row('AAA', 20)]) : calls.length === 2
-      ? Response.json({ status: 'OK', resultsCount: 0 }) : payload([row('AAA', 10)])
+    return payload([row('AAA', calls.length === 1 ? 20 : 10)])
   } })
-  assert.equal(result.previousTradingDate, '2026-09-08')
+  assert.equal(result.tradingDate, '2026-09-04')
+  assert.equal(result.previousTradingDate, '2026-09-03')
+  assert.equal(calls.length, 2)
   assert.equal(result.rankings.gainers[0].changePct, 100)
   await assert.rejects(collectMovers({ key: 'test', now: at,
     fetchImpl: async () => new Response(null, { status: 429 }) }), /rate_limited/)

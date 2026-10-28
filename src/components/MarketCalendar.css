@@ -21,6 +21,8 @@
 .calendar-earnings .calendar-category { color: #856747; }
 .calendar-fed .calendar-category { color: #5c6681; }
 .calendar-events .calendar-category { color: #805f79; }
+.calendar-market .calendar-category { color: #496a7b; }
+.calendar-dots .calendar-dot-market, .calendar-key.calendar-dot-market { background: #496a7b; }
 .calendar-major { font-size: 9px; padding: 1px 4px; border-radius: 2px; background: #edf0e6; color: #5a654e; }
 .calendar-event-title { display: block; font-size:var(--ui-font-control); line-height: 1.55; color: #30332b; text-decoration: none; overflow-wrap: anywhere; }
 .calendar-event-title:hover { text-decoration: underline; }

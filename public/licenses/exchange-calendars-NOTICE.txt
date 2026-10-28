@@ -1,0 +1,8 @@
+The NYSE session data used by Anthracite was generated from exchange_calendars 4.13.2.
+https://github.com/gerrymanoim/exchange_calendars
+Copyright 2018 Quantopian, Inc.
+Apache License, Version 2.0. See exchange-calendars-LICENSE.txt.
+
+Anthracite selects the XNYS cash-equity calendar, converts it to JSON, and validates
+holidays and early closes against the reviewed official NYSE/ICE announcements.
+The upstream package source has not been modified or bundled into the browser.
