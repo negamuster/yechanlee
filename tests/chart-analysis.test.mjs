@@ -44,3 +44,10 @@ test('comparison rejects wrong identity, periods, currencies, intervals, invalid
   assert.ok(result.points.every(p => b.points.some(b => b.t === p.t)))
   assert.equal(result.points.at(-1).t, primary().points.at(-2).t)
 })
+
+test('price-change subtraction preserves the half-cent percentage-point rounding boundary', () => {
+  const result = compareChartReturns(primary({ points: points(2, i => 100 + i * 15.5) }), benchmark({ points: points(2, i => 200 + i * 7.75) }))
+  assert.equal(result.status, 'ok')
+  assert.equal(result.points[1].difference, 11.625)
+  assert.equal(result.points[1].difference.toFixed(2), '11.63')
+})

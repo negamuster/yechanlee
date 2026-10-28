@@ -27,7 +27,7 @@ export function compareChartReturns(primary: { points: PricePoint[]; currency: s
   if (common.length < 2) return unavailable('동일 시점의 공통 관측치가 2개 이상 필요합니다.')
   const first = common[0], base = index.get(first.t)!
   const points = common.map(p => {
-    const stock = (p.c / first.c - 1) * 100, benchmark = (index.get(p.t)! / base - 1) * 100
+    const stock = ((p.c - first.c) / first.c) * 100, benchmark = ((index.get(p.t)! - base) / base) * 100
     return { t: p.t, stock, benchmark, difference: stock - benchmark }
   })
   return points.every(p => [p.stock, p.benchmark, p.difference].every(Number.isFinite)) ? { status: 'ok', points } : unavailable('비교 변화율을 계산할 수 없습니다.')

@@ -33,7 +33,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
   const comparisonPoints = useMemo(() => new Map(compared?.status === 'ok' ? compared.points.map(p => [p.t, p]) : []), [compared])
   const id = useId(), container = useRef<HTMLDivElement>(null), engine = useRef<Engine | null>(null)
   const latestBars = useRef(bars)
-  const updatingData = useRef(false)
+  const updatingData = useRef(false), keyboardSelection = useRef(false)
   const [previousBars, setPreviousBars] = useState(bars), [manual, setManual] = useState(false)
   const [activeTime, setActiveTime] = useState<number | null>(null), [range, setRange] = useState(() => chartFullRange(bars.length)), [available, setAvailable] = useState(true), [tablePage, setTablePage] = useState(0)
   const rangeRef = useRef(range)
@@ -79,7 +79,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
         rangeRef.current = next; setRange(previous => previous.from === next.from && previous.to === next.to ? previous : next); setTablePage(0)
         if (value.to - value.from < Math.min(7, latestBars.current.length - 1) - .01) chart?.timeScale().setVisibleLogicalRange(next)
       })
-      chart.subscribeCrosshairMove(event => { if (typeof event.time === 'number') setActiveTime(event.time * 1000) })
+      chart.subscribeCrosshairMove(event => { if (!updatingData.current && !keyboardSelection.current && typeof event.time === 'number') setActiveTime(event.time * 1000) })
       setAvailable(true)
     } catch { chart?.remove(); chart = undefined; engine.current = null; setAvailable(false) }
     return () => { engine.current = null; chart?.remove() }
@@ -124,12 +124,16 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     }
   }, [bars, effectiveMode, showVolume, changePercent, currency, period, percentMode, comparisonPoints, averages, averageValues])
   function select(index: number) {
-    const i = Math.max(0, Math.min(bars.length - 1, index)); setActiveTime(bars[i].t)
+    const i = Math.max(0, Math.min(bars.length - 1, index))
+    keyboardSelection.current = true
+    updatingData.current = true
+    try {
     const instance = engine.current
     const selectedValue = percentMode ? comparisonPoints.get(bars[i].t)?.stock : bars[i].c
     if (selectedValue != null) instance?.chart.setCrosshairPosition(selectedValue, time(bars[i]), effectiveMode === 'candles' ? instance.candles : instance.line)
     else instance?.chart.clearCrosshairPosition()
     if (i < range.from || i > range.to) navigate(clampChartRange({ from: i - (range.to - range.from) / 2, to: i + (range.to - range.from) / 2 }, bars.length))
+    } finally { updatingData.current = false; setActiveTime(bars[i].t) }
   }
   if (!selected) return null
   const rows = [...visible].reverse(), pages = Math.max(1, Math.ceil(rows.length / 12)), page = Math.min(tablePage, pages - 1)
@@ -147,7 +151,7 @@ export default function StockPriceChart({ bars, currency, changePercent, period,
     {(!candlesAvailable || !volumeAvailable) && <p className="stock-note">{!candlesAvailable && '시가·고가·저가 미제공 · 선형 차트 표시. '}{!volumeAvailable && '거래량 미제공.'}</p>}
     <div className="stock-chart-readout" role="status" aria-live="polite"><time dateTime={new Date(selected.t).toISOString()}>{chartPointTime(selected.t, period)} ET</time><strong>{percentMode ? stockPercent(comparisonPoints.get(selected.t)?.stock, true) : stockMoney(selected.c, currency)}</strong><span>{percentMode ? '공통 첫 종가 대비 가격 변화' : `${chartIntervalLabel(interval)} 종가`}</span></div>
     <dl className="stock-chart-ohlcv">{[['시가', selected.o], ['고가', selected.h], ['저가', selected.l], ['종가', selected.c]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value == null ? '미제공' : stockMoney(value, currency)}</dd></div>)}<div><dt>거래량 (주)</dt><dd>{formatVolume(selected.v)}</dd></div></dl>
-    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${id}-help`} onPointerDownCapture={() => setManual(true)} onWheelCapture={() => setManual(true)} onTouchStartCapture={() => setManual(true)} onKeyDown={event => {
+    <div className="stock-chart-frame" tabIndex={0} role="group" aria-label="시점별 주가 차트" aria-describedby={`${id}-help`} onPointerMoveCapture={() => { keyboardSelection.current = false }} onPointerDownCapture={() => { keyboardSelection.current = false; setManual(true) }} onWheelCapture={() => setManual(true)} onTouchStartCapture={() => { keyboardSelection.current = false; setManual(true) }} onKeyDown={event => {
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); select(activeIndex + (event.key === 'ArrowLeft' ? -1 : 1)) }
       else if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); select(event.key === 'Home' ? 0 : bars.length - 1) }
       else if (['+', '=', '-', '0', 'PageUp', 'PageDown'].includes(event.key)) { event.preventDefault(); if (event.key === '0') fit(); else if (event.key.startsWith('Page')) navigate(moveChartRange(range, bars.length, event.key === 'PageUp' ? -1 : 1)); else navigate(zoomChartRange(range, bars.length, event.key === '-' ? 1 / .65 : .65)) }
