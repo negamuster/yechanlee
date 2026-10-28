@@ -19,8 +19,52 @@ Freshness is measured by successful client receipt, separately from the source's
 
 The header search button and Cmd+K / Ctrl+K open a native modal dialog using the existing scroll/focus restoration helper. Search covers internal pages, watched and remote US stocks, published briefing titles/dates/body, saved articles and the latest collected news titles/publishers. Categories narrow results; arrows and Enter select, Escape dismisses. Korean stock aliases use the same cached stock lookup. Remote lookup is debounced, aborted on query change/close, and cannot replace a newer query. Exact tickers can open directly when lookup fails. Saved articles win canonical URL deduplication; external articles open in a new tab and update read history. Search does not send saved articles or briefing content to the stock API.
 
-Stock results contain only saved tickers or matches returned by the provider. Company-name input must not create a synthetic ticker result: Apple, Nvidia and Tesla select AAPL, NVDA and TSLA respectively. While lookup is pending, Enter cannot open an unverified ticker. After lookup failure or an empty response, a separately labelled direct-ticker button is available for users who already know the symbol; it is never the default Enter selection.
+Stock results contain saved tickers, reviewed SEC catalog tickers or matches returned by the provider. Company-name input must not create a synthetic ticker result: Apple, Nvidia and Tesla select AAPL, NVDA and TSLA respectively. While lookup is pending, Enter may open a reviewed catalog match; it cannot open an unverified ticker. After lookup failure or an empty response with no stock matches, a separately labelled direct-ticker button is available for users who already know the symbol; it is never the default Enter selection.
 
-References: [TanStack Query freshness and revalidation defaults](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults) and [cmdk command menu](https://github.com/pacocoursey/cmdk). These interaction patterns are implemented with the existing React cache and native dialog; no new runtime dependencies were added.
+References: [TanStack Query freshness and revalidation defaults](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults) and [cmdk command menu](https://github.com/pacocoursey/cmdk). These interaction patterns are implemented with the existing React cache and native dialog; these patterns do not add TanStack Query or cmdk dependencies. Fuse.js is used for matching as described below.
 
 Validation: resource lifecycle unit tests, mounted Maps/cache/key-isolation tests, search indexing tests and JSDOM keyboard/query/cancellation/read-history interactions. JSDOM does not verify native focus trapping, top-layer rendering, visual responsive layout or touch behavior; these require real-browser QA.
+
+
+## Fuse.js header search (2026-10-28)
+
+The existing header command palette uses the pinned stable `fuse.js` 7.5.0 basic
+build (Apache-2.0) for typo-tolerant matching. The license is shipped in
+`public/licenses/fuse-LICENSE.txt`, and the upstream distribution copyright header
+is retained in `public/licenses/fuse-NOTICE.txt`. Official references:
+https://github.com/krisk/Fuse and https://www.fusejs.io/fuzzy-search.html.
+
+The 516 reviewed companies and their share-class aliases are imported directly
+from `config/sec-monitor.json` at build time, independently of live SEC snapshots.
+The menu shows the catalog's own check date. This does not query SEC on typing,
+download the full filings snapshot, imply a current quote or add all SEC issuers.
+Membership updates continue through the reviewed config. Existing Korean aliases
+also participate in matching; this does not translate arbitrary Korean names.
+
+Saved tickers win deduplication, then catalog identities, then provider-only
+matches. Empty input retains the original useful shortcuts and saved stocks.
+An exact ticker is the first group and selected option across all categories;
+GOOG/GOOGL and dotted tickers retain distinct canonical routes. Exact ticker
+queries suppress fuzzy expansions. Company names/typos can only open an identity
+already in the catalog, saved list or provider result, never a synthetic ticker
+built from the company-name input. Outside-catalog lookup retains debounce,
+cancellation, query identity, cache and the explicit non-default direct action.
+When catalog results exist, a provider outage does not hide them or offer a
+confusing unverified direct ticker derived from a typo.
+
+Every word must match; words with at least three characters and a letter may
+match approximately (threshold0.3, location-independent), while shorter words and
+numbers remain literal. Literal title matches rank ahead of approximate hits
+within each category, with the existing result caps. Title matches are merged,
+bounded original-string ranges rendered as React text and `mark` elements,
+without HTML injection. An alias/body-only match need not highlight the title.
+Saved articles and briefing content stay local; they are never passed to Fuse
+Cloud or another search service. The existing separate provider request still
+receives only an eligible typed stock query, and stock lookup is disabled for
+article/briefing-only categories.
+
+Verification adds catalog/name/typo/share-class/ranking and range safety tests,
+mounted provider-failure/late-response/private-record/HTML-text cases, plus desktop
+and Pixel7 Chromium tests for native focus restoration, IME Enter, key navigation,
+offline-provider fallback, highlighting and horizontal overflow. Actual device
+and Safari checks are separate from Chromium emulation.
