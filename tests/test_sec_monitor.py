@@ -61,6 +61,38 @@ class MonitorTests(unittest.TestCase):
             self.assertEqual(len(list(Path(folder).iterdir())), 1)
             self.assertNotIn('RuntimeError', path.read_text())
 
+    def test_budget_exhaustion_retains_receipts_after_representative_symbol_change(self):
+        first, _ = m.refresh(CONFIG, None, lambda *args: [], NOW)
+        config = copy.deepcopy(CONFIG)
+        config['companies'][0].update(symbol='APPLE', aliases=['AAPL', 'APPLE'], indices=['sp500'])
+        with patch.object(m.time, 'monotonic', side_effect=[0, 1201]):
+            result, failures = m.refresh(config, first, lambda *args: self.fail('budget must prevent request'), NOW + dt.timedelta(hours=1))
+        self.assertEqual(failures, 1)
+        self.assertEqual(result['companies'][0]['status'], 'stale')
+        self.assertEqual(result['companies'][0]['fetchedAt'], first['companies'][0]['fetchedAt'])
+        self.assertEqual(result['companies'][0]['symbol'], 'APPLE')
+
+    def test_new_cik_exposes_only_proven_short_history_and_archive_gap_fails(self):
+        class Dates:
+            def to_pylist(self): return [dt.date(2026, 7, 1)]
+        class Filings:
+            data = types.SimpleNamespace(column=lambda name: Dates())
+            def to_pandas(self): return types.SimpleNamespace(to_dict=lambda mode: [ROW])
+        class Company:
+            def __init__(self, cik): self.cik = cik; self.data = types.SimpleNamespace(files=[])
+            def get_filings(self, **kwargs): return Filings()
+        with patch.dict(sys.modules, {'edgar': types.SimpleNamespace(Company=Company)}):
+            rows = m.collect_company(TARGET, '2026-04-24', '2026-10-21', 40)
+            self.assertEqual(rows.coverage_from, '2026-07-01')
+            result, failures = m.refresh(CONFIG, None, lambda *args: rows, NOW)
+            self.assertEqual(failures, 0)
+            self.assertEqual(result['companies'][0]['coverageFrom'], '2026-07-01')
+            original = Company.__init__
+            def with_archive(self, cik):
+                original(self, cik); self.data.files = [{'name': 'older.json'}]
+            with patch.object(Company, '__init__', with_archive):
+                with self.assertRaises(ValueError): m.collect_company(TARGET, '2026-04-24', '2026-10-21', 40)
+
     def test_adapter_uses_cik_and_bounded_metadata_only(self):
         calls = []
         class Dates:

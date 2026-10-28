@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 
 FORMS = ("10-K", "10-K/A", "10-Q", "10-Q/A", "8-K", "8-K/A", "20-F", "20-F/A", "40-F", "40-F/A", "6-K", "6-K/A")
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +39,12 @@ def normalize_rows(rows, cik, start, end, limit):
     return sorted(result.values(), key=lambda r: (r["filed"], r["accession"]), reverse=True)[:limit]
 
 
+class CollectedFilings(list):
+    def __init__(self, rows, coverage_from):
+        super().__init__(rows)
+        self.coverage_from = coverage_from
+
+
 def collect_company(target, start, end, limit):
     from edgar import Company
     company = Company(int(target["cik"]))
@@ -45,11 +52,16 @@ def collect_company(target, start, end, limit):
         raise ValueError("Company identity mismatch")
     recent = company.get_filings(trigger_full_load=False)
     dates = recent.data.column("filing_date").to_pylist() if recent is not None else []
-    if not dates or min(str(d) for d in dates) > start:
+    if not dates:
+        raise ValueError("No submission history to establish coverage")
+    coverage_from = max(start, min(str(d) for d in dates))
+    if coverage_from > start and getattr(company.data, "files", None) != []:
         raise ValueError("Recent submissions do not cover the requested window")
+    # A new CIK with an explicitly empty SEC archive index has a shorter history.
+    # Publish only that proven range; never imply predecessor filings are included.
     filings = company.get_filings(form=list(FORMS), filing_date=f"{start}:{end}", amendments=True, trigger_full_load=False)
     rows = [] if filings is None else filings.to_pandas().to_dict("records")
-    return normalize_rows(rows, target["cik"], start, end, limit)
+    return CollectedFilings(normalize_rows(rows, target["cik"], coverage_from, end, limit), coverage_from)
 
 
 def refresh(config, previous, collector=collect_company, now=None):
@@ -57,27 +69,30 @@ def refresh(config, previous, collector=collect_company, now=None):
     now = clock()
     end = now.date().isoformat()
     start = (now.date() - dt.timedelta(days=config["lookbackDays"])).isoformat()
-    old = {r["symbol"]: r for r in (previous or {}).get("companies", [])}
+    old = {r["cik"]: r for r in (previous or {}).get("companies", [])}
     companies, failures = [], 0
+    deadline = time.monotonic() + 1200
     for target in config["companies"]:
         base = {**target}
         try:
+            if time.monotonic() > deadline:
+                raise TimeoutError("Collection budget exhausted")
             filings = collector(target, start, end, config["maxFilings"])
             stamp = clock().isoformat().replace("+00:00", "Z")
             base["attemptedAt"] = stamp
-            base.update(status="ok", fetchedAt=stamp, coverageFrom=start, coverageTo=end, filings=filings)
+            base.update(status="ok", fetchedAt=stamp, coverageFrom=getattr(filings, "coverage_from", start), coverageTo=end, filings=filings)
         except Exception:
             # Never log upstream text, identity credentials, or replace a failure with empty success.
             failures += 1
             base["attemptedAt"] = clock().isoformat().replace("+00:00", "Z")
-            prior = old.get(target["symbol"])
+            prior = old.get(target["cik"])
             if prior and prior.get("cik") == target["cik"] and prior.get("fetchedAt"):
                 base = {**copy.deepcopy(prior), **base, "status": "stale"}
             else:
                 base.update(status="unavailable", fetchedAt=None, coverageFrom=None, coverageTo=None, filings=[])
         companies.append(base)
     return {"version": 1, "source": "SEC EDGAR", "collector": "EdgarTools 5.62.1", "attemptedAt": clock().isoformat().replace("+00:00", "Z"),
-            "lookbackDays": config["lookbackDays"], "maxFilings": config["maxFilings"], "companies": companies}, failures
+            "lookbackDays": config["lookbackDays"], "maxFilings": config["maxFilings"], "companies": companies, **({"universe": config["universe"]} if "universe" in config else {})}, failures
 
 
 def atomic_write(path, data):

@@ -3,12 +3,11 @@ import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import './SiteHeader.css'
 import SiteSearch from './SiteSearch'
-const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로'], ['/saved', '저장한 항목']]
+const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로'], ['/calendar', '경제·실적 캘린더'], ['/filings', 'SEC 공시 모니터'], ['/form13f', '기관 포트폴리오 · 13F'], ['/simulator', '자산 시뮬레이터'], ['/saved', '저장한 항목']]
 export default function SiteHeader() {
   const [open, setOpen] = useState(false)
-  const [toolsOpen, setToolsOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
-  function close() { setOpen(false); setToolsOpen(false); setContactOpen(false) }
+  function close() { setOpen(false); setContactOpen(false) }
   return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') close() }}>
     <div className="site-header-shell">
     <div className="site-header-top">
@@ -26,15 +25,7 @@ export default function SiteHeader() {
     </div>
     <nav id="site-menu" className={`site-menu${open ? ' is-open' : ''}`} aria-label="주요 메뉴">
       {links.map(([to, label]) => <NavLink key={to} to={to} end onClick={close}>{label}</NavLink>)}
-      <div className="site-tools">
-        <button type="button" aria-expanded={toolsOpen} aria-controls="site-tools-links" onClick={() => setToolsOpen(!toolsOpen)}>투자 도구 {toolsOpen ? '−' : '+'}</button>
-        {toolsOpen && <div id="site-tools-links" className="site-tools-links">
-          <NavLink to="/calendar" onClick={close}>경제·실적 캘린더</NavLink>
-          <NavLink to="/filings" onClick={close}>SEC 공시 모니터</NavLink>
-          <NavLink to="/form13f" onClick={close}>기관 포트폴리오 · 13F</NavLink>
-          <NavLink to="/simulator" onClick={close}>자산 시뮬레이터</NavLink>
-        </div>}
-      </div>
+
     </nav>
     </div>
   </header>
