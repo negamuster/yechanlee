@@ -69,3 +69,50 @@ test('collector outage, six-hour delay and uncovered stock remain explicit witho
   await page.reload()
   await expect(page.locator('.filing-source').first()).toContainText('수집 지연 · 이전 수집본')
 })
+test('flat navigation preserves requested order and fits desktop, tablet and mobile', async ({ page }) => {
+  await install(page)
+  await page.goto('/filings')
+  for (const width of [1280, 1000, 790]) {
+    await page.setViewportSize({ width, height: 900 })
+    if (width <= 860) await page.getByRole('button', { name: '메뉴 열기', exact: true }).click()
+    const links = page.getByRole('navigation', { name: '주요 메뉴', exact: true }).getByRole('link')
+    expect((await links.allTextContents()).slice(5)).toEqual(['글로벌 매크로', '경제·실적 캘린더', 'SEC 공시 모니터', '기관 포트폴리오 · 13F', '자산 시뮬레이터', '저장한 항목'])
+    await expect(links.filter({ hasText: 'SEC 공시 모니터' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  }
+  await page.setViewportSize({ width: 390, height: 900 })
+  const mobile = page.getByRole('navigation', { name: '모바일 주요 메뉴', exact: true })
+  await expect(mobile.getByRole('link', { name: '캘린더', exact: true })).toHaveAttribute('href', '/calendar')
+  await mobile.getByRole('link', { name: '더보기', exact: true }).click()
+  for (const label of ['SEC 공시 모니터', '기관 포트폴리오 · 13F', '자산 시뮬레이터']) {
+    await expect(page.getByRole('main').getByRole('link', { name: label, exact: true })).toBeVisible()
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+test('index filters and share-class search use a single issuer at full universe scale', async ({ page }) => {
+  const state = await install(page)
+  const config = JSON.parse(readFileSync(new URL('../../config/sec-monitor.json', import.meta.url)))
+  state.data.universe = { ...config.universe, checkedAt: state.data.attemptedAt }
+  state.data.companies = config.companies.map(c => ({ ...snapshot.companies[1], ...c, filings: [] }))
+  await page.goto('/filings')
+  await expect(page.getByText('선택 대상 516개 기업', { exact: false })).toBeVisible()
+  await page.getByLabel('지수', { exact: true }).selectOption('nasdaq100')
+  await expect(page.getByText('선택 대상 100개 기업', { exact: false })).toBeVisible()
+  await page.getByRole('searchbox', { name: '기업 검색' }).fill('GOOG')
+  await expect(page.locator('.filing-source')).toHaveCount(1)
+  await expect(page.locator('.filing-source')).toContainText('GOOG / GOOGL')
+  await page.getByRole('searchbox', { name: '기업 검색' }).fill('')
+  await page.getByLabel('지수', { exact: true }).selectOption('sp500')
+  await expect(page.getByText('선택 대상 500개 기업', { exact: false })).toBeVisible()
+  await page.getByLabel('지수', { exact: true }).selectOption('additional')
+  await expect(page.locator('.filing-source')).toHaveCount(1)
+  await expect(page.locator('.filing-source')).toContainText('SATL')
+})
+
+test('short new-CIK history exposes exact coverage and excluded predecessor filings', async ({ page }) => {
+  const state = await install(page)
+  state.data.companies[0].coverageFrom = '2026-07-01'
+  await page.goto('/filings')
+  await expect(page.locator('.filing-source').first()).toContainText('2026-07-01 ~ 2026-10-21')
+  await expect(page.locator('.filing-source').first()).toContainText('이전 CIK 공시 미포함')
+})

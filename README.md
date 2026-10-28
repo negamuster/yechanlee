@@ -93,4 +93,4 @@ npm run check:stocks -- --symbol AAPL
 
 ### SEC 공시 모니터
 
-`/filings`에서 주요 8개 기업의 최근 180일 정기·수시 보고서를 확인합니다. EdgarTools Python 배치가 매시간 수집하고, 웹사이트는 검증된 메타데이터만 읽습니다. 수집 대상·설치·실패 처리·검증은 [SEC 모니터 문서](docs/sec-filing-monitor.md)를 참고하세요. 로컬 UI 개발과 빌드에는 Python이 필요하지 않습니다.
+`/filings`에서 S&P 500·Nasdaq 100 구성 목록과 추가 기업(SATL)의 최근 180일 정기·수시 보고서를 확인합니다. EdgarTools Python 배치가 매시간 수집하고, 웹사이트는 검증된 메타데이터만 읽습니다. 수집 대상·설치·실패 처리·검증은 [SEC 모니터 문서](docs/sec-filing-monitor.md)를 참고하세요. 로컬 UI 개발과 빌드에는 Python이 필요하지 않습니다.
