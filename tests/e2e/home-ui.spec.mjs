@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { writeFile } from 'node:fs/promises'
 import { installStockFixtures, FIXED_AT } from './stock-fixtures.mjs'
+import { SECTORS } from '../../lib/sector-performance.js'
 
 async function setup(page) {
   const state = await installStockFixtures(page)
@@ -11,7 +12,7 @@ async function setup(page) {
   state.fontFiles = fontFiles
   const day = '2026-10-20', returns = { '1d': 1.25, '1w': 2.1, '1m': 3.4, ytd: 12.8 }
   const sector = { symbol: 'XLK', name: 'Technology', returns, relative: returns, starts: { '1d': '2026-10-19', '1w': '2026-10-13', '1m': '2026-09-18', ytd: '2025-12-31' }, asOf: day }
-  await page.route('**/api/sector-performance', route => route.fulfill({ json: { sectors: [sector, { ...sector, symbol: 'XLF', name: 'Financial', returns: { ...returns, '1d': -.45 } }, { ...sector, symbol: 'XLV', name: 'Healthcare' }], benchmark: { ...sector, symbol: 'VOO', name: 'S&P 500' }, fetchedAt: new Date(FIXED_AT).toISOString(), stale: false, basis: 'USD · 일별 종가 · 배당 미포함 가격수익률' } }))
+  await page.route('**/api/sector-performance', route => route.fulfill({ json: { sectors: SECTORS.map(([symbol, name], index) => ({ ...sector, symbol, name, returns: { ...returns, '1d': index % 3 ? -.45 : 1.25 } })), benchmark: { ...sector, symbol: 'VOO', name: 'S&P 500' }, fetchedAt: new Date(FIXED_AT).toISOString(), stale: false, basis: 'USD · 일별 종가 · 배당 미포함 가격수익률' } }))
   await page.route('**/api/market-movers', route => route.fulfill({ json: { tradingDate: day, previousTradingDate: '2026-10-19', fetchedAt: FIXED_AT, stale: false, rankings: { turnover: [{ ticker: 'AAPL', price: 102, volume: 1e6, turnover: 1e9, changePct: 1.25 }, { ticker: 'NVDA', price: 204, volume: 2e6, turnover: 9e8, changePct: -.45 }], gainers: [], losers: [] } } }))
   await page.route('**/api/market-indices', route => route.fulfill({ json: { fetchedAt: FIXED_AT, quotes: [{ symbol: '^GSPC', label: 'S&P 500', price: 6000, changePercent: 1.25, asOf: '2026-10-20T20:00:00Z', unit: 'pt', status: 'ok' }, { symbol: '^IXIC', label: 'NASDAQ', price: 20000, changePercent: -.45, asOf: '2026-10-20T20:00:00Z', unit: 'pt', status: 'ok' }] } }))
   await page.route('**/api/calendar?*', route => route.fulfill({ json: { events: [], sources: [{ name: 'BLS', date: null, state: 'snapshot', updatedAt: '2026-10-20T12:00:00Z', error: 'http_403', checkedAt: '2026-10-21T12:00:00Z', url: 'https://www.bls.gov/schedule/' }], fetchedAt: new Date(FIXED_AT).toISOString() } }))
@@ -24,6 +25,21 @@ async function fontsReady(page) {
   expect(await page.evaluate(() => [...document.fonts].some(face => face.family.includes('Pretendard') && face.status === 'loaded'))).toBe(true)
 }
 const noOverflow = async page => expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
+async function compactTilesFit(page) {
+  const maps = page.locator('.home-dashboard-maps')
+  await expect(maps.locator('.sector-selectable')).toHaveCount(11)
+  expect(await maps.locator('.sector-selectable').evaluateAll(tiles => tiles.every(tile => {
+    const bounds = tile.getBoundingClientRect()
+    return [...tile.querySelectorAll('button > span, strong, a')].every(element => {
+      const box = element.getBoundingClientRect()
+      return box.left >= bounds.left - 1 && box.right <= bounds.right + 1 && element.scrollWidth <= element.clientWidth + 1
+    })
+  }))).toBe(true)
+  const buttons = await maps.locator('.sector-periods button').evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y } }))
+  expect(buttons[0].y).toBe(buttons[1].y)
+  expect(buttons[2].y).toBe(buttons[3].y)
+  expect(buttons[2].y).toBeGreaterThan(buttons[0].y)
+}
 
 test('home type, icons, nested actions and local fonts remain accessible with source warnings intact', async ({ page }, testInfo) => {
   const state = await setup(page)
@@ -45,6 +61,7 @@ test('home type, icons, nested actions and local fonts remain accessible with so
   expect(contrast).toBeGreaterThanOrEqual(4.5)
   if (testInfo.project.name === 'desktop-chromium') {
     const maps = page.locator('.home-dashboard-maps')
+    await compactTilesFit(page)
     await maps.getByRole('button', { name: 'Maps 출처와 산정 기준', exact: true }).click()
     await expect(page).toHaveURL(/\/$/)
     await expect(maps.locator('.widget-info-panel')).toBeVisible()
@@ -86,6 +103,7 @@ test('home reflows through desktop, tablet, zoom-equivalent and narrow mobile wi
     const briefing = page.locator('.home-briefing')
     if (width <= 700) await expect(briefing).toHaveClass(/is-mobile/)
     else await expect(briefing).not.toHaveClass(/is-mobile/)
+    if (width > 700) await compactTilesFit(page)
     await noOverflow(page)
     if ([1440, 768, 320].includes(width)) await page.screenshot({ path: testInfo.outputPath(`home-ui-${width}.png`), fullPage: true })
   }
