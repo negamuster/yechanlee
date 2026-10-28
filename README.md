@@ -48,12 +48,14 @@ npm run verify:all
 | 명령 | 실행 범위 |
 | --- | --- |
 | `npm test` | `tests/*.test.mjs`의 전체 Node 회귀 검사 |
-| `npm run build` | 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드 → 커밋 표식 생성 |
+| `npm run build` | NYSE 시간표 검증 → 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드 → 커밋 표식 생성 |
 | `npm run verify` | lint + Node 회귀 검사 + 빌드 |
 | `npm run setup:browsers` | Playwright Chromium과 필요한 시스템 의존성 설치 |
 | `npm run test:e2e` | 이미 빌드한 결과로 PC·모바일 Chromium 검사 |
 | `npm run verify:all` | lint + Node 회귀 검사 + 빌드 + PC·모바일 Chromium 검사 |
 | `npm run lint` | ESLint 검사 · 경고도 실패 처리 · verify 및 CI에 포함 |
+| `npm run calendar:check` | Python 가상환경에 `requirements-calendar.txt` 설치 후 NYSE 시간표를 고정 버전 라이브러리·공식 검토 목록과 대조 · 외부 API 호출 없음 |
+| `npm run calendar:generate` | 공식 일정 검토 후 NYSE 시간표 재생성 · 공식 확인 시각을 자동 갱신하지 않음 |
 
 브라우저 검사는 고정된 시각과 합성 API 응답을 사용하며 외부 요청을 차단합니다. 실제 API 키나 운영 API 할당량을 쓰지 않습니다. `test:e2e`가 `127.0.0.1:4173`에 preview 서버를 직접 실행하므로 해당 포트를 비워 둡니다. 모바일 검사는 Pixel 7 크기의 Chromium 에뮬레이션이며 실제 기기·Safari 검사는 아닙니다.
 
@@ -85,7 +87,7 @@ npm run check:stocks -- --symbol AAPL
 | `data/` | 검증한 공공 데이터 저장본 |
 
 - [금융 데이터·운영 검증](docs/stock-verification.md), [재무 이력과 기간·단위](docs/financial-history.md)
-- [뉴스 수집과 출처 상태](docs/news-feeds.md), [경제 일정](docs/calendar.md), [브리핑 자동화](docs/briefing-automation.md)
+- [뉴스 수집과 출처 상태](docs/news-feeds.md), [경제 일정](docs/calendar.md), [거래소 일정 생성·검증](docs/exchange-calendar.md), [브리핑 자동화](docs/briefing-automation.md)
 - [13F 검증](docs/13f-and-simulator-validation.md), [노트·근거·백업](docs/investment-evidence.md), [검색·백업 상태 안내](docs/note-discovery-and-backup-status.md)
 - [API와 비밀값 관리](docs/api-security.md)
 

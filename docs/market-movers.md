@@ -1,5 +1,7 @@
 # Market Movers
 
+Candidate dates now use the [reviewed NYSE cash-equity schedule](exchange-calendar.md), while the provider's 21:00 ET eligibility/coverage gate remains independent. Known holidays are excluded before requests. A missing historical scheduled session fails collection and preserves the previous timestamped snapshot; it is not skipped as another holiday. Unknown/out-of-range schedules do not generate guessed weekday queries.
+
 The home page places a ten-row ranking underneath Market Overview. The three
 buttons select estimated dollar turnover, percentage gainers, or percentage losers.
 Rows link to the existing stock detail page. This first version covers US-listed

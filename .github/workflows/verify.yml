@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths:
       - 'config/sec-monitor.json'
+      - 'config/us-equity-calendar-review.json'
+      - 'data/us-equity-sessions.json'
+      - 'requirements-calendar.txt'
       - 'public/data/sec-filings.json'
       - 'requirements-edgar.txt'
       - '.github/workflows/refresh-sec-filings.yml'
@@ -43,8 +46,10 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
-      - run: pip install -r requirements-edgar.txt
+      - run: pip install -r requirements-edgar.txt -r requirements-calendar.txt
       - run: python -m unittest discover -s tests -p 'test_sec_monitor.py'
+      - run: python -m unittest discover -s tests -p 'test_exchange_calendar.py'
+      - run: python scripts/build-exchange-calendar.py --check
       - run: node scripts/validate-sec-filings.mjs
       - run: npm test
         id: node_tests

@@ -8,6 +8,7 @@ import { load } from 'cheerio'
 
 const { default: Home } = await import('../src/pages/00_Home.tsx')
 const { default: MarketCalendar } = await import('../src/components/MarketCalendar.tsx')
+const { default: MarketSessionStatus } = await import('../src/components/MarketSessionStatus.tsx')
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
 const { loadResource } = await import('../src/utils/resourceCache.ts')
 const { latestBriefing } = await import('../src/lib/briefings.ts')
@@ -25,6 +26,39 @@ async function seed(key, data) {
 }
 await seed('/api/market-movers', moverData)
 await seed('/api/sector-performance', sectorData)
+
+test('home session summary follows scheduled boundaries and keeps unknown coverage distinct on both layouts', () => {
+  const previousNow = Date.now
+  try {
+    for (const [time, expected] of [['2026-11-26T15:00:00Z', '휴장일'], ['2026-11-27T14:30:00Z', '정규장 시간'], ['2026-11-27T18:00:00Z', '정규장 종료 시간 이후'], ['2029-01-02T15:00:00Z', '일정 미확인']]) {
+      Date.now = () => Date.parse(time)
+      for (const mobile of [false, true]) {
+        const $ = render(createElement(MarketSessionStatus), mobile)
+        assert.equal($('.market-session-state').text(), expected + (time.startsWith('2026-11-27') ? ' · 조기 폐장일' : ''))
+        assert.ok($('.market-session-status').text().includes('실제 거래 상태'))
+        assert.ok($('.market-session-status').text().includes('공식 일정 확인 2026.'))
+        assert.equal($('.market-session-summary a').attr('href'), '/calendar')
+        if (time.startsWith('2029')) assert.ok($('.market-session-summary').text().includes('다음 개장 미확인'))
+      }
+    }
+  } finally { Date.now = previousNow }
+})
+
+test('calendar adds a separate local market category with US-date holidays and rollover-aware early closes', () => {
+  const previousNow = Date.now
+  Date.now = () => Date.parse('2026-11-26T15:00:00Z')
+  try {
+    const session = { 'anthracite.ui.v1.calendar.month': '2026-11', 'anthracite.ui.v1.calendar.day': '2026-11-26', 'anthracite.ui.v1.calendar.category': 'Market' }
+    const holiday = render(createElement(MarketCalendar, { full: true }), false, { session })
+    assert.equal(holiday('.calendar-filters button[aria-pressed=true]').text(), '거래소')
+    assert.ok(holiday('.calendar-list').text().includes('미국 주식 휴장 (NYSE)'))
+    assert.ok(holiday('.calendar-list').text().includes('종일 (미국 날짜)'))
+    assert.ok(holiday('.calendar-date[data-date="2026-11-27"]').attr('aria-label').includes('거래소 일정'))
+    const early = render(createElement(MarketCalendar, { full: true }), false, { session: { ...session, 'anthracite.ui.v1.calendar.day': '2026-11-27' } })
+    assert.ok(early('.calendar-list').text().includes('미국 주식 조기 폐장 (NYSE)'))
+    assert.ok(/11.*28.*03:00 KST/.test(early('.calendar-event-meta').text()))
+  } finally { Date.now = previousNow }
+})
 
 function render(element, mobile = false, { session = {}, saved } = {}) {
   const previous = globalThis.window
@@ -120,7 +154,7 @@ test('full calendar page retains its full labels and has no self-referencing car
   assert.ok($('.calendar-help summary').text().includes('출처·조회 범위'))
   assert.ok($('.calendar-date').length >= 28)
   assert.equal($('.calendar-tabs button').length, 2)
-  assert.equal($('.calendar-filters button').length, 5)
+  assert.equal($('.calendar-filters button').length, 6)
   assert.equal($('.calendar-focus-filters button').length, 3)
 })
 test('home always shows the month and all events without overwriting detailed calendar preferences', () => {

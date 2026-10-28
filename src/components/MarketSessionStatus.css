@@ -1,0 +1,9 @@
+.market-session-status { padding: 8px 24px; border-bottom: 1px solid var(--ui-border); font: 12px/1.6 var(--font-ui); color: var(--ui-muted); background: #fafbfc; }
+.market-session-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 14px; }
+.market-session-summary strong { color: var(--ui-text); font-weight: 600; }
+.market-session-state { color: #5d6470; }.market-session-state.state-open { color: #177144; }
+.market-session-status a { color: inherit; text-underline-offset: 3px; }
+.market-session-status details { margin-top: 2px; }.market-session-status summary { cursor: pointer; width: fit-content; }
+.market-session-status p { margin: 4px 0; max-width: 850px; overflow-wrap: anywhere; }
+.market-session-status :is(a, summary):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+@media (max-width: 700px) { .market-session-status { padding: 8px 14px; font-size: 11px; }.market-session-summary { gap: 3px 10px; }.market-session-summary strong { flex-basis: 100%; }.market-session-status summary { min-height: 32px; display: flex; align-items: center; } }

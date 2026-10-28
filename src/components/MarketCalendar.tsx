@@ -1,4 +1,5 @@
 import { refreshPolicies } from '../lib/refreshPolicy'
+import { exchangeCalendar } from '../../lib/exchange-calendar.js'
 import { exportCalendar } from '../lib/calendarExport'
 import { matchesCalendarFocus } from '../lib/calendarFilters'
 import type { CalendarFocus } from '../lib/calendarFilters'
@@ -16,7 +17,7 @@ import { calendarLabels as labels, koreanCalendarTitle as koreanTitle, calendarF
 import type { CalendarCategory as Category, CalendarEvent, CalendarData } from '../lib/calendarPresentation'
 import './MarketCalendar.css'
 
-const categories: Category[] = ['All', 'Economic', 'Earnings', 'Fed', 'Events']
+const categories: Category[] = ['All', 'Economic', 'Earnings', 'Fed', 'Events', 'Market']
 const nyDate = (now: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 const prettyDate = (date: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: 'UTC', month: 'numeric', day: 'numeric', weekday: 'short' }).format(new Date(`${date}T12:00:00Z`))
 const addDays = (date: string, days: number) => new Date(Date.parse(`${date}T12:00:00Z`) + days * 86400000).toISOString().slice(0, 10)
@@ -64,16 +65,17 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     const clock = window.setInterval(() => setNow(Date.now()), 30000)
     return () => { clearInterval(clock) }
   }, [])
-  const events = [...(schedule.data?.events || []), ...(earnings.data?.events || [])].filter(event => (category === 'All' || event.category === category) && matchesCalendarFocus(event, focus, watched))
+  const marketEvents = exchangeCalendar.events(view === 'week' ? weekFrom : from, view === 'week' ? weekTo : to)
+  const events: CalendarEvent[] = [...(schedule.data?.events || []), ...(earnings.data?.events || []), ...(marketEvents || [])].filter(event => (category === 'All' || event.category === category) && matchesCalendarFocus(event, focus, watched))
   const selectedEvents = events.filter(event => event.date === selected).sort((a, b) => {
     const order = (event: CalendarEvent) => event.startAt ? Date.parse(event.startAt) : Date.parse(`${event.date}T00:00:00Z`) + (event.session === 'pre' ? 0 : event.session === 'post' ? 30 : 48) * 3600000
     return Number(b.major) - Number(a.major) || order(a) - order(b) || a.title.localeCompare(b.title)
   })
-  const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.error || source.state === 'stale' || source.state === 'unavailable').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`))]
+  const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.error || source.state === 'stale' || source.state === 'unavailable').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`)), ...(marketEvents === null ? ['NYSE 예정 일정 범위 밖 또는 확인 불가'] : [])]
   const stamp = (value: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value))
   const zoneLabel = timezone === 'Asia/Seoul' ? 'KST' : 'ET'
   const loading = schedule.loading || earnings.loading
-  const hasData = !!schedule.data || !!earnings.data
+  const hasData = !!schedule.data || !!earnings.data || !!marketEvents?.length
   const failed = schedule.error || earnings.error
   const missingSources = [schedule.error ? '경제지표·연준 조회 실패' : '', earnings.error ? '실적 조회 실패' : '', ...issues].filter(Boolean)
   function navigate(offset: number) {
@@ -96,15 +98,16 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         failureDetail={missingSources.join(' · ')} onRetry={() => setReload(n => n + 1)} />
       {!loading && !selectedEvents.length && !failed && !issues.length && <p className="calendar-message" role="status">{focus === 'all' ? '선택한 날짜에 등록된 일정이 없어요.' : '선택한 날짜에 이 필터에 맞는 일정이 없어요.'}</p>}
       <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
-        <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
+        <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.allDay ? '종일 (미국 날짜)' : event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
         {language === 'ko' && event.category !== 'Earnings' && <details className="calendar-original"><summary>원문 이름</summary><small className="calendar-original-title">{event.title}</small></details>}
         {full && event.description && <p className="calendar-event-description">{event.description}</p>}
-        <div className="calendar-event-foot"><span>{event.source}</span><button type="button" className="calendar-export" aria-label={`${event.title} 일정 파일 저장`} onClick={() => downloadEvent(event)}>일정 저장 ↗</button><span>{event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
+        <div className="calendar-event-foot"><span>{event.source}</span><button type="button" className="calendar-export" aria-label={`${event.title} 일정 파일 저장`} onClick={() => downloadEvent(event)}>일정 저장 ↗</button><span>{event.category === 'Market' && event.allDay ? '예정 일정 · 변경 가능' : event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
       </li>)}</ul></div>
     </div>
   </>
   const help = <>
+    {exchangeCalendar.info && <p>NYSE 현물 주식 정규장 예정 일정 · 공식 확인 {dataTime(exchangeCalendar.info.reviewedAt, timezone)} · 범위 {exchangeCalendar.info.from} – {exchangeCalendar.info.to} · exchange_calendars {exchangeCalendar.info.packageVersion}. 임시 휴장·거래 중단·장전·장후는 포함하지 않습니다. 새로고침은 이 시간표를 갱신하지 않습니다. <a href={exchangeCalendar.info.url} target="_blank" rel="noopener noreferrer">NYSE 공식 일정 ↗</a></p>}
     {schedule.data?.sources.filter(source => source.state === 'snapshot' || source.state === 'stale').map(source => <p className="calendar-time-note" key={source.name}>{source.name} 저장 일정 · {source.updatedAt ? `${stamp(source.updatedAt)} ${zoneLabel} 출처 확인` : '확인 시각 없음'} · 변경 가능</p>)}
     <p>{schedule.data ? `일정 조회 ${dataTime(schedule.data.fetchedAt, timezone)}` : 'BLS · BEA · 연준 · Nasdaq'}</p>
     <ul className="calendar-source-status">{[...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].map(source => <li key={`${source.name}:${source.date || 'month'}`}><strong>{source.name}</strong>{source.date ? ` · ${source.date} 실적` : ''}<br />원본 확인: {dataTime(source.updatedAt, timezone)}<br />{source.state === 'unavailable' ? '조회 불가' : source.state === 'stale' ? '갱신 실패 또는 저장본 노후 · 이전 데이터' : source.state === 'snapshot' ? '저장 일정 사용 · 변경 가능' : '확인된 일정'}
@@ -140,6 +143,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
       })}
     </div>
     <div className="calendar-compact-status"><span>{full ? `미국 날짜 기준 · 시간 ${zoneLabel} · ★ 주요 일정` : `미국 날짜 · ${zoneLabel}`}</span>{full && <button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button>}</div>
+    <p className="calendar-time-note">거래소 일정은 NYSE 현물 주식 정규장 기준 · 휴장일은 미국 날짜의 종일 일정입니다.</p>
     {full && schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 나머지 BLS 일정은 별도 저장본의 확인 시각을 따르며, 저장본 만료 시 표시되지 않습니다.</p>}
     {agenda}
     {exportMessage && <p className="calendar-time-note" role="status">{exportMessage}<button type="button" onClick={() => setExportMessage('')}>닫기</button></p>}

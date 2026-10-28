@@ -1,8 +1,8 @@
-export type CalendarCategory = 'All' | 'Economic' | 'Earnings' | 'Fed' | 'Events'
+export type CalendarCategory = 'All' | 'Economic' | 'Earnings' | 'Fed' | 'Events' | 'Market'
 export interface CalendarEvent {
   ticker?: string; id: string; title: string; description?: string; category: Exclude<CalendarCategory, 'All'>
   date: string; startAt: string | null; session: 'pre' | 'post' | 'unknown' | null
-  major: boolean; source: string; sourceUrl: string; estimated: boolean
+  major: boolean; source: string; sourceUrl: string; estimated: boolean; allDay?: boolean
 }
 export interface CalendarSource {
   name: string; date: string | null; state: 'ok' | 'snapshot' | 'stale' | 'unavailable'; updatedAt: string | null; url: string
@@ -14,7 +14,7 @@ export function calendarFailureLabel(code: string) {
       : code === 'snapshot_out_of_range' ? '보완 일정의 조회 범위 밖' : '출처 갱신 실패'
 }
 export interface CalendarData { events: CalendarEvent[]; sources: CalendarSource[]; fetchedAt: string }
-export const calendarLabels: Record<CalendarCategory, string> = { All: '전체', Economic: '경제지표', Earnings: '실적', Fed: '연준', Events: '행사' }
+export const calendarLabels: Record<CalendarCategory, string> = { All: '전체', Economic: '경제지표', Earnings: '실적', Fed: '연준', Events: '행사', Market: '거래소' }
 const translations: [RegExp, string][] = [
   [/Consumer Price Index/i, '소비자물가지수 (CPI)'], [/Producer Price Index/i, '생산자물가지수 (PPI)'],
   [/^Employment Situation/i, '고용보고서'], [/Job Openings and Labor Turnover Survey/i, '구인·이직 보고서 (JOLTS)'],
@@ -26,6 +26,7 @@ const translations: [RegExp, string][] = [
   [/FOMC Meeting/i, 'FOMC 회의 · 금리 결정 일정'], [/Beige Book/i, '베이지북'],
 ]
 export function koreanCalendarTitle(event: CalendarEvent) {
+  if (event.category === 'Market') return event.allDay ? '미국 주식 휴장 (NYSE)' : '미국 주식 조기 폐장 (NYSE)'
   if (event.category === 'Earnings') return `${event.title} · 실적 발표`
   const match = translations.find(([pattern]) => pattern.test(event.title))
   if (match) return match[1]
