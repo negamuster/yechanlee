@@ -72,7 +72,7 @@ test('collector outage, six-hour delay and uncovered stock remain explicit witho
 test('flat navigation preserves requested order and fits desktop, tablet and mobile', async ({ page }) => {
   await install(page)
   await page.goto('/filings')
-  for (const width of [1280, 1000, 390]) {
+  for (const width of [1280, 1000, 790]) {
     await page.setViewportSize({ width, height: 900 })
     if (width <= 860) await page.getByRole('button', { name: '메뉴 열기', exact: true }).click()
     const links = page.getByRole('navigation', { name: '주요 메뉴', exact: true }).getByRole('link')
@@ -80,6 +80,14 @@ test('flat navigation preserves requested order and fits desktop, tablet and mob
     await expect(links.filter({ hasText: 'SEC 공시 모니터' })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   }
+  await page.setViewportSize({ width: 390, height: 900 })
+  const mobile = page.getByRole('navigation', { name: '모바일 주요 메뉴', exact: true })
+  await expect(mobile.getByRole('link', { name: '캘린더', exact: true })).toHaveAttribute('href', '/calendar')
+  await mobile.getByRole('link', { name: '더보기', exact: true }).click()
+  for (const label of ['SEC 공시 모니터', '기관 포트폴리오 · 13F', '자산 시뮬레이터']) {
+    await expect(page.getByRole('main').getByRole('link', { name: label, exact: true })).toBeVisible()
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 test('index filters and share-class search use a single issuer at full universe scale', async ({ page }) => {
   const state = await install(page)

@@ -73,6 +73,6 @@ and excluding predecessor CIK filings. An archive gap still fails closed. The pu
 at a time and collapses per-company collection details for large selections.
 
 Navigation now exposes calendar, filings, 13F and simulator individually between
-macro and saved items. Desktop/tablet navigation wraps; the existing mobile menu
-shows the same ordered links. CI tests cover those widths, index selection,
+macro and saved items. Desktop/tablet navigation wraps; mobile retains its bottom calendar link and the More page links to filings,
+13F and simulator. CI tests cover those widths, index selection,
 share-class lookup and the full 516-issuer metadata shape.
