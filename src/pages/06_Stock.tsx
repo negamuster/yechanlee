@@ -9,6 +9,7 @@ import { quoteFromBars } from '../lib/stockSnapshot'
 import type { StockResourceSource } from '../lib/stockSnapshot'
 import { stockMoney, stockNumber, stockPercent } from '../lib/stockPresentation'
 import { stockChartPeriods, chartIntervalLabel, chartPointTime } from '../lib/stockChart'
+import type { MovingAverageWindow } from '../lib/chartAnalysis'
 import type { StockChartPeriod } from '../lib/stockChart'
 import ResourceState from '../components/ResourceState'
 import FinancialHistory from '../components/FinancialHistory'
@@ -58,10 +59,14 @@ export default function Stock() {
   const { isRead, mark } = useReadArticles()
   const [chartMode, setChartMode] = useState<StockChartMode>('line')
   const [chartVolume, setChartVolume] = useState(true)
+  const [averages, setAverages] = useState<MovingAverageWindow[]>([])
+  const [compareVOO, setCompareVOO] = useState(false)
   const [period, setPeriod] = useState<StockChartPeriod>('1M')
   const [chartRevision, setChartRevision] = useState(0)
   const chartState = useStockChart(symbol, period, chartRevision)
   const chart = chartState.data
+  const comparisonEnabled = compareVOO && symbol !== 'VOO'
+  const benchmarkState = useStockChart('VOO', period, chartRevision, comparisonEnabled && !!chart?.points.length)
   const refreshChart = () => setChartRevision(value => value + 1)
   function refresh() { refreshSnapshot(); refreshChart() }
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -127,7 +132,8 @@ export default function Stock() {
           <section id="stock-chart" className="stock-card" aria-labelledby="stock-chart-title">
             <div className="stock-section-heading"><div><h2 id="stock-chart-title">주가 차트</h2><p className="stock-note">Yahoo Finance · {chart ? chartIntervalLabel(chart.interval) : '가격 이력'}</p></div><div className="stock-periods" role="group" aria-label="차트 조회 기간">{stockChartPeriods.map(value => <button type="button" key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{value}</button>)}</div></div>
             <ResourceState label="주가 차트" loading={chartState.loading} error={chartState.error} hasData={!!chart?.points.length} stale={chart?.stale} updatedAt={chart?.fetchedAt} onRetry={refreshChart} layout="rows" />
-            {chart && chart.points.length > 1 ? <><p className="stock-chart-period">{chartPointTime(chart.points[0].t, period)} ~ {chartPointTime(chart.points.at(-1)!.t, period)} ET <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>{chart.baseline?.label || '비교 기준 미확인'}</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.points} currency={chart.currency} changePercent={chart.changePercent} period={period} interval={chart.interval} mode={chartMode} onModeChange={setChartMode} volume={chartVolume} onVolumeChange={setChartVolume} /></> : !chartState.loading && !chartState.error && <p className="stock-empty-note" role="status">이 기간에 확인된 가격이 충분하지 않습니다. 다른 기간을 선택해 주세요.</p>}
+            {chart && chart.points.length > 1 ? <><p className="stock-chart-period">{chartPointTime(chart.points[0].t, period)} ~ {chartPointTime(chart.points.at(-1)!.t, period)} ET <strong className={`stock-${tone(chart.changePercent)}`}>{stockPercent(chart.changePercent, true)}</strong><span>{chart.baseline?.label || '비교 기준 미확인'}</span></p><PriceChart key={`${symbol}-${period}`} bars={chart.points} currency={chart.currency} changePercent={chart.changePercent} period={period} interval={chart.interval} mode={chartMode} onModeChange={setChartMode} volume={chartVolume} onVolumeChange={setChartVolume} symbol={symbol} averages={averages} onAveragesChange={setAverages} comparison={{ enabled: comparisonEnabled, benchmark: benchmarkState.data, onToggle: () => setCompareVOO(value => !value) }} /></> : !chartState.loading && !chartState.error && <p className="stock-empty-note" role="status">이 기간에 확인된 가격이 충분하지 않습니다. 다른 기간을 선택해 주세요.</p>}
+            {comparisonEnabled && <div className="stock-benchmark-status"><ResourceState label="VOO 비교 자료" loading={benchmarkState.loading} error={benchmarkState.error} hasData={!!benchmarkState.data?.points.length} stale={benchmarkState.data?.stale} updatedAt={benchmarkState.data?.fetchedAt} onRetry={refreshChart} layout="rows" />{benchmarkState.data && <p className="stock-note">VOO · {benchmarkState.data.source} · 조회 {new Date(benchmarkState.data.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST</p>}</div>}
             <p className="stock-note stock-chart-source">지연 시세 포함 · 지연 시간 미확인 · 배당 포함 총수익률 아님 · 진행 중인 봉은 값이 바뀔 수 있습니다.{period === 'ALL' && ' ALL은 제공자가 반환한 조회 가능 전체 범위입니다. 상장 이후 전체 이력이 아닐 수 있습니다.'}{period === '5D' && ' 최근 확인 가능한 최대 5거래일을 표시합니다.'}{chart && ` 조회 ${new Date(chart.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })} KST.`} 상단의 Polygon / Massive 일별 종가와 관측 시점·출처가 다를 수 있습니다.</p>
           </section>
           <div className="stock-detail-grid"><div className="stock-main-column">

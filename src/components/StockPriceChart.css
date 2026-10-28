@@ -11,3 +11,6 @@
 @media(max-width:760px) { .stock-chart-tools button,.stock-chart-table button { min-height:44px; min-width:44px; }.stock-chart-canvas { height:250px; }.stock-chart-canvas.with-volume { height:330px; }.stock-chart-ohlcv { gap:10px 14px; }.stock-chart-tools { gap:10px; } }
 
 .stock-price-chart .stock-chart-frame:focus-visible { outline:2px solid var(--ui-focus); outline-offset:3px; }
+.stock-chart-analysis-readout,.stock-chart-comparison-readout { display:flex; flex-wrap:wrap; gap:10px 20px; margin:12px 0; font-size:12px; font-variant-numeric:tabular-nums; }
+.stock-chart-analysis-readout>div,.stock-chart-comparison-readout>div { display:flex; gap:8px; }.stock-chart-analysis-readout dt,.stock-chart-comparison-readout dt { color:var(--ui-muted); }.stock-chart-analysis-readout dd,.stock-chart-comparison-readout dd { margin:0; }
+.stock-chart-analysis-tools { margin-bottom:10px; }.stock-chart-analysis-basis { overflow-wrap:anywhere; }.stock-benchmark-status { margin-top:14px; }
