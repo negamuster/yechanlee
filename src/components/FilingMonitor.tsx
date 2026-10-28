@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useResource } from '../hooks/useResource'
 import { refreshPolicies } from '../lib/refreshPolicy'
@@ -9,6 +9,7 @@ import ResourceState from './ResourceState'
 import './FilingMonitor.css'
 
 export default function FilingMonitor({ symbol }: { symbol?: string }) {
+  const formId = useId()
   const { items } = useSavedItems()
   const [revision, setRevision] = useState(0), [watchedOnly, setWatchedOnly] = useState(false), [form, setForm] = useState('all'), [query, setQuery] = useState('')
   const { data, loading, error } = useResource('/data/sec-filings.json', validSecMonitor, refreshPolicies.filings, revision)
@@ -24,7 +25,7 @@ export default function FilingMonitor({ symbol }: { symbol?: string }) {
     <div className="filing-toolbar"><h2>SEC 공시 모니터</h2><button type="button" disabled={loading} onClick={retry}>공시 목록 새로고침</button></div>
     <p className="filing-note">SEC EDGAR · EdgarTools 수집 · 매시간 수집 예정 · 실시간 알림이 아닙니다. 최근 180일, 기업당 최신 40건까지. 새로고침은 게시된 수집본을 다시 확인합니다.</p>
     {!symbol && <div className="filing-controls"><label>기업 검색 <input type="search" value={query} maxLength={100} placeholder="티커·기업명" onChange={e => { setQuery(e.target.value); setShown(20) }} /></label><label><input type="checkbox" checked={watchedOnly} onChange={e => { setWatchedOnly(e.target.checked); setShown(20) }} />관심 종목만</label></div>}
-    <label className="filing-form">공시 유형 <select value={form} onChange={e => { setForm(e.target.value); setShown(20) }}><option value="all">전체 유형</option>{['10-K', '10-Q', '8-K', '20-F', '40-F', '6-K'].map(f => <option key={f} value={f}>{f} · {formLabel(f)} (정정 포함)</option>)}</select></label>
+    <div className="filing-form"><label htmlFor={formId}>공시 유형</label><select id={formId} value={form} onChange={e => { setForm(e.target.value); setShown(20) }}><option value="all">전체 유형</option>{['10-K', '10-Q', '8-K', '20-F', '40-F', '6-K'].map(f => <option key={f} value={f}>{f} · {formLabel(f)} (정정 포함)</option>)}</select></div>
     <ResourceState label="공시 수집본" loading={loading} error={error} hasData={!!data} onRetry={retry} />
     {data && <>
       {!symbol && <details className="filing-coverage"><summary>모니터링 대상 {data.companies.length}개 기업 · 최근 수집 시도 {dataTime(data.attemptedAt)}</summary><p>{data.companies.map(c => c.symbol).join(' · ')}</p><p>대상 밖 종목의 공시 여부는 확인하지 않습니다. 관심 목록은 이 브라우저에서만 필터링합니다.</p></details>}
