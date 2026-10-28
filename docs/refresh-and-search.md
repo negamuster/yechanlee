@@ -30,7 +30,8 @@ Validation: resource lifecycle unit tests, mounted Maps/cache/key-isolation test
 
 The existing header command palette uses the pinned stable `fuse.js` 7.5.0 basic
 build (Apache-2.0) for typo-tolerant matching. The license is shipped in
-`public/licenses/fuse-LICENSE.txt`. Official references:
+`public/licenses/fuse-LICENSE.txt`, and the upstream distribution copyright header
+is retained in `public/licenses/fuse-NOTICE.txt`. Official references:
 https://github.com/krisk/Fuse and https://www.fusejs.io/fuzzy-search.html.
 
 The 516 reviewed companies and their share-class aliases are imported directly
