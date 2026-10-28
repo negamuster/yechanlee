@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "source": "SEC EDGAR",
+  "collector": "EdgarTools 5.62.1",
+  "attemptedAt": "2026-10-21T12:00:00Z",
+  "lookbackDays": 180,
+  "maxFilings": 40,
+  "companies": [
+    {
+      "symbol": "AAPL",
+      "cik": "0000320193",
+      "name": "AAPL fixture",
+      "status": "ok",
+      "attemptedAt": "2026-10-21T12:00:00Z",
+      "fetchedAt": "2026-10-21T12:00:00Z",
+      "coverageFrom": "2026-04-24",
+      "coverageTo": "2026-10-21",
+      "filings": [
+        {
+          "accession": "0000320193-26-000003",
+          "form": "10-Q/A",
+          "filed": "2026-10-20",
+          "reportDate": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000003/0000320193-26-000003-index.html"
+        },
+        {
+          "accession": "0000320193-26-000002",
+          "form": "8-K",
+          "filed": "2026-10-20",
+          "reportDate": null,
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000002/0000320193-26-000002-index.html"
+        },
+        {
+          "accession": "0000320193-26-000001",
+          "form": "10-Q",
+          "filed": "2026-10-20",
+          "reportDate": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/0000320193-26-000001-index.html"
+        }
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "cik": "0001045810",
+      "name": "NVDA fixture",
+      "status": "ok",
+      "attemptedAt": "2026-10-21T12:00:00Z",
+      "fetchedAt": "2026-10-21T12:00:00Z",
+      "coverageFrom": "2026-04-24",
+      "coverageTo": "2026-10-21",
+      "filings": []
+    }
+  ]
+}

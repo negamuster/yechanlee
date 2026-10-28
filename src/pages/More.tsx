@@ -3,7 +3,7 @@ import MarketLive from '../components/MarketLive'
 
 const groups = [
   { title: '시장·경제', links: [['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로']] },
-  { title: '투자 도구·방송', links: [['/form13f', '기관 포트폴리오 · 13F'], ['/simulator', '자산 시뮬레이터'], ['/live', 'Yahoo Finance Live']] },
+  { title: '투자 도구·방송', links: [['/filings', 'SEC 공시 모니터'], ['/form13f', '기관 포트폴리오 · 13F'], ['/simulator', '자산 시뮬레이터'], ['/live', 'Yahoo Finance Live']] },
 ]
 export default function More() {
   return <main className="more-page">

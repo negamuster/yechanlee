@@ -21,6 +21,7 @@ const EconomicIndicators = lazy(() => import('./pages/04_EconomicIndicators'))
 const GlobalMacro = lazy(() => import('./pages/05_GlobalMacro'))
 const Stock = lazy(() => import('./pages/06_Stock'))
 const Simulator = lazy(() => import('./pages/Simulator'))
+const Filings = lazy(() => import('./pages/Filings'))
 const Form13F = lazy(() => import('./pages/Form13F'))
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
         <Route path="/macro" element={<GlobalMacro />} />
         <Route path="/stock/:ticker" element={<Stock />} />
         <Route path="/simulator" element={<Simulator />} />
+        <Route path="/filings" element={<Filings />} />
         <Route path="/form13f" element={<Form13F />} />
       </Routes>
       </Suspense></RouteLoadBoundary>

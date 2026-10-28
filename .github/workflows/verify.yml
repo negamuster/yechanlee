@@ -3,6 +3,10 @@ on:
   push:
     branches: [main]
     paths:
+      - 'config/sec-monitor.json'
+      - 'public/data/sec-filings.json'
+      - 'requirements-edgar.txt'
+      - '.github/workflows/refresh-sec-filings.yml'
       - 'src/**'
       - 'lib/**'
       - 'api/**'
@@ -36,6 +40,12 @@ jobs:
           package-manager-cache: false
       - run: npm ci --no-audit --no-fund
         id: dependencies
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-edgar.txt
+      - run: python -m unittest discover -s tests -p 'test_sec_monitor.py'
+      - run: node scripts/validate-sec-filings.mjs
       - run: npm test
         id: node_tests
       - run: npm run lint
