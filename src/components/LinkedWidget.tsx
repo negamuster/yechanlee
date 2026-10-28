@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, MouseEvent } from 'react'
 import { widgetActivation, widgetControls } from '../lib/widgetNavigation'
+import { Card } from './ui/Card'
 import './LinkedWidget.css'
 
 export default function LinkedWidget({ className = '', children, ...props }: ComponentPropsWithoutRef<'div'>) {
@@ -13,5 +14,5 @@ export default function LinkedWidget({ className = '', children, ...props }: Com
     if (action === 'new-tab') window.open(link.href, '_blank', 'noopener,noreferrer')
     else link.click()
   }
-  return <div {...props} className={`${className} linked-widget`} onClick={activate} onAuxClick={activate}>{children}</div>
+  return <Card {...props} className={`${className} linked-widget`} onClick={activate} onAuxClick={activate}>{children}</Card>
 }

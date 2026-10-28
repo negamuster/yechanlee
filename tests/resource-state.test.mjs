@@ -23,7 +23,8 @@ test('initial loading has a named skeleton without pretending to have values', (
 
 test('background refresh uses a small status, and successful idle data has no notice', () => {
   const $ = render({ loading: true, hasData: true, updatedAt: stamp })
-  assert.equal($('.data-notice-loading').text().trim(), '•업데이트 중…')
+  assert.equal($('.data-notice-loading').text().trim(), '업데이트 중…')
+  assert.equal($('.data-notice-mark[aria-hidden="true"] svg').length, 1)
   assert.equal($('.data-skeleton, button').length, 0)
   assert.equal(render({ hasData: true }).root().text(), '')
 })

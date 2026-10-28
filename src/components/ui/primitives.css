@@ -1,0 +1,2 @@
+.ui-card { min-width: 0; color: var(--ui-text); background: var(--ui-card); border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); }
+.ui-skeleton { background: var(--ui-hover); border-radius: 6px; }

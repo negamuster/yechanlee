@@ -1,4 +1,4 @@
-.home-briefing.is-mobile { padding: 16px; border-color: var(--ui-border); border-radius: 14px; }
+.home-briefing.is-mobile { padding: var(--ui-card-padding); border-color: var(--ui-border); border-radius: var(--ui-card-radius); }
 .mobile-briefing { color: var(--ui-text); }
 .mobile-briefing-kicker { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .mobile-briefing-kicker h2 { margin: 0; font-size: 14px; font-weight: 700; color: var(--ui-selected); }
