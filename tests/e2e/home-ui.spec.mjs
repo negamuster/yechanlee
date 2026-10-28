@@ -4,6 +4,11 @@ import { installStockFixtures, FIXED_AT } from './stock-fixtures.mjs'
 
 async function setup(page) {
   const state = await installStockFixtures(page)
+  const fontFiles = new Map()
+  page.on('response', response => {
+    if (new URL(response.url()).pathname.endsWith('.woff2')) fontFiles.set(response.url(), response.body().then(body => body.byteLength).catch(() => null))
+  })
+  state.fontFiles = fontFiles
   const day = '2026-10-20', returns = { '1d': 1.25, '1w': 2.1, '1m': 3.4, ytd: 12.8 }
   const sector = { symbol: 'XLK', name: 'Technology', returns, relative: returns, starts: { '1d': '2026-10-19', '1w': '2026-10-13', '1m': '2026-09-18', ytd: '2025-12-31' }, asOf: day }
   await page.route('**/api/sector-performance', route => route.fulfill({ json: { sectors: [sector, { ...sector, symbol: 'XLF', name: 'Financial', returns: { ...returns, '1d': -.45 } }, { ...sector, symbol: 'XLV', name: 'Healthcare' }], benchmark: { ...sector, symbol: 'VOO', name: 'S&P 500' }, fetchedAt: new Date(FIXED_AT).toISOString(), stale: false, basis: 'USD · 일별 종가 · 배당 미포함 가격수익률' } }))
@@ -43,6 +48,7 @@ test('home type, icons, nested actions and local fonts remain accessible with so
     await maps.getByRole('button', { name: 'Maps 출처와 산정 기준', exact: true }).click()
     await expect(page).toHaveURL(/\/$/)
     await expect(maps.locator('.widget-info-panel')).toBeVisible()
+    await maps.getByRole('button', { name: 'Maps 출처와 산정 기준', exact: true }).click()
     await expect(page.locator('.home-dashboard-calendar')).toContainText('일정 일부를 확인하지 못했습니다.')
     const save = page.getByRole('button', { name: 'AAPL 관심 종목 저장', exact: true })
     await expect(save.locator('svg')).toHaveAttribute('focusable', 'false')
@@ -57,15 +63,17 @@ test('home type, icons, nested actions and local fonts remain accessible with so
   await dialog.getByRole('combobox').press('Escape')
   await expect(search).toBeFocused()
   await noOverflow(page)
+  await page.getByRole('heading', { level: 1, name: '오늘의 시장', exact: true }).click()
   await page.screenshot({ path: testInfo.outputPath('home-ui.png'), fullPage: true })
-  const metrics = await page.evaluate(() => {
-    const fonts = performance.getEntriesByType('resource').filter(entry => /\.woff2(?:\?|$)/.test(entry.name))
-    return { fontRequests: fonts.length, fontTransferBytes: fonts.reduce((sum, entry) => sum + entry.transferSize, 0), fontOrigins: [...new Set(fonts.map(entry => new URL(entry.name).origin))] }
-  })
-  expect(metrics.fontRequests).toBeGreaterThan(0)
-  expect(metrics.fontOrigins).toEqual(['http://127.0.0.1:4173'])
-  expect(metrics.fontTransferBytes).toBeLessThan(1_000_000)
+  // Use actual WOFF2 response bodies so metrics do not depend on ResourceTiming availability.
+  // These are compressed font payload bytes, excluding HTTP headers.
+  const fonts = await Promise.all([...state.fontFiles].map(async ([url, bytes]) => ({ url, bytes: await bytes })))
+  const metrics = { fontRequests: fonts.length, fontPayloadBytes: fonts.reduce((sum, entry) => sum + entry.bytes, 0), fontOrigins: [...new Set(fonts.map(entry => new URL(entry.url).origin))] }
   await writeFile(testInfo.outputPath('home-ui-metrics.json'), JSON.stringify(metrics, null, 2))
+  expect(metrics.fontRequests).toBeGreaterThan(0)
+  expect(fonts.every(entry => entry.bytes !== null && entry.bytes > 0)).toBe(true)
+  expect(metrics.fontOrigins).toEqual(['http://127.0.0.1:4173'])
+  expect(metrics.fontPayloadBytes).toBeLessThan(1_000_000)
   expect(state.pageErrors).toEqual([])
 })
 
