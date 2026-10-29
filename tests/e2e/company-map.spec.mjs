@@ -34,6 +34,7 @@ test('company map proportions, sector/count/list choices, quote basis, logo fall
  }
  await map.locator('.company-map-tile').first().focus();await page.keyboard.press('Enter')
  await expect(page).toHaveURL(/\/stock\/NVDA$/)
+ expect(state.requests.some(url=>url.includes('logo='))).toBe(false)
  expect(state.pageErrors).toEqual([])
 })
 test('source-failure receipts and a failed refresh preserve map data while initial failure stays explicit',async({page})=>{
