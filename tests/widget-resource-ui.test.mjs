@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from './helpers/render-static.mjs'
 import { MemoryRouter } from 'react-router-dom'
 import { load } from 'cheerio'
 
-const { default: SectorPerformance } = await import('../src/components/SectorPerformance.tsx')
+const { SectorETF: SectorPerformance } = await import('../src/components/SectorPerformance.tsx')
 const { default: MarketMovers } = await import('../src/components/MarketMovers.tsx')
 const { default: MarketCalendar } = await import('../src/components/MarketCalendar.tsx')
 const { default: MarketTicker } = await import('../src/components/MarketTicker.tsx')

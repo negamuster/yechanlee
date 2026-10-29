@@ -1,0 +1,532 @@
+{
+  "version": 1,
+  "companies": [
+    {
+      "symbol": "NVDA",
+      "name": "엔비디아",
+      "sector": "technology",
+      "marketCap": 5200780722176,
+      "changePercent": -1.17463,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "애플",
+      "sector": "technology",
+      "marketCap": 5017916932096,
+      "changePercent": -0.942097,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "알파벳",
+      "sector": "communication",
+      "marketCap": 3973383716864,
+      "changePercent": 1.34445,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "마이크로소프트",
+      "sector": "technology",
+      "marketCap": 3943039238144,
+      "changePercent": -0.0602276,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "아마존",
+      "sector": "consumer",
+      "marketCap": 2746195378176,
+      "changePercent": 0.592651,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "TSM",
+      "name": "TSMC",
+      "sector": "technology",
+      "marketCap": 2279507230720,
+      "changePercent": 0.604302,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "SPCX",
+      "name": "스페이스X",
+      "sector": "industrial",
+      "marketCap": 1972377878528,
+      "changePercent": -2.25468,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "브로드컴",
+      "sector": "technology",
+      "marketCap": 1679410724864,
+      "changePercent": 2.76926,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "테슬라",
+      "sector": "consumer",
+      "marketCap": 1597772529664,
+      "changePercent": -0.795168,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "META",
+      "name": "메타",
+      "sector": "communication",
+      "marketCap": 1594209206272,
+      "changePercent": -1.24156,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "SKHY",
+      "name": "SK하이닉스",
+      "sector": "technology",
+      "marketCap": 1161420341248,
+      "changePercent": 13.3049,
+      "quoteAt": "2026-10-28T20:00:00.000Z"
+    },
+    {
+      "symbol": "BRK-B",
+      "name": "버크셔 해서웨이",
+      "sector": "financial",
+      "marketCap": 1156711186432,
+      "changePercent": -0.488032,
+      "quoteAt": "2026-10-28T20:00:13.000Z"
+    },
+    {
+      "symbol": "LLY",
+      "name": "일라이 릴리",
+      "sector": "healthcare",
+      "marketCap": 1148830482432,
+      "changePercent": 0.498476,
+      "quoteAt": "2026-10-28T20:03:31.000Z"
+    },
+    {
+      "symbol": "MU",
+      "name": "마이크론",
+      "sector": "technology",
+      "marketCap": 1112449220608,
+      "changePercent": 5.86481,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "WMT",
+      "name": "월마트",
+      "sector": "defensive",
+      "marketCap": 945181032448,
+      "changePercent": -0.460948,
+      "quoteAt": "2026-10-28T20:00:00.000Z"
+    },
+    {
+      "symbol": "AMD",
+      "name": "AMD",
+      "sector": "technology",
+      "marketCap": 944288825344,
+      "changePercent": 3.24492,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "JPM",
+      "name": "JP모건",
+      "sector": "financial",
+      "marketCap": 901045092352,
+      "changePercent": 1.04529,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "V",
+      "name": "비자",
+      "sector": "financial",
+      "marketCap": 752068526080,
+      "changePercent": -0.313537,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "XOM",
+      "name": "엑슨모빌",
+      "sector": "energy",
+      "marketCap": 748450217984,
+      "changePercent": 1.17281,
+      "quoteAt": "2026-10-28T20:02:49.000Z"
+    },
+    {
+      "symbol": "JNJ",
+      "name": "존슨앤드존슨",
+      "sector": "healthcare",
+      "marketCap": 652477399040,
+      "changePercent": 0.859598,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "ASML",
+      "name": "ASML",
+      "sector": "technology",
+      "marketCap": 640891879424,
+      "changePercent": 1.66792,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "MA",
+      "name": "마스터카드",
+      "sector": "financial",
+      "marketCap": 534637608960,
+      "changePercent": 0.075432,
+      "quoteAt": "2026-10-28T20:00:03.000Z"
+    },
+    {
+      "symbol": "ABBV",
+      "name": "애브비",
+      "sector": "healthcare",
+      "marketCap": 505377849344,
+      "changePercent": -0.139678,
+      "quoteAt": "2026-10-28T20:04:01.000Z"
+    },
+    {
+      "symbol": "INTC",
+      "name": "인텔",
+      "sector": "technology",
+      "marketCap": 504981618688,
+      "changePercent": 1.90954,
+      "quoteAt": "2026-10-28T20:00:00.000Z"
+    },
+    {
+      "symbol": "PLTR",
+      "name": "팔란티어",
+      "sector": "technology",
+      "marketCap": 472945917952,
+      "changePercent": -0.966134,
+      "quoteAt": "2026-10-28T20:00:00.000Z"
+    },
+    {
+      "symbol": "CVX",
+      "name": "셰브런",
+      "sector": "energy",
+      "marketCap": 449599471616,
+      "changePercent": 0.42501,
+      "quoteAt": "2026-10-28T20:03:26.000Z"
+    },
+    {
+      "symbol": "ORCL",
+      "name": "오라클",
+      "sector": "technology",
+      "marketCap": 438173138944,
+      "changePercent": 10.7332,
+      "quoteAt": "2026-10-28T20:03:50.000Z"
+    },
+    {
+      "symbol": "COST",
+      "name": "코스트코",
+      "sector": "defensive",
+      "marketCap": 435476496384,
+      "changePercent": -0.947459,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "CSCO",
+      "name": "시스코",
+      "sector": "technology",
+      "marketCap": 434827919360,
+      "changePercent": -0.978628,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "KO",
+      "name": "코카콜라",
+      "sector": "defensive",
+      "marketCap": 394581114880,
+      "changePercent": 0.603206,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "PG",
+      "name": "P&G",
+      "sector": "defensive",
+      "marketCap": 366812332032,
+      "changePercent": -0.609182,
+      "quoteAt": "2026-10-28T20:02:29.000Z"
+    },
+    {
+      "symbol": "UNH",
+      "name": "유나이티드헬스",
+      "sector": "healthcare",
+      "marketCap": 365410844672,
+      "changePercent": -0.801678,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "BAC",
+      "name": "Bank of America Corporation",
+      "sector": "financial",
+      "marketCap": 352019054592,
+      "changePercent": 0.335434,
+      "quoteAt": "2026-10-28T20:00:03.000Z"
+    },
+    {
+      "symbol": "MRK",
+      "name": "Merck & Co., Inc.",
+      "sector": "healthcare",
+      "marketCap": 347698462720,
+      "changePercent": -0.627566,
+      "quoteAt": "2026-10-28T20:03:37.000Z"
+    },
+    {
+      "symbol": "AMAT",
+      "name": "Applied Materials, Inc.",
+      "sector": "technology",
+      "marketCap": 330136551424,
+      "changePercent": 5.06908,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "CAT",
+      "name": "Caterpillar Inc.",
+      "sector": "industrial",
+      "marketCap": 327922876416,
+      "changePercent": 0.00981443,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "PANW",
+      "name": "Palo Alto Networks, Inc.",
+      "sector": "technology",
+      "marketCap": 322692808704,
+      "changePercent": -1.79488,
+      "quoteAt": "2026-10-28T20:00:00.000Z"
+    },
+    {
+      "symbol": "LRCX",
+      "name": "Lam Research Corporation",
+      "sector": "technology",
+      "marketCap": 317636542464,
+      "changePercent": 5.38509,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "HD",
+      "name": "The Home Depot, Inc.",
+      "sector": "consumer",
+      "marketCap": 316826320896,
+      "changePercent": -0.295134,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "PM",
+      "name": "Philip Morris International Inc.",
+      "sector": "defensive",
+      "marketCap": 315837415424,
+      "changePercent": 0.0098728,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "DELL",
+      "name": "Dell Technologies Inc.",
+      "sector": "technology",
+      "marketCap": 313957974016,
+      "changePercent": -1.62762,
+      "quoteAt": "2026-10-28T20:04:18.000Z"
+    },
+    {
+      "symbol": "GE",
+      "name": "GE Aerospace",
+      "sector": "industrial",
+      "marketCap": 312441208832,
+      "changePercent": 1.16576,
+      "quoteAt": "2026-10-28T20:00:03.000Z"
+    },
+    {
+      "symbol": "SHEL",
+      "name": "Shell plc",
+      "sector": "energy",
+      "marketCap": 298724163584,
+      "changePercent": 0.3913,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "sector": "financial",
+      "marketCap": 297553461248,
+      "changePercent": 1.72275,
+      "quoteAt": "2026-10-28T20:03:15.000Z"
+    },
+    {
+      "symbol": "HSBC",
+      "name": "HSBC Holdings plc",
+      "sector": "financial",
+      "marketCap": 295384449024,
+      "changePercent": 0.418557,
+      "quoteAt": "2026-10-28T20:00:03.000Z"
+    },
+    {
+      "symbol": "NVS",
+      "name": "Novartis AG",
+      "sector": "healthcare",
+      "marketCap": 294776373248,
+      "changePercent": -0.497258,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "RY",
+      "name": "Royal Bank of Canada",
+      "sector": "financial",
+      "marketCap": 283489697792,
+      "changePercent": 0.861984,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "TXN",
+      "name": "Texas Instruments Incorporated",
+      "sector": "technology",
+      "marketCap": 283261337600,
+      "changePercent": 0.297816,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "SAP",
+      "name": "SAP SE",
+      "sector": "technology",
+      "marketCap": 273465606144,
+      "changePercent": 0.479215,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "CRWD",
+      "name": "CrowdStrike Holdings, Inc.",
+      "sector": "technology",
+      "marketCap": 273042472960,
+      "changePercent": -0.507419,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "GS",
+      "name": "The Goldman Sachs Group, Inc.",
+      "sector": "financial",
+      "marketCap": 269383024640,
+      "changePercent": 1.46966,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "RTX",
+      "name": "RTX Corporation",
+      "sector": "industrial",
+      "marketCap": 264274427904,
+      "changePercent": 0.6372,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "AZN",
+      "name": "AstraZeneca PLC",
+      "sector": "healthcare",
+      "marketCap": 262894026752,
+      "changePercent": -0.335141,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "TMO",
+      "name": "Thermo Fisher Scientific Inc.",
+      "sector": "healthcare",
+      "marketCap": 260357570560,
+      "changePercent": 1.60601,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "NFLX",
+      "name": "Netflix, Inc.",
+      "sector": "communication",
+      "marketCap": 258122629120,
+      "changePercent": -0.847727,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "ARM",
+      "name": "Arm Holdings plc",
+      "sector": "technology",
+      "marketCap": 251940864000,
+      "changePercent": 4.10414,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "BABA",
+      "name": "Alibaba Group Holding Limited",
+      "sector": "consumer",
+      "marketCap": 251162738688,
+      "changePercent": 0.718277,
+      "quoteAt": "2026-10-28T20:01:45.000Z"
+    },
+    {
+      "symbol": "WFC",
+      "name": "Wells Fargo & Company",
+      "sector": "financial",
+      "marketCap": 251147124736,
+      "changePercent": 1.22187,
+      "quoteAt": "2026-10-28T20:02:32.000Z"
+    },
+    {
+      "symbol": "AMGN",
+      "name": "Amgen Inc.",
+      "sector": "healthcare",
+      "marketCap": 244273741824,
+      "changePercent": 0.866162,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "MUFG",
+      "name": "Mitsubishi UFJ Financial Group, Inc.",
+      "sector": "financial",
+      "marketCap": 241548705792,
+      "changePercent": -0.093112,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "IBM",
+      "name": "International Business Machines Corporation",
+      "sector": "technology",
+      "marketCap": 239323496448,
+      "changePercent": 1.18681,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "ANET",
+      "name": "Arista Networks, Inc.",
+      "sector": "technology",
+      "marketCap": 235495882752,
+      "changePercent": -0.149732,
+      "quoteAt": "2026-10-28T20:00:03.000Z"
+    },
+    {
+      "symbol": "LIN",
+      "name": "Linde plc",
+      "sector": "materials",
+      "marketCap": 234251681792,
+      "changePercent": -0.0963315,
+      "quoteAt": "2026-10-28T20:00:01.000Z"
+    },
+    {
+      "symbol": "GEV",
+      "name": "GE Vernova Inc.",
+      "sector": "industrial",
+      "marketCap": 233848881152,
+      "changePercent": -1.90486,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    },
+    {
+      "symbol": "TM",
+      "name": "Toyota Motor Corporation",
+      "sector": "consumer",
+      "marketCap": 229495619584,
+      "changePercent": -0.869959,
+      "quoteAt": "2026-10-28T20:00:02.000Z"
+    }
+  ],
+  "fetchedAt": "2026-10-29T11:38:08.153741Z",
+  "source": "Yahoo Finance",
+  "sourceUrl": "https://finance.yahoo.com/research-hub/screener/largest_market_cap/",
+  "sourceCount": 100,
+  "excluded": 35,
+  "stale": false,
+  "classificationAt": "2026-10-29"
+}

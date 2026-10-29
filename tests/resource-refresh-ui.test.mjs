@@ -10,7 +10,7 @@ Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { on
 const { createElement: h, act } = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
-const { default: SectorPerformance } = await import('../src/components/SectorPerformance.tsx')
+const { SectorETF: SectorPerformance } = await import('../src/components/SectorPerformance.tsx')
 const { useResource } = await import('../src/hooks/useResource.ts')
 const { refreshPolicies } = await import('../src/lib/refreshPolicy.ts')
 const { invalidateResource, loadResource } = await import('../src/utils/resourceCache.ts')

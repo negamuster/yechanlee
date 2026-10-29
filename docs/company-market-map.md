@@ -1,0 +1,11 @@
+# Company market map
+
+Goal: replace the home's equal ETF tiles with company market-cap-weighted rectangles; centered ticker/logo/return; market-cap and sector selection, Top15/30/50 and accessible list view. Preserve the ETF view and its news controls as a separate toggle. Full Maps lives on /equity and supports mobile. Homepage keeps its existing mobile reading flow.
+
+Area uses provider USD company marketCap, not price, volume or index weight. Yahoo's largest_market_cap screener (first 100 ranked rows) is the bounded universe, filtered to NYSE/Nasdaq equity quotes with positive caps; OTC/preferred rows removed. Aliases for one SEC issuer are collapsed (GOOGL preferred over GOOG; BRK-B over BRK-A). This is a collected subset, not a full-market or index ranking. Sector metadata is a reviewed local business classification; unknown companies remain unclassified. Filtering does not imply whole-sector coverage. ADR caps refer to the provider's whole-company estimate. Quote regular-session time and cap collection time must remain distinct; provider gives no independent cap valuation timestamp. Show delay/non-live, per-row quote times, coverage and source.
+
+Use one fixed upstream request, timeout, 5-minute cache and coalescing; preserve original timestamps on fallback. A checked bundled receipt is available on cold failure with explicit stale/source-failure notice. Invalid/missing caps never become zero-area fake companies. Quote returns may be null and display unavailable in a neutral color. Never use pre/post-market changes in the regular-return map. Expired source data remains visibly old. No new scheduled automation.
+
+Use existing logo proxy only for the first eight sufficiently large tiles; lazy images and ticker fallback on missing/failed logos. No external logo keys/domains or new dependencies. Native links, keyboard focus, text list and controls remain available when a tile is too small for visible labels.
+
+Verification: financial parser/dedup/filter/failure/cache tests, treemap area/non-overlap tests and PC/mobile map selection/list/links/source/stale/error tests, plus full repository CI. Independent review before merge. User authorized both security PR44 and this feature's main merge/production deployment.
