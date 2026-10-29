@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
+import { gzipSync } from 'node:zlib'
 import { installStockFixtures } from './stock-fixtures.mjs'
 
 const manifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
@@ -11,6 +12,11 @@ const trigger = page => page.getByRole('button', { name: '통합 검색·빠른 
 const menu = page => page.getByRole('dialog', { name: '통합 검색·빠른 이동', exact: true })
 
 test('home renders the current edition before deferred search/archive downloads and delayed search can be cancelled safely', async ({ page }) => {
+  const metrics = JSON.parse(await readFile(new URL('../../dist/.vite/initial-loading.json', import.meta.url), 'utf8'))
+  const chunks = await Promise.all(metrics.files.map(file => readFile(new URL(`../../dist/${file}`, import.meta.url))))
+  // Compare with final files; Vite expands preload maps after generateBundle.
+  expect(metrics.bytes).toBe(chunks.reduce((sum, file) => sum + file.byteLength, 0))
+  expect(metrics.gzipBytes).toBe(chunks.reduce((sum, file) => sum + gzipSync(file).byteLength, 0))
   const state = await installStockFixtures(page)
   const scripts = []
   page.on('request', request => { if (request.resourceType() === 'script') scripts.push(new URL(request.url()).pathname) })

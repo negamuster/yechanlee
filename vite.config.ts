@@ -7,6 +7,8 @@ import sectorAPI from './api/sector-performance.js'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { gzipSync } from 'node:zlib'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 // @ts-expect-error The same JavaScript Node.js handler also serves local development.
 import newsAPI from './api/news.js'
 // @ts-expect-error Shared JavaScript server handler.
@@ -33,7 +35,7 @@ export default defineConfig({
   plugins: [react(), {
     name: 'initial-loading-budget',
     apply: 'build',
-    generateBundle(_options, bundle) {
+    async writeBundle(options, bundle) {
       const initial = new Set<string>()
       const visit = (file: string) => {
         if (initial.has(file)) return
@@ -54,7 +56,11 @@ export default defineConfig({
       }
       if (!initial.size || bytes > 700_000 || gzipBytes > 210_000) this.error(`Initial JavaScript budget exceeded: ${bytes} bytes / ${gzipBytes} gzip bytes (limits 700000 / 210000)`)
       const metrics = { bytes, gzipBytes, files: [...initial].sort(), limits: { bytes: 700_000, gzipBytes: 210_000 } }
-      this.emitFile({ type: 'asset', fileName: '.vite/initial-loading.json', source: JSON.stringify(metrics, null, 2) + '\n' })
+      // Vite expands preload dependencies after generateBundle; measure final emitted code.
+      if (!options.dir) this.error('Initial JavaScript measurement requires an output directory')
+      const reportDir = join(options.dir, '.vite')
+      await mkdir(reportDir, { recursive: true })
+      await writeFile(join(reportDir, 'initial-loading.json'), JSON.stringify(metrics, null, 2) + '\n')
       console.log(`Initial JavaScript: ${bytes} bytes / ${gzipBytes} gzip bytes across ${initial.size} static chunks`)
     },
   }, {
