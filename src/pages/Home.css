@@ -136,7 +136,7 @@
 .home-page .home-content .sector-selectable > a { padding-block: 1px; line-height: 1.4; }
 .home-page .home-content .sector-grid { gap: 6px; margin: 10px 0; }
 .home-page .home-content .mover-row { min-height: 48px; padding-block: 5px; }
-.home-dashboard-calendar .calendar-list:not(.is-expanded) { max-height: none; overflow: visible; }
+.home-dashboard-calendar .calendar-list:not(.is-expanded) { max-height: 240px; overflow-y: auto; }
 .home-dashboard-calendar .calendar-list.is-expanded { max-height: 360px; overflow-y: auto; }
 .home-dashboard-calendar .calendar-time-note { margin: 6px 0; font-size: var(--ui-font-caption); line-height: 1.6; }
 .calendar-preview-more { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 8px; color: var(--ui-muted); font-size: var(--ui-font-caption); }

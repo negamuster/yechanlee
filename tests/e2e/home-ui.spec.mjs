@@ -20,7 +20,7 @@ async function setup(page) {
   await page.route('**/api/calendar?*', route => route.fulfill({ json: { events: new URL(route.request().url()).searchParams.get('mode') === 'month' ? events : [], sources: [{ name: 'BLS', date: null, state: 'snapshot', updatedAt: '2026-10-20T12:00:00Z', error: 'http_403', checkedAt: '2026-10-21T12:00:00Z', url: 'https://www.bls.gov/schedule/' }], fetchedAt: new Date(FIXED_AT).toISOString() } }))
   state.homeNews = { fail: false, partial: true, items: [{ id: 'home-design-fixture', title: '미국 기술주와 반도체 시장 점검', publisher: '검증용 뉴스', article_url: 'https://example.com/home-design-fixture', published_utc: '2026-10-21T11:00:00Z', region: 'global', topics: ['investing'] }] }
   await page.route('**/api/news', route => state.homeNews.fail ? route.fulfill({ status: 503, json: { error: 'Simulated outage' } }) : route.fulfill({ json: { items: state.homeNews.items, sources: [{ id: 'fixture', publisher: '검증용 뉴스', region: 'global', status: 'ok', checkedAt: FIXED_AT }, ...(state.homeNews.partial ? [{ id: 'fixture-blocked', publisher: '접근 제한 매체', region: 'global', status: 'unavailable', error: 'http_403', checkedAt: FIXED_AT, nextRetryAt: FIXED_AT + 1800000 }] : [])], fetchedAt: FIXED_AT } }))
-  await page.route('https://www.youtube-nocookie.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: '<html lang="ko"><body style="margin:0;background:#18283f;color:white;display:grid;place-content:center;height:100vh;font:16px sans-serif">브라우저 검증용 방송 영역</body></html>' }))
+  await page.route('https://www.youtube-nocookie.com/embed/**', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<html lang="ko"><head><meta charset="utf-8"></head><body style="margin:0;background:#18283f;color:white;display:grid;place-content:center;height:100vh;font:16px sans-serif">브라우저 검증용 방송 영역</body></html>' }))
   return state
 }
 async function fontsReady(page) {
@@ -99,11 +99,13 @@ test('home type, icons, nested actions and local fonts remain accessible with so
   expect(state.pageErrors).toEqual([])
 })
 
-test('compact briefing opens the complete edition with every original summary and detail basis', async ({ page }) => {
+test('compact briefing opens the complete edition with every original summary and detail basis', async ({ page }, testInfo) => {
   await setup(page)
   await page.goto('/')
   const card = page.locator('.home-briefing-card')
   await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await fontsReady(page)
+  const height = (await page.locator('.home-briefing').boundingBox()).height
   await expect(card.locator('.briefing-detail-tabs, .briefing-stocks, .mobile-briefing-event-preview')).toHaveCount(0)
   await expect(card.locator('time')).toHaveAttribute('datetime', edition.cutoffAt)
   await card.getByRole('link', { name: '브리핑 전체 보기', exact: true }).click()
@@ -116,8 +118,14 @@ test('compact briefing opens the complete edition with every original summary an
     await expect(page.locator('.mobile-briefing-assets')).toContainText(asset.basis)
   }
   await noOverflow(page)
+  await page.screenshot({ path: testInfo.outputPath('home-ui-edition.png'), fullPage: true })
   await page.getByRole('link', { name: '← 지난 브리핑', exact: true }).click()
   await expect(page).toHaveURL(/\/briefings$/)
+  await page.getByRole('link', { name: '← 홈', exact: true }).click()
+  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await fontsReady(page)
+  expect((await page.locator('.home-briefing').boundingBox()).height).toBeLessThanOrEqual(height + 1)
+  await noOverflow(page)
 })
 
 test('compact news preserves filter choices and restores mobile dialog focus', async ({ page }, testInfo) => {
@@ -193,6 +201,7 @@ test('home calendar previews three events and expands, folds and resets for anot
   await expect(events).toHaveCount(3)
   await expect(calendar).toContainText('주요 일정 우선 · 3/5개 표시')
   await expect(calendar).toContainText('일정 일부를 확인하지 못했습니다.')
+  expect((await calendar.locator('.calendar-list').boundingBox()).height).toBeLessThanOrEqual(241)
   await calendar.getByRole('button', { name: '나머지 2개 더 보기', exact: true }).click()
   await expect(events).toHaveCount(5)
   const fold = calendar.getByRole('button', { name: '일정 접기', exact: true })
