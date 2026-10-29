@@ -6,6 +6,9 @@ import calendarAPI from './api/calendar.js'
 import sectorAPI from './api/sector-performance.js'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { gzipSync } from 'node:zlib'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 // @ts-expect-error The same JavaScript Node.js handler also serves local development.
 import newsAPI from './api/news.js'
 // @ts-expect-error Shared JavaScript server handler.
@@ -28,8 +31,39 @@ import { createFinancialsHandler } from './lib/stock-financials.js'
 export default defineConfig({
   // Only this non-secret setting may be exposed to browser code.
   envPrefix: 'VITE_YAHOO_LIVE_VIDEO_ID',
-  build: { emptyOutDir: true },
+  build: { emptyOutDir: true, manifest: true },
   plugins: [react(), {
+    name: 'initial-loading-budget',
+    apply: 'build',
+    async writeBundle(options, bundle) {
+      const initial = new Set<string>()
+      const visit = (file: string) => {
+        if (initial.has(file)) return
+        const chunk = bundle[file]
+        if (chunk?.type !== 'chunk') return
+        initial.add(file)
+        chunk.imports.forEach(visit)
+      }
+      for (const chunk of Object.values(bundle)) if (chunk.type === 'chunk' && chunk.isEntry) visit(chunk.fileName)
+      const deferred = ['/src/data/published-briefings.json', '/src/lib/briefingArchive.ts', '/src/components/CommandPalette.tsx', '/config/sec-monitor.json']
+      let bytes = 0, gzipBytes = 0
+      for (const file of initial) {
+        const chunk = bundle[file]
+        if (chunk.type !== 'chunk') continue
+        for (const id of Object.keys(chunk.modules)) if (deferred.some(path => id.split('?')[0].endsWith(path))) this.error(`Deferred module leaked into initial JavaScript: ${id}`)
+        bytes += Buffer.byteLength(chunk.code)
+        gzipBytes += gzipSync(chunk.code).byteLength
+      }
+      if (!initial.size || bytes > 700_000 || gzipBytes > 210_000) this.error(`Initial JavaScript budget exceeded: ${bytes} bytes / ${gzipBytes} gzip bytes (limits 700000 / 210000)`)
+      const metrics = { bytes, gzipBytes, files: [...initial].sort(), limits: { bytes: 700_000, gzipBytes: 210_000 } }
+      // Vite expands preload dependencies after generateBundle; measure final emitted code.
+      if (!options.dir) this.error('Initial JavaScript measurement requires an output directory')
+      const reportDir = join(options.dir, '.vite')
+      await mkdir(reportDir, { recursive: true })
+      await writeFile(join(reportDir, 'initial-loading.json'), JSON.stringify(metrics, null, 2) + '\n')
+      console.log(`Initial JavaScript: ${bytes} bytes / ${gzipBytes} gzip bytes across ${initial.size} static chunks`)
+    },
+  }, {
     name: 'local-news-api',
     configureServer(server) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
