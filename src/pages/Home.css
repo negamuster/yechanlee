@@ -2,7 +2,7 @@
 .home-content { max-width: 1760px; margin: auto; padding: var(--ui-space-lg) var(--ui-page-gutter) 0; }
 
 /* Independent columns let news follow the briefing without waiting for the calendar. */
-.home-overview { display: grid; grid-template-columns: clamp(280px, 21vw, 320px) minmax(0, 1fr) clamp(280px, 20vw, 300px); grid-template-areas: "heading heading heading" "market primary support"; gap: var(--ui-layout-gap); align-items: start; }
+.home-overview { display: grid; grid-template-columns: clamp(340px, 26vw, 400px) minmax(0, 1fr) clamp(280px, 20vw, 300px); grid-template-areas: "heading heading heading" "market primary support"; gap: var(--ui-layout-gap); align-items: start; }
 .home-section-heading { grid-area: heading; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; min-width: 0; }
 .home-section-heading h1 { margin: 0; font-size: 26px; line-height: 1.4; font-weight: 700; letter-spacing: -.025em; }
 .home-section-heading p { margin: 0; color: var(--ui-muted); font-size: var(--ui-font-control); }
