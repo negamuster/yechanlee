@@ -30,6 +30,7 @@ async function fontsReady(page) {
 const noOverflow = async page => expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
 async function compactTilesFit(page) {
   const maps = page.locator('.home-dashboard-maps')
+  await maps.getByRole('button', { name: '업종 ETF', exact: true }).click()
   await expect(maps.locator('.sector-selectable')).toHaveCount(11)
   expect(await maps.locator('.sector-selectable').evaluateAll(tiles => tiles.every(tile => {
     const bounds = tile.getBoundingClientRect()
@@ -42,6 +43,8 @@ async function compactTilesFit(page) {
   expect(buttons[0].y).toBe(buttons[1].y)
   expect(buttons[2].y).toBe(buttons[3].y)
   expect(buttons[2].y).toBeGreaterThan(buttons[0].y)
+  await maps.getByRole('button', { name: '기업 시가총액', exact: true }).click()
+  await expect(maps.locator('.company-map-tile')).toHaveCount(3)
 }
 
 test('home type, icons, nested actions and local fonts remain accessible with source warnings intact', async ({ page }, testInfo) => {

@@ -1,0 +1,55 @@
+import {test,expect} from '@playwright/test'
+import {installStockFixtures,companyMapFixture} from './stock-fixtures.mjs'
+
+test('company map proportions, sector/count/list choices, quote basis, logo fallback and stock links survive reflow',async({page},testInfo)=>{
+ const state=await installStockFixtures(page)
+ await page.goto('/equity')
+ const map=page.locator('.company-map')
+ await expect(map.locator('.company-map-tile')).toHaveCount(3)
+ const areas=await map.locator('.company-map-tile').evaluateAll(nodes=>nodes.map(e=>({symbol:e.querySelector('strong').textContent,area:e.getBoundingClientRect().width*e.getBoundingClientRect().height})))
+ expect(areas[0].symbol).toBe('NVDA');expect(areas[0].area/areas[1].area).toBeCloseTo(5/3,3)
+ await map.getByRole('button',{name:'Maps 출처와 산정 기준',exact:true}).click()
+ await expect(map.locator('.widget-info-panel')).toContainText('별도 산정 시각은 미제공')
+ await expect(map.locator('.widget-info-panel')).toContainText('시장 전체나 특정 지수')
+ await map.getByRole('button',{name:'Maps 출처와 산정 기준',exact:true}).click()
+ await map.getByRole('combobox',{name:'Maps 보기 기준',exact:true}).selectOption('financial')
+ await expect(map.locator('.company-map-tile')).toHaveCount(1)
+ await expect(map.locator('.company-map-tile')).toContainText('등락률 미제공')
+ await map.getByRole('combobox',{name:'Maps 보기 기준',exact:true}).selectOption('utilities')
+ await expect(map).toContainText('현재 수집 범위에 이 업종 기업이 없습니다.')
+ await map.getByRole('combobox',{name:'Maps 보기 기준',exact:true}).selectOption('all')
+ await map.getByRole('combobox',{name:'Maps 표시 종목 수',exact:true}).selectOption('50')
+ await map.getByRole('button',{name:'목록 보기',exact:true}).click()
+ await expect(map.locator('.company-map-list a')).toHaveCount(3)
+ await expect(map.locator('.company-map-list')).toContainText('정규장 시세')
+ await page.reload();await expect(map.getByRole('combobox',{name:'Maps 표시 종목 수',exact:true})).toHaveValue('50')
+ await expect(map.locator('.company-map-list a')).toHaveCount(3)
+ await map.getByRole('button',{name:'지도 보기',exact:true}).click()
+ for(const width of [1440,768,393,320]) {
+  await page.setViewportSize({width,height:1000})
+  await expect(map.locator('.company-map-tile')).toHaveCount(3)
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true)
+  await map.scrollIntoViewIfNeeded()
+  if([1440,320].includes(width)) await page.screenshot({path:testInfo.outputPath(`home-ui-company-map-${width}.png`),fullPage:true})
+ }
+ await map.locator('.company-map-tile').first().focus();await page.keyboard.press('Enter')
+ await expect(page).toHaveURL(/\/stock\/NVDA$/)
+ expect(state.pageErrors).toEqual([])
+})
+test('source-failure receipts and a failed refresh preserve map data while initial failure stays explicit',async({page})=>{
+ await installStockFixtures(page)
+ let fail=false
+ const fixture=companyMapFixture();fixture.stale=true;fixture.sourceError=true
+ await page.route('**/api/sector-performance?view=companies',route=>fail?route.fulfill({status:503,json:{error:'offline'}}):route.fulfill({json:fixture}))
+ await page.goto('/equity');const map=page.locator('.company-map')
+ await expect(map.locator('.company-map-tile')).toHaveCount(3)
+ await expect(map).toContainText('원본 갱신 실패')
+ const receipt=await map.locator('.company-map-receipt').textContent();fail=true
+ await map.getByRole('button',{name:'Maps 새로고침',exact:true}).click()
+ await expect(map).toContainText('갱신')
+ await expect(map.locator('.company-map-tile')).toHaveCount(3)
+ await expect(map.locator('.company-map-receipt')).toHaveText(receipt)
+ await page.reload();await expect(map.locator('.company-map-tile')).toHaveCount(0)
+ await expect(map).toContainText('기업 지도')
+ await expect(map.getByRole('button',{name:/다시 시도/})).toBeVisible()
+})

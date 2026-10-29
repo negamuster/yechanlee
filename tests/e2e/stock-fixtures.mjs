@@ -27,6 +27,7 @@ export async function installStockFixtures(page) {
     if (url.origin !== 'http://127.0.0.1:4173') return route.abort()
     if (!url.pathname.startsWith('/api/')) return route.continue()
     state.requests.push(url.pathname + url.search)
+    if (url.pathname === '/api/sector-performance' && url.searchParams.get('view')==='companies') return route.fulfill({json: companyMapFixture()})
     if (url.pathname === '/api/news') return route.fulfill({ json: { version: 'rss-node-v6', items: [], sources: [], fetchedAt: FIXED_AT } })
     if (url.searchParams.has('search')) {
       const query = url.searchParams.get('search').toUpperCase(), symbols = Object.keys(companies).filter(symbol => symbol === query || companies[symbol][0].toUpperCase().includes(query))
@@ -65,3 +66,8 @@ export async function installStockFixtures(page) {
 }
 import { financialHistory } from '../../lib/financial-history.js'
 import { financialFacts } from '../fixtures/financial-history.mjs'
+
+export function companyMapFixture() { return {version:1,sourceCount:3,excluded:0,classificationAt:'2026-10-20',fetchedAt:new Date(FIXED_AT).toISOString(),stale:false,companies:[
+  {symbol:'NVDA',name:'엔비디아',sector:'technology',marketCap:5e12,changePercent:1.25,quoteAt:'2026-10-20T20:00:00Z'},
+  {symbol:'AAPL',name:'애플',sector:'technology',marketCap:3e12,changePercent:-.45,quoteAt:'2026-10-20T20:00:00Z'},
+  {symbol:'JPM',name:'JP모건',sector:'financial',marketCap:1e12,changePercent:null,quoteAt:'2026-10-20T20:00:00Z'}] } }

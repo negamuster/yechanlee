@@ -1,0 +1,248 @@
+{
+  "checkedAt": "2026-10-29",
+  "companies": {
+    "NVDA": {
+      "sector": "technology",
+      "name": "엔비디아"
+    },
+    "AAPL": {
+      "sector": "technology",
+      "name": "애플"
+    },
+    "MSFT": {
+      "sector": "technology",
+      "name": "마이크로소프트"
+    },
+    "TSM": {
+      "sector": "technology",
+      "name": "TSMC"
+    },
+    "AVGO": {
+      "sector": "technology",
+      "name": "브로드컴"
+    },
+    "SKHY": {
+      "sector": "technology",
+      "name": "SK하이닉스"
+    },
+    "MU": {
+      "sector": "technology",
+      "name": "마이크론"
+    },
+    "AMD": {
+      "sector": "technology",
+      "name": "AMD"
+    },
+    "ASML": {
+      "sector": "technology",
+      "name": "ASML"
+    },
+    "INTC": {
+      "sector": "technology",
+      "name": "인텔"
+    },
+    "PLTR": {
+      "sector": "technology",
+      "name": "팔란티어"
+    },
+    "ORCL": {
+      "sector": "technology",
+      "name": "오라클"
+    },
+    "CSCO": {
+      "sector": "technology",
+      "name": "시스코"
+    },
+    "AMAT": {
+      "sector": "technology"
+    },
+    "PANW": {
+      "sector": "technology"
+    },
+    "LRCX": {
+      "sector": "technology"
+    },
+    "DELL": {
+      "sector": "technology"
+    },
+    "TXN": {
+      "sector": "technology"
+    },
+    "SAP": {
+      "sector": "technology"
+    },
+    "CRWD": {
+      "sector": "technology"
+    },
+    "ARM": {
+      "sector": "technology"
+    },
+    "IBM": {
+      "sector": "technology"
+    },
+    "ANET": {
+      "sector": "technology"
+    },
+    "GOOGL": {
+      "sector": "communication",
+      "issuer": "alphabet",
+      "preferred": "GOOGL",
+      "name": "알파벳"
+    },
+    "GOOG": {
+      "sector": "communication",
+      "issuer": "alphabet",
+      "preferred": "GOOGL",
+      "name": "알파벳"
+    },
+    "META": {
+      "sector": "communication",
+      "name": "메타"
+    },
+    "NFLX": {
+      "sector": "communication"
+    },
+    "AMZN": {
+      "sector": "consumer",
+      "name": "아마존"
+    },
+    "TSLA": {
+      "sector": "consumer",
+      "name": "테슬라"
+    },
+    "HD": {
+      "sector": "consumer"
+    },
+    "BABA": {
+      "sector": "consumer"
+    },
+    "TM": {
+      "sector": "consumer"
+    },
+    "BRK-A": {
+      "sector": "financial",
+      "issuer": "berkshire",
+      "preferred": "BRK-B",
+      "name": "버크셔 해서웨이"
+    },
+    "BRK-B": {
+      "sector": "financial",
+      "issuer": "berkshire",
+      "preferred": "BRK-B",
+      "name": "버크셔 해서웨이"
+    },
+    "JPM": {
+      "sector": "financial",
+      "name": "JP모건"
+    },
+    "V": {
+      "sector": "financial",
+      "name": "비자"
+    },
+    "MA": {
+      "sector": "financial",
+      "name": "마스터카드"
+    },
+    "BAC": {
+      "sector": "financial"
+    },
+    "MS": {
+      "sector": "financial"
+    },
+    "HSBC": {
+      "sector": "financial"
+    },
+    "RY": {
+      "sector": "financial"
+    },
+    "GS": {
+      "sector": "financial"
+    },
+    "WFC": {
+      "sector": "financial"
+    },
+    "MUFG": {
+      "sector": "financial"
+    },
+    "LLY": {
+      "sector": "healthcare",
+      "name": "일라이 릴리"
+    },
+    "JNJ": {
+      "sector": "healthcare",
+      "name": "존슨앤드존슨"
+    },
+    "ABBV": {
+      "sector": "healthcare",
+      "name": "애브비"
+    },
+    "UNH": {
+      "sector": "healthcare",
+      "name": "유나이티드헬스"
+    },
+    "MRK": {
+      "sector": "healthcare"
+    },
+    "NVS": {
+      "sector": "healthcare"
+    },
+    "AZN": {
+      "sector": "healthcare"
+    },
+    "TMO": {
+      "sector": "healthcare"
+    },
+    "AMGN": {
+      "sector": "healthcare"
+    },
+    "XOM": {
+      "sector": "energy",
+      "name": "엑슨모빌"
+    },
+    "CVX": {
+      "sector": "energy",
+      "name": "셰브런"
+    },
+    "SHEL": {
+      "sector": "energy"
+    },
+    "WMT": {
+      "sector": "defensive",
+      "name": "월마트"
+    },
+    "COST": {
+      "sector": "defensive",
+      "name": "코스트코"
+    },
+    "KO": {
+      "sector": "defensive",
+      "name": "코카콜라"
+    },
+    "PG": {
+      "sector": "defensive",
+      "name": "P&G"
+    },
+    "PM": {
+      "sector": "defensive"
+    },
+    "SPCX": {
+      "sector": "industrial",
+      "name": "스페이스X"
+    },
+    "CAT": {
+      "sector": "industrial"
+    },
+    "GE": {
+      "sector": "industrial"
+    },
+    "RTX": {
+      "sector": "industrial"
+    },
+    "GEV": {
+      "sector": "industrial"
+    },
+    "LIN": {
+      "sector": "materials"
+    }
+  }
+}

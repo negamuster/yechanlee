@@ -63,6 +63,7 @@ function render(element, mobile = false, { session = {}, saved } = {}) {
   const previous = globalThis.window
   const previousSession = globalThis.sessionStorage, previousLocal = globalThis.localStorage
   globalThis.window = { matchMedia: () => ({ matches: mobile }), history: { state: { idx: 0 } } }
+  session = { 'anthracite.ui.v1.maps.view': 'etf', ...session }
   globalThis.sessionStorage = { getItem: key => Object.hasOwn(session, key) ? JSON.stringify(session[key]) : null }
   if (saved) globalThis.localStorage = { getItem: key => key === SAVED_KEY ? JSON.stringify(saved) : null }
   try { return load(renderToStaticMarkup(createElement(MemoryRouter, null, createElement(SavedItemsProvider, null, element)))) }
@@ -238,4 +239,14 @@ test('neighboring dates remain visible but cannot navigate outside the supported
     assert.equal(january('.calendar-date[data-date="2027-01-31"]').length, 1)
     assert.equal(january('.calendar-date[data-date="2027-02-01"]').is('[disabled]'), true)
   } finally { Date.now = previousNow }
+})
+
+test('home defaults to the company-cap map with separate ETF access and explicit collection coverage', async () => {
+  await seed('/api/sector-performance?view=companies', { version:1, sourceCount:1, excluded:0, classificationAt:'2026-10-29', fetchedAt:new Date().toISOString(), stale:false, companies:[{symbol:'NVDA',name:'엔비디아',sector:'technology',marketCap:5e12,changePercent:1,quoteAt:'2026-10-28T20:00:00Z'}] })
+  const $=render(createElement(Home), false, {session:{'anthracite.ui.v1.maps.view':'companies'}})
+  assert.equal($('.company-map').length,1)
+  assert.equal($('.maps-view-tabs button[aria-pressed=true]').text(),'기업 시가총액')
+  assert.equal($('.sector-panel').length,0)
+  assert.ok($('.company-map-basis').text().includes('수집 범위 1개'))
+  assert.equal($('.company-map-controls select').length,2)
 })

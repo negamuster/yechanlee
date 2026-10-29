@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+import CompanyMap from './CompanyMap'
 import { refreshPolicies } from '../lib/refreshPolicy'
 import type { NewsSector } from './sectorNews'
 import { useResource } from '../hooks/useResource'
@@ -19,7 +21,13 @@ function validData(value: unknown): value is Data {
   const data = value as Data | null
   return !!data && Array.isArray(data.sectors) && !!data.benchmark && !!data.benchmark.returns
 }
-export default function SectorPerformance({ compact = false, selectedSector, onSelectSector }: { compact?: boolean; selectedSector?: string; onSelectSector?: (sector: NewsSector) => void }) {
+type Props = { compact?: boolean; selectedSector?: string; onSelectSector?: (sector: NewsSector) => void }
+export default function SectorPerformance(props: Props) {
+  const [view,setView]=useSessionState('maps.view','companies',v=>v==='companies'||v==='etf')
+  const controls=<div className="maps-view-tabs" role="group" aria-label="Maps 대상 선택" data-widget-interactive><button type="button" aria-pressed={view==='companies'} onClick={()=>setView('companies')}>기업 시가총액</button><button type="button" aria-pressed={view==='etf'} onClick={()=>setView('etf')}>업종 ETF</button></div>
+  return view==='companies'?<CompanyMap compact={props.compact} controls={controls}/>:<SectorETF {...props} controls={controls}/>
+}
+export function SectorETF({ compact = false, selectedSector, onSelectSector, controls }: Props & {controls?:ReactNode}) {
   const [period, setPeriod] = useSessionState<Period>('maps.period', '1d', v => periods.some(([period]) => period === v))
   const [infoOpen, setInfoOpen] = useState(false)
   const infoId = useId()
@@ -37,6 +45,7 @@ export default function SectorPerformance({ compact = false, selectedSector, onS
     <div className={`sector-heading${compact ? ' widget-heading' : ''}`}><h2>{compact ? <Link to="/equity" data-widget-link aria-label="Maps 전체 업종 성과 보기">Maps</Link> : 'Maps'}</h2>
       {compact && <WidgetActions label="Maps" refresh={{ loading, onClick: () => setRetry(n => n + 1) }} info={{ id: infoId, label: 'Maps 출처와 산정 기준', open: infoOpen, disabled: !data, onClick: () => setInfoOpen(value => !value) }} />}
     </div>
+    {controls}
     {compact && <div id={infoId} hidden={!infoOpen} className="widget-info-panel" data-widget-interactive>{dataInfo}</div>}
     {!compact && <p className="sector-description">11개 업종 ETF로 보는 시장의 흐름 · 완료된 거래일 기준</p>}
     <div className="sector-controls"><div className="sector-periods" role="group" aria-label="비교 기간">{periods.map(([key, label]) => <SelectionButton key={key} selected={period === key} selectionId={`${infoId}-period`} onClick={() => setPeriod(key)}>{label}</SelectionButton>)}</div>
