@@ -47,6 +47,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   const view = full ? savedView : 'month'
   const [exportMessage, setExportMessage] = useState('')
   const [infoOpen, setInfoOpen] = useState(false)
+  const [expandedDate, setExpandedDate] = useState<string | null>(null)
   const infoId = useId()
   const [reload, setReload] = useState(0)
   const from = `${month}-01`
@@ -71,6 +72,8 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     const order = (event: CalendarEvent) => event.startAt ? Date.parse(event.startAt) : Date.parse(`${event.date}T00:00:00Z`) + (event.session === 'pre' ? 0 : event.session === 'post' ? 30 : 48) * 3600000
     return Number(b.major) - Number(a.major) || order(a) - order(b) || a.title.localeCompare(b.title)
   })
+  const agendaExpanded = full || expandedDate === selected
+  const visibleEvents = agendaExpanded ? selectedEvents : selectedEvents.slice(0, 3)
   const issues = [...new Set([...(schedule.data?.sources || []), ...(earnings.data?.sources || [])].filter(source => source.error || source.state === 'stale' || source.state === 'unavailable').map(source => `${source.name}${source.state === 'stale' ? ' (이전 데이터)' : ''}`)), ...(marketEvents === null ? ['NYSE 예정 일정 범위 밖 또는 확인 불가'] : [])]
   const stamp = (value: string) => new Intl.DateTimeFormat('ko-KR', { timeZone: timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value))
   const zoneLabel = timezone === 'Asia/Seoul' ? 'KST' : 'ET'
@@ -92,12 +95,12 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
   }
   const agenda = <>
     <div className="calendar-selected-heading">{prettyDate(selected)} 일정 <span>{selected === today ? '오늘 · ' : ''}{loading && !hasData ? '확인 중' : `${selectedEvents.length}건`}{full && ` · ${focus === 'major' ? '주요 일정만' : focus === 'watched' ? '관심 종목 실적만' : '주요 일정 우선'}`}</span></div>
-    <div className="calendar-list" aria-busy={loading} key={`${selected}:${category}:${focus}`} tabIndex={0} aria-label="선택한 날짜 일정">
+    <div id={`${infoId}-agenda`} className={`calendar-list${agendaExpanded ? ' is-expanded' : ''}`} aria-busy={loading} key={`${selected}:${category}:${focus}`} tabIndex={0} aria-label="선택한 날짜 일정">
       <ResourceState label="일정 데이터" loading={loading} error={failed} hasData={hasData} stale={issues.length > 0}
         failureMessage={hasData ? '일정 일부를 확인하지 못했습니다.' : '일정을 불러오지 못했습니다.'}
         failureDetail={missingSources.join(' · ')} onRetry={() => setReload(n => n + 1)} />
       {!loading && !selectedEvents.length && !failed && !issues.length && <p className="calendar-message" role="status">{focus === 'all' ? '선택한 날짜에 등록된 일정이 없어요.' : '선택한 날짜에 이 필터에 맞는 일정이 없어요.'}</p>}
-      <div className="calendar-day"><ul>{selectedEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
+      <div className="calendar-day"><ul>{visibleEvents.map(event => <li key={event.id} className={`calendar-event calendar-${event.category.toLowerCase()}${event.ticker && watched.has(event.ticker) ? ' is-watched' : ''}${event.major ? ' is-major' : ''}`}>
         <div className="calendar-event-meta">{event.ticker && watched.has(event.ticker) && <span className="calendar-watch-badge">★ 관심 종목</span>}<span className="calendar-category">{labels[event.category]}</span>{event.major && <span className="calendar-major">주요</span>}<span>{event.allDay ? '종일 (미국 날짜)' : event.startAt ? `${stamp(event.startAt)} ${zoneLabel}` : event.session === 'pre' ? '장전 (미국)' : event.session === 'post' ? '장후 (미국)' : '시간 미정 (미국)'}</span></div>
         <a className="calendar-event-title" title={event.title} href={event.sourceUrl} target="_blank" rel="noopener noreferrer">{language === 'ko' ? koreanTitle(event) : event.title} ↗</a>
         {language === 'ko' && event.category !== 'Earnings' && <details className="calendar-original"><summary>원문 이름</summary><small className="calendar-original-title">{event.title}</small></details>}
@@ -105,6 +108,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
         <div className="calendar-event-foot"><span>{event.source}</span><button type="button" className="calendar-export" aria-label={`${event.title} 일정 파일 저장`} onClick={() => downloadEvent(event)}>일정 저장 ↗</button><span>{event.category === 'Market' && event.allDay ? '예정 일정 · 변경 가능' : event.estimated ? '예상 일정 · 변경 가능' : event.startAt && Date.parse(event.startAt) < now ? '예정 시각 지남' : '예정'}</span></div>
       </li>)}</ul></div>
     </div>
+    {!full && selectedEvents.length > 3 && <div className="calendar-preview-more"><span>주요 일정 우선 · {visibleEvents.length}/{selectedEvents.length}개 표시</span><button type="button" aria-expanded={agendaExpanded} aria-controls={`${infoId}-agenda`} onClick={() => setExpandedDate(agendaExpanded ? null : selected)}>{agendaExpanded ? '일정 접기' : `나머지 ${selectedEvents.length - visibleEvents.length}개 더 보기`}</button></div>}
   </>
   const help = <>
     {exchangeCalendar.info && <p>NYSE 현물 주식 정규장 예정 일정 · 공식 확인 {dataTime(exchangeCalendar.info.reviewedAt, timezone)} · 범위 {exchangeCalendar.info.from} – {exchangeCalendar.info.to} · exchange_calendars {exchangeCalendar.info.packageVersion}. 임시 휴장·거래 중단·장전·장후는 포함하지 않습니다. 새로고침은 이 시간표를 갱신하지 않습니다. <a href={exchangeCalendar.info.url} target="_blank" rel="noopener noreferrer">NYSE 공식 일정 ↗</a></p>}

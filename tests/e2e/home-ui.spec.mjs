@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
-import { writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { installStockFixtures, FIXED_AT } from './stock-fixtures.mjs'
 import { SECTORS } from '../../lib/sector-performance.js'
+const [edition] = JSON.parse(await readFile(new URL('../../src/data/published-briefings.json', import.meta.url), 'utf8'))
 
 async function setup(page) {
   const state = await installStockFixtures(page)
@@ -15,9 +16,11 @@ async function setup(page) {
   await page.route('**/api/sector-performance', route => route.fulfill({ json: { sectors: SECTORS.map(([symbol, name], index) => ({ ...sector, symbol, name, returns: { ...returns, '1d': index % 3 ? -.45 : 1.25 } })), benchmark: { ...sector, symbol: 'VOO', name: 'S&P 500' }, fetchedAt: new Date(FIXED_AT).toISOString(), stale: false, basis: 'USD · 일별 종가 · 배당 미포함 가격수익률' } }))
   await page.route('**/api/market-movers', route => route.fulfill({ json: { tradingDate: day, previousTradingDate: '2026-10-19', fetchedAt: FIXED_AT, stale: false, rankings: { turnover: [{ ticker: 'AAPL', price: 102, volume: 1e6, turnover: 1e9, changePct: 1.25 }, { ticker: 'NVDA', price: 204, volume: 2e6, turnover: 9e8, changePct: -.45 }], gainers: [], losers: [] } } }))
   await page.route('**/api/market-indices', route => route.fulfill({ json: { fetchedAt: FIXED_AT, quotes: [{ symbol: '^GSPC', label: 'S&P 500', price: 6000, changePercent: 1.25, asOf: '2026-10-20T20:00:00Z', unit: 'pt', status: 'ok' }, { symbol: '^IXIC', label: 'NASDAQ', price: 20000, changePercent: -.45, asOf: '2026-10-20T20:00:00Z', unit: 'pt', status: 'ok' }] } }))
-  await page.route('**/api/calendar?*', route => route.fulfill({ json: { events: [], sources: [{ name: 'BLS', date: null, state: 'snapshot', updatedAt: '2026-10-20T12:00:00Z', error: 'http_403', checkedAt: '2026-10-21T12:00:00Z', url: 'https://www.bls.gov/schedule/' }], fetchedAt: new Date(FIXED_AT).toISOString() } }))
-  await page.route('**/api/news', route => route.fulfill({ json: { items: [{ id: 'home-design-fixture', title: '미국 기술주와 반도체 시장 점검', publisher: '검증용 뉴스', article_url: 'https://example.com/home-design-fixture', published_utc: '2026-10-21T11:00:00Z', region: 'global', topics: ['investing'] }], sources: [], fetchedAt: FIXED_AT } }))
-  await page.route('https://www.youtube-nocookie.com/embed/**', route => route.fulfill({ contentType: 'text/html', body: '<html lang="ko"><body style="margin:0;background:#18283f;color:white;display:grid;place-content:center;height:100vh;font:16px sans-serif">브라우저 검증용 방송 영역</body></html>' }))
+  const events = ['2026-10-21', '2026-10-22'].flatMap(date => Array.from({ length: 5 }, (_, index) => ({ id: `${date}-${index}`, title: `검증 일정 ${index + 1}`, date, startAt: `${date}T${String(14 + index).padStart(2, '0')}:00:00Z`, category: 'Economic', major: index === 0, source: '검증 출처', sourceUrl: 'https://example.com/calendar', estimated: false })))
+  await page.route('**/api/calendar?*', route => route.fulfill({ json: { events: new URL(route.request().url()).searchParams.get('mode') === 'month' ? events : [], sources: [{ name: 'BLS', date: null, state: 'snapshot', updatedAt: '2026-10-20T12:00:00Z', error: 'http_403', checkedAt: '2026-10-21T12:00:00Z', url: 'https://www.bls.gov/schedule/' }], fetchedAt: new Date(FIXED_AT).toISOString() } }))
+  state.homeNews = { fail: false, partial: true, items: [{ id: 'home-design-fixture', title: '미국 기술주와 반도체 시장 점검', publisher: '검증용 뉴스', article_url: 'https://example.com/home-design-fixture', published_utc: '2026-10-21T11:00:00Z', region: 'global', topics: ['investing'] }] }
+  await page.route('**/api/news', route => state.homeNews.fail ? route.fulfill({ status: 503, json: { error: 'Simulated outage' } }) : route.fulfill({ json: { items: state.homeNews.items, sources: [{ id: 'fixture', publisher: '검증용 뉴스', region: 'global', status: 'ok', checkedAt: FIXED_AT }, ...(state.homeNews.partial ? [{ id: 'fixture-blocked', publisher: '접근 제한 매체', region: 'global', status: 'unavailable', error: 'http_403', checkedAt: FIXED_AT, nextRetryAt: FIXED_AT + 1800000 }] : [])], fetchedAt: FIXED_AT } }))
+  await page.route('https://www.youtube-nocookie.com/embed/**', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<html lang="ko"><head><meta charset="utf-8"></head><body style="margin:0;background:#18283f;color:white;display:grid;place-content:center;height:100vh;font:16px sans-serif">브라우저 검증용 방송 영역</body></html>' }))
   return state
 }
 async function fontsReady(page) {
@@ -82,6 +85,8 @@ test('home type, icons, nested actions and local fonts remain accessible with so
   await noOverflow(page)
   await page.getByRole('heading', { level: 1, name: '오늘의 시장', exact: true }).click()
   await page.screenshot({ path: testInfo.outputPath('home-ui.png'), fullPage: true })
+  const layout = await page.evaluate(() => Object.fromEntries(['.home-briefing', '.news-controls', '.news-status-area', '.news-article'].map(selector => { const r = document.querySelector(selector)?.getBoundingClientRect(); return [selector, r ? { top: r.top + scrollY, height: r.height } : null] })))
+  await writeFile(testInfo.outputPath('home-ui-layout.json'), JSON.stringify(layout, null, 2))
   // Use actual WOFF2 response bodies so metrics do not depend on ResourceTiming availability.
   // These are compressed font payload bytes, excluding HTTP headers.
   const fonts = await Promise.all([...state.fontFiles].map(async ([url, bytes]) => ({ url, bytes: await bytes })))
@@ -92,6 +97,123 @@ test('home type, icons, nested actions and local fonts remain accessible with so
   expect(metrics.fontOrigins).toEqual(['http://127.0.0.1:4173'])
   expect(metrics.fontPayloadBytes).toBeLessThan(1_000_000)
   expect(state.pageErrors).toEqual([])
+})
+
+test('compact briefing opens the complete edition with every original summary and detail basis', async ({ page }, testInfo) => {
+  await setup(page)
+  await page.goto('/')
+  const card = page.locator('.home-briefing-card')
+  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await fontsReady(page)
+  const height = (await page.locator('.home-briefing').boundingBox()).height
+  await expect(card.locator('.briefing-detail-tabs, .briefing-stocks, .mobile-briefing-event-preview')).toHaveCount(0)
+  await expect(card.locator('time')).toHaveAttribute('datetime', edition.cutoffAt)
+  await card.getByRole('link', { name: '브리핑 전체 보기', exact: true }).click()
+  await expect(page).toHaveURL(new RegExp(`/briefings/${edition.id}$`))
+  await expect(page.locator('.briefing-edition-summary li')).toHaveCount(edition.summary.length)
+  for (const text of edition.summary) await expect(page.locator('.briefing-edition-summary')).toContainText(text)
+  for (const stock of edition.homepage?.stocks ?? []) await expect(page.locator('.briefing-stocks')).toContainText(stock.basis)
+  for (const asset of edition.homepage?.assets ?? []) {
+    await expect(page.locator('.mobile-briefing-assets')).toContainText(asset.value)
+    await expect(page.locator('.mobile-briefing-assets')).toContainText(asset.basis)
+  }
+  await noOverflow(page)
+  await page.screenshot({ path: testInfo.outputPath('home-ui-edition.png'), fullPage: true })
+  await page.getByRole('link', { name: '← 지난 브리핑', exact: true }).click()
+  await expect(page).toHaveURL(/\/briefings$/)
+  await page.getByRole('link', { name: '← 홈', exact: true }).click()
+  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await fontsReady(page)
+  expect((await page.locator('.home-briefing').boundingBox()).height).toBeLessThanOrEqual(height + 1)
+  await noOverflow(page)
+})
+
+test('compact news preserves filter choices and restores mobile dialog focus', async ({ page }, testInfo) => {
+  await setup(page)
+  await page.goto('/')
+  const feed = page.locator('.news-feed'), toggle = feed.locator('.news-filter-toggle')
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  await toggle.click()
+  if (testInfo.project.name === 'mobile-chromium') {
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    expect(await dialog.evaluate(element => element.contains(document.activeElement))).toBe(true)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+    await expect(toggle).toBeFocused()
+  } else {
+    await expect(feed.getByRole('group', { name: '뉴스 주제 선택' })).toBeVisible()
+    await feed.getByRole('button', { name: '테크', exact: true }).click()
+    await toggle.click()
+    await expect(feed.getByRole('button', { name: '테크 주제 필터 해제', exact: true })).toBeVisible()
+    await page.reload()
+    await expect(feed.getByRole('button', { name: /필터/ }).filter({ has: page.locator('.news-filter-count') })).toHaveAttribute('aria-expanded', 'false')
+    await feed.getByRole('button', { name: '테크 주제 필터 해제', exact: true }).click()
+    await expect(feed.getByRole('heading', { name: '미국 기술주와 반도체 시장 점검', exact: true })).toBeVisible()
+    await feed.getByRole('button', { name: '필터', exact: true }).click()
+    await page.reload()
+    await expect(feed.getByRole('button', { name: '필터', exact: true })).toHaveAttribute('aria-expanded', 'true')
+  }
+})
+
+test('news warnings remain visible with folded source details and a failed refresh retains original articles and receipt time', async ({ page }) => {
+  const state = await setup(page)
+  await page.goto('/')
+  const feed = page.locator('.news-feed'), sources = feed.locator('.news-source-status')
+  const headline = feed.getByRole('heading', { name: '미국 기술주와 반도체 시장 점검', exact: true })
+  await expect(headline).toBeVisible()
+  await expect(feed.getByText('일부 매체를 확인하지 못했습니다.', { exact: true })).toBeVisible()
+  await expect(sources).not.toHaveAttribute('open')
+  await sources.locator('summary').click()
+  await expect(sources).toContainText('출처 서버에서 접근 거부 (403)')
+  await sources.locator('summary').click()
+  state.homeNews.fail = true
+  await feed.getByRole('button', { name: '새 기사 확인', exact: true }).click()
+  await expect(feed.getByText('갱신 실패 · 이전 수집 기사 표시 중', { exact: true })).toBeVisible()
+  await expect(headline).toBeVisible()
+  await expect(feed.locator('.data-notice-time time')).toHaveAttribute('datetime', new Date(FIXED_AT).toISOString())
+  state.homeNews.fail = false; state.homeNews.partial = false; state.homeNews.items = []
+  await feed.getByRole('button', { name: '갱신 실패 · 이전 수집 기사 표시 중 다시 시도', exact: true }).click()
+  await expect(feed.getByRole('button', { name: '뉴스 목록 업데이트 보기', exact: true })).toBeVisible()
+  await expect(headline).toBeVisible()
+  await feed.getByRole('button', { name: '뉴스 목록 업데이트 보기', exact: true }).click()
+  await expect(headline).toHaveCount(0)
+  await expect(feed.getByText('최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.', { exact: true })).toBeVisible()
+  await expect(feed.getByText('일부 매체를 확인하지 못했습니다.', { exact: true })).toHaveCount(0)
+})
+
+test('an initial news failure remains distinct from a confirmed empty list', async ({ page }) => {
+  const state = await setup(page); state.homeNews.fail = true
+  await page.goto('/')
+  const feed = page.locator('.news-feed')
+  await expect(feed.getByText('뉴스를 불러오지 못했습니다.', { exact: true })).toBeVisible()
+  await expect(feed.getByText('최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.', { exact: true })).toHaveCount(0)
+  state.homeNews.fail = false; state.homeNews.partial = false; state.homeNews.items = []
+  await feed.getByRole('button', { name: '뉴스를 불러오지 못했습니다. 다시 시도', exact: true }).click()
+  await expect(feed.getByText('최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.', { exact: true })).toBeVisible()
+})
+
+test('home calendar previews three events and expands, folds and resets for another date without losing source warnings', async ({ page }) => {
+  await setup(page)
+  await page.setViewportSize({ width: 1024, height: 1000 })
+  await page.goto('/')
+  const calendar = page.locator('.home-dashboard-calendar'), events = calendar.locator('.calendar-event')
+  await expect(events).toHaveCount(3)
+  await expect(calendar).toContainText('주요 일정 우선 · 3/5개 표시')
+  await expect(calendar).toContainText('일정 일부를 확인하지 못했습니다.')
+  expect((await calendar.locator('.calendar-list').boundingBox()).height).toBeLessThanOrEqual(241)
+  await calendar.getByRole('button', { name: '나머지 2개 더 보기', exact: true }).click()
+  await expect(events).toHaveCount(5)
+  const fold = calendar.getByRole('button', { name: '일정 접기', exact: true })
+  await expect(fold).toBeFocused()
+  await fold.click()
+  await expect(events).toHaveCount(3)
+  await calendar.getByRole('button', { name: '나머지 2개 더 보기', exact: true }).click()
+  await calendar.locator('[data-date="2026-10-22"]').click()
+  await expect(events).toHaveCount(3)
+  await expect(calendar.getByRole('button', { name: '나머지 2개 더 보기', exact: true })).toHaveAttribute('aria-expanded', 'false')
+  await expect(calendar).toContainText('BLS')
+  await expect(page).toHaveURL(/\/$/)
 })
 
 test('home reflows through desktop, tablet, zoom-equivalent and narrow mobile widths', async ({ page }, testInfo) => {

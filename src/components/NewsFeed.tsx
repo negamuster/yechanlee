@@ -60,7 +60,7 @@ function NewsImage({ item }: { item: NewsItem }) {
   </figure>
 }
 
-export default function NewsFeed({ mobile = false, previewTarget = null, previewSector = null, onClearSector }: { mobile?: boolean; previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
+export default function NewsFeed({ compact = false, mobile = false, previewTarget = null, previewSector = null, onClearSector }: { compact?: boolean; mobile?: boolean; previewTarget?: HTMLElement | null; previewSector?: NewsSector | null; onClearSector?: () => void }) {
   const { isRead, mark } = useReadArticles()
   const [hideRead, setHideRead] = useSessionState('news.hideRead', false, v => typeof v === 'boolean')
   const [sectorFilter, setSectorFilter] = useSessionState<NewsSector | null>('news.sector', null, isNewsSector)
@@ -77,7 +77,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
   const [automatic, setAutomatic] = useState(0)
   const manualRevision = useRef(0)
   const [visibleBatches, setVisibleBatches] = useSessionState('news.batches', 1, v => Number.isInteger(v) && Number(v) > 0 && Number(v) <= 500)
-  const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', !mobile, v => typeof v === 'boolean')
+  const [filtersOpen, setFiltersOpen] = useSessionState('news.filtersOpen', !compact && !mobile, v => typeof v === 'boolean')
   const [mobileDraft, setMobileDraft] = useState<NewsFilters | null>(null)
   const filtersId = useId()
   const searchId = useId()
@@ -196,7 +196,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
       {!loading && !failed && !previewItems.length && <p className="sector-news-note">{hideRead ? '최근 72시간 내 읽지 않은 관련 기사가 없습니다.' : '최근 72시간 내 관련 기사가 없습니다.'}</p>}
       <button type="button" className="sector-news-more" onClick={showRelated}>{previewSector ? '관련 기사 더 보기' : '전체 기사 보기'} ↓</button>
     </section>, previewTarget)}
-    <div ref={root} className={`news-feed${mobile ? ' mobile-news-feed' : ''}`}>
+    <div ref={root} className={`news-feed${compact ? ' news-feed-compact' : ''}${mobile ? ' mobile-news-feed' : ''}`}>
       <div className="news-controls">
         <div className="news-toolbar">
           <div className="news-filters" role="group" aria-label="뉴스 지역 선택">
@@ -212,7 +212,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
             </div>}
             <button type="button" className="news-refresh" aria-label={loading ? '새 기사 확인 중' : '새 기사 확인'} disabled={loading} onClick={retryNews}>
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M20 7v5h-5M4 17v-5h5" /><path d="M6.1 6.1A8 8 0 0 1 20 12M4 12a8 8 0 0 0 13.9 5.9" /></svg>
-              <span className={mobile ? 'news-sr-only' : undefined}>{loading ? '확인 중…' : '새로고침'}</span>
+              <span className={mobile || compact ? 'news-sr-only' : undefined}>{loading ? '확인 중…' : '새로고침'}</span>
             </button>
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
               <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
           </div>
           <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
-          <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
+          <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류{compact && <> · 최근 72시간 기사 · 묶음별 최신순 · 묶음당 매체별 최대 3개</>}</p>
         </div>}
         {filterCount > 0 && <div className="news-active-filters" role="group" aria-label="적용한 뉴스 필터">
           {region !== 'all' && <button type="button" aria-label={`${region === 'kr' ? '국내' : '해외'} 지역 필터 해제`} onClick={() => { setRegion('all'); setVisibleBatches(1) }}>{region === 'kr' ? '국내' : '해외'} <span aria-hidden="true">×</span></button>}
@@ -253,8 +253,7 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
       </div>
       {mobile && mobileDraft && <MobileNewsFilters id={filtersId} value={mobileDraft} items={feed?.items || []}
         available={Boolean(feed)} isRead={isRead} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
-      {timeFeed && <p className="news-updated">{updates.available ? '목록 기준:' : '최근 확인:'} <time dateTime={new Date(timeFeed.fetchedAt).toISOString()}
-        title={`최근 조회 ${dataTime(latest?.fetchedAt)} · 표시 목록 수집 ${dataTime(feed?.fetchedAt)}`}>{relativeTime(timeFeed.fetchedAt)}</time></p>}
+      <div className="news-status-area">
       {updates.available && <div className="news-update-notice" role="status" aria-live="polite">
         <button type="button" className="news-apply-updates" aria-controls={newsListId} onClick={applyUpdates}>
           {updates.count > 0 ? `새 기사 ${updates.count}건 보기` : '뉴스 목록 업데이트 보기'}<span aria-hidden="true">↑</span>
@@ -263,6 +262,9 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
       <ResourceState label="뉴스" loading={loading} error={failed} hasData={!!feed} stale={partial} updatedAt={failed ? feed?.fetchedAt : undefined}
         failureMessage={failed ? feed ? '갱신 실패 · 이전 수집 기사 표시 중' : '뉴스를 불러오지 못했습니다.' : '일부 매체를 확인하지 못했습니다.'}
         onRetry={retryNews} layout="news" />
+      <div className="news-status-meta">
+      {timeFeed && <p className="news-updated">{updates.available ? '목록 기준:' : '최근 확인:'} <time dateTime={new Date(timeFeed.fetchedAt).toISOString()}
+        title={`최근 조회 ${dataTime(latest?.fetchedAt)} · 표시 목록 수집 ${dataTime(feed?.fetchedAt)}`}>{relativeTime(timeFeed.fetchedAt)}</time></p>}
       {!!relevantSources.length && <details className="news-source-status">
         <summary>매체별 수집 상태 · {relevantSources.filter(source => source.status === 'ok').length}/{relevantSources.filter(source => source.status !== 'not_configured').length}개 피드 기사 확인</summary>
         <ul>{relevantSources.map(source => <li key={source.id}>
@@ -274,9 +276,11 @@ export default function NewsFeed({ mobile = false, previewTarget = null, preview
         </li>)}</ul>
         <p>접근 거부는 30분, 주소 오류는 6시간 뒤부터 다시 확인합니다. 일시 오류가 반복되면 확인 간격이 길어지며, 출처가 요청한 대기 시간도 적용됩니다. 재시도 가능 시각 이후 다음 요청에서 확인합니다. 대기와 저장 자료는 서버 인스턴스 단위이며 재시작되면 초기화됩니다. 상태는 피드별로 표시하며, 동일 매체의 피드가 여러 개일 수 있습니다. ‘기사 없음’은 수집 조건에 맞는 기사가 없다는 뜻입니다. 출처의 접근 제한이나 피드 미설정은 새로고침으로 해결되지 않을 수 있습니다.</p>
       </details>}
+      </div>
+      </div>
       <div id={newsListId} className="news-results" tabIndex={-1} aria-busy={loading && !feed}>
         {loading && !feed ? null : news.length ? <>
-          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시 · 묶음별 최신순 · 묶음당 매체별 최대 3개</p>
+          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시{!compact && ' · 묶음별 최신순 · 묶음당 매체별 최대 3개'}</p>
           <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>

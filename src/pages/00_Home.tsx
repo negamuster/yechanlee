@@ -9,7 +9,7 @@ import MarketSessionStatus from '../components/MarketSessionStatus'
 import NewsFeed from '../components/NewsFeed'
 import MarketMovers from '../components/MarketMovers'
 import MarketLive from '../components/MarketLive'
-import DailyBriefing from '../components/DailyBriefing'
+import HomeBriefing from '../components/HomeBriefing'
 import LinkedWidget from '../components/LinkedWidget'
 import './Home.css'
 
@@ -39,10 +39,10 @@ export default function Home() {
     <main className="home-content home-overview" ref={content}>
       <div className="home-section-heading"><h1>오늘의 시장</h1><p>브리핑과 주요 소식을 한눈에 살펴보세요.</p></div>
       <div className="home-primary">
-        <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><DailyBriefing mobile={mobile} /></LinkedWidget>
+        <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><HomeBriefing mobile={mobile} /></LinkedWidget>
         <section className="home-news" aria-labelledby="home-news-title">
           <h2 id="home-news-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
-          <NewsFeed mobile={mobile} previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
+          <NewsFeed compact mobile={mobile} previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
         </section>
       </div>
       {!mobile && <>
