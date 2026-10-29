@@ -12,7 +12,7 @@ export function HomeBriefingCard({ item, mobile = false }: { item?: Briefing; mo
     {item ? <>
       <p className="briefing-meta home-briefing-date">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 <time dateTime={item.cutoffAt}>{kstTime(item.cutoffAt)}</time></p>
       <h3><Link to={`/briefings/${item.id}`}>{withoutCitations(item.homepage?.headline ?? item.title)}</Link></h3>
-      {item.summary[0] && <p className="home-briefing-summary"><CitedText item={item} text={item.summary[0]} /></p>}
+      <div className="home-briefing-summaries">{item.summary.slice(0, 3).map((text, index) => <p className="home-briefing-summary" key={index}><CitedText item={item} text={text} /></p>)}</div>
       <div className="home-briefing-footer">
         <Link className="home-briefing-read" to={`/briefings/${item.id}`}>브리핑 전체 보기 <span aria-hidden="true">→</span></Link>
         <p className="briefing-meta home-briefing-disclaimer">{mode && <>{mode} · </>}최근 게시본 · 실시간 시황이 아닙니다.</p>
