@@ -10,7 +10,8 @@ import WidgetActions from './WidgetActions'
 import './CompanyMap.css'
 function Logo({ symbol }: { symbol: string }) {
   const [failed,setFailed]=useState(false)
-  return <span className="company-map-logo" aria-hidden="true">{failed ? symbol.slice(0,2) : <img src={`/api/stock-data?logo=${encodeURIComponent(symbol.replace('-', '.'))}`} alt="" loading="lazy" onError={()=>setFailed(true)} />}</span>
+  const available=['NVDA','AAPL','GOOGL','AMZN','TSM'].includes(symbol)
+  return <span className="company-map-logo" aria-hidden="true">{failed||!available ? symbol.slice(0,2) : <img src={`/company-logos/${symbol}.svg`} alt="" loading="lazy" onError={()=>setFailed(true)} />}</span>
 }
 export default function CompanyMap({compact=false, controls}: {compact?:boolean;controls?:ReactNode}) {
   const [sector,setSector]=useSessionState<string>('maps.company.sector','all',v=>v==='all'||mapSectors.some(([key])=>key===v))
