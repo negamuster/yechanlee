@@ -1,5 +1,243 @@
 [
   {
+    "id": "2026-10-30",
+    "reviewMode": "automated",
+    "title": "미국 증시 요약 | 2026년 10월 29일",
+    "sessionDate": "2026-10-29",
+    "cutoffAt": "2026-10-29T21:58:35.000Z",
+    "publishedAt": "2026-10-29T22:02:57.885Z",
+    "summary": [
+      "미국장은 나스닥 종합이 1.4% 하락한 반면 러셀2000은 1.0% 올랐습니다. Alphabet의 매출 예상 미달과 AI 투자에 따른 현금 유출이 기술주에 부담이 됐지만, NYSE에서는 상승 종목이 하락 종목보다 많아 지수와 종목 전반의 흐름이 달랐습니다.[1][3]",
+      "3분기 GDP 속보치는 전분기 대비 연율 3.4%로 예상 3.2%를 웃돌았고, 9월 PCE 물가는 전월보다 0.5% 올랐습니다. 실적에서는 비만치료제 수요에 매출 전망을 높인 Lilly가 상승했고, 장 마감 후 Amazon은 현금 유출과 연말 매출 전망을 공개했습니다.[1][2][4][5]",
+      "10년물 파 수익률은 4.98%로 7bp 낮아졌고, WTI 선물은 외교 협상 기대 속 0.76% 하락해 결제됐습니다. 오늘 21:30 KST에는 임금·복리후생 비용을 담은 3분기 고용비용지수가 발표됩니다.[6][7][8]"
+    ],
+    "blocks": [
+      {
+        "kind": "metadata",
+        "text": "작성 기준 2026-10-30 06:58:35 KST · 최근 24시간: 2026-10-29 06:58:35~10월 30일 06:58:35 KST · 직전 미국 정규장 거래일 2026-10-29 · 정규장 마감 10월 30일 05:00 KST · NYSE 공식 일정상 29일은 정상 거래일입니다. 지수와 주요 종목은 정규장 종가, Amazon 발표는 장 마감 후 정보입니다. 기준 시각 이후 정보는 제외했습니다.[8]"
+      },
+      {
+        "kind": "heading",
+        "text": "기술주 하락과 중소형주 상승…성장·물가 지표 함께 소화"
+      },
+      {
+        "kind": "paragraph",
+        "text": "29일 미국장은 S&P500과 다우가 소폭 내리고 나스닥 종합은 1.4% 하락했습니다. 반면 러셀2000은 1.0% 상승했고 NYSE의 상승·하락 종목 비율은 1.95대 1이었습니다. 대형 기술주의 부진이 주요 지수를 눌렀지만, 하락이 시장 전체 종목으로 고르게 번진 장은 아니었습니다.[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "개장 전 발표된 7~9월 실질 GDP 속보치는 전분기 대비 연율 3.4% 증가해 Reuters 조사 예상 3.2%와 2분기 2.2%를 웃돌았습니다. BEA는 투자·소비·정부지출 증가가 성장에 기여했다고 설명했습니다. 9월 PCE 물가는 전월 대비 0.5%, 전년 대비 3.6% 올랐고, 식품·에너지를 뺀 근원 물가는 각각 0.3%, 3.1% 상승했습니다. Reuters는 성장과 물가 자료를 소화하는 과정에서 시장 국채금리가 하락했다고 전했습니다.[2][7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "Alphabet은 전날 장 마감 후 내놓은 실적에서 매출이 예상을 밑돌고 AI 투자에 따른 현금 소모가 커졌다는 평가를 받으며 12.6% 하락했습니다. 회사 발표문상 3분기 설비투자는 513억5500만달러, 잉여현금흐름은 90억6500만달러 유출로, Cloud 매출의 103% 성장과 자금 부담이 함께 드러났습니다.[1][3]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "반대로 Lilly는 Mounjaro·Zepbound 수요를 바탕으로 올해 매출 전망을 910억~920억달러로 높였고 주가는 6.6% 올랐습니다. 3분기 매출은 39% 증가한 244억달러였으며, 이 중 약 9억달러는 마일스톤과 리베이트·할인 추정 조정 등에 따른 혜택이었습니다.[1][4]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "정규장 이후 Amazon은 9월 말까지 12개월 누적 잉여현금흐름이 424억달러 유출로 전환했다고 발표했습니다. 4분기 매출 전망 2400억~2470억달러의 중간값은 Reuters가 전한 예상 2445억1000만달러보다 낮았고, 보도는 현금 소모와 연말 매출 전망 뒤 시간외 주가 하락을 전했습니다.[5]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "재무부 파 수익률은 2년물이 전일보다 6bp, 10년물이 7bp 낮아졌습니다. 달러와 금도 Reuters 관측에서 약세였고, WTI 선물은 0.76% 하락해 결제됐습니다. 유가 보도는 미국·이란 간 외교 협상 기대가 중동 공급 불안의 일부를 상쇄했다고 설명했습니다.[6][7]"
+      },
+      {
+        "kind": "heading",
+        "text": "시장 수치"
+      },
+      {
+        "kind": "metadata",
+        "text": "주가지수 · 2026-10-29 미국 정규장 종가 · 단위: 포인트 · 10월 28일 대비"
+      },
+      {
+        "kind": "paragraph",
+        "text": "S&P500 7,720.39 (−0.30%) · 다우 52,342.56 (−0.25%) · 나스닥 종합 26,184.72 (−1.4%, AP 보도 반올림) · 러셀2000 2,859.22 (+1.0%, AP 보도 반올림).[1]"
+      },
+      {
+        "kind": "metadata",
+        "text": "국채 · 재무부 호가 기반 파 수익률 · 2026-10-29 약 15:30 EDT / 10월 30일 04:30 KST 관측 · 10월 28일 대비 · 실거래 종가 아님"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2년물 4.61% (−6bp) · 10년물 4.98% (−7bp).[6]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "WTI 원유 선물 · 2026-10-29 결제 변화 −0.76% (−0.78달러/배럴) · 전 거래일 대비 · 계약월 미확인으로 가격 수준은 제외했습니다.[7]"
+      },
+      {
+        "kind": "heading",
+        "text": "주요 경제지표 · 10월 29일 미국 발표"
+      },
+      {
+        "kind": "paragraph",
+        "text": "3분기 실질 GDP 속보치 · 전분기 대비 연율 · 실제 +3.4% / Reuters 조사 예상 +3.2% / 이전 2분기 +2.2%. 대상 기간은 2026년 7~9월입니다.[2]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "9월 PCE 물가 · 전월 대비 실제 +0.5% / 이전 8월 +0.3% · 전년 대비 실제 +3.6%. 근원 PCE 물가 · 전월 대비 실제 +0.3% / 이전 +0.3% · 전년 대비 실제 +3.1%. 예상치는 개별 수치를 확인하지 못해 생략했습니다.[2]"
+      },
+      {
+        "kind": "heading",
+        "text": "기준 시각 이후 72시간 공식 일정"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-10-30 21:30 KST (오늘) · 3분기 고용비용지수(ECI). 확인할 항목: 임금·급여와 복리후생을 포함한 고용주의 시간당 노동비용 변화.[8]"
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "Reuters·AP · 10월 29일 미국장 마감",
+        "url": "https://www.reuters.com/business/nasdaq-futures-slide-mixed-big-tech-results-test-ai-trade-2026-10-29/",
+        "links": [
+          {
+            "label": "AP · 4대 지수 마감",
+            "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-2c26b0b1bbc3bfab9f3f4b902172f458"
+          }
+        ],
+        "accessNote": "두 마감 기사 본문을 읽었습니다. S&P500·다우 종가 및 둘째 자리 등락률, Alphabet −12.6%, Lilly +6.6%, NYSE 상승/하락 1.95대 1은 Reuters, 나스닥 종합 26184.72/−1.4%와 러셀2000 2859.22/+1.0%는 AP 본문 기준입니다. 나스닥 등락률은 AP의 소수 첫째 자리 반올림을 유지했습니다. 정규장 수치를 시간외 수치로 대체하지 않았습니다."
+      },
+      {
+        "id": 2,
+        "label": "BEA · GDP 속보치·9월 소득 및 소비지출",
+        "url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026",
+        "links": [
+          {
+            "label": "BEA · 9월 개인소득·소비지출",
+            "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+          },
+          {
+            "label": "Reuters · GDP 예상치·발표 보도",
+            "url": "https://www.reuters.com/world/us/us-economic-growth-accelerates-third-quarter-2026-10-29/"
+          }
+        ],
+        "accessNote": "BEA 홈페이지의 현재 발표 링크를 통해 두 공식 본문과 표를 읽었습니다. 10월 29일 08:30 EDT 발표, GDP 대상 7~9월·전분기 대비 연율 3.4%·직전 분기 2.2%, 9월 월간/연간 PCE 및 근원 물가를 대조했습니다. 예상 GDP 3.2%는 Reuters 조사 수치이며, PCE 예상은 만들지 않았습니다. 분기 PCE의 연율 수치를 9월 월간 물가와 섞지 않았습니다."
+      },
+      {
+        "id": 3,
+        "label": "Alphabet · 회사 작성 3분기 실적 발표문 공개 배포본",
+        "url": "https://www.marketscreener.com/news/alphabet-2026-q3-earnings-press-release-ce785cd3d981f42c",
+        "accessNote": "10월 28일 16:06 EDT 공개된 Publicnow 배포 회사 발표문의 본문과 현금흐름 표를 읽었습니다. IR 직접 열람으로 표시하지 않았고 배포본을 독립 확인으로 세지 않았습니다. 9월 30일 종료 분기 Cloud +103%, 설비투자 51355백만달러, FCF −9065백만달러를 각각 513.55억·−90.65억달러로 검산했습니다. 자동 갱신 주가 영역은 사용하지 않았고 29일 종가 반응과 예상 미달 평가는 [1]에 귀속했습니다."
+      },
+      {
+        "id": 4,
+        "label": "Lilly IR · 3분기 실적·연간 전망",
+        "url": "https://investor.lilly.com/news-releases/news-release-details/lilly-reports-third-quarter-2026-financial-results-raises-full",
+        "accessNote": "10월 29일 회사 실적 본문을 읽었습니다. 분기 매출 24.4billion USD/+39%, 2026년 매출 전망 91~92billion USD와 Mounjaro·Zepbound 기여를 대조했습니다. 매출의 약 0.9billion USD 혜택도 보존했습니다. 인수 IPR&D 비용이 반영된 GAAP/비GAAP EPS를 예상과 혼합하지 않고 EPS 비교는 생략했습니다. 정규장 +6.6%와 실적 후 반응은 [1] 기준입니다."
+      },
+      {
+        "id": 5,
+        "label": "Amazon IR · 장 마감 후 3분기 실적·4분기 전망",
+        "url": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Third-Quarter-Results/default.aspx",
+        "links": [
+          {
+            "label": "Reuters · Amazon 현금 소모·연말 매출 전망",
+            "url": "https://www.reuters.com/business/retail-consumer/amazon-projects-fourth-quarter-sales-below-estimates-2026-10-29/"
+          }
+        ],
+        "accessNote": "공식 실적·현금흐름·가이던스 본문을 읽었습니다. FCF −42.4billion USD는 3분기 단독이 아닌 9월 말 종료 12개월 누적이며, 4분기 매출 전망 240~247billion USD를 확인했습니다. Reuters의 예상 244.51billion USD와 전망 중간값 243.5billion USD를 비교했습니다. 시간외 하락 보도는 정규장 이후로 구분하되 개별 관측 시각이 부족해 등락률·홈페이지 종목 행은 생략했습니다. 진행 중 콜의 추가 가이던스는 사용하지 않았습니다."
+      },
+      {
+        "id": 6,
+        "label": "미국 재무부 · 10월 28·29일 파 수익률",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "accessNote": "표 머리말과 28·29일 행, 방법론을 읽었습니다. 2년물 4.67→4.61%, 10년물 5.05→4.98%를 각각 −6bp·−7bp로 검산했습니다. 약 15:30 EDT의 지표성 매수호가를 보간한 파 수익률이며 실제 거래 종가가 아닙니다. Reuters가 별도로 제시한 시장 금리 수준·변동폭과 섞지 않았습니다."
+      },
+      {
+        "id": 7,
+        "label": "Reuters · 자산시장·원유 결제",
+        "url": "https://www.reuters.com/world/china/global-markets-global-markets-2026-10-29/",
+        "links": [
+          {
+            "label": "Reuters · 원유 결제·외교 협상 배경",
+            "url": "https://www.reuters.com/business/energy/us-oil-prices-fall-investors-gauge-risks-mideast-supply-2026-10-29/"
+          }
+        ],
+        "accessNote": "글로벌 시장과 원유 기사 본문을 읽었습니다. 성장·물가 자료 소화 중 시장 금리 하락과 달러·금 약세는 보도에 귀속했습니다. 달러·금 수치의 관측 시각이 불명확해 수준·등락 수치와 홈페이지 행은 제외했습니다. WTI 결제 −0.76%/−78센트는 −0.78달러/배럴로 환산했고, 계약월이 없어 가격 수준은 생략했습니다. 외교 협상 기대와 공급 우려의 상쇄는 원유 기사 설명이며 협상 타결로 단정하지 않았습니다. 두 Reuters 기사는 독립 확인이 아닙니다."
+      },
+      {
+        "id": 8,
+        "label": "NYSE·BLS · 공식 거래일·발표 일정",
+        "url": "https://www.nyse.com/trade/hours-calendars",
+        "links": [
+          {
+            "label": "BLS · 2026년 10월 발표 일정",
+            "url": "https://www.bls.gov/schedule/2026/10_sched.htm"
+          },
+          {
+            "label": "BLS · 고용비용지수 정의·다음 발표",
+            "url": "https://www.bls.gov/eci/"
+          }
+        ],
+        "accessNote": "NYSE 공식 휴장일표와 09:30~16:00 ET 정규장을 읽어 29일 정상 거래 및 30일 05:00 KST 마감을 확인했습니다. BLS 달력과 ECI 설명에서 10월 30일 08:30 ET의 3분기 발표와 임금·급여·복리후생을 포함한 시간당 노동비용 정의를 확인했습니다. 21:30 KST로 변환해 기준 시각 이후 72시간 안임을 확인했고 예상치·발표 결과를 만들지 않았습니다."
+      }
+    ],
+    "dataNote": "동일 모델이 원문과 자체 대조했으며 독립 검증이나 사람 승인이 아닙니다. 관측 시각이 불명확한 달러·금 수치와 계약월 미확인 WTI 가격 수준은 제외했습니다.",
+    "corrections": [],
+    "homepage": {
+      "headline": "Alphabet 현금 소모에 기술주 약세…중소형주는 상승[1][3]",
+      "stocks": [
+        {
+          "name": "알파벳",
+          "ticker": "GOOGL",
+          "change": "−12.6%",
+          "reason": "전날 발표한 3분기 매출의 예상 미달과 AI 투자에 따른 현금 소모가 부담으로 보도됐습니다. 분기 FCF는 90.65억달러 유출이었으며 Cloud 성장에도 주가가 하락했습니다.",
+          "basis": "2026-10-29 미국 정규장 종가 · 10월 28일 종가 대비 · Reuters 반올림",
+          "sourceIds": [
+            1,
+            3
+          ]
+        },
+        {
+          "name": "일라이 릴리",
+          "ticker": "LLY",
+          "change": "+6.6%",
+          "reason": "Mounjaro·Zepbound 수요에 올해 매출 전망을 910억~920억달러로 높였습니다. Reuters는 비만치료제 매출에 따른 전망 상향 뒤 상승했다고 전했습니다.",
+          "basis": "2026-10-29 미국 정규장 종가 · 10월 28일 종가 대비 · Reuters 반올림",
+          "sourceIds": [
+            1,
+            4
+          ]
+        }
+      ],
+      "assets": [
+        {
+          "label": "미국 10년물",
+          "value": "4.98%",
+          "change": "−7bp",
+          "basis": "2026-10-29 약 15:30 EDT / 10월 30일 04:30 KST · 10월 28일 대비 · 재무부 호가 기반 파 수익률 · 실거래 종가 아님",
+          "sourceIds": [
+            6
+          ]
+        },
+        {
+          "label": "WTI 원유 선물",
+          "value": "가격 수준 제외 · 계약월 미확인",
+          "change": "−0.76% / −0.78달러/배럴",
+          "basis": "2026-10-29 결제 변화 · 전 거래일 대비 · Reuters 본문에 계약월 미표기",
+          "sourceIds": [
+            7
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-10-30T21:30:00+09:00",
+          "label": "3분기 고용비용지수 ECI (오늘)",
+          "detail": "임금·급여와 복리후생을 포함한 고용주의 시간당 노동비용 변화 확인",
+          "sourceIds": [
+            8
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "2026-10-29",
     "reviewMode": "automated",
     "title": "미국 증시 요약 | 2026년 10월 28일",
