@@ -11,16 +11,16 @@ const { default: SavedItemsProvider } = await import('../src/components/SavedIte
 const { latestBriefing } = await import('../src/lib/briefings.ts')
 
 const edition = { id: 'test-edition', title: 'Original title', sessionDate: '2026-10-20', cutoffAt: '2026-10-20T22:00:00Z', publishedAt: '2026-10-20T22:10:00Z', reviewMode: 'automated',
-  summary: ['정규장 -0.5% · 시간외 보도 시점 +2%입니다. 최종 종가가 아닙니다.[1]', '두 번째 문단입니다.[1]', '세 번째 문단입니다.[1]'],
+  summary: ['정규장 -0.5% · 시간외 보도 시점 +2%입니다. 최종 종가가 아닙니다.[1]', '두 번째 문단입니다.[1]', '세 번째 문단입니다.[1]', '나머지는 전체 브리핑에서 확인합니다.[1]'],
   homepage: { headline: '원래 헤드라인[1]', stocks: [], assets: [], events: [] }, sources: [{ id: 1, label: 'Official source', url: 'https://example.com/source' }], blocks: [], dataNote: 'Original basis', corrections: [] }
 const render = element => load(renderToStaticMarkup(h(MemoryRouter, null, element)))
 
-test('compact home preserves one complete cited paragraph, original date and a direct full-edition path on both layouts', () => {
+test('home preserves three complete cited paragraphs, original date and a direct full-edition path on both layouts', () => {
   const before = structuredClone(edition)
   for (const mobile of [false, true]) {
     const $ = render(h(HomeBriefingCard, { item: edition, mobile }))
-    assert.equal($('.home-briefing-summary').text(), edition.summary[0])
-    assert.equal($('.home-briefing-card').text().includes(edition.summary[1]), false)
+    assert.deepEqual($('.home-briefing-summary').map((_, el) => $(el).text()).get(), edition.summary.slice(0, 3))
+    assert.equal($('.home-briefing-card').text().includes(edition.summary[3]), false)
     assert.equal($('.home-briefing-date time').attr('datetime'), edition.cutoffAt)
     assert.ok($('.home-briefing-date').text().includes(edition.sessionDate))
     assert.ok($('.home-briefing-date').text().includes('KST'))
@@ -41,7 +41,7 @@ test('compact home keeps rules/legacy editions honest and missing editions have 
   const $ = render(h(HomeBriefingCard, { item: legacy }))
   assert.equal($('h3 a').text(), edition.title)
   assert.ok($('.home-briefing-disclaimer').text().includes('규칙 기반 자동 정리 · AI 미사용'))
-  assert.equal($('.home-briefing-summary').text(), edition.summary[0])
+  assert.deepEqual($('.home-briefing-summary').map((_, el) => $(el).text()).get(), edition.summary.slice(0, 3))
   const empty = render(h(HomeBriefingCard))
   assert.equal(empty('.home-briefing-empty a').attr('href'), '/#home-news-title')
   assert.equal(empty('.home-briefing-summary, time, .home-briefing-read').length, 0)

@@ -103,7 +103,7 @@ test('compact briefing opens the complete edition with every original summary an
   await setup(page)
   await page.goto('/')
   const card = page.locator('.home-briefing-card')
-  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary.slice(0, 3))
   await fontsReady(page)
   const height = (await page.locator('.home-briefing').boundingBox()).height
   await expect(card.locator('.briefing-detail-tabs, .briefing-stocks, .mobile-briefing-event-preview')).toHaveCount(0)
@@ -122,7 +122,7 @@ test('compact briefing opens the complete edition with every original summary an
   await page.getByRole('link', { name: '← 지난 브리핑', exact: true }).click()
   await expect(page).toHaveURL(/\/briefings$/)
   await page.getByRole('link', { name: '← 홈', exact: true }).click()
-  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary[0])
+  await expect(card.locator('.home-briefing-summary')).toHaveText(edition.summary.slice(0, 3))
   await fontsReady(page)
   expect((await page.locator('.home-briefing').boundingBox()).height).toBeLessThanOrEqual(height + 1)
   await noOverflow(page)
