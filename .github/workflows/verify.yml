@@ -67,7 +67,7 @@ jobs:
           name: home-ui-review
           path: |
             test-results/**/home-ui*.png
-            test-results/**/home-ui-metrics.json
+            test-results/**/home-ui*.json
           retention-days: 7
           if-no-files-found: ignore
       - name: Summarize revision and checks

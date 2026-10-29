@@ -1,0 +1,9 @@
+# Home reading density
+
+Goal: bring current news closer to the top of the home page. Home shows the latest edition's complete first summary paragraph, original headline, US session date, cutoff, citations and publication-mode/non-live notice, with a direct link to the full edition. Detailed stock/asset/event fields remain accessible on the edition page. Never truncate a financial sentence, synthesize a shorter claim, or change published content.
+
+Home news starts with advanced filters closed when no preference is saved. Keep existing filters, reading snapshots/anchors, update confirmation, source states, original receipt times, retry behavior and mobile dialog focus. Group collection metadata and shorten the result count; detailed ordering information belongs with the filter explanation. Keep warnings visible when collapsed.
+
+Reduce home-only sidebar padding/gaps without reducing caption readability or touch targets. Keep all 11 sector tiles, period controls and month dates. Preview the first three existing sorted calendar events; allow expansion of all remaining events in place, without changing full-calendar preferences, ordering, source/zone/basis, failure states or provider requests.
+
+Completion: relevant Node tests, full lint/Node/build and desktop/Pixel 7 Chromium; deterministic screenshots at desktop/tablet/320px; verify direct full-briefing path, hidden-filter state and saved preferences, partial/total/stale news failure and old timestamps, three-event expansion/collapse/date change, long tile labels and independent actions. Review the committed change independently per AGENTS.md. CI/browser emulation, protected preview, live deployment and real-device/Safari checks are separate evidence. Delivery is PR + CI; main merge/production deployment requires a separate user request.

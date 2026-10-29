@@ -125,6 +125,45 @@
 #home-news-title { scroll-margin-top: calc(var(--header-height, 100px) + 16px); }
 #home-calendar:focus-visible, #home-news-title:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 6px; }
 
+/* Home previews use less space while retaining complete text and independent controls. */
+.home-page .home-primary > :is(.home-briefing, .home-news) { padding: 20px; }
+.home-page :is(.home-market-column, .home-dashboard-sidebar) { gap: 16px; }
+.home-page :is(.home-market-column, .home-dashboard-sidebar) > .home-widget { padding: 18px; }
+.home-page :is(.home-market-column, .home-dashboard-sidebar) .widget-heading { margin-bottom: 10px; }
+.home-page :is(.home-market-column, .home-dashboard-sidebar) .widget-heading h2 { font-size: 18px; }
+.home-page .home-content .sector-tile { padding: 8px; gap: 4px; }
+.home-page .home-content .sector-selectable button { gap: 4px; }
+.home-page .home-content .sector-selectable > a { padding-block: 1px; line-height: 1.4; }
+.home-page .home-content .sector-grid { gap: 6px; margin: 10px 0; }
+.home-page .home-content .mover-row { min-height: 48px; padding-block: 5px; }
+.home-dashboard-calendar .calendar-list:not(.is-expanded) { max-height: none; overflow: visible; }
+.home-dashboard-calendar .calendar-list.is-expanded { max-height: 360px; overflow-y: auto; }
+.home-dashboard-calendar .calendar-time-note { margin: 6px 0; font-size: var(--ui-font-caption); line-height: 1.6; }
+.calendar-preview-more { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 8px; color: var(--ui-muted); font-size: var(--ui-font-caption); }
+.calendar-preview-more button { min-height: 40px; padding: 6px 8px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); color: var(--ui-selected); background: var(--ui-card); font: inherit; font-size: var(--ui-font-control); cursor: pointer; }
+.calendar-preview-more button:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+.home-news > h2 { margin-bottom: 10px; }
+.home-page .home-news .news-feed-compact .news-controls { padding: 0; margin-bottom: 8px; border: 0; border-radius: 0; background: transparent; }
+.news-feed-compact .news-toolbar { margin-bottom: 8px; gap: 6px; }
+.news-feed-compact .news-toolbar-actions { gap: 4px; }
+.news-feed-compact .news-controls .news-refresh { width: 40px; padding: 8px; }
+.news-feed-compact .news-filter-panel { margin-top: 10px; padding-top: 10px; }
+.news-feed-compact .news-status-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; }
+.news-feed-compact .news-updated { display: flex; align-items: center; gap: 4px; min-height: 32px; margin: 0; font-size: var(--ui-font-meta); }
+.news-feed-compact .news-source-status { margin: 0; min-width: 0; }
+.news-feed-compact .news-source-status summary { min-height: 32px; }
+.news-feed-compact .news-source-status[open] { flex-basis: 100%; }
+.news-feed-compact .news-source-status p { font-size: var(--ui-font-meta); line-height: 1.7; }
+.news-feed-compact .news-status-area .data-notice { margin: 4px 0; padding: 6px 8px; gap: 6px; }
+.news-feed-compact .news-status-area .data-notice-content { flex: 1 1 160px; }
+.news-feed-compact .news-status-area .data-notice-content p { font-size: var(--ui-font-meta); }
+.news-feed-compact .news-result-count { margin: 4px 0 8px; font-size: var(--ui-font-meta); }
+@media (pointer: coarse) {
+  .home-content .calendar-preview-more button, .home-page .home-content .movers-list .save-button,
+  .home-page .home-news .news-feed-compact .news-refresh { min-width: 44px; min-height: 44px; }
+  .home-page .home-content .sector-selectable > a { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
 @media (max-width: 1279px) and (min-width: 701px) {
   .home-overview { grid-template-columns: clamp(280px, 29vw, 320px) minmax(0, 1fr); grid-template-areas: "heading heading" "market primary" "support primary"; grid-template-rows: auto min-content 1fr; gap: 20px; }
   .home-dashboard-sidebar { position: static; max-height: none; overflow: visible; padding-right: 0; }
@@ -142,6 +181,9 @@
   .home-section-heading h1 { font-size: 23px; }
   .home-section-heading p { font-size: 13px; }
   .home-briefing { padding: 18px; }
+  .home-page .home-primary > :is(.home-briefing, .home-news) { padding: 18px; }
+  .news-feed-compact .news-status-meta { gap: 0 10px; }
+  .news-feed-compact .news-source-status summary { min-height: 44px; }
   .home-news { margin-top: 20px; padding: 18px; }
   .home-news > h2 { margin-bottom: 12px; }
   .home-content .sector-heading { margin-bottom: 4px; }

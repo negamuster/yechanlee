@@ -12,7 +12,6 @@ const { default: MarketSessionStatus } = await import('../src/components/MarketS
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
 const { loadResource } = await import('../src/utils/resourceCache.ts')
 const { latestBriefing } = await import('../src/lib/briefings.ts')
-const { briefingSections } = await import('../src/lib/briefingPresentation.ts')
 const { SAVED_KEY } = await import('../src/lib/savedItems.ts')
 const moverData = { tradingDate: '2026-10-14', previousTradingDate: '2026-10-13', fetchedAt: Date.now(), stale: false,
   rankings: { turnover: [{ ticker: 'ABC', price: 123.45, changePct: -2.1, turnover: 1e9, volume: 1e6 }, ...Array.from({ length: 9 }, (_, index) => ({ ticker: `TEST${index}`, price: 100, changePct: 1, turnover: 1e8, volume: 1e6 }))], gainers: [], losers: [] } }
@@ -111,8 +110,10 @@ test('home retains price dates, currency context, timezone, source references an
   assert.ok($('.sector-compact-status').text().includes('종가 기준 · Yahoo Finance'))
   assert.ok($('.calendar-compact-status').text().includes('미국 날짜 · KST'))
   assert.ok($('.calendar-help').text().includes('자동 반영되지 않습니다'))
-  assert.ok($('.daily-briefing').text().includes('실시간 시황이 아닙니다'))
-  for (const stock of latestBriefing?.homepage?.stocks ?? []) assert.ok($('.briefing-stocks').text().includes(stock.basis))
+  assert.ok($('.home-briefing-card').text().includes('실시간 시황이 아닙니다'))
+  assert.equal($('.home-briefing-summary').text().replace(/\s+/g, ''), latestBriefing.summary[0].replace(/\s+/g, ''))
+  assert.equal($('.home-briefing-read').attr('href'), `/briefings/${latestBriefing.id}`)
+  assert.equal($('.briefing-stocks, .briefing-detail-tabs').length, 0)
 })
 test('home cards align their title and actions without duplicate refresh controls or nested links', () => {
   const $ = render(createElement(Home))
@@ -137,14 +138,14 @@ test('home cards align their title and actions without duplicate refresh control
   assert.equal($('.home-dashboard-live .market-live-actions button').length, 0)
   assert.equal($('a button, a a').length, 0)
 })
-test('mobile home keeps its briefing archive destination and disclosures without extra navigation buttons', () => {
+test('mobile home keeps the archive destination and a direct full-edition path in the compact summary', () => {
   const $ = render(createElement(Home), true)
   assert.equal($('.linked-widget').length, 1)
-  assert.equal($('.mobile-briefing-kicker [data-widget-link]').attr('href'), '/briefings')
-  assert.ok($('.mobile-briefing-headline a').attr('href').startsWith('/briefings/'))
-  assert.equal($('.mobile-briefing-detail-controls button').length, briefingSections(latestBriefing).length)
-  assert.equal($('.mobile-briefing-actions, .home-dashboard-movers, .home-dashboard-calendar').length, 0)
-  assert.ok($('.mobile-briefing-disclaimer').text().includes('실시간 시황이 아닙니다'))
+  assert.equal($('.home-briefing-card [data-widget-link]').attr('href'), '/briefings')
+  assert.equal($('.home-briefing-read').attr('href'), `/briefings/${latestBriefing.id}`)
+  assert.equal($('.home-briefing-summary').length, 1)
+  assert.equal($('.mobile-briefing-detail-controls, .home-dashboard-movers, .home-dashboard-calendar').length, 0)
+  assert.ok($('.home-briefing-disclaimer').text().includes('실시간 시황이 아닙니다'))
 })
 test('full calendar page retains its full labels and has no self-referencing card destination', () => {
   const $ = render(createElement(MarketCalendar, { full: true }))

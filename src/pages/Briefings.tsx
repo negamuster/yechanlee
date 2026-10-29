@@ -2,6 +2,9 @@ import { Link, useParams } from 'react-router-dom'
 import { briefings, kstTime } from '../lib/briefings'
 import EvidenceAttachButton from '../components/EvidenceAttachButton'
 import { briefingEvidence } from '../lib/evidenceSources'
+import { briefingSections } from '../lib/briefingPresentation'
+import { CitedText } from '../components/BriefingReferences'
+import BriefingDetails from '../components/BriefingDetails'
 import '../components/DailyBriefing.css'
 export default function Briefings() {
   const { date } = useParams()
@@ -14,6 +17,8 @@ export default function Briefings() {
   if (!item) return <main className="briefing-archive"><h1>게시된 브리핑을 찾을 수 없습니다.</h1><Link to="/briefings">브리핑 목록으로 →</Link></main>
   return <main className="briefing-article"><Link to="/briefings">← 지난 브리핑</Link><h1>{item.title}</h1><p className="briefing-meta">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'}<br />정보 기준 {kstTime(item.cutoffAt)}<br />게시 {kstTime(item.publishedAt)}{item.reviewMode === 'automated' && <><br />AI 작성·자동 검토</>}{item.reviewMode === 'gemini-research' && <><br />Gemini 본문 요약·해석 · 자동 근거 대조 · </>}{item.reviewMode === 'gemini' && <><br />Gemini 제목 요약 · 자동 대조 · </>}{item.reviewMode === 'rules' && <><br />규칙 기반 자동 정리 · AI 미사용</>}</p>
     <EvidenceAttachButton source={briefingEvidence(item)} />
+    {!!item.summary.length && <section className="briefing-edition-summary" aria-label="핵심 요약"><h2>핵심 요약</h2><ul>{item.summary.map((text, index) => <li key={index}><CitedText item={item} text={text} /></li>)}</ul></section>}
+    {!!briefingSections(item).length && <section className="briefing-edition-details" aria-label="발행 당시 주요 변화"><h2>발행 당시 주요 변화</h2><p className="briefing-meta">정보 기준 {kstTime(item.cutoffAt)} · 자산별 관측 시각과 비교 기준을 확인하세요.</p>{briefingSections(item).map(section => <BriefingDetails key={section.key} item={item} section={section.key} mobile headingLevel="h3" />)}</section>}
     {item.blocks.map((b,i)=>b.kind==='heading'?<h2 key={i}>{b.text}</h2>:b.kind==='subheading'?<h3 key={i}>{b.text}</h3>:b.kind==='metadata'?<div className="briefing-tags" key={i}>{b.text.split(' · ').map((tag,j)=><span key={j}>{tag}</span>)}</div>:<p key={i}>{b.text}</p>)}
     <p className="briefing-meta">{item.dataNote}</p><Link to="/briefings/methodology">작성 원칙 →</Link><section className="briefing-sources"><h2>출처</h2><ol>{item.sources.map(s=><li id={`source-${s.id}`} key={s.id} value={s.id}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label} ↗</a>{s.accessNote && <span className="briefing-access">{s.accessNote}</span>}{s.links?.map(link=><a className="briefing-source-alternate" key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}</li>)}</ol></section>
     {!!item.corrections.length && <details><summary>정정 이력</summary>{item.corrections.map((c,i)=><p key={i}>{kstTime(c.at)} · {c.text}</p>)}</details>}
