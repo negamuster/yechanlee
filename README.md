@@ -18,7 +18,7 @@ npm run dev
 
 터미널에 표시된 개발 주소를 엽니다. `predev`가 저장된 브리핑에서 공개용 데이터를 생성하고, Vite 개발 서버가 `api/`·`lib/`의 서버 핸들러를 연결합니다. 브리핑을 새로 작성하거나 운영 사이트에 게시하지는 않습니다.
 
-실제 종목 시세·Market Movers 조회에는 공급업체 키가 필요합니다. 로컬에서 사용할 때만 저장소 루트의 `.env.local`에 다음 값을 넣고 개발 서버를 다시 시작합니다.
+실제 종목 시세·Market Movers 조회에는 공급업체 키가 필요합니다. 새 개발 환경에서는 `.env.example`을 `.env.local`로 복사해 설정합니다. 기존 `.env.local`이 있다면 보존합니다. 로컬에서 사용할 때만 저장소 루트의 `.env.local`에 다음 값을 넣고 개발 서버를 다시 시작합니다.
 
 ```dotenv
 POLYGON_KEY=your_provider_key
@@ -48,7 +48,8 @@ npm run verify:all
 | 명령 | 실행 범위 |
 | --- | --- |
 | `npm test` | `tests/*.test.mjs`의 전체 Node 회귀 검사 |
-| `npm run build` | NYSE 시간표 검증 → 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드·초기 JS 예산 검사 → 커밋 표식 생성 |
+| `npm run build` | NYSE 시간표 검증 → 공개용 브리핑 생성 → 미사용 소스 검사 → TypeScript 검사 → Vite 빌드·초기 JS 예산 검사 → 커밋 표식 생성 |
+| `npm run check:source` | 실제 앱 진입점에서 정적·동적 import를 따라 TS/TSX/CSS/JSON의 사용 여부 검사 · 테스트에서만 쓰는 파일도 미사용으로 처리 |
 | `npm run verify` | lint + Node 회귀 검사 + 빌드 |
 | `npm run setup:browsers` | Playwright Chromium과 필요한 시스템 의존성 설치 |
 | `npm run test:e2e` | 이미 빌드한 결과로 PC·모바일 Chromium 검사 |
@@ -92,6 +93,7 @@ npm run check:stocks -- --symbol AAPL
 - [뉴스 수집과 출처 상태](docs/news-feeds.md), [경제 일정](docs/calendar.md), [거래소 일정 생성·검증](docs/exchange-calendar.md), [브리핑 자동화](docs/briefing-automation.md)
 - [13F 검증](docs/13f-and-simulator-validation.md), [노트·근거·백업](docs/investment-evidence.md), [검색·백업 상태 안내](docs/note-discovery-and-backup-status.md)
 - [API와 비밀값 관리](docs/api-security.md)
+- [파일·GitHub 정리 기록과 브랜치 대조](docs/repository-cleanup-2026-10-30.md)
 
 관심 종목·기사·노트는 브라우저별로 저장되며 기기 간 자동 동기화되지 않습니다. 작성 중인 초안은 저장 전까지 백업에 포함되지 않습니다. 개발·검증 중 실제 개인 기록을 테스트 데이터로 덮어쓰지 않습니다.
 

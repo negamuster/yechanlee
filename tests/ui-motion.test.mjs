@@ -18,7 +18,7 @@ dom.window.matchMedia = query => ({ get matches() { return query.includes('prefe
   addEventListener(_event, listener) { preferenceListeners.add(listener) }, removeEventListener(_event, listener) { preferenceListeners.delete(listener) } })
 function setMotionPreference(reduced) { reducedMotion = reduced; for (const listener of preferenceListeners) listener({ matches: reduced }) }
 
-const { createElement: h, useState, act } = await import('react')
+const { createElement: h, act } = await import('react')
 const { createRoot } = await import('react-dom/client')
 const { MemoryRouter } = await import('react-router-dom')
 const { MotionConfig } = await import('motion/react')
@@ -27,20 +27,11 @@ const { default: SavedItemsProvider, BookmarkButton } = await import('../src/com
 const { useSavedItems } = await import('../src/hooks/useSavedItems.ts')
 const { SectorETF: SectorPerformance } = await import('../src/components/SectorPerformance.tsx')
 const { default: MarketMovers } = await import('../src/components/MarketMovers.tsx')
-const { MobileBriefingCard } = await import('../src/components/MobileDailyBriefing.tsx')
 const { SAVED_KEY } = await import('../src/lib/savedItems.ts')
 const { loadResource } = await import('../src/utils/resourceCache.ts')
 
 const article = { article_url: 'https://example.com/a', title: 'Article A', publisher: 'Source A', published_utc: '2026-10-15T00:00:00Z' }
 const other = { ...article, article_url: 'https://example.com/b', title: 'Article B' }
-const edition = {
-  id: 'motion-fixture', title: 'Test briefing', sessionDate: '2026-10-15', cutoffAt: '2026-10-15T22:00:00Z', publishedAt: '2026-10-15T22:10:00Z', reviewMode: 'automated',
-  summary: ['First summary[1]', 'Second summary[1]', 'Third summary[1]'], blocks: [], dataNote: 'Fixture', corrections: [],
-  sources: [{ id: 1, label: 'Original source', url: 'https://example.com/source' }],
-  homepage: { headline: 'Headline', stocks: [{ ticker: 'ABC', name: 'Company', change: '+2%', reason: 'Original reason', basis: 'Original close basis', sourceIds: [1] }],
-    assets: [{ label: 'Yield', value: '4.25%', change: '+2bp', basis: 'Original observation basis', sourceIds: [1] }],
-    events: [{ at: '2026-10-16T21:30:00+09:00', label: 'Original event', detail: 'What to check', sourceIds: [1] }] },
-}
 const container = document.getElementById('root')
 let root
 const tick = () => new Promise(resolve => setTimeout(resolve, 45))
@@ -56,10 +47,6 @@ const stored = () => JSON.parse(localStorage.getItem(SAVED_KEY))
 const bookmark = () => container.querySelector('button[aria-label="Article A 북마크 저장"], button[aria-label="Article A 북마크 해제"]')
 const toastAction = title => [...document.querySelectorAll('[data-sonner-toast]')].find(node => node.textContent.includes(title))?.querySelector('[data-button]')
 function persist(articles = [], stocks = []) { localStorage.setItem(SAVED_KEY, JSON.stringify({ version: 1, stocks, articles })) }
-function MobileFixture() {
-  const [state, setState] = useState({ summary: false, section: null })
-  return h(MobileBriefingCard, { item: edition, state, onChange: setState })
-}
 function BulkControl() {
   const { removeSelected } = useSavedItems()
   return h('button', { onClick: () => removeSelected('stocks', ['AAPL']), 'data-bulk-delete': true }, 'Delete selected stock')
@@ -99,35 +86,6 @@ test('Maps and Movers retain independent selections, saved preferences and origi
     assert.equal(JSON.parse(sessionStorage.getItem('anthracite.ui.v1.movers.category')), 'gainers')
     assert.ok(container.querySelector('.movers-status').textContent.includes('2026-10-15'))
   } finally { globalThis.fetch = previousFetch }
-})
-
-test('briefing summaries and details expand, switch and close with source links intact and closed content inert', async () => {
-  await render(h(MobileFixture))
-  assert.equal(container.querySelectorAll('.mobile-briefing-summary-list li').length, 1)
-  await click(container.querySelector('.mobile-briefing-summary-toggle'))
-  assert.equal(container.querySelectorAll('.mobile-briefing-summary-list li').length, 3)
-  assert.equal(container.querySelector('.mobile-briefing-summary-toggle').getAttribute('aria-expanded'), 'true')
-  const buttons = container.querySelectorAll('.mobile-briefing-detail-controls button')
-  await click(buttons[1])
-  let panel = container.querySelector('.mobile-briefing-detail-content')
-  assert.equal(panel.getAttribute('aria-hidden'), 'false')
-  assert.equal(panel.hasAttribute('inert'), false)
-  assert.ok(panel.textContent.includes('4.25%'))
-  assert.ok(panel.textContent.includes('Original observation basis'))
-  assert.ok(panel.querySelector('a[href="/briefings/motion-fixture#source-1"]'))
-  await act(async () => { buttons[2].click(); buttons[0].click(); await tick() })
-  await act(tick)
-  assert.equal(container.querySelectorAll('.mobile-briefing-detail-controls [aria-expanded=true]').length, 1)
-  assert.ok(panel.textContent.includes('Original close basis'))
-  assert.equal(container.querySelectorAll('.mobile-briefing-detail-controls [aria-pressed]').length, 0)
-  await click(buttons[0])
-  assert.equal(panel.getAttribute('aria-hidden'), 'true')
-  assert.equal(panel.hasAttribute('inert'), true)
-  await act(tick)
-  assert.equal(panel.querySelectorAll('a, button').length, 0)
-  await click(container.querySelector('.mobile-briefing-summary-toggle'))
-  await act(tick)
-  assert.equal(container.querySelectorAll('.mobile-briefing-summary-list li').length, 1)
 })
 
 test('saving updates duplicate bookmarks and undo removes only that article from the latest storage', async () => {
@@ -192,18 +150,12 @@ test('bulk deletion retains its separate thirty-second undo when a bookmark noti
   assert.deepEqual(stored().articles, [article])
 })
 
-test('ordinary motion completes after interrupted disclosure and bookmark actions without leaving focusable closed content or a scaled button', async () => {
+test('ordinary bookmark motion settles after interrupted saves without leaving a scaled button', async () => {
   setMotionPreference(false)
-  await render(h('div', null, h(MobileFixture), h(BookmarkButton, { article, iconOnly: true })))
-  const toggle = container.querySelector('.mobile-briefing-detail-controls button')
-  await click(toggle)
-  await click(toggle)
-  const panel = container.querySelector('.mobile-briefing-detail-content')
-  assert.equal(panel.hasAttribute('inert'), true, 'exiting links are inert as soon as the control closes')
+  await render(h(BookmarkButton, { article, iconOnly: true }))
   await click(bookmark())
   await click(bookmark())
   await act(async () => { await new Promise(resolve => setTimeout(resolve, 350)) })
-  assert.equal(panel.querySelectorAll('a, button').length, 0)
   assert.equal(bookmark().getAttribute('aria-pressed'), 'false')
   assert.ok(['', 'none', 'scale(1)'].includes(bookmark().style.transform))
   assert.deepEqual(stored().articles, [])

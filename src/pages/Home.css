@@ -86,8 +86,6 @@
 .home-page .home-content .widget-heading + :is(.sector-controls, .calendar-month-navigation) { margin-top: 0; }
 .home-widget, .home-news { box-shadow: 0 2px 12px #10213a04; }
 .home-briefing .briefing-kicker a { color: var(--ui-selected); font-weight: 650; }
-.home-briefing .briefing-stocks { gap: 24px; }
-.home-briefing .briefing-detail-tabs { padding-top: 20px; margin-top: 24px; }
 .home-news .news-controls { border-color: transparent; background: var(--ui-surface); }
 .home-news .news-grid { gap: 16px; border-top: 0; padding-top: 4px; }
 .home-news .news-grid .news-card:nth-child(n) { padding: 16px; border: 1px solid var(--ui-border); border-radius: 16px; background: var(--ui-card); }

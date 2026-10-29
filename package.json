@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/validate-exchange-calendar.mjs && node scripts/build-briefings.mjs && tsc -b && vite build && node scripts/write-build-info.mjs",
+    "build": "node scripts/validate-exchange-calendar.mjs && node scripts/build-briefings.mjs && node scripts/check-source-graph.mjs && tsc -b && vite build && node scripts/write-build-info.mjs",
+    "check:source": "node scripts/check-source-graph.mjs",
     "lint": "eslint . --max-warnings=0",
     "preview": "vite preview",
     "predev": "node scripts/build-briefings.mjs",
