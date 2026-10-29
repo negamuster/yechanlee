@@ -29,7 +29,7 @@ Usage is limited by one agent, a focused source set (target 5–8), one draft an
 
 To avoid competing same-date editions and recurring Gemini trials, `.github/workflows/daily-digest.yml` is now **workflow_dispatch only**. Its schedules, data-health completion trigger and push-triggered Gemini live trial are removed. It retains a manually invoked non-AI rules fallback; invoking it first on a date will preserve that rules edition against later ChatGPT replacement. No secret or historical edition is removed. Independent data-health/BLS schedules remain separate.
 
-The task retrieves current main over the GitHub connection each run; it does not depend on persistent scratch files. Only a new `content/briefings/YYYY-MM-DD.json` and the rebuilt `src/data/published-briefings.json` may be committed during normal publication. Content is labeled `automated`, and Vercel success must be confirmed. Activation is not proof that the first future run succeeds.
+The task retrieves current main over the GitHub connection each run; it does not depend on persistent scratch files. Only a new `content/briefings/YYYY-MM-DD.json` and the rebuilt `src/data/published-briefings.json` and `src/data/latest-briefing.json` may be committed during normal publication. Content is labeled `automated`, and Vercel success must be confirmed. Activation is not proof that the first future run succeeds.
 
 **The sections below are migration history. The October 12 operation above takes precedence.**
 
@@ -52,7 +52,7 @@ The workflow has a manual trigger. Pushes affecting the generator run collection
 
 `scripts/generate-daily-digest.mjs` fixes an actual cutoff, refuses an existing same-date file, requires at least three fresh headlines from two publishers, records feed/data checks, and writes one new edition exclusively. Rules checks are a separate gate, not a bypass of the previous AI editorial-review gate. `contentHash` still protects reviewed payload integrity.
 
-Workflow: install locked dependencies → tests → collect/generate → build public payload → commit only content/briefings and src/data/published-briefings.json → normal push → observe Vercel status. A competing main update fails the push instead of force-pushing; rerun from latest main. Collection/build failures keep old content. A deployment failure is reported as a failed workflow; no automatic rollback or success claim. GitHub may disable schedules after 60 days of repository inactivity.
+Workflow: install locked dependencies → tests → collect/generate → build public payload → commit only content/briefings, src/data/published-briefings.json and src/data/latest-briefing.json → normal push → observe Vercel status. A competing main update fails the push instead of force-pushing; rerun from latest main. Collection/build failures keep old content. A deployment failure is reported as a failed workflow; no automatic rollback or success claim. GitHub may disable schedules after 60 days of repository inactivity.
 
 ## Validation
 

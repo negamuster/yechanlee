@@ -31,12 +31,6 @@
 .market-clock time { font-size: var(--ui-font-meta); line-height: 1.5; }
 .market-clock strong { margin-left: 5px; color: var(--ui-text); font-size: 13px; font-weight: 600; }
 
-.stock-search-dropdown { position: absolute; top: calc(100% + 6px); left: 0; width: max(100%, 320px); max-width: calc(100vw - 28px); max-height: min(440px, 65dvh); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); background: #fff; box-shadow: 0 8px 24px #00000014; z-index: 90; }
-.stock-search-hint { padding: 8px 12px; margin: 0; color: var(--ui-muted); font-size: var(--ui-font-meta); line-height: 1.6; }
-.stock-search-option { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 3px 8px; min-height: var(--ui-control-height); padding: 8px 12px; cursor: pointer; font-size: 13px; line-height: 1.4; }
-.stock-search-option[aria-selected="true"] { background: var(--ui-hover); }
-.stock-search-option span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.stock-search-option small { grid-column: 2; color: var(--ui-muted); font-size: var(--ui-font-caption); }
 
 @media (min-width: 861px) {
   .site-header-shell .market-clocks, .site-header-shell .site-contact { grid-row: 1; align-self: center; }
@@ -72,11 +66,9 @@
   .market-clock strong { margin-left: 3px; font-size: 12px; }
   .site-search input { font-size: 16px; }
   .site-menu a { min-height: 44px; }
-  .stock-search-option { min-height: 44px; }
 }
 
 @media (max-width: 700px) {
-  .stock-search-dropdown { width: 100%; max-width: 100%; }
   .market-clocks { min-width: 0; }
   .market-clock time { white-space: normal; }
   .market-clock strong { white-space: nowrap; }

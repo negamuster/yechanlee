@@ -29,7 +29,7 @@ Usage is limited by one agent, a focused source set (target 5–8), one draft an
 
 To avoid competing same-date editions and recurring Gemini trials, `.github/workflows/daily-digest.yml` is now **workflow_dispatch only**. Its schedules, data-health completion trigger and push-triggered Gemini live trial are removed. It retains a manually invoked non-AI rules fallback; invoking it first on a date will preserve that rules edition against later ChatGPT replacement. No secret or historical edition is removed. Independent data-health/BLS schedules remain separate.
 
-The task retrieves current main over the GitHub connection each run; it does not depend on persistent scratch files. Only a new `content/briefings/YYYY-MM-DD.json` and the rebuilt `src/data/published-briefings.json` may be committed during normal publication. Content is labeled `automated`, and Vercel success must be confirmed. Activation is not proof that the first future run succeeds.
+The task retrieves current main over the GitHub connection each run; it does not depend on persistent scratch files. Only a new `content/briefings/YYYY-MM-DD.json` and the rebuilt `src/data/published-briefings.json` and `src/data/latest-briefing.json` may be committed during normal publication. Content is labeled `automated`, and Vercel success must be confirmed. Activation is not proof that the first future run succeeds.
 
 `content/briefings/*.json` contains editorial drafts. This is a public GitHub repository: do not place confidential notes or credentials here. Drafts are excluded from the website bundle by `scripts/build-briefings.mjs`. The public payload is an explicit projection with review fields removed.
 
