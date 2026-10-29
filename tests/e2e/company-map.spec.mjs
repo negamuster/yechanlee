@@ -53,3 +53,13 @@ test('source-failure receipts and a failed refresh preserve map data while initi
  await expect(map).toContainText('기업 지도')
  await expect(map.getByRole('button',{name:/다시 시도/})).toBeVisible()
 })
+
+test('a successful receipt with old regular-session quotes is labeled old without claiming refresh failure',async({page})=>{
+  await installStockFixtures(page)
+  const fixture=companyMapFixture();fixture.companies=fixture.companies.map(c=>({...c,quoteAt:'2026-10-01T20:00:00Z'}))
+  await page.route('**/api/sector-performance?view=companies',route=>route.fulfill({json:fixture}))
+  await page.goto('/equity');const map=page.locator('.company-map')
+  await expect(map.locator('.company-map-tile')).toHaveCount(3)
+  await expect(map).toContainText('5일 이상 지난 시세')
+  await expect(map).not.toContainText('갱신 실패')
+})

@@ -47,7 +47,7 @@ export default function CompanyMap({compact=false, controls}: {compact?:boolean;
       <label><span className="sr-only">Maps 표시 종목 수</span><select aria-label="Maps 표시 종목 수" value={count} onChange={e=>setCount(Number(e.target.value))}>{[15,30,50].map(n=><option key={n} value={n}>Top {n}</option>)}</select></label>
       <button type="button" aria-pressed={view==='list'} onClick={()=>setView(v=>v==='map'?'list':'map')}>{view==='map'?'목록 보기':'지도 보기'}</button>
     </div>
-    <ResourceState label="기업 지도" loading={loading} error={error} hasData={!!data} stale={data?.stale||oldQuote} updatedAt={data?.fetchedAt} onRetry={()=>setRevision(n=>n+1)} layout="tiles" />
+    <ResourceState label="기업 지도" loading={loading} error={error} hasData={!!data} stale={data?.stale} updatedAt={data?.fetchedAt} onRetry={()=>setRevision(n=>n+1)} layout="tiles" />
     {data&&<>
       {(data.sourceError||data.stale)&&<p className="company-map-warning" role="status">원본 갱신 실패 · 이전 수집 자료입니다. 수집 시각 {mapTime(data.fetchedAt)}</p>}
       {oldQuote&&<p className="company-map-warning">5일 이상 지난 시세가 포함되어 있습니다. 종목별 시각을 확인하세요.</p>}
