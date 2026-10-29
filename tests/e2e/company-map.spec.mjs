@@ -63,3 +63,21 @@ test('a successful receipt with old regular-session quotes is labeled old withou
   await expect(map).toContainText('5일 이상 지난 시세')
   await expect(map).not.toContainText('갱신 실패')
 })
+
+test('dense company map keeps small-tile details reachable through the list at phone width',async({page},testInfo)=>{
+  await installStockFixtures(page)
+  const fixture=companyMapFixture()
+  fixture.companies=Array.from({length:40},(_,i)=>({symbol:`T${String(i).padStart(2,'0')}`,name:`검증 기업 ${i}`,sector:i%2?'financial':'technology',marketCap:5e12/(i+1),changePercent:i%3?-.45:1.25,quoteAt:'2026-10-20T20:00:00Z'}))
+  fixture.sourceCount=40
+  await page.route('**/api/sector-performance?view=companies',route=>route.fulfill({json:fixture}))
+  await page.setViewportSize({width:320,height:1000});await page.goto('/equity')
+  const map=page.locator('.company-map')
+  await expect(map.locator('.company-map-tile')).toHaveCount(30)
+  await map.getByRole('combobox',{name:'Maps 표시 종목 수',exact:true}).selectOption('50')
+  await expect(map.locator('.company-map-tile')).toHaveCount(40)
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true)
+  await map.scrollIntoViewIfNeeded();await page.screenshot({path:testInfo.outputPath('home-ui-company-map-dense-320.png'),fullPage:true})
+  await map.getByRole('button',{name:'목록 보기',exact:true}).click()
+  await expect(map.locator('.company-map-list a')).toHaveCount(40)
+  await expect(map.locator('.company-map-list a').last()).toContainText('T39')
+})
