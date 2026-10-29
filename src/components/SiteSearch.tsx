@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Search } from 'lucide-react'
-import CommandPalette from './CommandPalette'
+import SearchLoadBoundary, { SearchLoadingDialog } from './SearchLoadBoundary'
 import './SiteSearch.css'
+
+const CommandPalette = lazy(() => import('./CommandPalette'))
 
 export default function SiteSearch({ onSelect }: { onSelect: () => void }) {
   const [opened, setOpened] = useState(false)
@@ -24,6 +26,6 @@ export default function SiteSearch({ onSelect }: { onSelect: () => void }) {
       <Search size={18} aria-hidden="true" focusable="false" strokeWidth={1.8} />
       <span>종목·뉴스·페이지 검색</span><kbd>⌘K / Ctrl K</kbd>
     </button></div>
-    {opened && <CommandPalette onClose={() => setOpened(false)} onSelect={onSelect} />}
+    {opened && <SearchLoadBoundary onClose={() => setOpened(false)}><Suspense fallback={<SearchLoadingDialog onClose={() => setOpened(false)} />}><CommandPalette onClose={() => setOpened(false)} onSelect={onSelect} /></Suspense></SearchLoadBoundary>}
   </>
 }

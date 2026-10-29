@@ -48,7 +48,7 @@ npm run verify:all
 | 명령 | 실행 범위 |
 | --- | --- |
 | `npm test` | `tests/*.test.mjs`의 전체 Node 회귀 검사 |
-| `npm run build` | NYSE 시간표 검증 → 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드 → 커밋 표식 생성 |
+| `npm run build` | NYSE 시간표 검증 → 공개용 브리핑 생성 → TypeScript 검사 → Vite 빌드·초기 JS 예산 검사 → 커밋 표식 생성 |
 | `npm run verify` | lint + Node 회귀 검사 + 빌드 |
 | `npm run setup:browsers` | Playwright Chromium과 필요한 시스템 의존성 설치 |
 | `npm run test:e2e` | 이미 빌드한 결과로 PC·모바일 Chromium 검사 |
@@ -60,6 +60,8 @@ npm run verify:all
 브라우저 검사는 고정된 시각과 합성 API 응답을 사용하며 외부 요청을 차단합니다. 실제 API 키나 운영 API 할당량을 쓰지 않습니다. `test:e2e`가 `127.0.0.1:4173`에 preview 서버를 직접 실행하므로 해당 포트를 비워 둡니다. 모바일 검사는 Pixel 7 크기의 Chromium 에뮬레이션이며 실제 기기·Safari 검사는 아닙니다.
 
 ## GitHub CI와 운영 점검
+
+초기 로딩은 [번들 분리·성능 기준](docs/initial-loading.md)을 따릅니다. `scripts/build-briefings.mjs`가 같은 검토된 원본에서 전체 `published-briefings.json`과 홈용 `latest-briefing.json`을 함께 생성합니다. 브리핑 원본을 수정했다면 두 생성물을 함께 갱신합니다. 빌드는 정적 의존성 전체의 JavaScript 크기와 지연 로딩 경계를 검사하고 `dist/.vite/initial-loading.json`에 결과를 남깁니다.
 
 [Verify site changes](.github/workflows/verify.yml)는 PR의 통합 커밋에서 의존성 설치, `npm test`, lint, 빌드, 브라우저 설치, PC·모바일 검사를 실행합니다. 결과를 구분해 볼 수 있도록 단계별로 실행하며 실제 검사 SHA와 성공·실패·건너뜀을 요약합니다. 실패 시 화면·trace·HTML 보고서를 7일간 보관합니다.
 

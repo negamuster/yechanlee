@@ -65,9 +65,11 @@ jobs:
         if: always()
         with:
           name: home-ui-review
+          include-hidden-files: true
           path: |
             test-results/**/home-ui*.png
             test-results/**/home-ui*.json
+            dist/.vite/initial-loading.json
           retention-days: 7
           if-no-files-found: ignore
       - name: Summarize revision and checks

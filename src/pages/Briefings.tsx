@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
-import { briefings, kstTime } from '../lib/briefings'
+import { briefings } from '../lib/briefingArchive'
+import { kstTime } from '../lib/briefings'
 import EvidenceAttachButton from '../components/EvidenceAttachButton'
 import { briefingEvidence } from '../lib/evidenceSources'
 import { briefingSections } from '../lib/briefingPresentation'
