@@ -12,7 +12,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import './NewsFeed.css'
 import { PUBLISHER_LOGOS } from './publisherLogos'
 import NewsArticle from './NewsArticle'
-import MobileNewsFilters from './MobileNewsFilters'
+import MobileNewsFiltersLoader from './MobileNewsFiltersLoader'
 import ResourceState from './ResourceState'
 import { countNewsFilters, matchingNews } from '../lib/newsFilters'
 import type { NewsFilters } from '../lib/newsFilters'
@@ -83,6 +83,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
   const searchId = useId()
   const newsListId = useId()
   const searchInput = useRef<HTMLInputElement>(null)
+  const filterToggle = useRef<HTMLButtonElement>(null)
   const [, setClock] = useState(0)
   const root = useRef<HTMLDivElement>(null)
   const anchor = useRef<NewsReadingAnchor | null>(null)
@@ -223,7 +224,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
             <input ref={searchInput} id={searchId} type="search" value={query} maxLength={120} onChange={event => { setQuery(event.target.value); setVisibleBatches(1) }} placeholder="기사 제목·매체 검색" />
             {query && <button type="button" className="news-search-clear" aria-label="검색어 지우기" onClick={() => { setQuery(''); setVisibleBatches(1); searchInput.current?.focus() }}><span aria-hidden="true">×</span></button>}
           </div>
-          <button type="button" className="news-filter-toggle" aria-haspopup={mobile ? 'dialog' : undefined}
+          <button ref={filterToggle} type="button" className="news-filter-toggle" aria-haspopup={mobile ? 'dialog' : undefined}
             data-active={filterCount > 0 || undefined}
             aria-expanded={mobile ? Boolean(mobileDraft) : filtersOpen} aria-controls={!mobile || mobileDraft ? filtersId : undefined}
             onClick={event => {
@@ -252,8 +253,8 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
           <button type="button" className="news-clear-filters" onClick={resetFilters}>전체 초기화</button>
         </div>}
       </div>
-      {mobile && mobileDraft && <MobileNewsFilters id={filtersId} value={mobileDraft} items={feed?.items || []}
-        available={Boolean(feed)} isRead={isRead} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
+      {mobile && mobileDraft && <MobileNewsFiltersLoader id={filtersId} value={mobileDraft} items={feed?.items || []}
+        available={Boolean(feed)} isRead={isRead} returnFocus={filterToggle} onApply={applyMobileFilters} onDismiss={() => setMobileDraft(null)} />}
       <div className="news-status-area">
       {updates.available && <div className="news-update-notice" role="status" aria-live="polite">
         <button type="button" className="news-apply-updates" aria-controls={newsListId} onClick={applyUpdates}>

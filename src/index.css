@@ -3,6 +3,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* Portaled drawers sit above the app; absolute backdrops cover Safari's visual viewport. */
+#root { isolation: isolate; }
+body { position: relative; }
+
 :root {
   --font-ui: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --ui-text: #191f28;

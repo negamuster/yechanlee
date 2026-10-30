@@ -14,7 +14,7 @@ export default function SiteSearch({ onSelect }: { onSelect: () => void }) {
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if (event.isComposing || event.repeat || event.altKey || !(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'k') return
-      if (document.querySelector('dialog[open]:not(#site-command-menu)')) return
+      if (document.querySelector('dialog[open]:not(#site-command-menu), [role="dialog"][aria-modal="true"]:not(#site-command-menu)')) return
       event.preventDefault()
       setOpened(value => !value)
     }

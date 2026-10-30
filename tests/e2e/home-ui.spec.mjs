@@ -3,6 +3,8 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { installStockFixtures, FIXED_AT } from './stock-fixtures.mjs'
 import { SECTORS } from '../../lib/sector-performance.js'
 const [edition] = JSON.parse(await readFile(new URL('../../src/data/published-briefings.json', import.meta.url), 'utf8'))
+const manifest = JSON.parse(await readFile(new URL('../../dist/.vite/manifest.json', import.meta.url), 'utf8'))
+const drawerFile = manifest['src/components/MobileNewsFilters.tsx'].file
 
 async function setup(page) {
   const state = await installStockFixtures(page)
@@ -222,6 +224,86 @@ test('mobile home gives news full reading width and filter drafts remain accessi
     await noOverflow(page)
   }
   expect(state.pageErrors).toEqual([])
+})
+
+test('mobile drawer loads on demand, cancels delayed loading and swipes away only from its drag area', async ({ page, context, isMobile }, testInfo) => {
+  const state = await setup(page)
+  await page.setViewportSize({ width: 393, height: 740 })
+  const scripts = []
+  page.on('request', request => { if (request.resourceType() === 'script') scripts.push(new URL(request.url()).pathname) })
+  let release
+  const gate = new Promise(resolve => { release = resolve })
+  await page.route(`**/${drawerFile}`, async route => { await gate; await route.continue() })
+  await page.goto('/')
+  const toggle = page.locator('.news-filter-toggle')
+  await expect(page.locator('.news-article')).toHaveCount(1)
+  expect(scripts).not.toContain(`/${drawerFile}`)
+  await toggle.click()
+  await expect(page.locator('.news-filter-loading [role="status"]')).toHaveText('필터를 불러오는 중…')
+  await page.keyboard.press('Escape')
+  await expect(toggle).toBeFocused()
+  release()
+  await toggle.click()
+  const dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
+  await expect(dialog.locator('.news-sheet-drag-area')).toBeVisible()
+  await expect(dialog).toHaveAttribute('aria-modal', 'true')
+  await expect(dialog.locator('fieldset')).toHaveCount(4)
+  await expect(dialog.locator('input[type="radio"]:checked')).toHaveCount(3)
+  await expect(dialog.getByRole('button', { name: '뉴스 필터 닫기', exact: true })).toBeFocused()
+  await page.keyboard.press('Control+k')
+  await expect(page.locator('#site-command-menu')).toHaveCount(0)
+  await dialog.getByText('국내', { exact: true }).click()
+
+  const drag = async (x, y, distance) => {
+    if (isMobile) {
+      const cdp = await context.newCDPSession(page)
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] })
+      for (let i = 1; i <= 8; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + distance * i / 8 }] })
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await cdp.detach()
+    } else {
+      await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x, y + distance, { steps: 8 }); await page.mouse.up()
+    }
+  }
+  const body = dialog.locator('.news-sheet-body'), box = await body.boundingBox()
+  if (isMobile) await drag(box.x + box.width / 2, box.y + box.height - 30, -140)
+  else { await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.wheel(0, 160) }
+  await expect.poll(() => body.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  await expect(dialog).toBeVisible()
+  await page.screenshot({ path: testInfo.outputPath('home-ui-mobile-drawer.png') })
+  const handle = await dialog.locator('.news-sheet-drag-area').boundingBox()
+  await drag(handle.x + handle.width / 2, handle.y + handle.height / 2, 380)
+  await expect(dialog).toHaveCount(0)
+  await expect(toggle).toBeFocused()
+  await expect(toggle).not.toHaveAttribute('data-active')
+  await expect(page.locator('.news-article')).toHaveCount(1)
+  await toggle.click()
+  await expect(dialog.getByRole('radio', { name: '전체', exact: true })).toBeChecked()
+  await page.mouse.click(8, 8)
+  await expect(dialog).toHaveCount(0)
+  await expect(toggle).toBeFocused()
+  expect(state.pageErrors).toEqual([])
+})
+
+test('a failed mobile drawer chunk is closable and reload restores filters without losing articles', async ({ page }) => {
+  await setup(page)
+  await page.setViewportSize({ width: 393, height: 740 })
+  await page.route(`**/${drawerFile}`, route => route.abort())
+  await page.goto('/')
+  const toggle = page.locator('.news-filter-toggle'), dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
+  await toggle.click()
+  await expect(dialog.getByRole('alert')).toContainText('필터를 불러오지 못했습니다.')
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+  await expect(toggle).toBeFocused()
+  await expect(page.locator('.news-article')).toHaveCount(1)
+  await page.unroute(`**/${drawerFile}`)
+  await toggle.click()
+  await dialog.getByRole('button', { name: '페이지 새로고침', exact: true }).click()
+  await expect(page.locator('.news-article')).toHaveCount(1)
+  await toggle.click()
+  await expect(dialog.locator('.news-sheet-drag-area')).toBeVisible()
+  await dialog.getByRole('button', { name: '뉴스 필터 닫기', exact: true }).click()
+  await expect(toggle).toBeFocused()
 })
 
 test('news warnings remain visible with folded source details and a failed refresh retains original articles and receipt time', async ({ page }) => {
