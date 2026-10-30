@@ -283,14 +283,14 @@ test('every home card title and its actual link use the same font before and aft
 
 test('header clocks stay centered without covering navigation and the market strip stays compact and readable', async ({ page, isMobile }, testInfo) => {
   const state = await setup(page)
-  await page.goto('/')
-  await expect(page.locator('.market-ticker-item').first()).toBeVisible()
-  await fontsReady(page)
   const metrics = []
   for (const width of isMobile ? [393, 320] : [2048, 1440, 1280, 1101, 1100, 1024, 861, 860, 768, 700, 393, 320]) {
     await page.setViewportSize({ width, height: 700 })
-    if (width <= 700) await expect(page.locator('.home-briefing')).toHaveClass(/is-mobile/)
-    else await expect(page.locator('.home-briefing')).not.toHaveClass(/is-mobile/)
+    // Home intentionally omits the strip on mobile; Markets exposes the same widget.
+    const path = width <= 700 ? '/markets' : '/'
+    if (new URL(page.url()).pathname !== path) await page.goto(path)
+    await expect(page.locator('.market-ticker-item').first()).toBeVisible()
+    if (width > 700) await expect(page.locator('.home-briefing')).not.toHaveClass(/is-mobile/)
     await fontsReady(page)
     const layout = await page.evaluate(() => {
       const box = selector => { const r = document.querySelector(selector).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, height: r.height, center: r.top + r.height / 2 } }
@@ -317,14 +317,23 @@ test('header clocks stay centered without covering navigation and the market str
     if (isMobile) expect(layout.controlHeight).toBeGreaterThanOrEqual(44)
     await expect(page.locator('.market-ticker-item').first().locator('.market-ticker-time')).toContainText('시세 기준')
     await noOverflow(page)
-    metrics.push({ width, ...layout })
+    metrics.push({ width, path, ...layout })
     if ([2048, 1440, 1101, 768, 320].includes(width)) await page.screenshot({ path: testInfo.outputPath(`home-ui-header-${width}.png`) })
   }
   if (!isMobile) {
     await page.setViewportSize({ width: 1440, height: 700 })
-    await page.getByRole('button', { name: 'Contact +', exact: true }).click()
-    await expect(page.locator('#site-contact-links a').first()).toHaveText('Personal Profile ↗')
-    await expect(page.locator('#site-contact-links a').first()).toHaveAttribute('href', 'https://negamuster.github.io/')
+    await page.getByRole('button', { name: '통합 검색·빠른 이동', exact: true }).press('Tab')
+    const button = page.getByRole('button', { name: 'Contact +', exact: true })
+    await expect(button).toBeFocused()
+    await button.press('Enter')
+    await button.press('Tab')
+    const profile = page.locator('#site-contact-links a').first()
+    await expect(profile).toBeFocused()
+    await expect(profile).toBeInViewport()
+    await expect(profile).toHaveText('Personal Profile ↗')
+    await expect(profile).toHaveAttribute('href', 'https://negamuster.github.io/')
+    await profile.press('Escape')
+    await expect(page.locator('#site-contact-links')).toHaveCount(0)
   }
   await page.goto('/more')
   const contact = page.getByRole('region', { name: 'Contact', exact: true })
