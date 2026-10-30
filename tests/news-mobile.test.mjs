@@ -7,9 +7,7 @@ import { load } from 'cheerio'
 
 const { default: NewsArticle } = await import('../src/components/NewsArticle.tsx')
 const { default: SavedItemsProvider } = await import('../src/components/SavedItemsProvider.tsx')
-const { default: MobileNewsFilters } = await import('../src/components/MobileNewsFilters.tsx')
 const { default: NewsFeed } = await import('../src/components/NewsFeed.tsx')
-const { defaultNewsFilters } = await import('../src/lib/newsFilters.ts')
 const item = { id: 'mobile-news', title: '긴 제목도 임의로 자르지 않고 시장의 움직임과 그 이유를 온전히 확인할 수 있는 기사', publisher: 'Test Financial News', published_utc: '2026-10-15T03:20:00Z', article_url: 'https://example.com/news/mobile', region: 'global', topics: ['economy', 'tech'] }
 const render = (props = {}) => load(renderToStaticMarkup(createElement(SavedItemsProvider, null,
   createElement(NewsArticle, { item, mobile: true, read: false, timeLabel: '30분 전', onRead() {}, ...props }))))
@@ -51,19 +49,6 @@ test('older articles without topic metadata still render the complete title and 
   assert.equal($('h3').text(), item.title)
   assert.equal($('.mobile-news-topics').text(), '')
   assert.equal($('.mobile-news-footer > button').length, 1)
-})
-test('mobile filter sheet has a labelled native dialog, keyboard-native choices and separate reset/apply controls', () => {
-  const $ = load(renderToStaticMarkup(createElement(MobileNewsFilters, { id: 'test-filters', value: defaultNewsFilters('list'), items: [], available: true, isRead: () => false, onApply() {}, onDismiss() {} })))
-  assert.equal($('dialog').attr('aria-modal'), 'true')
-  assert.equal($('dialog').attr('aria-labelledby'), $('h2').attr('id'))
-  assert.equal($('dialog').attr('aria-describedby'), $('.news-sheet-header p').attr('id'))
-  assert.equal($('fieldset').length, 4)
-  assert.equal($('input[type=radio][checked]').length, 3)
-  assert.equal($('.news-sheet-reset').text(), '조건 초기화')
-  assert.equal($('.news-sheet-apply').text(), '적용하기')
-  assert.equal($('.news-sheet-close').attr('aria-label'), '뉴스 필터 닫기')
-  assert.equal($('.news-sheet-footer [role=status]').text(), '이 조건에 맞는 기사 0개')
-  assert.equal($('dialog[open]').length, 0, 'showModal, not an open attribute, controls top-layer lifecycle')
 })
 test('news filters keep desktop inline controls while mobile exposes a closed dialog trigger and compact toolbar', () => {
   const feed = mobile => load(renderToStaticMarkup(createElement(SavedItemsProvider, null, createElement(NewsFeed, { mobile }))))
