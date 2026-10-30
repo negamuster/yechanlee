@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'index.html'
+      - 'public/anthracite-social*'
       - 'config/sec-monitor.json'
       - 'config/us-equity-calendar-review.json'
       - 'data/us-equity-sessions.json'
