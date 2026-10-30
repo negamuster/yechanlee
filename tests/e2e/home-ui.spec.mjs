@@ -323,7 +323,7 @@ test('header clocks stay centered without covering navigation and the market str
   if (!isMobile) {
     await page.setViewportSize({ width: 1440, height: 700 })
     await page.getByRole('button', { name: '통합 검색·빠른 이동', exact: true }).press('Tab')
-    const button = page.getByRole('button', { name: 'Contact +', exact: true })
+    const button = page.locator('button[aria-controls="site-contact-links"]')
     await expect(button).toBeFocused()
     await button.press('Enter')
     await button.press('Tab')
