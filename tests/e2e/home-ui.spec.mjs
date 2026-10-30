@@ -240,7 +240,7 @@ test('every home card title and its actual link use the same font before and aft
   await page.goto('/')
   const readTitles = async () => page.locator('.home-content h2.widget-title').evaluateAll(nodes => nodes.flatMap(node => [node, ...node.querySelectorAll('a')].map(element => {
     const s = getComputedStyle(element)
-    return { text: element.textContent, family: s.fontFamily, size: parseFloat(s.fontSize), weight: s.fontWeight, lineHeight: parseFloat(s.lineHeight), spacing: s.letterSpacing }
+    return { text: element.textContent, family: s.fontFamily, size: parseFloat(s.fontSize), weight: s.fontWeight, lineHeight: parseFloat(s.lineHeight), spacing: s.letterSpacing === 'normal' ? 0 : parseFloat(s.letterSpacing) }
   })))
   const check = async () => {
     await fontsReady(page)
@@ -251,7 +251,7 @@ test('every home card title and its actual link use the same font before and aft
       expect(title.size).toBe(18)
       expect(title.weight).toBe('600')
       expect(title.lineHeight).toBeCloseTo(25.2, 1)
-      expect(title.spacing).toBe('0px')
+      expect(title.spacing).toBe(0)
     }
     return titles
   }
