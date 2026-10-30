@@ -23,7 +23,7 @@ export default function MobileNewsFilters({ id, value, items, available, isRead,
       <Drawer.Backdrop className="news-filter-backdrop" />
       <Drawer.Viewport className="news-filter-viewport">
         <Drawer.Popup id={id} className="news-filter-sheet" initialFocus={close} finalFocus={returnFocus}
-          aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
+          aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
     <div className="news-sheet-drag-area" aria-hidden="true"><span /></div>
     <header className="news-sheet-header">
       <div><Drawer.Title id={`${id}-title`}>뉴스 필터</Drawer.Title><Drawer.Description id={`${id}-description`}>원하는 조건을 고른 뒤 적용해 주세요.</Drawer.Description></div>
