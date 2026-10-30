@@ -41,7 +41,7 @@ export default function Home() {
       <div className="home-primary">
         <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><HomeBriefing mobile={mobile} /></LinkedWidget>
         <section className="home-news" aria-labelledby="home-news-title">
-          <h2 id="home-news-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
+          <h2 id="home-news-title" className="widget-title" tabIndex={-1}>{mobile ? '최신 뉴스' : 'Latest News'}</h2>
           <NewsFeed compact mobile={mobile} previewTarget={newsTarget} previewSector={newsSector} onClearSector={() => setNewsSector(null)} />
         </section>
       </div>

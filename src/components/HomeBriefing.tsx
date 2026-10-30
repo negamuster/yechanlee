@@ -8,7 +8,7 @@ import './HomeBriefing.css'
 export function HomeBriefingCard({ item, mobile = false }: { item?: Briefing; mobile?: boolean }) {
   const mode = item?.reviewMode === 'automated' ? 'AI 작성·자동 검토' : item?.reviewMode === 'gemini-research' ? 'Gemini 본문 요약·해석 · 자동 근거 대조' : item?.reviewMode === 'gemini' ? 'Gemini 제목 요약 · 자동 대조' : item?.reviewMode === 'rules' ? '규칙 기반 자동 정리 · AI 미사용' : ''
   return <section className="home-briefing-card" aria-labelledby="home-briefing-title">
-    <div className="briefing-kicker widget-heading"><h2 id="home-briefing-title"><Link to="/briefings" data-widget-link aria-label={`${mobile ? '오늘의 브리핑' : 'Daily Market Briefing'} · 지난 브리핑 목록 보기`}>{mobile ? '오늘의 브리핑' : 'Daily Market Briefing'}</Link></h2></div>
+    <div className="briefing-kicker widget-heading"><h2 id="home-briefing-title" className="widget-title"><Link to="/briefings" data-widget-link aria-label={`${mobile ? '오늘의 브리핑' : 'Daily Market Briefing'} · 지난 브리핑 목록 보기`}>{mobile ? '오늘의 브리핑' : 'Daily Market Briefing'}</Link></h2></div>
     {item ? <>
       <p className="briefing-meta home-briefing-date">{item.sessionDate ? `미국 거래일 ${item.sessionDate}` : '뉴스·공식 지표 모음'} · 기준 <time dateTime={item.cutoffAt}>{kstTime(item.cutoffAt)}</time></p>
       <h3><Link to={`/briefings/${item.id}`}>{withoutCitations(item.homepage?.headline ?? item.title)}</Link></h3>

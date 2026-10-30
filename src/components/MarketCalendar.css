@@ -1,6 +1,6 @@
 .market-calendar { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--ui-border); color: var(--ui-text); font-family: var(--font-ui); min-width: 0; }
 .calendar-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.calendar-heading h2 { font-size: var(--ui-font-section); font-weight: 600; margin: 0; }
+.calendar-heading :is(h1, h2) { font-size: var(--ui-font-section); font-weight: 600; margin: 0; }
 .calendar-heading a { font-size:var(--ui-font-control); color: #62655a; }
 .calendar-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }
 .calendar-tabs, .calendar-filters { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -35,7 +35,7 @@
 .calendar-page { max-width: 1040px; margin: 28px auto 64px; padding: 0 24px; }
 .calendar-page > a { font-size: 13px; color: #656b5c; }
 .calendar-full { margin-top: 20px; }
-.calendar-full .calendar-heading h2 { font-size: 28px; }
+.calendar-full .calendar-heading :is(h1, h2) { font-size: 28px; }
 .calendar-intro { color: #73776b; font-size:var(--ui-font-body); line-height: 1.7; }
 .calendar-full .calendar-list { max-height: none; overflow: visible; padding: 0; }
 .calendar-full .calendar-event { padding: 15px 10px; }
@@ -43,7 +43,7 @@
 .calendar-full .calendar-event-meta, .calendar-full .calendar-event-foot { font-size:var(--ui-font-control); }
 .calendar-event-description { margin: 6px 0; font-size: 13px; line-height: 1.6; color: #73776b; }
 @media (max-width: 700px) { .calendar-page { padding: 0 18px; } }
-.calendar-heading h2 small { font-size:var(--ui-font-meta); color: #85877e; font-weight: 400; margin-left: 4px; }
+.calendar-heading :is(h1, h2) small { font-size:var(--ui-font-meta); color: #85877e; font-weight: 400; margin-left: 4px; }
 .calendar-settings { display: flex; gap: 5px; }
 .calendar-month-navigation { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 12px; }
 .calendar-month-navigation strong { font-size: 16px; font-weight: 500; }

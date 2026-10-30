@@ -35,7 +35,7 @@ export default function CompanyMap({compact=false, controls}: {compact?:boolean;
   useEffect(()=>{const timer=setInterval(()=>setClock(Date.now()),60000);return ()=>clearInterval(timer)},[])
   const oldQuote=!!data?.companies.some(c=>clock-Date.parse(c.quoteAt)>5*86400000)
   return <section className={`company-map${compact?' is-compact':''}`} aria-labelledby={titleId}>
-    <div className="widget-heading"><h2 id={titleId}>{compact?<Link to="/equity" data-widget-link aria-label="Maps 기업별 시가총액 지도 보기">Maps</Link>:'Maps · 기업별 시가총액'}</h2><WidgetActions label="Maps" refresh={{loading,onClick:()=>setRevision(n=>n+1)}} info={{id:infoId,label:'Maps 출처와 산정 기준',open:info,disabled:!data,onClick:()=>setInfo(v=>!v)}} /></div>
+    <div className="widget-heading"><h2 id={titleId} className="widget-title">{compact?<Link to="/equity" data-widget-link aria-label="Maps 기업별 시가총액 지도 보기">Maps</Link>:'Maps · 기업별 시가총액'}</h2><WidgetActions label="Maps" refresh={{loading,onClick:()=>setRevision(n=>n+1)}} info={{id:infoId,label:'Maps 출처와 산정 기준',open:info,disabled:!data,onClick:()=>setInfo(v=>!v)}} /></div>
     <div id={infoId} className="widget-info-panel" data-widget-interactive hidden={!info}>
       <p>면적은 USD 기업 시가총액 추정치, 색상은 정규장 시세의 전일 종가 대비 등락률입니다. 실시간 시황이 아닙니다. ADR은 공급자가 제공하는 기업 전체 시가총액 기준입니다.</p>
       <p>Yahoo Finance 시총 상위 {data?.sourceCount??100}개 원본 중 NYSE·Nasdaq 주식·중복 제거 후 {data?.companies.length??'—'}개 기업. 시장 전체나 특정 지수의 구성 종목 전체가 아닙니다. 업종은 자체 사업 분류이며 해당 업종 전체 순위가 아닙니다.</p>

@@ -234,3 +234,48 @@ test('home reflows through desktop, tablet, zoom-equivalent and narrow mobile wi
   }
   expect(state.pageErrors).toEqual([])
 })
+
+test('every home card title and its actual link use the same font before and after reading an edition', async ({ page }, testInfo) => {
+  await setup(page)
+  await page.goto('/')
+  const readTitles = async () => page.locator('.home-content h2.widget-title').evaluateAll(nodes => nodes.flatMap(node => [node, ...node.querySelectorAll('a')].map(element => {
+    const s = getComputedStyle(element)
+    return { text: element.textContent, family: s.fontFamily, size: parseFloat(s.fontSize), weight: s.fontWeight, lineHeight: parseFloat(s.lineHeight), spacing: s.letterSpacing }
+  })))
+  const check = async () => {
+    await fontsReady(page)
+    const titles = await readTitles()
+    expect(titles.length).toBeGreaterThanOrEqual(3)
+    for (const title of titles) {
+      expect(title.family).toContain('Pretendard')
+      expect(title.size).toBe(18)
+      expect(title.weight).toBe('600')
+      expect(title.lineHeight).toBeCloseTo(25.2, 1)
+      expect(title.spacing).toBe('0px')
+    }
+    return titles
+  }
+  const measurements = []
+  for (const width of [1440, 1024, 768, 393, 320]) {
+    await page.setViewportSize({ width, height: 1000 })
+    if (width <= 700) await expect(page.locator('.home-briefing')).toHaveClass(/is-mobile/)
+    else await expect(page.locator('.home-briefing')).not.toHaveClass(/is-mobile/)
+    const titles = await check()
+    expect(await page.locator('.home-content h2.widget-title').count()).toBe(width > 700 ? 6 : 2)
+    if (width > 700) {
+      const maps = page.locator('.home-dashboard-maps')
+      await maps.getByRole('button', { name: '업종 ETF', exact: true }).click()
+      await check()
+      await maps.getByRole('button', { name: '기업 시가총액', exact: true }).click()
+    }
+    await noOverflow(page)
+    if ([1440, 320].includes(width)) await page.screenshot({ path: testInfo.outputPath(`home-ui-titles-${width}.png`), fullPage: true })
+    measurements.push({ width, titles })
+  }
+  await page.getByRole('link', { name: '브리핑 전체 보기', exact: true }).click()
+  await expect(page.locator('.briefing-article h1')).toBeVisible()
+  await page.getByRole('link', { name: '← 지난 브리핑', exact: true }).click()
+  await page.getByRole('link', { name: '← 홈', exact: true }).click()
+  await check()
+  await writeFile(testInfo.outputPath('home-ui-title-metrics.json'), JSON.stringify(measurements, null, 2))
+})

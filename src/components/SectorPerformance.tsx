@@ -42,7 +42,7 @@ export function SectorETF({ compact = false, selectedSector, onSelectSector, con
     <p className="sector-note">Yahoo Finance · {data.basis}. 업종 전체 지수가 아닌 대표 ETF의 성과입니다. 1주는 7일, 1개월은 30일 전 또는 직전 거래일 대비이며, 연초 이후는 전년도 마지막 거래일 대비입니다.{!compact && ' 초과성과는 업종 ETF 수익률에서 VOO 수익률을 뺀 값입니다.'}</p>
   </>
   return <section className={`sector-panel ${compact ? 'sector-compact' : ''}`} aria-label="Maps · 미국 업종 ETF 히트맵">
-    <div className={`sector-heading${compact ? ' widget-heading' : ''}`}><h2>{compact ? <Link to="/equity" data-widget-link aria-label="Maps 전체 업종 성과 보기">Maps</Link> : 'Maps'}</h2>
+    <div className={`sector-heading${compact ? ' widget-heading' : ''}`}><h2 className="widget-title">{compact ? <Link to="/equity" data-widget-link aria-label="Maps 전체 업종 성과 보기">Maps</Link> : 'Maps'}</h2>
       {compact && <WidgetActions label="Maps" refresh={{ loading, onClick: () => setRetry(n => n + 1) }} info={{ id: infoId, label: 'Maps 출처와 산정 기준', open: infoOpen, disabled: !data, onClick: () => setInfoOpen(value => !value) }} />}
     </div>
     {controls}

@@ -47,7 +47,7 @@
   .home-content.market-hub .movers-status button { min-height: 44px; }
   .calendar-page { margin-block: 12px 24px; }
   .calendar-page .calendar-full { margin-top: 12px; padding-top: 12px; }
-  .calendar-page .calendar-heading h2 { font-size: 20px; }
+  .calendar-page .calendar-heading :is(h1, h2) { font-size: 20px; }
   .calendar-page .calendar-controls { margin-block: 10px 6px; }
   .calendar-page .calendar-month-grid { margin-block: 10px; }
   .calendar-page .calendar-full .calendar-event { padding: 12px 6px; overflow-wrap: anywhere; }

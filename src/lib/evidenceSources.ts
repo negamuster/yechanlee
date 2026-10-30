@@ -30,7 +30,7 @@ export function briefingEvidence(item: Briefing, stock?: NonNullable<Briefing['h
   const facts: EvidenceSource['facts'] = [{ label: '정보 기준 시각', value: item.cutoffAt }, ...(item.sessionDate ? [{ label: '미국 거래일', value: item.sessionDate }] : [])]
   if (stock) facts.push({ label: `${stock.name} (${stock.ticker})`, value: stock.change }, { label: '관측 기준', value: stock.basis }, { label: '당시 해석', value: stock.reason.slice(0, 1000) })
   else item.summary.slice(0, 3).forEach((value, i) => facts.push({ label: `요약 ${i + 1}`, value: value.slice(0, 1000) }))
-  const corrections = item.corrections.map(c => `${c.at}: ${c.text}`).join(' · ')
+  const corrections = (item.corrections ?? []).map(c => `${c.at}: ${c.text}`).join(' · ')
   return { kind: 'briefing', title: `${item.title}${stock ? ` · ${stock.ticker}` : ''}`, url: `https://yechanlee.vercel.app/briefings/${item.id}`, publisher: 'Anthracite', publishedAt: item.publishedAt,
     period: item.sessionDate || item.id, observedAt: item.cutoffAt, stale: false, facts,
     links: sources.slice(0, 30).map(s => ({ label: `${s.label}${s.accessNote?` · ${s.accessNote}`:''}`.slice(0, 300), url: s.url })), caveat: `브리핑에 기재된 요약·해석과 출처입니다. 원문 확인이 필요합니다. ${item.dataNote}${corrections ? ` 연결 당시 정정 이력: ${corrections}` : ''}`.slice(0, 2500) }

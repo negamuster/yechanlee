@@ -43,7 +43,6 @@
 .home-content .sector-controls { margin: 12px 0; }
 .home-content .sector-note { margin: 10px 0 4px; }
 .home-content :is(.movers-heading, .sector-heading, .market-live-heading) { margin-bottom: 10px; gap: 8px; }
-.home-content :is(.movers-heading, .sector-heading, .market-live-heading) h2 { font-size:var(--ui-font-section); }
 .home-content :is(.movers-description, .market-live-description) { font-size:var(--ui-font-control); margin: 8px 0 12px; }
 .home-content .market-live-actions { font-size:var(--ui-font-control); }
 .home-dashboard-live .market-live-note { font-size:var(--ui-font-meta); }
@@ -75,17 +74,15 @@
 .home-dashboard-movers .movers-footnote { padding-top: 8px; font-size:var(--ui-font-meta); line-height: 1.6; }
 .home-dashboard-movers .movers-footnote p { margin-bottom: 5px; }
 .home-dashboard-movers .movers-notice, .home-dashboard-movers .movers-empty { font-size:var(--ui-font-control); padding: 8px 0; }
-/* Shared section labels and controls, including the separate Markets page. */
-.home-page .home-content :is(.briefing-kicker, .sector-heading, .calendar-heading, .market-live-heading, .movers-heading) h2,
-.home-page .home-news > h2,
+/* Home controls and the compact market-strip label. */
 .home-page .market-ticker-meta > strong { font-family: var(--font-ui); font-weight: 600; letter-spacing: 0; }
 .home-page .home-content .widget-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 8px; min-height: 32px; margin: 0 0 12px; padding: 0; }
-.home-page .home-content .widget-heading h2 { min-width: 0; margin: 0; font-size: var(--ui-font-section); line-height: 1.4; overflow-wrap: anywhere; }
+.home-page .home-content .widget-heading h2 { min-width: 0; margin: 0; line-height: 1.4; overflow-wrap: anywhere; }
 .home-page .home-content .widget-heading h2 [data-widget-link] { white-space: normal; }
 .home-page .home-content .widget-info-panel { margin: 0 0 12px; }
 .home-page .home-content .widget-heading + :is(.sector-controls, .calendar-month-navigation) { margin-top: 0; }
 .home-widget, .home-news { box-shadow: 0 2px 12px #10213a04; }
-.home-briefing .briefing-kicker a { color: var(--ui-selected); font-weight: 650; }
+.home-briefing .briefing-kicker a { color: var(--ui-selected); }
 .home-news .news-controls { border-color: transparent; background: var(--ui-surface); }
 .home-news .news-grid { gap: 16px; border-top: 0; padding-top: 4px; }
 .home-news .news-grid .news-card:nth-child(n) { padding: 16px; border: 1px solid var(--ui-border); border-radius: 16px; background: var(--ui-card); }
@@ -128,7 +125,6 @@
 .home-page :is(.home-market-column, .home-dashboard-sidebar) { gap: 16px; }
 .home-page :is(.home-market-column, .home-dashboard-sidebar) > .home-widget { padding: 18px; }
 .home-page :is(.home-market-column, .home-dashboard-sidebar) .widget-heading { margin-bottom: 10px; }
-.home-page :is(.home-market-column, .home-dashboard-sidebar) .widget-heading h2 { font-size: 18px; }
 .home-page .home-content .sector-tile { padding: 7px; gap: 3px; }
 .home-page .home-content .sector-tile strong { font-size: 16px; }
 .home-page .home-content .sector-selectable button > span { min-height: 1.4em; }
@@ -199,4 +195,15 @@
   .home-content .market-live { max-width: 440px; margin-inline: auto; }
   .market-live-actions :is(a, button) { min-height: 44px; display: inline-flex; align-items: center; }
   #home-news-title { scroll-margin-top: 16px; }
+}
+
+/* One title contract for home cards, including the actual text-bearing link.
+   Kept after responsive rules so late-loaded widget CSS cannot change the type. */
+.home-page .home-content h2.widget-title,
+.home-page .home-content h2.widget-title > a {
+  font-family: var(--font-ui);
+  font-size: var(--ui-font-widget-title);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
 }

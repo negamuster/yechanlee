@@ -22,7 +22,7 @@ export default function Briefings() {
     {!!briefingSections(item).length && <section className="briefing-edition-details" aria-label="발행 당시 주요 변화"><h2>발행 당시 주요 변화</h2><p className="briefing-meta">정보 기준 {kstTime(item.cutoffAt)} · 자산별 관측 시각과 비교 기준을 확인하세요.</p>{briefingSections(item).map(section => <BriefingDetails key={section.key} item={item} section={section.key} mobile headingLevel="h3" />)}</section>}
     {item.blocks.map((b,i)=>b.kind==='heading'?<h2 key={i}>{b.text}</h2>:b.kind==='subheading'?<h3 key={i}>{b.text}</h3>:b.kind==='metadata'?<div className="briefing-tags" key={i}>{b.text.split(' · ').map((tag,j)=><span key={j}>{tag}</span>)}</div>:<p key={i}>{b.text}</p>)}
     <p className="briefing-meta">{item.dataNote}</p><Link to="/briefings/methodology">작성 원칙 →</Link><section className="briefing-sources"><h2>출처</h2><ol>{item.sources.map(s=><li id={`source-${s.id}`} key={s.id} value={s.id}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label} ↗</a>{s.accessNote && <span className="briefing-access">{s.accessNote}</span>}{s.links?.map(link=><a className="briefing-source-alternate" key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}</li>)}</ol></section>
-    {!!item.corrections.length && <details><summary>정정 이력</summary>{item.corrections.map((c,i)=><p key={i}>{kstTime(c.at)} · {c.text}</p>)}</details>}
+    {!!item.corrections?.length && <details><summary>정정 이력</summary>{item.corrections.map((c,i)=><p key={i}>{kstTime(c.at)} · {c.text}</p>)}</details>}
     <p className="briefing-meta">시장 정보와 분석을 제공하며 특정 투자상품의 매수·매도를 권유하지 않습니다.</p>
   </main>
 }
