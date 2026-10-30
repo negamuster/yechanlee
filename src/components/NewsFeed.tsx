@@ -224,6 +224,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
             {query && <button type="button" className="news-search-clear" aria-label="검색어 지우기" onClick={() => { setQuery(''); setVisibleBatches(1); searchInput.current?.focus() }}><span aria-hidden="true">×</span></button>}
           </div>
           <button type="button" className="news-filter-toggle" aria-haspopup={mobile ? 'dialog' : undefined}
+            data-active={filterCount > 0 || undefined}
             aria-expanded={mobile ? Boolean(mobileDraft) : filtersOpen} aria-controls={!mobile || mobileDraft ? filtersId : undefined}
             onClick={event => {
               if (mobile) { event.currentTarget.focus({ preventScroll: true }); setMobileDraft({ ...currentFilters }) }
@@ -284,7 +285,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
           <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>
-        </> : !failed || feed ? <div className="news-notice" role="status"><p>{failed || partial ? '표시 가능한 기사 중 선택한 조건에 맞는 기사가 없습니다.' : hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
+        </> : !failed || feed ? <div className="news-notice" role="status">{mobile && <h3>조건에 맞는 기사가 없어요</h3>}<p>{failed || partial ? '표시 가능한 기사 중 선택한 조건에 맞는 기사가 없습니다.' : hideRead ? '최근 72시간 내 이 조건의 읽지 않은 기사가 없습니다.' : '최근 72시간 내 선택한 조건에 맞는 기사가 없습니다.'}</p>
           {filterCount > 0 && <button className="news-reset" type="button" onClick={resetFilters}>필터 초기화</button>}
         </div> : null}
       </div>

@@ -105,6 +105,8 @@
   .news-filters button { flex: 1; }
 }
 @media (max-width: 700px) {
+  .mobile-news-feed .news-filters { border: 0; padding: 4px; background: var(--ui-surface); }
+  .mobile-news-feed .news-filters button { border-radius: 8px; }
   .mobile-news-feed .news-toolbar { flex-wrap: nowrap; }
   .mobile-news-feed .news-toolbar-actions { width: auto; margin-left: auto; }
   .mobile-news-feed .news-refresh { min-width: 44px; min-height: 44px; padding: 8px; border-color: var(--ui-border); background: #fff; }
@@ -114,6 +116,11 @@
   .news-search { padding-left: 10px; }
   .news-search input { font-size: 16px; }
   .news-controls .news-filter-toggle { padding-inline: 10px; }
+  .mobile-news-feed .news-filter-toggle[data-active] { border-color: var(--ui-accent-border); color: var(--ui-selected-hover); background: var(--ui-accent-soft); }
+  .mobile-news-feed .news-notice { margin: 16px 0; padding: 24px 16px; border: 1px dashed var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-surface); text-align: center; }
+  .mobile-news-feed .news-notice h3 { margin: 0 0 8px; color: var(--ui-text); font-size: 16px; font-weight: 600; }
+  .mobile-news-feed .news-notice p { margin: 0; }
+  .mobile-news-feed .news-more { width: 100%; margin-block: 20px; background: var(--ui-surface); }
   .news-topic-filters { flex-wrap: nowrap; overflow-x: auto; padding: 3px 3px 6px; scrollbar-width: thin; }
   .news-topic-filters button { flex-shrink: 0; }
   .news-read-toggle { gap: 7px; }

@@ -173,11 +173,13 @@
 @media (max-width: 700px) {
   .home-content { padding: 20px 16px 0; }
   .home-overview { display: block; }
-  .home-section-heading { margin-bottom: 18px; }
+  .home-section-heading { margin-bottom: 16px; gap: 4px; flex-direction: column; }
   .home-section-heading h1 { font-size: 23px; }
   .home-section-heading p { font-size: 13px; }
   .home-briefing { padding: 18px; }
-  .home-page .home-primary > :is(.home-briefing, .home-news) { padding: 18px; }
+  .home-page .home-primary > .home-briefing { padding: 16px; }
+  /* A full-width news surface avoids putting the reading list inside two gutters. */
+  .home-page .home-primary > .home-news { margin: 20px -16px 0; padding: 20px 16px; border-inline: 0; border-radius: 0; }
   .news-feed-compact .news-status-meta { gap: 0 10px; }
   .news-feed-compact .news-source-status summary { min-height: 44px; }
   .home-news { margin-top: 20px; padding: 18px; }

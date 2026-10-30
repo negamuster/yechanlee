@@ -159,6 +159,70 @@ test('compact news preserves filter choices and restores mobile dialog focus', a
   }
 })
 
+test('mobile home gives news full reading width and filter drafts remain accessible and reversible', async ({ page }, testInfo) => {
+  const state = await setup(page)
+  await page.goto('/')
+  const feed = page.locator('.mobile-news-feed'), toggle = feed.locator('.news-filter-toggle')
+  for (const width of [320, 393, 700]) {
+    await page.setViewportSize({ width, height: 740 })
+    await expect(page.locator('.home-briefing')).toHaveClass(/is-mobile/)
+    await expect(feed.locator('.news-article')).toHaveCount(1)
+    const readingWidth = await feed.locator('.mobile-news-link').evaluate(element => element.getBoundingClientRect().width)
+    expect(readingWidth).toBeGreaterThanOrEqual(width - 34)
+    await expect(page.locator('.home-briefing-summary')).toHaveText(edition.summary.slice(0, 3))
+    await noOverflow(page)
+    if (width === 393) await page.screenshot({ path: testInfo.outputPath('home-ui-mobile-foundation.png'), fullPage: true })
+
+    await toggle.click()
+    let dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
+    await expect(dialog.getByRole('button', { name: '뉴스 필터 닫기', exact: true })).toBeFocused()
+    await dialog.getByText('국내', { exact: true }).click()
+    await expect(dialog.getByRole('radio', { name: '국내', exact: true })).toBeChecked()
+    await page.keyboard.press('Escape')
+    await expect(toggle).toBeFocused()
+    await expect(toggle).not.toHaveAttribute('data-active')
+    await expect(feed.locator('.news-article')).toHaveCount(1)
+
+    await toggle.click()
+    dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
+    await expect(dialog.getByRole('radio', { name: '전체', exact: true })).toBeChecked()
+    await dialog.getByText('국내', { exact: true }).click()
+    const layout = await dialog.evaluate(element => {
+      const body = element.querySelector('.news-sheet-body'), footer = element.querySelector('.news-sheet-footer').getBoundingClientRect()
+      return { footerTop: footer.top, footerBottom: footer.bottom, bodyCanScroll: body.scrollHeight > body.clientHeight,
+        selectedChecks: [...element.querySelectorAll('input:checked + span svg')].every(svg => getComputedStyle(svg).display !== 'none'),
+        targetsFit: [...element.querySelectorAll('button, .news-sheet-options label, .news-sheet-read')].every(node => node.getBoundingClientRect().height >= 44),
+        width: element.clientWidth, scrollWidth: element.scrollWidth }
+    })
+    expect(layout.footerTop).toBeGreaterThanOrEqual(0)
+    expect(layout.footerBottom).toBeLessThanOrEqual(740)
+    expect(layout.bodyCanScroll).toBe(true)
+    expect(layout.selectedChecks).toBe(true)
+    expect(layout.targetsFit).toBe(true)
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.width + 1)
+    await writeFile(testInfo.outputPath(`home-ui-mobile-filters-${width}.json`), JSON.stringify(layout, null, 2))
+    if (width !== 700) await page.screenshot({ path: testInfo.outputPath(`home-ui-mobile-filters-${width}.png`) })
+    await dialog.getByRole('button', { name: '적용하기', exact: true }).click()
+    await expect(dialog).toHaveCount(0)
+    await expect(toggle).toBeFocused()
+    await expect(toggle).toHaveAttribute('data-active', 'true')
+    await expect(feed.getByRole('heading', { name: '조건에 맞는 기사가 없어요', exact: true })).toBeVisible()
+    await expect(feed.getByText('일부 매체를 확인하지 못했습니다.', { exact: true })).toBeVisible()
+
+    await toggle.click()
+    dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
+    await expect(dialog.getByRole('radio', { name: '국내', exact: true })).toBeChecked()
+    await dialog.getByRole('button', { name: '조건 초기화', exact: true }).click()
+    await expect(dialog.getByRole('radio', { name: '전체', exact: true })).toBeChecked()
+    await expect(toggle).toHaveAttribute('data-active', 'true')
+    await dialog.getByRole('button', { name: '적용하기', exact: true }).click()
+    await expect(toggle).not.toHaveAttribute('data-active')
+    await expect(feed.locator('.news-article')).toHaveCount(1)
+    await noOverflow(page)
+  }
+  expect(state.pageErrors).toEqual([])
+})
+
 test('news warnings remain visible with folded source details and a failed refresh retains original articles and receipt time', async ({ page }) => {
   const state = await setup(page)
   await page.goto('/')

@@ -20,7 +20,9 @@
   .home-briefing-card .widget-heading a, .home-briefing-read { min-height: 44px; }
 }
 @media (max-width: 700px) {
-  .home-briefing-card h3 { font-size: 21px; }
-  .home-briefing-footer { gap: 4px; }
+  .home-briefing-card h3 { margin: 12px 0 16px; font-size: 21px; }
+  .home-briefing-summaries { gap: 12px; }
+  .home-briefing-footer { gap: 10px; margin-top: 16px; padding-top: 16px; }
+  .home-briefing-read { justify-content: space-between; width: 100%; min-height: 48px; padding: 10px 12px; border-radius: var(--ui-radius); background: var(--ui-accent-soft); color: var(--ui-selected-hover); }
   .home-briefing-footer .home-briefing-disclaimer { flex-basis: 100%; }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Check, X } from 'lucide-react'
 import { defaultNewsFilters, matchingNews } from '../lib/newsFilters'
 import type { NewsFilters } from '../lib/newsFilters'
 import { outsideDialog, presentModal } from '../lib/modal'
@@ -28,16 +29,16 @@ export default function MobileNewsFilters({ id, value, items, available, isRead,
     }}>
     <header className="news-sheet-header">
       <div><h2 id={`${id}-title`}>뉴스 필터</h2><p id={`${id}-description`}>원하는 조건을 고른 뒤 적용해 주세요.</p></div>
-      <button type="button" className="news-sheet-close" aria-label="뉴스 필터 닫기" onClick={onDismiss} autoFocus><span aria-hidden="true">×</span></button>
+      <button type="button" className="news-sheet-close" aria-label="뉴스 필터 닫기" onClick={onDismiss} autoFocus><X size={20} aria-hidden="true" /></button>
     </header>
     <div className="news-sheet-body">
-      <fieldset><legend>지역</legend><div className="news-sheet-options">
+      <fieldset><legend>지역</legend><div className="news-sheet-options news-sheet-regions">
         {([{ value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' }] as const).map(option =>
-          <label key={option.value}><input type="radio" name={`${id}-region`} value={option.value} checked={draft.region === option.value} onChange={() => setDraft(current => ({ ...current, region: option.value }))} /><span>{option.label}</span></label>)}
+          <label key={option.value}><input type="radio" name={`${id}-region`} value={option.value} checked={draft.region === option.value} onChange={() => setDraft(current => ({ ...current, region: option.value }))} /><span><Check aria-hidden="true" />{option.label}</span></label>)}
       </div></fieldset>
       <fieldset><legend>주제</legend><div className="news-sheet-options">
         {[{ value: 'all' as const, label: '전체 주제' }, ...TOPICS].map(option =>
-          <label key={option.value}><input type="radio" name={`${id}-topic`} value={option.value} checked={draft.topic === option.value} onChange={() => setDraft(current => ({ ...current, topic: option.value }))} /><span>{option.label}</span></label>)}
+          <label key={option.value}><input type="radio" name={`${id}-topic`} value={option.value} checked={draft.topic === option.value} onChange={() => setDraft(current => ({ ...current, topic: option.value }))} /><span><Check aria-hidden="true" />{option.label}</span></label>)}
       </div></fieldset>
       <fieldset><legend>읽기 설정</legend>
         <label className="news-sheet-read"><input type="checkbox" checked={draft.hideRead} onChange={event => setDraft(current => ({ ...current, hideRead: event.target.checked }))} />
@@ -46,7 +47,7 @@ export default function MobileNewsFilters({ id, value, items, available, isRead,
       </fieldset>
       <fieldset><legend>표시 방식</legend><div className="news-sheet-options">
         {([{ value: 'list', label: '목록' }, { value: 'cards', label: '이미지 포함' }] as const).map(option =>
-          <label key={option.value}><input type="radio" name={`${id}-view`} value={option.value} checked={draft.view === option.value} onChange={() => setDraft(current => ({ ...current, view: option.value }))} /><span>{option.label}</span></label>)}
+          <label key={option.value}><input type="radio" name={`${id}-view`} value={option.value} checked={draft.view === option.value} onChange={() => setDraft(current => ({ ...current, view: option.value }))} /><span><Check aria-hidden="true" />{option.label}</span></label>)}
       </div></fieldset>
       {(draft.query.trim() || draft.sector) && <section className="news-sheet-extra" aria-label="추가 적용 조건">
         <h3>추가 적용 조건</h3>
