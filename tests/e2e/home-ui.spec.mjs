@@ -186,7 +186,8 @@ test('mobile home gives news full reading width and filter drafts remain accessi
     await toggle.click()
     dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
     await expect(dialog.getByRole('radio', { name: '전체', exact: true })).toBeChecked()
-    await dialog.getByText('국내', { exact: true }).click()
+    // Keep the global sources relevant while making the investing-only fixture empty.
+    await dialog.getByText('테크', { exact: true }).click()
     const layout = await dialog.evaluate(element => {
       const body = element.querySelector('.news-sheet-body'), footer = element.querySelector('.news-sheet-footer').getBoundingClientRect()
       return { footerTop: footer.top, footerBottom: footer.bottom, bodyCanScroll: body.scrollHeight > body.clientHeight,
@@ -211,9 +212,9 @@ test('mobile home gives news full reading width and filter drafts remain accessi
 
     await toggle.click()
     dialog = page.getByRole('dialog', { name: '뉴스 필터', exact: true })
-    await expect(dialog.getByRole('radio', { name: '국내', exact: true })).toBeChecked()
+    await expect(dialog.getByRole('radio', { name: '테크', exact: true })).toBeChecked()
     await dialog.getByRole('button', { name: '조건 초기화', exact: true }).click()
-    await expect(dialog.getByRole('radio', { name: '전체', exact: true })).toBeChecked()
+    await expect(dialog.getByRole('radio', { name: '전체 주제', exact: true })).toBeChecked()
     await expect(toggle).toHaveAttribute('data-active', 'true')
     await dialog.getByRole('button', { name: '적용하기', exact: true }).click()
     await expect(toggle).not.toHaveAttribute('data-active')
