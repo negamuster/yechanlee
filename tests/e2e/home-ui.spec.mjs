@@ -243,6 +243,7 @@ test('every home card title and its actual link use the same font before and aft
     return { text: element.textContent, family: s.fontFamily, size: parseFloat(s.fontSize), weight: s.fontWeight, lineHeight: parseFloat(s.lineHeight), spacing: s.letterSpacing === 'normal' ? 0 : parseFloat(s.letterSpacing) }
   })))
   const check = async () => {
+    await expect(page.locator('.home-content h2.widget-title').first()).toBeVisible()
     await fontsReady(page)
     const titles = await readTitles()
     expect(titles.length).toBeGreaterThanOrEqual(3)
