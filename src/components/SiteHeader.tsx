@@ -17,7 +17,7 @@ export default function SiteHeader() {
       <div className="site-contact">
         <button type="button" aria-expanded={contactOpen} aria-controls="site-contact-links" onClick={() => setContactOpen(!contactOpen)}>Contact {contactOpen ? '−' : '+'}</button>
         {contactOpen && <div id="site-contact-links" className="site-contact-links">
-          <a href="mailto:yechan030102@gmail.com">yechan030102@gmail.com</a>
+          <a href="https://negamuster.github.io/" target="_blank" rel="noopener noreferrer">개인 프로필 ↗</a>
           <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
         </div>}
       </div>
