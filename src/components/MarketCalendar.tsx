@@ -31,6 +31,7 @@ function useCalendarData(from: string, to: string, mode: 'month' | 'earnings' | 
   return useResource(`/api/calendar?from=${from}&to=${to}&mode=${mode}`, validCalendar, refreshPolicies.calendar, reload)
 }
 export default function MarketCalendar({ full = false }: { full?: boolean }) {
+  const Heading = full ? 'h1' : 'h2'
   const { items } = useSavedItems()
   const watched = new Set(items.stocks.map(s => s.ticker))
   const [now, setNow] = useState(Date.now)
@@ -119,7 +120,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     <p>일정 조회는 서버 응답 생성 시각이며, 출처별 원본 확인 시각과 다를 수 있습니다. 저장 일정은 수집 이후 변경 사항이 아직 반영되지 않았을 수 있습니다. 출처 오류가 있으면 재시도 가능 시각 이후 다음 요청에서 다시 확인하며, 새로고침으로 대기 시간을 없애지는 않습니다.</p><p>날짜별 점과 요약은 현재 조회한 일정만 표시합니다. 월간 보기의 실적은 선택 날짜만, 주간 보기의 실적은 해당 주를 조회합니다. 빈 날짜가 일정 없음을 보장하지는 않습니다.</p><p>BLS 직접 조회가 어려우면 CPI·PPI·고용보고서 등 9개 지표군은 FRED 일정으로 보완합니다. 그 외 BLS 일정은 별도 저장본의 확인 시각을 따릅니다.</p><p>일정 저장은 개별 .ics 파일 다운로드입니다. 시각이 미정인 일정은 미국 기준 날짜의 종일 일정으로 저장하며, 이후 변경 사항은 자동 반영되지 않습니다.</p><p>실적일은 기업 IR에서 최종 확인하세요. 주요 표시는 사이트 분류이며, 예정 시각 경과가 발표 완료를 뜻하지는 않습니다.</p>
   </>
   return <section className={`market-calendar${full ? ' calendar-full' : ''}`} aria-label="경제·실적 캘린더">
-    <div className={`calendar-heading${full ? '' : ' widget-heading'}`}><h2>{full ? <>Calendar <small>경제·실적</small></> : <Link to="/calendar" data-widget-link aria-label="Calendar 전체 경제·실적 캘린더 보기">Calendar</Link>}</h2>
+    <div className={`calendar-heading${full ? '' : ' widget-heading'}`}><Heading className="widget-title">{full ? <>Calendar <small>경제·실적</small></> : <Link to="/calendar" data-widget-link aria-label="Calendar 전체 경제·실적 캘린더 보기">Calendar</Link>}</Heading>
       {!full && <WidgetActions label="Calendar" refresh={{ loading, onClick: () => setReload(n => n + 1) }} info={{ id: infoId, label: '캘린더 출처와 조회 범위', open: infoOpen, onClick: () => setInfoOpen(value => !value) }} />}
     </div>
     {!full && <div id={infoId} hidden={!infoOpen} className="calendar-help widget-info-panel" data-widget-interactive>{help}</div>}

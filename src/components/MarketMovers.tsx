@@ -62,7 +62,7 @@ export default function MarketMovers({ overview = false }: { overview?: boolean 
   return (
     <section className="market-movers" aria-labelledby="market-movers-heading">
       <div className={`movers-heading${overview ? ' widget-heading' : ''}`}>
-        <h2 id="market-movers-heading">{overview ? <Link to="/markets#market-movers-heading" data-widget-link aria-label="Market Movers 전체 보기">Market Movers</Link> : 'Market Movers'}</h2>
+        <h2 id="market-movers-heading" className="widget-title">{overview ? <Link to="/markets#market-movers-heading" data-widget-link aria-label="Market Movers 전체 보기">Market Movers</Link> : 'Market Movers'}</h2>
         {overview && <WidgetActions label="Market Movers" refresh={{ loading, onClick: () => setRefresh(value => value + 1) }} info={{ id: infoId, label: '종목 순위 출처와 산정 기준', open: infoOpen, onClick: () => setInfoOpen(value => !value) }} />}
       </div>
       {overview && <div id={infoId} hidden={!infoOpen} className="movers-info widget-info-panel" data-widget-interactive>{info}</div>}

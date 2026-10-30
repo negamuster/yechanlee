@@ -1,6 +1,5 @@
 .home-briefing-card { color: var(--ui-text); }
 .home-page .home-content .home-briefing-card .widget-heading { min-height: 32px; margin-bottom: 4px; }
-.home-page .home-content .home-briefing-card .widget-heading h2 { font-size: var(--ui-font-control); }
 .home-briefing-card .widget-heading a { display: inline-flex; align-items: center; min-height: 32px; text-decoration: none; }
 .home-briefing-card .briefing-meta { color: var(--ui-muted); font-size: var(--ui-font-caption); line-height: 1.6; margin: 0; }
 .home-briefing-card .home-briefing-date { font-size: var(--ui-font-meta); font-variant-numeric: tabular-nums; }

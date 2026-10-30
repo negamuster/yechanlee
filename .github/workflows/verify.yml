@@ -69,6 +69,8 @@ jobs:
           path: |
             test-results/**/home-ui*.png
             test-results/**/home-ui*.json
+            test-results/**/screen-review*.png
+            test-results/**/screen-review*.json
             dist/.vite/initial-loading.json
           retention-days: 7
           if-no-files-found: ignore

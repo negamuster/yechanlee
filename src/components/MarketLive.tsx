@@ -17,7 +17,7 @@ export default function MarketLive({ autoPlay = true, compact = false }: { autoP
   return (
     <section className="market-live" aria-labelledby="market-live-heading">
       <div className={`market-live-heading${compact ? ' widget-heading' : ''}`}>
-        <h2 id="market-live-heading">{compact ? <Link to="/live" data-widget-link aria-label="Yahoo Finance Live 방송 페이지 보기">Yahoo Finance Live</Link> : 'Yahoo Finance Live'}</h2>
+        <h2 id="market-live-heading" className="widget-title">{compact ? <Link to="/live" data-widget-link aria-label="Yahoo Finance Live 방송 페이지 보기">Yahoo Finance Live</Link> : 'Yahoo Finance Live'}</h2>
         {compact && opened && <WidgetActions label="Yahoo Finance Live" close={() => setOpened(false)} />}
       </div>
       <div className="market-live-frame" id="market-live-player">
