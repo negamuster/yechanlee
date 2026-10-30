@@ -1,14 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#20251e"/>
-  <rect x="34" y="34" width="1132" height="562" fill="none" stroke="#66735a" stroke-opacity=".45"/>
-  <rect x="34" y="34" width="1132" height="5" fill="#a4b18f"/>
-  <text x="88" y="134" font-family="DejaVu Sans,sans-serif" font-size="17" letter-spacing="3" fill="#b5bea9">MARKETS / MACRO / DAILY BRIEFING</text>
-  <text x="78" y="300" font-family="Nimbus Roman,Times New Roman,serif" font-size="116" fill="#f7f6ef">Anthracite</text>
-  <line x1="88" y1="346" x2="660" y2="346" stroke="#788568" stroke-opacity=".7"/>
-  <text x="88" y="405" font-family="DejaVu Sans,sans-serif" font-size="30" fill="#edece2">Daily Market Briefing</text>
-  <text x="88" y="449" font-family="DejaVu Sans,sans-serif" font-size="19" fill="#b5bea9">Market indicators &amp; economic calendar</text>
-  <rect x="870" y="202" width="222" height="222" fill="#30382a" stroke="#788568" stroke-opacity=".45"/>
-  <text x="981" y="357" text-anchor="middle" font-family="Nimbus Roman,Times New Roman,serif" font-size="140" fill="#f7f6ef">A</text>
-  <text x="88" y="548" font-family="DejaVu Sans,sans-serif" font-size="17" fill="#c4cdb7">yechanlee.vercel.app</text>
-  <text x="1092" y="548" text-anchor="end" font-family="DejaVu Sans,sans-serif" font-size="13" letter-spacing="2" fill="#a7b199">BY YECHAN LEE</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Anthracite — Markets, Briefings &amp; Investment Tools</title>
+  <desc id="description">A bright Anthracite brand card with blue accents, an abstract chart, a heatmap and briefing lines. The graphics are decorative and contain no market observations.</desc>
+  <rect width="1200" height="630" fill="#f7f9fc"/>
+  <circle cx="1064" cy="188" r="214" fill="#eff5ff"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#2563eb"/>
+  <g font-family="Nimbus Sans,Arial,sans-serif">
+    <text x="76" y="114" font-size="14" font-weight="bold" letter-spacing="2.2" fill="#2563eb">YOUR DAILY MARKET PERSPECTIVE</text>
+    <text x="71" y="230" font-family="Nimbus Roman,Times New Roman,serif" font-size="90" fill="#191f28">Anthracite</text>
+    <rect x="76" y="263" width="56" height="4" rx="2" fill="#2563eb"/>
+    <text x="76" y="328" font-size="32" fill="#191f28">Markets, made clearer.</text>
+    <text x="76" y="376" font-size="23" fill="#596474">News, data and investment tools</text>
+    <text x="76" y="408" font-size="23" fill="#596474">in one place.</text>
+    <!-- Symbolic UI only: no company names, prices, dates or performance claims. -->
+    <rect x="730" y="116" width="394" height="378" rx="28" fill="#dfe8f6" opacity=".45"/>
+    <rect x="730" y="108" width="394" height="378" rx="28" fill="#ffffff" stroke="#e5e9ef"/>
+    <circle cx="760" cy="140" r="4" fill="#2563eb"/>
+    <circle cx="775" cy="140" r="4" fill="#c8d8f7"/>
+    <circle cx="790" cy="140" r="4" fill="#e5e9ef"/>
+    <line x1="754" y1="162" x2="1100" y2="162" stroke="#e5e9ef"/>
+    <text x="756" y="195" font-size="12" font-weight="bold" letter-spacing="1.4" fill="#596474">MARKETS</text>
+    <path d="M756 223H1098 M756 253H1098 M756 283H1098" fill="none" stroke="#eef1f6"/>
+    <path d="M756 272L790 256L824 265L858 230L892 241L926 222L960 236L994 205L1028 218L1062 201L1098 211V304H756Z" fill="#eff5ff"/>
+    <path d="M756 272L790 256L824 265L858 230L892 241L926 222L960 236L994 205L1028 218L1062 201L1098 211" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="1098" cy="211" r="6" fill="#ffffff" stroke="#2563eb" stroke-width="3"/>
+    <line x1="754" y1="321" x2="1100" y2="321" stroke="#e5e9ef"/>
+    <text x="756" y="351" font-size="12" font-weight="bold" letter-spacing="1.4" fill="#596474">MAPS</text>
+    <rect x="756" y="367" width="70" height="89" rx="8" fill="#2563eb"/>
+    <rect x="832" y="367" width="68" height="47" rx="8" fill="#93b6fa"/>
+    <rect x="832" y="420" width="31" height="36" rx="7" fill="#dce8ff"/>
+    <rect x="869" y="420" width="31" height="36" rx="7" fill="#bed3fc"/>
+    <text x="930" y="351" font-size="12" font-weight="bold" letter-spacing="1.4" fill="#596474">BRIEFINGS</text>
+    <rect x="930" y="370" width="168" height="9" rx="4.5" fill="#334155"/>
+    <rect x="930" y="391" width="136" height="9" rx="4.5" fill="#d9e0e9"/>
+    <rect x="930" y="412" width="156" height="9" rx="4.5" fill="#d9e0e9"/>
+    <rect x="930" y="439" width="58" height="17" rx="8.5" fill="#eff5ff"/>
+    <rect x="996" y="439" width="41" height="17" rx="8.5" fill="#eff5ff"/>
+    <text x="76" y="489" font-size="20" font-weight="bold" fill="#334155">Markets · Briefings · Investment Tools</text>
+    <line x1="76" y1="526" x2="1124" y2="526" stroke="#e1e7ef"/>
+    <text x="76" y="568" font-size="17" fill="#596474">yechanlee.vercel.app</text>
+    <text x="1124" y="568" text-anchor="end" font-size="12" letter-spacing="1.8" fill="#596474">BY YECHAN LEE</text>
+  </g>
 </svg>
