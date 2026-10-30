@@ -4,7 +4,7 @@ import { installScreenReviewFixtures } from './screen-review-fixtures.mjs'
 const editions = JSON.parse(await readFile(new URL('../../src/data/published-briefings.json', import.meta.url), 'utf8'))
 const legacy = editions.find(item => item.id === '2026-10-16')
 const screens = [
-  { id: 'home', path: '/', title: '오늘의 시장', ready: '.news-card', nav: '/' },
+  { id: 'home', path: '/', title: '오늘의 시장', ready: '.news-article', nav: '/' },
   { id: 'markets', path: '/markets', title: '시장', ready: '.mover-row', nav: '/markets' },
   { id: 'equity', path: '/equity', title: '주식시장', ready: '.company-map-tile', nav: '/markets' },
   { id: 'rates', path: '/rates', title: '금리·채권', ready: '.guide-resources', nav: '/markets' },
