@@ -280,3 +280,64 @@ test('every home card title and its actual link use the same font before and aft
   await check()
   await writeFile(testInfo.outputPath('home-ui-title-metrics.json'), JSON.stringify(measurements, null, 2))
 })
+
+test('header clocks stay centered without covering navigation and the market strip stays compact and readable', async ({ page, isMobile }, testInfo) => {
+  const state = await setup(page)
+  const metrics = []
+  for (const width of isMobile ? [393, 320] : [2048, 1440, 1280, 1101, 1100, 1024, 861, 860, 768, 700, 393, 320]) {
+    await page.setViewportSize({ width, height: 700 })
+    // Home intentionally omits the strip on mobile; Markets exposes the same widget.
+    const path = width <= 700 ? '/markets' : '/'
+    if (new URL(page.url()).pathname !== path) await page.goto(path)
+    await expect(page.locator('.market-ticker-item').first()).toBeVisible()
+    if (width > 700) await expect(page.locator('.home-briefing')).not.toHaveClass(/is-mobile/)
+    await fontsReady(page)
+    const layout = await page.evaluate(() => {
+      const box = selector => { const r = document.querySelector(selector).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, height: r.height, center: r.top + r.height / 2 } }
+      const clocks = box('.market-clocks'), header = box('.site-header'), quote = box('.market-ticker-item')
+      const overlap = [...document.querySelectorAll('.site-menu a')].some(el => { const r = el.getBoundingClientRect(); return r.width && r.height && r.left < clocks.right && r.right > clocks.left && r.top < clocks.bottom && r.bottom > clocks.top })
+      return { header, clocks, quote, search: box('.site-search'), brand: box('.site-brand'), contact: box('.site-contact'), overlap,
+        tickerHeight: box('.market-ticker').height,
+        priceFont: parseFloat(getComputedStyle(document.querySelector('.market-ticker-value')).fontSize),
+        timeFont: parseFloat(getComputedStyle(document.querySelector('.market-ticker-time')).fontSize),
+        controlHeight: box('.market-ticker-meta button').height }
+    })
+    if (width > 1100) {
+      // The content grid has 6px top padding; optical center remains within 3px of the complete bar.
+      expect(Math.abs(layout.clocks.center - layout.header.center)).toBeLessThanOrEqual(3)
+      expect(Math.abs(layout.contact.center - layout.clocks.center)).toBeLessThanOrEqual(1)
+    } else {
+      const row = width > 860 ? layout.search : layout.brand
+      expect(Math.abs(layout.clocks.center - row.center)).toBeLessThanOrEqual(1)
+    }
+    expect(layout.overlap).toBe(false)
+    expect(layout.quote.height).toBeLessThanOrEqual(48)
+    expect(layout.priceFont).toBeGreaterThanOrEqual(14)
+    expect(layout.timeFont).toBeGreaterThanOrEqual(12)
+    if (isMobile) expect(layout.controlHeight).toBeGreaterThanOrEqual(44)
+    await expect(page.locator('.market-ticker-item').first().locator('.market-ticker-time')).toContainText('시세 기준')
+    await noOverflow(page)
+    metrics.push({ width, path, ...layout })
+    if ([2048, 1440, 1101, 768, 320].includes(width)) await page.screenshot({ path: testInfo.outputPath(`home-ui-header-${width}.png`) })
+  }
+  if (!isMobile) {
+    await page.setViewportSize({ width: 1440, height: 700 })
+    await page.getByRole('button', { name: '통합 검색·빠른 이동', exact: true }).press('Tab')
+    const button = page.locator('button[aria-controls="site-contact-links"]')
+    await expect(button).toBeFocused()
+    await button.press('Enter')
+    await button.press('Tab')
+    const profile = page.locator('#site-contact-links a').first()
+    await expect(profile).toBeFocused()
+    await expect(profile).toBeInViewport()
+    await expect(profile).toHaveText('Personal Profile ↗')
+    await expect(profile).toHaveAttribute('href', 'https://negamuster.github.io/')
+    await profile.press('Escape')
+    await expect(page.locator('#site-contact-links')).toHaveCount(0)
+  }
+  await page.goto('/more')
+  const contact = page.getByRole('region', { name: 'Contact', exact: true })
+  await expect(contact.getByRole('link', { name: /Personal Profile/ })).toHaveAttribute('href', 'https://negamuster.github.io/')
+  await writeFile(testInfo.outputPath('home-ui-header-metrics.json'), JSON.stringify(metrics, null, 2))
+  expect(state.pageErrors).toEqual([])
+})
