@@ -497,9 +497,6 @@ test('home reading shortcuts preserve content and card alignment across desktop 
   await setup(page)
   await page.goto('/')
   const shortcuts = page.getByRole('navigation', { name: '오늘의 시장 바로가기', exact: true })
-  await shortcuts.getByRole('link', { name: '최신 뉴스', exact: true }).click()
-  await expect(page.locator('#home-news-title')).toBeFocused()
-  await expect(page.locator('#home-news-title')).toBeInViewport()
   await expect(page.locator('.home-briefing-summary')).toHaveText(edition.summary.slice(0, 3))
   if (testInfo.project.name === 'desktop-chromium') {
     await page.setViewportSize({ width: 1440, height: 1000 })
@@ -514,6 +511,10 @@ test('home reading shortcuts preserve content and card alignment across desktop 
     expect(layout.newsGap).toBe(24)
     expect(layout.mapWidth).toBeGreaterThanOrEqual(340)
   }
+  // Compare initial alignment before the news jump moves the sticky sidebar.
+  await shortcuts.getByRole('link', { name: '최신 뉴스', exact: true }).click()
+  await expect(page.locator('#home-news-title')).toBeFocused()
+  await expect(page.locator('#home-news-title')).toBeInViewport()
   await shortcuts.getByRole('link', { name: '오늘의 일정', exact: true }).click()
   await expect(page).toHaveURL(/\/calendar$/)
   await page.goto('/')
