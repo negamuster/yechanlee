@@ -1,14 +1,19 @@
 import MarketClocks from './MarketClocks'
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { desktopLinks, desktopSection } from '../lib/navigation'
 import './SiteHeader.css'
 import SiteSearch from './SiteSearch'
-const links = [['/', '홈'], ['/equity', '주식시장'], ['/rates', '금리·채권'], ['/fed', '연준·통화정책'], ['/indicators', '경제지표'], ['/macro', '글로벌 매크로'], ['/calendar', '경제·실적 캘린더'], ['/filings', 'SEC 공시 모니터'], ['/form13f', '기관 포트폴리오 · 13F'], ['/simulator', '자산 시뮬레이터'], ['/saved', '저장한 항목']]
 export default function SiteHeader() {
+  const { pathname, key } = useLocation()
+  const [routeKey, setRouteKey] = useState(key)
+  const menuToggle = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
+  if (routeKey !== key) { setRouteKey(key); setOpen(false); setContactOpen(false) }
+  const selected = desktopSection(pathname)
   function close() { setOpen(false); setContactOpen(false) }
-  return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') close() }}>
+  return <header className="site-header" onKeyDown={e => { if (e.key === 'Escape') { if (open) menuToggle.current?.focus(); close() } }}>
     <div className="site-header-shell">
     <div className="site-header-top">
       <NavLink to="/" className="site-brand" onClick={close}>Anthracite</NavLink>
@@ -21,10 +26,10 @@ export default function SiteHeader() {
           <a href="https://www.linkedin.com/in/yechanlee030102" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
         </div>}
       </div>
-      <button className="site-menu-toggle" type="button" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(!open)}>메뉴 {open ? '닫기' : '열기'}</button>
+      <button ref={menuToggle} className="site-menu-toggle" type="button" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(!open)}>메뉴 {open ? '닫기' : '열기'}</button>
     </div>
     <nav id="site-menu" className={`site-menu${open ? ' is-open' : ''}`} aria-label="주요 메뉴">
-      {links.map(([to, label]) => <NavLink key={to} to={to} end onClick={close}>{label}</NavLink>)}
+      {desktopLinks.map(({ to, label }) => <Link key={to} to={to} aria-current={selected === to ? 'page' : undefined} className={to === '/calendar' || to === '/saved' ? 'site-menu-section-start' : undefined} onClick={close}>{label}</Link>)}
 
     </nav>
     </div>

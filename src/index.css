@@ -23,9 +23,12 @@ body { position: relative; }
   --ui-focus-ring: #2563eb26;
   --ui-selected-hover: #1d4ed8;
   --ui-radius: 12px;
-  --ui-card-radius: 20px;
+  --ui-card-radius: 16px;
+  --ui-card-shadow: 0 2px 8px #10213a03;
+  --ui-control-weight: 500;
+  --ui-control-padding: 8px 12px;
   --ui-font-page: 30px;
-  --ui-font-section: 19px;
+  --ui-font-section: 18px;
   --ui-font-widget-title: 18px;
   --ui-font-body: 15px;
   --ui-font-control: 14px;
@@ -36,7 +39,7 @@ body { position: relative; }
   --ui-space-md: 16px;
   --ui-space-lg: 24px;
   --ui-space-xl: 32px;
-  --ui-card-padding: 24px;
+  --ui-card-padding: 20px;
   --ui-page-gutter: 24px;
   --ui-layout-gap: 24px;
   --ui-control-height: 40px;
@@ -45,12 +48,17 @@ body { position: relative; }
   --ui-chip-radius: 10px;
 }
 @media (max-width: 700px) {
-  :root { --ui-control-height: 44px; --ui-card-padding: 18px; --ui-page-gutter: 16px; --ui-layout-gap: 20px; }
+  :root { --ui-font-page: 24px; --ui-control-height: 44px; --ui-card-padding: 16px; --ui-page-gutter: 16px; --ui-layout-gap: 20px; }
 }
 @media (max-width: 700px), (pointer: coarse) {
   :root { --ui-chip-height: 44px; --ui-chip-padding: 8px 10px; --ui-chip-radius: 8px; }
 }
 body { font-family: var(--font-ui); font-size: var(--ui-font-body); line-height: 1.55; color: var(--ui-text); text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font-family: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+/* Interaction feedback stays brief and follows the system motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  :where(button, a, summary) { transition: color .15s, background-color .15s, border-color .15s; }
+}
 :where(button, input, select, textarea, a, summary):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
 .save-button > span > svg { display: block; width: 18px; height: 18px; }

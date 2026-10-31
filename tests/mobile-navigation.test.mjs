@@ -33,3 +33,15 @@ test('all top-level and detail pages expose exactly one selected tab in their ow
     assert.equal($('a[aria-current=page] .mobile-navigation-icon').length, 1)
   }
 })
+
+const { default: SiteHeader } = await import('../src/components/SiteHeader.tsx')
+const { desktopLinks } = await import('../src/lib/navigation.ts')
+test('desktop detail routes retain one parent menu selection and every destination stays in order', () => {
+  for (const [path, selected] of [['/', '/'], ['/stock/AAPL', '/equity'], ['/briefings/2026-10-31', '/'], ['/saved/thesis/AAPL', '/saved'], ['/filings', '/filings'], ['/more', null]]) {
+    const $ = load(renderToStaticMarkup(createElement(MemoryRouter, { initialEntries: [path] }, createElement(SiteHeader))))
+    const links = $('#site-menu a')
+    assert.deepEqual(links.toArray().map(link => [$(link).attr('href'), $(link).text()]), desktopLinks.map(link => [link.to, link.label]))
+    assert.equal($('#site-menu [aria-current=page]').length, selected ? 1 : 0, path)
+    if (selected) assert.equal($('#site-menu [aria-current=page]').attr('href'), selected)
+  }
+})

@@ -6,7 +6,7 @@
 .news-toolbar { justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
 .news-toolbar-actions { flex-wrap: wrap; margin-left: auto; }
 .news-filters, .news-view-toggle { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; }
-.news-controls button, .news-reset, .news-more { min-height: var(--ui-control-height); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 7px 12px; color: var(--ui-muted); background: #fff; font: inherit; font-size:var(--ui-font-control); line-height: 1.3; cursor: pointer; }
+.news-controls button, .news-reset, .news-more { min-height: var(--ui-control-height); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: var(--ui-control-padding); color: var(--ui-muted); background: var(--ui-card); font: inherit; font-size:var(--ui-font-control); font-weight: var(--ui-control-weight); line-height: 1.3; cursor: pointer; }
 .news-controls button:hover, .news-reset:hover, .news-more:hover { background: var(--ui-hover); color: var(--ui-text); }
 .news-controls :is(.news-filters, .news-view-toggle) button { border-color: transparent; background: transparent; min-height: calc(var(--ui-control-height) - 6px); padding: 5px 12px; border-radius: 5px; white-space: nowrap; }
 .news-controls :is(.news-filters, .news-view-toggle) button:hover { background: var(--ui-hover); }

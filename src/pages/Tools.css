@@ -3,14 +3,14 @@
 .tool-page-header { margin-bottom: 24px; }
 .tool-page-header h1 { margin: 0 0 10px; font-size: var(--ui-font-page); font-weight: 650; letter-spacing: -.025em; line-height: 1.35; }
 .tool-page-header > p { max-width: 760px; color: var(--ui-muted); font-size: var(--ui-font-body); line-height: 1.8; word-break: keep-all; }
-.tool-card { min-width: 0; padding: var(--ui-card-padding); border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); background: #fff; }
+.tool-card { min-width: 0; padding: var(--ui-card-padding); border: 1px solid var(--ui-border); border-radius: var(--ui-card-radius); background: var(--ui-card); box-shadow: var(--ui-card-shadow); }
 .tool-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; min-width: 0; }
 .tool-card-heading :is(h2, h3) { min-width: 0; margin: 0; font-size: var(--ui-font-section); font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 .financial-tool-page .tool-meta { color: var(--ui-muted); font-size: var(--ui-font-meta); line-height: 1.7; }
 .tool-section-note { margin: -4px 0 20px; color: var(--ui-muted); font-size: var(--ui-font-control); line-height: 1.8; }
 .tool-footer { padding: 24px var(--ui-page-gutter); border-top: 1px solid var(--ui-border); color: var(--ui-muted); background: #fff; font-size: var(--ui-font-meta); text-align: center; }
 .tool-text-link { color: var(--ui-selected); font-size: var(--ui-font-control); text-decoration: underline; text-underline-offset: 3px; line-height: 1.8; }
-.financial-tool-page .tool-button { min-height: var(--ui-control-height); padding: 7px 12px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-selected); font: inherit; font-size: var(--ui-font-control); cursor: pointer; }
+.financial-tool-page .tool-button { min-height: var(--ui-control-height); padding: var(--ui-control-padding); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-card); color: var(--ui-text); font: inherit; font-size: var(--ui-font-control); font-weight: var(--ui-control-weight); line-height: 1.3; cursor: pointer; }
 .financial-tool-page .tool-button:hover:not(:disabled) { background: var(--ui-hover); }
 .financial-tool-page .tool-button:disabled { color: var(--ui-muted); opacity: .55; cursor: default; }
 .financial-tool-page :is(button, input, select, summary):focus-visible,

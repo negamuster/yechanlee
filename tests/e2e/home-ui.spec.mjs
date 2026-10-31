@@ -492,3 +492,68 @@ test('header clocks stay centered without covering navigation and the market str
   await writeFile(testInfo.outputPath('home-ui-header-metrics.json'), JSON.stringify(metrics, null, 2))
   expect(state.pageErrors).toEqual([])
 })
+
+test('home reading shortcuts preserve content and card alignment across desktop and narrow widths', async ({ page }, testInfo) => {
+  await setup(page)
+  await page.goto('/')
+  const shortcuts = page.getByRole('navigation', { name: '오늘의 시장 바로가기', exact: true })
+  await shortcuts.getByRole('link', { name: '최신 뉴스', exact: true }).click()
+  await expect(page.locator('#home-news-title')).toBeFocused()
+  await expect(page.locator('#home-news-title')).toBeInViewport()
+  await expect(page.locator('.home-briefing-summary')).toHaveText(edition.summary.slice(0, 3))
+  if (testInfo.project.name === 'desktop-chromium') {
+    await page.setViewportSize({ width: 1440, height: 1000 })
+    await fontsReady(page)
+    const layout = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector).getBoundingClientRect()
+      return { maps: box('.home-dashboard-maps').top, briefing: box('.home-briefing').top, movers: box('.home-dashboard-movers').top,
+        newsGap: box('.home-news').top - box('.home-briefing').bottom, mapWidth: box('.home-dashboard-maps').width }
+    })
+    expect(Math.abs(layout.maps - layout.briefing)).toBeLessThanOrEqual(1)
+    expect(Math.abs(layout.movers - layout.briefing)).toBeLessThanOrEqual(1)
+    expect(layout.newsGap).toBe(24)
+    expect(layout.mapWidth).toBeGreaterThanOrEqual(340)
+  }
+  await shortcuts.getByRole('link', { name: '오늘의 일정', exact: true }).click()
+  await expect(page).toHaveURL(/\/calendar$/)
+  await page.goto('/')
+  await shortcuts.getByRole('link', { name: '시장 전체', exact: true }).click()
+  await expect(page).toHaveURL(/\/markets$/)
+  await noOverflow(page)
+})
+
+test('menus keep clear parent selection, tablet focus return and direct mobile tool access', async ({ page, isMobile }, testInfo) => {
+  await setup(page)
+  if (!isMobile) {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/stock/AAPL')
+    const nav = page.getByRole('navigation', { name: '주요 메뉴', exact: true })
+    await expect(nav.locator('[aria-current="page"]')).toHaveAttribute('href', '/equity')
+    await page.setViewportSize({ width: 768, height: 900 })
+    const toggle = page.locator('.site-menu-toggle')
+    await toggle.click()
+    await nav.getByRole('link', { name: '자산 시뮬레이터', exact: true }).focus()
+    await page.keyboard.press('Escape')
+    await expect(toggle).toBeFocused()
+    await expect(nav).toBeHidden()
+    await toggle.click()
+    await nav.getByRole('link', { name: '자산 시뮬레이터', exact: true }).click()
+    await expect(page).toHaveURL(/\/simulator$/)
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  }
+  await page.setViewportSize({ width: 320, height: 740 })
+  await page.goto('/more')
+  const tools = page.getByRole('region', { name: '투자 도구', exact: true })
+  await expect(tools.getByRole('link')).toHaveCount(4)
+  for (const link of await tools.getByRole('link').all()) {
+    expect((await link.boundingBox()).height).toBeGreaterThanOrEqual(44)
+    await expect(link.locator('svg').first()).toHaveAttribute('focusable', 'false')
+  }
+  await noOverflow(page)
+  await page.screenshot({ path: testInfo.outputPath('home-ui-clean-more-320.png'), fullPage: true })
+  await tools.getByRole('link', { name: 'SEC 공시 모니터', exact: true }).click()
+  await expect(page).toHaveURL(/\/filings$/)
+  const mobile = page.getByRole('navigation', { name: '모바일 주요 메뉴', exact: true })
+  await expect(mobile.locator('[aria-current="page"]')).toHaveAttribute('href', '/more')
+  await expect(mobile.getByRole('link')).toHaveCount(5)
+})

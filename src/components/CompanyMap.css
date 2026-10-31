@@ -3,7 +3,7 @@
 .company-map .widget-heading h2 { margin:0; font-size:var(--ui-font-section); }
 .company-map .widget-heading a { color:inherit; text-decoration:none; }
 .company-map-controls { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:12px 0 8px; }
-.company-map-controls :is(select,button) { font:inherit; font-size:13px; border:1px solid var(--ui-border); border-radius:10px; background:var(--ui-surface); color:var(--ui-text); min-height:40px; padding:7px; max-width:100%; cursor:pointer; }
+.company-map-controls :is(select,button) { font:inherit; font-size:var(--ui-font-control); font-weight:var(--ui-control-weight); border:1px solid var(--ui-border); border-radius:var(--ui-radius); background:var(--ui-card); color:var(--ui-text); min-height:var(--ui-control-height); padding:var(--ui-control-padding); max-width:100%; cursor:pointer; }
 .company-map-controls label { min-width:0; }
 .company-map-controls button { margin-left:auto; }
 .company-map-basis,.company-map-receipt { color:var(--ui-muted); font-size:12px; line-height:1.6; margin:8px 0; }
@@ -28,7 +28,7 @@
 .company-map-list a { display:grid; gap:4px; padding:10px; color:var(--ui-text); background:var(--ui-surface); border-radius:8px; text-decoration:none; min-height:44px; }
 .company-map-list small { color:var(--ui-muted); font-size:12px; }
 .maps-view-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 12px; }
-.maps-view-tabs button { font:inherit; font-size:13px; min-height:40px; padding:6px 10px; border:1px solid var(--ui-border); border-radius:10px; color:var(--ui-muted); background:#fff; cursor:pointer; }
+.maps-view-tabs button { font:inherit; font-size:var(--ui-font-control); font-weight:var(--ui-control-weight); min-height:var(--ui-control-height); padding:var(--ui-control-padding); border:1px solid var(--ui-border); border-radius:var(--ui-radius); color:var(--ui-muted); background:#fff; cursor:pointer; }
 .maps-view-tabs button[aria-pressed=true] { background:var(--ui-selected); color:#fff; border-color:var(--ui-selected); }
 .company-map :is(button,select,a):focus-visible,.maps-view-tabs button:focus-visible { outline:2px solid var(--ui-focus); outline-offset:2px; }
 @media(pointer:coarse) { .company-map-controls :is(select,button),.maps-view-tabs button { min-height:44px; } }
