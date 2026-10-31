@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useSessionState } from '../hooks/useSessionState'
 import { isNewsSector } from '../components/sectorNews'
 import type { NewsSector } from '../components/sectorNews'
@@ -37,7 +38,12 @@ export default function Home() {
     {!mobile && <MarketTicker />}
     <MarketSessionStatus />
     <main className="home-content home-overview" ref={content}>
-      <div className="home-section-heading"><h1>오늘의 시장</h1><p>브리핑과 주요 소식을 한눈에 살펴보세요.</p></div>
+      <header className="home-section-heading">
+        <div><h1>오늘의 시장</h1><p>시장 흐름과 오늘의 핵심 소식을 확인하세요.</p></div>
+        <nav className="home-section-links" aria-label="오늘의 시장 바로가기">
+          <a href="#home-news-title">최신 뉴스</a><Link to="/markets">시장 전체</Link><Link to="/calendar">오늘의 일정</Link>
+        </nav>
+      </header>
       <div className="home-primary">
         <LinkedWidget className={`home-widget home-briefing${mobile ? ' is-mobile' : ''}`}><HomeBriefing mobile={mobile} /></LinkedWidget>
         <section className="home-news" aria-labelledby="home-news-title">
