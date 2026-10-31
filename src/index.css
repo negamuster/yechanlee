@@ -55,7 +55,7 @@ body { position: relative; }
 }
 body { font-family: var(--font-ui); font-size: var(--ui-font-body); line-height: 1.55; color: var(--ui-text); text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font-family: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
+button, a { -webkit-tap-highlight-color: #2563eb1a; }
 /* Interaction feedback stays brief and follows the system motion preference. */
 @media (prefers-reduced-motion: no-preference) {
   :where(button, a, summary) { transition: color .15s, background-color .15s, border-color .15s; }

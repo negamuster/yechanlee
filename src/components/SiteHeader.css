@@ -56,7 +56,9 @@
   .site-menu-toggle { grid-column: 4; grid-row: 1; display: block; min-height: var(--ui-control-height); padding: 6px 8px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: #fff; color: var(--ui-text); font: inherit; font-size: var(--ui-font-control); cursor: pointer; }
   .site-search { grid-column: 1 / -1; grid-row: 2; max-width: none; }
   .site-menu { display: none; margin-top: 8px; }
-  .site-menu.is-open { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .site-menu.is-open { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; padding-top: 8px; border-top: 1px solid var(--ui-border); }
+  .site-menu a { min-height: 44px; white-space: normal; overflow-wrap: anywhere; }
+  .site-menu-section-start { margin-left: 0; }
   .clock-year { display: none; }
 }
 @media (max-width: 700px) {
@@ -78,3 +80,5 @@
   .market-clock time { white-space: normal; }
   .market-clock strong { white-space: nowrap; }
 }
+
+@media (min-width: 701px) and (pointer: coarse) { .site-menu a { min-height: 44px; } }

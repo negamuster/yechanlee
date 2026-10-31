@@ -532,6 +532,8 @@ test('menus keep clear parent selection, tablet focus return and direct mobile t
     await page.setViewportSize({ width: 768, height: 900 })
     const toggle = page.locator('.site-menu-toggle')
     await toggle.click()
+    const targets = await nav.getByRole('link').evaluateAll(links => links.map(link => ({ height: link.getBoundingClientRect().height, margin: getComputedStyle(link).marginLeft })))
+    expect(targets.every(target => target.height >= 44 && target.margin === '0px')).toBe(true)
     await nav.getByRole('link', { name: '자산 시뮬레이터', exact: true }).focus()
     await page.keyboard.press('Escape')
     await expect(toggle).toBeFocused()
