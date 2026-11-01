@@ -1,0 +1,295 @@
+{
+  "id": "2026-11-02",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026년 10월 30일",
+  "sessionDate": "2026-10-30",
+  "cutoffAt": "2026-11-01T22:05:12.000Z",
+  "summary": [
+    "주말 휴장으로 마지막 미국 거래일은 10월 30일입니다. 당시 S&P500 −1.82%, 나스닥 종합 −2.86%로 기술주가 더 크게 밀렸고, 보도는 AI 투자비의 수익 회수 우려를 배경으로 설명했습니다.[1][6]",
+    "OPEC+ 핵심 7개국은 11월 1일 회의에서 12월 생산 목표를 동결해, 전날 협의 보도를 공식 결정으로 확정했습니다. 이 결정에 앞선 금요일 WTI 선물은 2.08% 올라 결제됐고 미국 10년물 파 수익률은 4.94%로 4bp 낮아졌습니다.[3][4][5]",
+    "Binance는 일요일 일부 자산의 출금을 재개했으며, Reuters는 회사가 도난 자산의 95%를 보전했다고 설명한 내용을 전했습니다. 공식 안내는 자산·네트워크별 단계적 복구를 명시해, 일부 서비스 재개와 전체 정상화를 구분합니다.[2]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-11-02 07:05:12 KST · 최근 24시간: 2026-11-01 07:05:12~2026-11-02 07:05:12 KST · 직전 미국 정규장 거래일 2026-10-30 · 정규장 마감 2026-10-31 05:00 KST. 미국 현지는 아직 일요일로 새 정규장 종가가 없습니다. 금요일 관측치와 장 마감 이후 11월 1일 새 소식을 나눴으며 기준 시각 이후 정보는 제외했습니다.[6]"
+    },
+    {
+      "kind": "heading",
+      "text": "산유국 동결 확정·Binance 일부 출금 재개, 미국장은 오늘 밤 재개"
+    },
+    {
+      "kind": "paragraph",
+      "text": "미국 증시의 마지막 거래는 10월 30일 기술주 중심 하락장이었습니다. Intel·Amazon 실적 이후 AI 투자 지출과 수익 회수에 대한 우려가 부각됐다는 Reuters 보도 속에 나스닥 종합의 낙폭이 다우보다 컸습니다. 주말 새 소식에 대한 미국 주식의 정규장 반응은 아직 나오지 않았습니다.[1][6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "통상 분야에서는 Trump가 11월 1일 캐나다와 새로운 무역 합의의 구상이 있다고 말했다고 Reuters가 전했습니다. 최근 Carney 총리와 무역을 논의했다는 설명이지만, 구체적 조건은 공개하지 않았습니다. 관세 변경이나 최종 합의 체결이 발표된 단계는 아닙니다.[8]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "OPEC+는 협의 단계에서 공식 결정으로 넘어갔습니다. 사우디아라비아·러시아 등 7개국은 11월 1일 화상회의에서 9월의 생산 목표를 12월에도 유지하기로 했습니다. Reuters는 걸프 산유국 다수가 전쟁에 따른 수출 차질로 목표보다 낮은 생산을 이어가고 있다고 설명해, 목표 동결과 실제 공급량을 구분했습니다.[3]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Binance의 출금 복구도 계획에서 일부 실행으로 옮겨갔습니다. 공식 안내는 이용자 수요와 보안 점검에 따라 자산·네트워크를 순차 복구한다고 밝혔고, Reuters는 일요일 일부 출금 재개와 회사 측의 95% 자산 보전 설명을 보도했습니다. 재개 초기 인출이 늘었으나 이후 안정화되고 있다는 설명 역시 회사 측 발표입니다. 전체 출금 기능이 모두 정상화됐다는 의미는 아닙니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "아래 금리·유가 변화는 모두 금요일 기준입니다. 재무부 파 수익률은 2년물과 10년물이 각각 5bp·4bp 하락한 반면, WTI 선물은 2.08% 올랐습니다. 원유 보도는 호르무즈 해협 유조선 공격과 이란 전쟁 격화 우려를 공급 위험으로 설명했습니다.[4][5]"
+    },
+    {
+      "kind": "heading",
+      "text": "시장 수치 · 마지막 거래일 2026-10-30"
+    },
+    {
+      "kind": "metadata",
+      "text": "주가지수 · 미국 정규장 종가 · 단위: 포인트 · 2026-10-29 종가 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,580.07 (−1.82%) · 다우 51,770.31 (−1.09%) · 나스닥 종합 25,437.00 (−2.86%) · 러셀2000 2,811.84 (−1.7%, AP 보도 반올림).[1]"
+    },
+    {
+      "kind": "metadata",
+      "text": "국채 · 재무부 호가 기반 파 수익률 · 2026-10-30 약 15:30 EDT / 2026-10-31 04:30 KST 관측 · 2026-10-29 대비 · 실거래 종가 아님"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2년물 4.56% (−5bp) · 10년물 4.94% (−4bp).[4]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "WTI 원유 선물 · 2026-10-30 결제 변화 +2.08% (+2.12달러/배럴) · 전 거래일 대비 · 계약월 미확인으로 가격 수준은 제외했습니다.[5]"
+    },
+    {
+      "kind": "heading",
+      "text": "기준 시각 이후 72시간 공식 일정 · 모두 KST"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-11-02 23:30 KST · 미국 정규장 개장. NYSE 공식 휴장일표상 정상 거래일이며 미국 동부 서머타임 종료 후 09:30 EST를 적용했습니다. 확인할 항목: 개장 시각과 KST 익일인 11월 3일 06:00 마감.[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-11-03 00:00 KST · ISM 제조업 PMI. 미국 11월 2일 10:00 EST 발표의 KST 익일입니다. 확인할 항목: 제조업 PMI 발표치.[6][7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-11-05 00:00 KST · ISM 서비스업 PMI. 미국 11월 4일 10:00 EST 발표의 KST 익일입니다. 확인할 항목: 서비스업 PMI 발표치.[6][7]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters·AP · 10월 30일 미국장 마감",
+      "url": "https://www.reuters.com/business/nasdaq-futures-tumble-amazon-intel-results-deepen-ai-spending-woes-2026-10-30/",
+      "links": [
+        {
+          "label": "AP · 4대 지수 마감",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-a01d3551e794fed1a0c317c20bc3f0a2"
+        }
+      ],
+      "accessNote": "두 마감 본문을 읽었습니다. 3대 지수는 Reuters, 러셀2000은 AP의 반올림을 유지했습니다. 마지막 거래일 배경이며 주말 기사로 재분류하지 않았습니다."
+    },
+    {
+      "id": 2,
+      "label": "Binance 공식·Reuters · 단계적 출금 재개",
+      "url": "https://www.reuters.com/legal/government/binance-resumes-bitcoin-withdrawals-after-covering-bulk-stolen-63-billion-2026-11-01/",
+      "links": [
+        {
+          "label": "Binance 공식 · 복구 업데이트 4",
+          "url": "https://www.binance.com/en-GB/support/announcement/security-incident-recovery-update-4-withdrawals-resume-in-phases-2026-11-01-73911fb819b240f88b88256bdd318eda"
+        }
+      ],
+      "accessNote": "공식 안내와 후속 Reuters 본문을 읽었습니다. 공식 사전 안내의 90%와 후속 회사 설명의 95%는 갱신 시점이 달라 후자를 Reuters 귀속으로 표기했습니다. 공식 안내는 단계별 복구·보안 점검·일부 지연 가능성을 명시합니다. 인출 안정화는 회사 설명이며, 순유출액은 회사와 외부 업체의 집계 범위가 달라 수치를 생략했습니다. Reuters 재배포본의 11월 1일 18:15 UTC 갱신은 cutoff 이전이며 독립 확인으로 세지 않았습니다."
+    },
+    {
+      "id": 3,
+      "label": "OPEC · 11월 1일 생산 목표 결정",
+      "url": "https://www.opec.org/pr-detail/620-1-november-2026.html",
+      "links": [
+        {
+          "label": "Reuters · 생산 목표와 실제 공급 차질",
+          "url": "https://www.reuters.com/business/energy/opec-set-keep-oil-output-targets-steady-sources-say-2026-11-01/"
+        }
+      ],
+      "accessNote": "공식 성명 본문에서 7개국의 11월 1일 회의와 9월 목표의 12월 유지 결정을 확인했습니다. 실제 생산이 목표에 못 미친다는 설명은 Reuters 본문에 귀속했습니다. 목표 동결을 실제 공급 증가나 유가 반응으로 바꾸지 않았습니다."
+    },
+    {
+      "id": 4,
+      "label": "미국 재무부 · 10월 29·30일 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+      "accessNote": "표 머리말·29/30일 행·방법론을 읽었습니다. 2년물 4.61→4.56%, 10년물 4.98→4.94%를 −5bp·−4bp로 검산했습니다. 약 15:30 EDT의 지표성 매수호가를 보간한 파 수익률이며 실거래 종가나 장중 시장금리와 섞지 않았습니다."
+    },
+    {
+      "id": 5,
+      "label": "Reuters · 10월 30일 원유 결제",
+      "url": "https://www.reuters.com/business/energy/oil-rises-supply-concerns-houthis-attack-saudi-arabia-2026-10-30/",
+      "accessNote": "원유 본문을 읽었습니다. WTI +2.08%·+2.12달러/배럴은 금요일 결제 변화이며 계약월이 없어 가격 수준을 생략했습니다. 기사 최초 게시 시각과 최종 결제 관측 시각을 구분했습니다. 달러·금은 관측 기준이 충분하지 않아 수치와 홈페이지 행을 제외했습니다."
+    },
+    {
+      "id": 6,
+      "label": "NYSE·미 해군천문대 · 거래일·표준시",
+      "url": "https://www.nyse.com/trade/hours-calendars",
+      "links": [
+        {
+          "label": "미 해군천문대 · 서머타임 규칙",
+          "url": "https://aa.usno.navy.mil/faq/daylight_time"
+        }
+      ],
+      "accessNote": "NYSE 2026 휴장일표·09:30~16:00 ET와 USNO의 11월 첫 일요일 서머타임 종료 규칙을 읽었습니다. 11월 1일 15:00 KST 종료 이후 뉴욕은 UTC−5입니다. 10월 30일 마감은 31일 05:00 KST, 11월 2일 개장·마감은 23:30 KST와 익일 3일 06:00 KST로 변환했습니다."
+    },
+    {
+      "id": 7,
+      "label": "ISM · 제조업·서비스업 공식 발표 일정",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar/",
+      "accessNote": "2026년 11월 제조업 2일·서비스업 4일, 각각 10:00 EST를 직접 읽었습니다. KST 익일 11월 3일·5일 00:00으로 변환했습니다. 두 일정 모두 cutoff 후 72시간 안이며 공표 PMI만 확인 항목으로 썼습니다. 예상치·발표 결과·시장 방향은 넣지 않았습니다."
+    },
+    {
+      "id": 8,
+      "label": "Reuters · Trump의 미·캐나다 무역 협의 발언",
+      "url": "https://www.reuters.com/business/autos-transportation/trump-says-us-canada-have-concept-new-trade-deal-2026-11-01/",
+      "accessNote": "11월 1일 21:10 UTC 본문의 기자단 발언 보도를 읽었습니다. 합의 구상이라는 발언과 세부 조건 미공개까지만 전했으며 공식 합의문·관세 변경·시장 반응은 확인되지 않아 추가하지 않았습니다."
+    }
+  ],
+  "homepage": {
+    "headline": "OPEC+ 생산 목표 동결 확정…Binance 일부 출금 재개[2][3]",
+    "stocks": [],
+    "assets": [
+      {
+        "label": "미국 10년물",
+        "value": "4.94%",
+        "change": "−4bp",
+        "basis": "2026-10-30 약 15:30 EDT / 10월 31일 04:30 KST · 10월 29일 대비 · 재무부 호가 기반 파 수익률 · 실거래 종가 아님",
+        "sourceIds": [
+          4
+        ]
+      },
+      {
+        "label": "WTI 원유 선물",
+        "value": "가격 수준 제외 · 계약월 미확인",
+        "change": "+2.08% / +2.12달러/배럴",
+        "basis": "2026-10-30 결제 변화 · 전 거래일 대비 · Reuters 본문에 WTI 계약월 미표기",
+        "sourceIds": [
+          5
+        ]
+      }
+    ],
+    "events": [
+      {
+        "at": "2026-11-02T23:30:00+09:00",
+        "label": "미국 정규장 개장",
+        "detail": "23:30 KST 개장·익일 11월 3일 06:00 KST 마감 확인",
+        "sourceIds": [
+          6
+        ]
+      },
+      {
+        "at": "2026-11-03T00:00:00+09:00",
+        "label": "ISM 제조업 PMI (미국 11월 2일 발표·KST 익일)",
+        "detail": "제조업 PMI 발표치 확인",
+        "sourceIds": [
+          6,
+          7
+        ]
+      },
+      {
+        "at": "2026-11-05T00:00:00+09:00",
+        "label": "ISM 서비스업 PMI (미국 11월 4일 발표·KST 익일)",
+        "detail": "서비스업 PMI 발표치 확인",
+        "sourceIds": [
+          6,
+          7
+        ]
+      }
+    ]
+  },
+  "dataNote": "동일 모델이 원문과 자체 대조했으며 독립 검증이나 사람 승인이 아닙니다. Binance의 보전율·인출 안정화는 회사 설명이며, 미국 주식의 주말 새 소식에 대한 정규장 반응은 아직 없습니다.",
+  "corrections": [],
+  "publishedAt": "2026-11-01T22:10:15.051Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-11-01T22:09:49Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/nasdaq-futures-tumble-amazon-intel-results-deepen-ai-spending-woes-2026-10-30/",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": "2026-10-30T08:46:00Z",
+        "basis": "reported",
+        "claimSummary": "마감 본문의 지수·등락률·AI 우려와 AP 러셀 반올림을 요약·본문·수치와 대조. 마지막 거래일로 한정."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.reuters.com/legal/government/binance-resumes-bitcoin-withdrawals-after-covering-bulk-stolen-63-billion-2026-11-01/",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": "2026-11-01T05:49:00Z",
+        "basis": "reported",
+        "claimSummary": "공식 단계별 복구·보안 점검과 Reuters의 일부 출금 재개 대조. 95% 보전·인출 안정화는 후속 회사 설명으로 귀속; 사전 안내90%와 갱신 시점 구분. 순유출액은 집계 범위 차이로 제외. 전체 정상화·독립 감사 주장 없음."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.opec.org/pr-detail/620-1-november-2026.html",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "OPEC 공식 본문: 11/1 회의·7개국·9월 목표의 12월 유지. 실제 생산 목표 미달 설명은 Reuters 본문 귀속. 요약·본문·홈페이지의 공식 결정 표기와 대조."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "재무부 머리말·29/30행·방법론: 2Y4.61→4.56=−5bp,10Y4.98→4.94=−4bp. 약15:30EDT=10/31 04:30KST 호가 기반 보간 파 수익률, 실거래 종가 아님. 요약·본문·홈페이지 일치."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.reuters.com/business/energy/oil-rises-supply-concerns-houthis-attack-saudi-arabia-2026-10-30/",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": "2026-10-30T02:27:00Z",
+        "basis": "reported",
+        "claimSummary": "원유 본문: 10/30 WTI 결제 +2.08%/+2.12USD배럴, 공급 위험 설명 귀속. 계약월 미표기로 가격 제외, 일요일 결정과 금요일 가격 인과 혼합 없음."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.nyse.com/trade/hours-calendars",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "NYSE 휴장표·09:30~16ET와 USNO 서머타임 종료 규칙 대조. 10/30·11/2 정상 거래, cutoff 뉴욕 일요일. 11/2 23:30KST 개장·11/3 06KST 마감, EST 전환·KST 익일 명시."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar/",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "ISM 공식11월 표 제조업2일·서비스업4일·각10EST. 11/3·11/5 00KST, cutoff 후16.913·64.913시간으로72시간 내. 본문과 홈페이지 확인 항목 일치, 예상치 미사용."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.reuters.com/business/autos-transportation/trump-says-us-canada-have-concept-new-trade-deal-2026-11-01/",
+        "checkedAt": "2026-11-01T22:09:49Z",
+        "publishedAt": "2026-11-01T21:10:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 기자단 발언 본문: Trump의 캐나다 무역 합의 구상·Carney와 최근 논의·세부 조건 미공개. 발언 보도에 한정, 합의문·관세 변경·주가 반응 추정 없음."
+      }
+    ],
+    "contentHash": "66e2cc3614970e4bd5cbe7969b77766e995a6b19241a20577662b1fbe36d8b5c"
+  }
+}
