@@ -9,9 +9,12 @@ test('weekend closing data is valid; stale and missing rankings fail', () => {
  assert.ok(inspectHealth('movers',{},now).errors.length)
 })
 test('partial calendar outages warn without claiming complete failure', () => {
- const data={events:[],sources:[{name:'FRED',state:'snapshot',updatedAt:new Date(now).toISOString()},{name:'BLS',state:'unavailable'}]}
+ const checkedAt = new Date(now).toISOString()
+ const data={events:[],sources:[{name:'FRED (BLS)',state:'snapshot',updatedAt:checkedAt},{name:'BLS',state:'unavailable',error:'http_403',checkedAt,updatedAt:null}]}
  const result=inspectHealth('calendar',data,now)
  assert.equal(result.errors.length,0);assert.equal(result.warnings.length,1)
+ assert.ok(result.warnings[0].includes(`BLS: unavailable (http_403), checked ${checkedAt}, data updated unknown`))
+ assert.ok(result.warnings[0].includes('FRED covers 9 BLS release families only'))
  assert.ok(inspectHealth('calendar',{events:[],sources:[]},now).errors.length)
 })
 test('old news and all-missing quotes fail health checks',()=>{
@@ -29,6 +32,9 @@ test('names restricted and unconfigured feeds without calling them healthy', () 
 test('retained news and fallback calendars still warn when a live refresh fails', () => {
  const news=inspectHealth('news',{items:[{published_utc:new Date(now).toISOString()}],fetchedAt:now,sources:[{id:'example',status:'stale',error:'http_503'}]},now)
  assert.equal(news.errors.length,0);assert.ok(news.warnings.some(w=>w.includes('example (http_503)')))
- const calendar=inspectHealth('calendar',{events:[],sources:[{name:'BLS',state:'snapshot',updatedAt:new Date(now).toISOString(),error:'http_403'}]},now)
- assert.equal(calendar.errors.length,0);assert.ok(calendar.warnings.some(w=>w.includes('http_403')))
+ const updatedAt = '2026-10-02T12:00:00Z', checkedAt = new Date(now).toISOString()
+ const calendar=inspectHealth('calendar',{events:[],sources:[{name:'BLS',state:'snapshot',updatedAt,checkedAt,error:'http_403'}]},now)
+ assert.equal(calendar.errors.length,0)
+ assert.ok(calendar.warnings.some(w=>w.includes(`(http_403), checked ${checkedAt}, data updated ${updatedAt}`)))
+ assert.ok(calendar.warnings.includes('Some calendar data older than 48 hours'))
 })
