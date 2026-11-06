@@ -30,15 +30,30 @@ async function seed(key, data) {
   try { await loadResource(key, () => true, 60000, true) } finally { globalThis.fetch = previous }
 }
 
-test('initial widget loads use the common skeleton while the calendar month remains available', () => {
+test('initial widget loads use the common skeleton', () => {
   assert.equal(render(SectorPerformance, { compact: true })('.data-skeleton-tiles').length, 1)
   assert.equal(render(MarketMovers, { overview: true })('.data-skeleton-rows').length, 1)
-  const calendar = render(MarketCalendar)
-  assert.equal(calendar('.data-skeleton-rows').length, 1)
-  assert.ok(calendar('.calendar-date').length >= 35)
-  assert.equal(calendar('.calendar-selected-heading').text().includes('0건'), false)
   assert.equal(render(MarketTicker)('.data-skeleton-ticker').length, 1)
   assert.equal(render(NewsFeed)('.data-skeleton-news').length, 1)
+})
+
+test('calendar keeps the month grid and shows a skeleton when no exchange events are available', t => {
+  t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-10-21T16:00:00Z') })
+  const calendar = render(MarketCalendar)
+  assert.equal(calendar('.calendar-list').attr('aria-busy'), 'true')
+  assert.equal(calendar('.data-skeleton-rows').length, 1)
+  assert.ok(calendar('.calendar-date').length >= 35)
+  assert.ok(calendar('.calendar-selected-heading').text().includes('확인 중'))
+})
+
+test('calendar keeps the known NYSE holiday visible while other sources load', t => {
+  t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-11-26T16:00:00Z') })
+  const calendar = render(MarketCalendar)
+  assert.equal(calendar('.calendar-list').attr('aria-busy'), 'true')
+  assert.equal(calendar('.data-skeleton-rows').length, 0)
+  assert.equal(calendar('.data-notice-loading').length, 1)
+  assert.equal(calendar('.calendar-event-title').attr('title'), 'NYSE equity market holiday')
+  assert.ok(calendar('.calendar-date').length >= 35)
 })
 
 test('cached Maps values and their original basis stay visible during refresh', async () => {
