@@ -14,7 +14,7 @@ article bodies. The current response version is `rss-node-v5`.
 | CNBC | Finance RSS | Configured; this environment previously returned 403 |
 | Bloomberg | Markets RSS | HTTP 200; 20 eligible articles parsed; this sample contains no image metadata |
 | Financial Times | Markets RSS | Configured; HTTP 403 here, needs preview confirmation |
-| Yahoo Finance | News RSS | Configured; HTTP 429 here, needs preview confirmation |
+| Yahoo Finance | US headline RSS for SPY and QQQ | HTTP 200; 13 eligible articles parsed on 2026-11-06 |
 | Reuters | Optional provider-issued authenticated RSS URL | Not active without `REUTERS_RSS_URL`; not advertised as a working free feed |
 | 매일경제 | Economy and stocks RSS | Existing integration; this environment previously blocked/timed out |
 | 조선비즈 | General RSS filtered for business topics | Existing integration; live collection succeeded in the first version |
@@ -22,7 +22,7 @@ article bodies. The current response version is `rss-node-v5`.
 | 연합뉴스 | Economy RSS | HTTP 200; 120 eligible articles, 109 with accepted image metadata |
 | 연합인포맥스 | All articles RSS | HTTP 200; 50 eligible articles; feed dates without a timezone use Korea (+09:00) |
 
-The new feed samples were retrieved on 2026-09-11. HTTP success and local
+Unless otherwise dated, the feed samples were retrieved on 2026-09-11. HTTP success and local
 parsing do not prove that every feed and image loads in the deployed browser.
 The user reported that the preceding Node version looked good in preview.
 The preview is Vercel-login-protected, so the agent cannot independently

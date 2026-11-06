@@ -124,6 +124,14 @@ test('compact briefing opens the complete edition with every original summary an
   }
   await noOverflow(page)
   await page.screenshot({ path: testInfo.outputPath('home-ui-edition.png'), fullPage: true })
+  const firstBodySource = edition.blocks.filter(block => block.kind === 'paragraph')
+    .map(block => block.text.match(/\[(\d+)\]/)?.[1]).find(Boolean)
+  if (firstBodySource) {
+    const hash = `#source-${firstBodySource}`
+    await page.locator(`.briefing-article > p .briefing-citations a[href$="${hash}"]`).first().click()
+    await expect(page).toHaveURL(new RegExp(`/briefings/${edition.id}${hash}$`))
+    await expect(page.locator(hash)).toBeInViewport()
+  }
   await page.getByRole('link', { name: '← 지난 브리핑', exact: true }).click()
   await expect(page).toHaveURL(/\/briefings$/)
   await page.getByRole('link', { name: '← 홈', exact: true }).click()

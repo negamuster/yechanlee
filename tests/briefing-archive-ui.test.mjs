@@ -18,6 +18,13 @@ test('every published edition renders original summaries, sources and optional c
     assert.equal($('h1').text(), item.title, item.id)
     assert.equal($('.briefing-edition-summary li').length, item.summary.length, item.id)
     assert.equal($('.briefing-sources li').length, item.sources.length, item.id)
+    const blocks = $('.briefing-article').children('h2, h3, p:not(.briefing-meta), .briefing-tags')
+    assert.equal(blocks.length, item.blocks.length, item.id)
+    item.blocks.forEach((block, index) => {
+      const links = blocks.eq(index).find('.briefing-citations a').map((_, link) => $(link).attr('href')).get()
+      const expected = [...block.text.matchAll(/\[(\d+)\]/g)].map(([, id]) => `/briefings/${item.id}#source-${Number(id)}`)
+      assert.deepEqual(links, expected, `${item.id} block ${index}`)
+    })
     for (const source of item.sources) assert.equal($(`#source-${source.id} > a`).first().attr('href'), source.url, item.id)
     for (const correction of item.corrections ?? []) assert.ok($('.briefing-article details').text().includes(correction.text), item.id)
     const evidence = briefingEvidence(item)
