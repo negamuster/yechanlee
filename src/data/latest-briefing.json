@@ -1,245 +1,238 @@
 {
-  "id": "2026-11-06",
+  "id": "2026-11-07",
   "reviewMode": "automated",
-  "title": "미국 증시 요약 | 2026년 11월 5일",
-  "sessionDate": "2026-11-05",
-  "cutoffAt": "2026-11-05T21:59:02Z",
-  "publishedAt": "2026-11-05T22:01:58.577Z",
+  "title": "미국 증시 요약 | 2026년 11월 6일",
+  "sessionDate": "2026-11-06",
+  "cutoffAt": "2026-11-06T22:04:04Z",
+  "publishedAt": "2026-11-06T22:07:45.070Z",
   "summary": [
-    "반도체주 급락으로 미국 증시는 전날 상승분을 반납했습니다. 나스닥 종합은 5.52%, S&P500은 4.36% 하락했고 러셀2000도 4.4% 밀려, 기술주에서 두드러진 약세가 소형주에도 나타났습니다.[1]",
-    "데이터센터 건설을 제한하자는 공약을 내건 후보들의 승리로 AI 투자 속도가 늦어질 수 있다는 우려가 커졌다고 Reuters는 전했습니다. 휴대폰 칩 매출이 기대에 못 미친 Qualcomm은 9.5% 내렸습니다.[1][2]",
-    "미국 10년물 파 수익률은 4.84%로 6bp 낮아졌습니다. 반면 WTI 선물은 걸프 해역의 유조선 공격 소식에 공급 우려가 다시 불거지면서 2.72% 반등해 전날 급락을 일부 되돌렸습니다.[5][6]"
+    "반도체가 전날 급락 뒤 되올라 나스닥 종합이 1.1% 상승했습니다. 다우는 하락했고 나스닥은 주간으로 4주 연속 내렸습니다. 하루 반등에도 주요 지수의 주간 손실은 남았습니다.[1]",
+    "미국 10월 비농업 고용은 16만5000명 늘어 예상 6만5000명을 크게 웃돌았습니다. 발표 뒤 거래되는 미국 10년물 금리가 올랐고, 시장에서 12월 금리 인상에 무게를 두는 움직임이 나타났습니다.[1][2]",
+    "미 재무부가 집계한 오후 10년물 파 수익률은 4.86%로 전날보다 2bp 높았습니다. WTI 선물은 이란을 둘러싼 긴장이 다시 부각되면서 당일 0.34% 올랐지만, 주간으로는 약 13% 하락한 것으로 Reuters는 집계했습니다.[5][7]"
   ],
   "blocks": [
     {
       "kind": "metadata",
-      "text": "작성 기준 2026-11-06 06:59:02 KST · 최근 24시간 2026-11-05 06:59:02~2026-11-06 06:59:02 KST · 직전 정규장 2026-11-05 미국 거래일, 2026-11-06 06:00 KST 마감. NYSE 정상 거래일이며 마감 후 발표는 별도로 표시했습니다.[8]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "5일 미국 증시는 전날 중간선거 이후의 상승분을 모두 반납했습니다. S&P500은 4.36%, 다우는 3.44%, 나스닥 종합은 5.52% 내렸습니다. 필라델피아 반도체 지수는 12.2% 떨어져 기술주가 하락을 주도했고, 소형주 중심 러셀2000도 4.4% 밀렸습니다. 나스닥 종합은 10월 6일 최고 종가보다 10% 넘게 낮아졌습니다.[1]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Reuters는 텍사스와 조지아 등에서 데이터센터 신설에 제동을 걸겠다는 후보들이 승리하면서, AI 인프라 투자가 늦어질 수 있다는 우려가 커졌다고 보도했습니다. 대규모 설비 구축을 전제로 한 성장 기대가 흔들렸다는 설명입니다. 이날 주가에 반영된 것은 건설 규제 가능성이었으며, 새 규제가 시행됐다는 소식은 아니었습니다.[1]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "11월 5일 발표된 3분기 비농업 기업 부문 노동생산성 잠정치는 전분기 대비 연율 3.6%로 조사 예상 2.7%를 웃돌았습니다. 2분기 수정치는 2.1%였고 3분기 단위노동비용은 연율 0.7% 감소했습니다. 같은 날 발표된 10월 31일 종료 주간 신규 실업수당 청구는 18만9000건으로 예상 19만6000건과 전주 수정치 19만5000건을 밑돌았습니다.[4]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Qualcomm은 전날 장 마감 후 공개한 회계 4분기 휴대폰 칩 매출이 약 51억4000만달러로 예상 52억5000만달러를 밑돌았고, 다음 정규장에서 9.5% 하락했습니다. Reuters는 스마트폰 수요 둔화와 Apple 관련 매출 감소를 실적 부담으로 짚었습니다.[1][2]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "장 마감 후 Airbnb는 여행 수요와 제품 개선을 근거로 2026년 매출 증가율 전망을 10%대 중반 이상에서 10%대 후반으로 높였습니다. Reuters는 발표 뒤 시간외 거래에서 주가가 약 10% 올랐다고 전했습니다.[3]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "미 재무부 파 수익률은 2년물이 12bp, 10년물이 6bp 내렸습니다. 금 현물은 뉴욕 오후 2시 5분에 1.0% 올랐으며, Reuters는 당시 낮아진 시장금리와 약한 달러를 배경으로 짚었습니다. WTI 선물은 걸프 해역 유조선 공격 보도로 공급 차질 우려가 다시 불거지면서 전날 급락 뒤 2.72% 반등해 결제됐습니다.[5][6][7]"
+      "text": "작성 기준 2026-11-07 07:04:04 KST · 최근 24시간 2026-11-06 07:04:04~2026-11-07 07:04:04 KST · 직전 정규장 2026-11-06 미국 거래일(11월 7일 06:00 KST 마감). NYSE 정상 거래일.[8]"
     },
     {
       "kind": "heading",
-      "text": "시장 수치 · 2026-11-05 미국 거래일"
+      "text": "마감과 시장 폭"
     },
     {
       "kind": "paragraph",
-      "text": "정규장 종가(포인트), 11월 4일 대비: S&P500 7,353.73 (−4.36%) · 다우 51,523.06 (−3.44%) · 나스닥 종합 24,315.00 (−5.52%) · 러셀2000 2,729.89 (−4.4%).[1]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "2026-11-05 약 15:30 EST / 11월 6일 05:30 KST · 11월 4일 대비 · 미 재무부 매수호가 기반 파 수익률 · 2년물 4.46% (−12bp) · 10년물 4.84% (−6bp).[5]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "금 현물 4,100.27달러/트로이온스 (+1.0%) · 2026-11-05 19:05 UTC / 11월 6일 04:05 KST 장중 · 전 거래일 대비 · 현물.[7]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "WTI 선물 +2.40달러/배럴 (+2.72%) · 2026-11-05 선물 결제 · 11월 4일 결제 대비 · 계약월 미확인로 가격 수준 제외.[6]"
+      "text": "6일 뉴욕증시에서는 전날 낙폭이 컸던 반도체주가 반등했습니다. 필라델피아 반도체 지수가 4.2% 오르면서 나스닥 종합은 1.1%, S&P500은 0.32% 상승했습니다. 러셀2000도 0.9% 올랐지만 다우는 0.46% 내렸습니다. S&P500 업종 중 정보기술이 상승을 이끌었고 필수소비재와 헬스케어는 뒤처졌습니다. 나스닥은 장중 최대 2% 올랐다가 상승폭을 줄였고, 주간으로는 3.4% 밀리며 4주 연속 하락했습니다.[1]"
     },
     {
       "kind": "heading",
-      "text": "11월 5일 미국 경제지표"
+      "text": "장을 움직인 사건"
     },
     {
       "kind": "paragraph",
-      "text": "3분기 비농업 기업 부문 잠정치(계절조정·전분기 대비 연율): 노동생산성 +3.6% / 예상 +2.7% / 2분기 수정 +2.1%. 단위노동비용 −0.7% / 예상 +0.4% / 2분기 수정 +1.9%.[4]"
+      "text": "미국 동부 오전 8시 30분에 나온 10월 고용보고서에서 비농업 고용은 16만5000명 늘었습니다. Schwab이 인용한 예상치 6만5000명보다 10만 명 많았고, 9월 증가폭도 2만9000명에서 6만 명으로 수정됐습니다. 10월 실업률은 4.1%, 민간 시간당 평균임금은 전월보다 0.4% 올랐습니다. 전문·사업 서비스와 보건의료, 운송·창고업이 고용 증가에 기여했습니다.[2]"
     },
     {
       "kind": "paragraph",
-      "text": "10월 31일 종료 주 신규 실업수당 청구(계절조정): 18만9000건 / 예상 19만6000건 / 전주 수정 19만5000건.[4]"
+      "text": "발표 뒤 주식과 채권의 반응은 달랐습니다. Schwab은 기술주가 개장 전부터 보이던 상승폭을 발표 직후에도 대체로 유지한 반면, 거래되는 10년물 국채 수익률은 약 4bp 상승했다고 전했습니다. Reuters는 시장이 12월 연준 금리 인상에 더 무게를 뒀다고 보도했습니다. 정규장에서도 반도체주가 상승을 이끌었지만, 기술주가 고용 발표 이전부터 오르고 있었던 만큼 발표가 반등을 시작시켰다고 보기는 어렵습니다.[1][2]"
     },
     {
       "kind": "heading",
-      "text": "확인된 발표 일정"
+      "text": "기업과 실적"
     },
     {
       "kind": "paragraph",
-      "text": "2026-11-06 22:30 KST · 미국 10월 고용상황(미국 11월 6일 08:30 EST). 확인할 항목: 10월 비농업 고용 증감.[8]"
+      "text": "에어비앤비는 5일 장 마감 후 여행 수요와 제품 개선을 근거로 올해 매출 증가율 전망을 10%대 후반으로 올렸고, 6일 정규장에서 약 12% 상승했습니다. 아틀라시안은 같은 시기에 회계 1분기 클라우드 매출이 전년 대비 31% 늘었다고 발표했지만, 회사가 제시한 2분기 증가율은 약 27%였습니다. Barron’s는 클라우드 성장 속도가 느려질 수 있다는 우려를 짚었고, 주가는 6일 정규장에서 약 16% 내렸습니다.[1][3][4]"
+    },
+    {
+      "kind": "heading",
+      "text": "다른 자산과 다음 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "오후 미 재무부 파 수익률은 2년물이 5bp, 10년물이 2bp 올랐습니다. 달러지수는 개장 전 강세였고, 금 현물은 뉴욕 오후 1시 54분에 0.3% 낮았습니다. Reuters는 예상보다 강한 고용 발표 뒤 오른 금리와 달러를 금 약세의 배경으로 짚었습니다. WTI 선물은 이란에 대한 미국의 추가 공격 가능성이 다시 거론되며 0.34% 상승해 결제됐습니다. Reuters 집계로는 당일 반등에도 주간 낙폭이 약 13%였습니다.[2][5][6][7]"
+    },
+    {
+      "kind": "subheading",
+      "text": "시장 수치 · 2026-11-06 미국 거래일"
+    },
+    {
+      "kind": "paragraph",
+      "text": "정규장 종가(포인트), 11월 5일 대비: S&P500 7,376.86 (+0.32%) · 다우 51,285.73 (−0.46%) · 나스닥 종합 24,579.42 (+1.1%) · 러셀2000 2,754.11 (+0.9%).[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "국채 2년물 4.51% (+5bp) · 10년물 4.86% (+2bp). 2026-11-06 약 15:30 EST / 11월 7일 05:30 KST · 11월 5일 대비 · 미 재무부 지표성 매수호가 기반 파 수익률.[5]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "달러지수 102.22포인트 (+0.66%) · 2026-11-06 09:15 EST / 23:15 KST Schwab 개장 전 브리핑 표기 · 전 거래일 대비.[2] 금 현물 4,074.36달러/트로이온스 (−0.3%) · 2026-11-06 13:54 EST / 11월 7일 03:54 KST 장중 · 전 거래일 대비 · 금 현물.[6] WTI 선물 +0.31달러/배럴 (+0.34%) · 2026-11-06 선물 결제 · 11월 5일 결제 대비 · 계약월 미확인로 가격 수준 제외.[7]"
+    },
+    {
+      "kind": "subheading",
+      "text": "확인된 다음 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026-11-10 01:00 KST · 뉴욕 연은 소비자기대조사(미국 11월 9일 11:00 EST, 한국은 다음 날). 확인할 항목: 1년 기대 인플레이션 중앙값과 전월 대비 변화.[8]"
+    },
+    {
+      "kind": "heading",
+      "text": "Anthracite 관점"
+    },
+    {
+      "kind": "paragraph",
+      "text": "금요일 가격은 전날 급락한 반도체의 일부 회복과 강한 고용에 따른 금리 인상 가능성을 동시에 반영한 것으로 해석할 수 있습니다. 나스닥이 장중 고점보다 낮게 끝났고 주간으로도 하락해, 하루 반등만으로 매도 압력이 해소됐다고 판단하기는 이릅니다. 다음 정규장에서 10년물 시장 수익률이 금요일 개장 전 관측치인 4.88%를 웃돌 때도 반도체 지수가 금요일 종가를 지키는지 보면, 금리 부담 속에서도 기술주 반등이 이어지는지 가늠할 수 있습니다.[1][2]"
     }
   ],
   "sources": [
     {
       "id": 1,
-      "label": "Reuters·AP · 미국장 마감",
-      "url": "https://www.reuters.com/business/sp-500-futures-steady-after-midterm-rally-nasdaq-lags-chip-weakness-2026-11-05/",
+      "label": "Reuters·AP · 뉴욕증시 마감",
+      "url": "https://www.reuters.com/business/nasdaq-futures-rise-after-steep-ai-selloff-chip-stocks-stabilize-2026-11-06/",
+      "accessNote": "정규장 종가와 주간 등락률은 Reuters와 AP를 대조했습니다. 나스닥 종합 종가는 두 보도가 0.01포인트 달라 AP 수치(24,579.42)를, S&P500과 다우의 등락률은 Reuters 자릿수를 사용했습니다. 업종과 종목 등락은 Reuters 마감 기사 기준입니다.",
       "links": [
         {
           "label": "AP · 주요 지수 종가",
-          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-afe254c608c3d1fe2ea792812ba9765a"
-        },
-        {
-          "label": "Reuters · 반도체 지수·건설 제한 공약",
-          "url": "https://www.reuters.com/business/energy/global-markets-global-markets-2026-11-05/"
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-806f71d95105bc7efbc760b194dd8cad"
         }
-      ],
-      "accessNote": "Reuters의 최종 종가와 AP를 대조했습니다. 3대 지수 등락률은 Reuters, 러셀2000은 AP 반올림입니다. 반도체 지수 12.2% 하락과 텍사스·조지아 후보의 건설 제한 공약은 Reuters 글로벌 마감 본문 기준입니다. 공약과 시행을 구분했습니다."
+      ]
     },
     {
       "id": 2,
-      "label": "Qualcomm · 회계 4분기 실적",
-      "url": "https://investor.qualcomm.com/files/content_files/FY2026-4th-Quarter-Earnings-Release.pdf",
+      "label": "미 노동통계국·Schwab · 10월 고용과 발표 후 반응",
+      "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "accessNote": "10월 실제와 9월 수정치, 임금·고용 부문은 BLS, 예상과 발표 직후 거래 수익률·개장 전 달러지수는 Schwab의 09:15 EST 브리핑 기준입니다. 금리 인상 베팅 방향은 Reuters 마감 기사 [1]에서도 확인했습니다.",
       "links": [
         {
-          "label": "Reuters · 휴대폰 칩 매출 예상치",
-          "url": "https://www.reuters.com/business/media-telecom/qualcomm-forecasts-upbeat-sales-strength-non-smartphone-segments-2026-11-04/"
+          "label": "Schwab · 고용 예상치와 개장 전 시장 반응",
+          "url": "https://www.schwab.com/learn/story/stock-market-update-open?msockid=0a066d1894016b2528dc7aeb952b6ac9"
         }
-      ],
-      "accessNote": "공식 QCT 표는 휴대폰 칩 매출 5,137백만달러를, Reuters는 반올림한 51억4000만달러와 동일 부문 예상 52억5000만달러를 제시했습니다. 주가 −9.5%는 다음 날 정규장 마감 [1]입니다."
+      ]
     },
     {
       "id": 3,
-      "label": "Airbnb · 3분기 실적과 전망",
+      "label": "Airbnb · 3분기 실적과 연간 전망",
       "url": "https://news.airbnb.com/airbnb-q3-2026-financial-results",
-      "links": [
-        {
-          "label": "Reuters · 전망 상향과 시간외 반응",
-          "url": "https://www.reuters.com/business/airbnb-lifts-annual-revenue-growth-forecast-resilient-global-travel-demand-2026-11-05/"
-        },
-        {
-          "label": "회사 발표 시각",
-          "url": "https://www.prnewswire.com/news-releases/airbnb-announces-third-quarter-2026-results-302917687.html"
-        }
-      ],
-      "accessNote": "회사 본문과 Reuters에서 연간 매출 증가율 전망 상향을 확인했습니다. 회사 발표는 11월 5일 16:03 EST이며 시간외 약 +10%는 16:06 EST 게재 보도 기준입니다. 개별 호가 시각은 기사에 없습니다."
+      "accessNote": "11월 5일 미국장 마감 후 공개한 연간 매출 증가율 전망을 회사 발표에서 확인했습니다. 약 +12%는 11월 6일 정규장 마감 보도 [1]입니다."
     },
     {
       "id": 4,
-      "label": "BLS·미 노동부 · 생산성·실업수당",
-      "url": "https://www.bls.gov/news.release/prod2.nr0.htm",
+      "label": "Atlassian · SEC 공시와 실적 반응",
+      "url": "https://www.sec.gov/Archives/edgar/data/1650372/000165037226000049/ex991q1fy27.htm",
+      "accessNote": "11월 5일 마감 후 공개한 회계 1분기 클라우드 성장률과 2분기·연간 전망은 SEC 첨부 자료, 성장 둔화 우려는 Barron’s 보도, 정규장 약 −16%는 Reuters [1] 기준입니다. 분기 실적과 회사 전망의 기간을 구분했습니다.",
       "links": [
         {
-          "label": "미 노동부 · 주간 실업수당 청구",
-          "url": "https://www.dol.gov/ui/data.pdf"
-        },
-        {
-          "label": "ALM First · 당일 조사 예상치",
-          "url": "https://www.almfirst.com/resources/beyond-the-headlines/november-5-2026-headlines"
+          "label": "Barron’s · 클라우드 성장 둔화 우려",
+          "url": "https://www.barrons.com/articles/atlassian-earnings-stock-price-cloud-growth-e112ae67"
         }
-      ],
-      "accessNote": "BLS·노동부 공식 수치와 ALM First 조사 예상치를 대조했습니다. 이전치는 공식 수정치인 생산성 +2.1%, 단위노동비용 +1.9%, 신규청구 19만5000건을 사용했습니다. 지표 발표만의 가격 반응은 확인되지 않아 종가의 원인으로 연결하지 않았습니다."
+      ]
     },
     {
       "id": 5,
-      "label": "미 재무부 · 국채 파 수익률",
+      "label": "미 재무부 · 일별 국채 파 수익률",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
-      "links": [],
-      "accessNote": "11월 4일 대비 5일 2년물 4.58→4.46%, 10년물 4.90→4.84%입니다. 오후 3시 30분경 지표성 매수호가 기반이며 시장 거래 수익률과 구분했습니다."
+      "accessNote": "11월 5일→6일 2년물 4.46→4.51%, 10년물 4.84→4.86%를 대조했습니다. 오후 3시 30분경 지표성 매수호가 기반으로, 고용 발표 직후 거래 수익률과 별개입니다."
     },
     {
       "id": 6,
-      "label": "Reuters · WTI 결제와 공급 우려",
-      "url": "https://www.reuters.com/business/energy/oil-falls-fourth-day-expectations-lower-risk-iran-war-escalation-2026-11-05/",
-      "links": [],
-      "accessNote": "원문 WTI 결제 변화 +2.40달러/배럴 및 +2.72%를 유지했습니다. 당일 결제 계약월이 명시되지 않아 가격 수준을 제외했습니다. 유조선 공격과 공급 우려는 Reuters 설명입니다."
+      "label": "Reuters · 금 현물과 달러",
+      "url": "https://www.reuters.com/world/india/gold-eases-inflation-worries-higher-oil-us-payrolls-data-focus-2026-11-06/",
+      "accessNote": "11월 6일 18:54 UTC 금 현물 4,074.36달러/트로이온스와 −0.3%를 사용했습니다. 장중 저점 및 12월 금 선물과 구분했습니다."
     },
     {
       "id": 7,
-      "label": "Reuters · 금 현물과 달러",
-      "url": "https://www.reuters.com/world/india/gold-hits-two-week-high-dollar-treasury-yields-ease-after-us-midterm-elections-2026-11-05/",
-      "links": [],
-      "accessNote": "19:05 UTC 금 현물 4,100.27달러/트로이온스와 +1%를 사용했습니다. 12월 금 선물 및 별도 글로벌 기사 시각 미표기 관측치와 섞지 않았습니다. 달러 약세 설명은 금 관측 기사 기준이며 달러지수의 마감 수치는 사용하지 않았습니다."
+      "label": "Reuters · 원유 선물 결제",
+      "url": "https://www.reuters.com/business/energy/oil-set-sharp-weekly-drop-middle-east-supply-concerns-provide-floor-2026-11-06/",
+      "accessNote": "종합 마감 기사에 나온 유가 방향 대신 원유 전문 기사의 WTI 결제 변화 +0.31달러/배럴, +0.34%를 사용했습니다. Brent의 1월물을 WTI에 적용하지 않았으며, 동일 WTI 결제 계약월이 확인되지 않아 가격 수준을 제외했습니다."
     },
     {
       "id": 8,
-      "label": "NYSE·BLS · 거래일과 고용 일정",
-      "url": "https://www.nyse.com/trade/hours-calendars",
+      "label": "NYSE·뉴욕 연은 · 거래일과 다음 발표",
+      "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "accessNote": "NYSE 공식 일정에서 11월 6일 정상 거래 및 16:00 EST 마감을 확인했습니다. 뉴욕 연은 소비자기대조사 11월 9일 11:00 EST는 한국에서 다음 날 01:00이며, 확인 항목은 공식 조사에 수록된 1년 기대 인플레이션 중앙값입니다.",
       "links": [
         {
-          "label": "BLS · 11월 공식 발표 달력",
-          "url": "https://www.bls.gov/schedule/2026/11_sched.htm"
+          "label": "NYSE · 휴장일과 거래 시간",
+          "url": "https://www.nyse.com/trade/hours-calendars"
         },
         {
-          "label": "BLS · 비농업 고용 통계",
-          "url": "https://www.bls.gov/ces/"
+          "label": "뉴욕 연은 · 소비자기대조사 공표 항목",
+          "url": "https://www.newyorkfed.org/microeconomics/sce"
         }
-      ],
-      "accessNote": "NYSE 휴장표와 정규장 09:30~16:00 ET, BLS 10월 고용상황 일정 및 비농업 고용 항목을 확인했습니다. 미국 동부 표준시 08:30은 같은 날 22:30 KST입니다."
+      ]
     }
   ],
-  "dataNote": "동일 모델이 원문과 자체 대조했으며 독립 검증이나 사람 승인이 아닙니다. Airbnb 시간외 등락률은 보도 관측치이며 정규장 종가와 구분했습니다.",
+  "dataNote": "동일 모델이 원문과 자체 대조했으며 독립 검증이나 사람 승인이 아닙니다. 자산별 관측 시각과 비교 기준은 각 수치 옆에 표시했습니다.",
   "corrections": [],
   "homepage": {
-    "headline": "반도체 급락에 전날 상승분 반납[1]",
+    "headline": "반도체 반등에 나스닥 상승…강한 고용에 금리도 올라[1][2]",
     "stocks": [
-      {
-        "name": "퀄컴",
-        "ticker": "QCOM",
-        "change": "−9.5%",
-        "reason": "전날 마감 후 공개한 회계 4분기 휴대폰 칩 매출이 예상을 밑돌았습니다. Reuters는 스마트폰 수요 둔화와 Apple 관련 매출 감소를 짚었습니다.",
-        "basis": "2026-11-05 미국 정규장 종가 · 11월 4일 대비 · Reuters 보도",
-        "sourceIds": [
-          1,
-          2
-        ]
-      },
       {
         "name": "에어비앤비",
         "ticker": "ABNB",
-        "change": "약 +10%",
-        "reason": "여행 수요와 제품 개선을 근거로 연간 매출 증가율 전망을 10%대 후반으로 올렸습니다.",
-        "basis": "2026-11-05 미국 시간외 · 16:06 EST 게재 Reuters 보도 · 개별 호가 시각 미표기",
+        "change": "약 +12%",
+        "reason": "여행 수요와 제품 개선을 근거로 2026년 매출 증가율 전망을 10%대 후반으로 높였습니다. 전망 공개 다음 정규장에서 주가가 상승했습니다.",
+        "basis": "2026-11-06 미국 정규장 종가 · 11월 5일 종가 대비 · Reuters 반올림",
         "sourceIds": [
+          1,
           3
+        ]
+      },
+      {
+        "name": "아틀라시안",
+        "ticker": "TEAM",
+        "change": "약 −16%",
+        "reason": "회계 1분기 클라우드 매출은 31% 늘었지만 회사는 2분기에 약 27% 증가를 예상했습니다. Barron’s는 클라우드 성장 둔화 우려를 짚었습니다.",
+        "basis": "2026-11-06 미국 정규장 종가 · 11월 5일 종가 대비 · Reuters 반올림",
+        "sourceIds": [
+          1,
+          4
         ]
       }
     ],
     "assets": [
       {
         "label": "미국 10년물",
-        "value": "4.84%",
-        "change": "−6bp",
-        "basis": "2026-11-05 약 15:30 EST / 11월 6일 05:30 KST · 11월 4일 대비 · 미 재무부 매수호가 기반 파 수익률",
+        "value": "4.86%",
+        "change": "+2bp",
+        "basis": "2026-11-06 약 15:30 EST / 11월 7일 05:30 KST · 11월 5일 대비 · 미 재무부 지표성 매수호가 기반 파 수익률",
         "sourceIds": [
           5
         ]
       },
       {
-        "label": "금 현물",
-        "value": "4,100.27달러/트로이온스",
-        "change": "+1.0%",
-        "basis": "2026-11-05 19:05 UTC / 11월 6일 04:05 KST 장중 · 전 거래일 대비 · 현물",
+        "label": "달러지수",
+        "value": "102.22포인트",
+        "change": "+0.66%",
+        "basis": "2026-11-06 09:15 EST / 23:15 KST Schwab 개장 전 브리핑 표기 · 전 거래일 대비",
         "sourceIds": [
-          7
+          2
+        ]
+      },
+      {
+        "label": "금 현물",
+        "value": "4,074.36달러/트로이온스",
+        "change": "−0.3%",
+        "basis": "2026-11-06 13:54 EST / 11월 7일 03:54 KST 장중 · 전 거래일 대비 · 금 현물",
+        "sourceIds": [
+          6
         ]
       },
       {
         "label": "WTI 원유 선물",
         "value": "가격 수준 제외 · 계약월 미확인",
-        "change": "+2.72% / +2.40달러/배럴",
-        "basis": "2026-11-05 선물 결제 · 11월 4일 결제 대비 · 계약월 미확인",
+        "change": "+0.34% / +0.31달러/배럴",
+        "basis": "2026-11-06 선물 결제 · 11월 5일 결제 대비 · 계약월 미확인",
         "sourceIds": [
-          6
+          7
         ]
       }
     ],
     "events": [
       {
-        "at": "2026-11-06T22:30:00+09:00",
-        "label": "미국 10월 고용상황",
-        "detail": "10월 비농업 고용 증감 확인",
+        "at": "2026-11-10T01:00:00+09:00",
+        "label": "뉴욕 연은 소비자기대조사",
+        "detail": "1년 기대 인플레이션 중앙값과 전월 대비 변화",
         "sourceIds": [
           8
         ]
