@@ -39,6 +39,22 @@ test('live ICS keeps revised dates while missing families use the supplement wit
   assert.equal(source.state,'stale')
 })
 
+test('a later live-source failure retains missing families and newer FRED replaces covered supplements once', async () => {
+  let now = Date.parse(checkedAt) + 20 * 60000, live = true
+  const snapshot = {version:1,sourceUrl:SOURCES.bls.url,checkedAt,ics,schedule}
+  const fred = {version:1,sourceUrl:FRED_URL,checkedAt:'2026-11-07T07:00:00.000Z',from:'2026-11-01',to:'2026-11-30',releaseIds:Object.keys(FRED_RELEASES).map(Number),events:[{rid:10,date:'2026-11-12',startAt:'2026-11-12T13:30:00.000Z'}]}
+  const cpi = {title:'Consumer Price Index',date:'2026-11-10',startAt:'2026-11-10T13:30:00.000Z'}
+  snapshot.schedule = {...schedule,events:[...schedule.events,cpi]}
+  const handler = createCalendarHandler({now:()=>now,blsSnapshot:snapshot,fredSnapshot:fred,fetchImpl:async url=>live&&url===SOURCES.bls.url?new Response(ics):new Response(null,{status:403})})
+  const request = () => new Request('https://example.com/api/calendar?mode=month&from=2026-11-01&to=2026-11-30')
+  await handler(request())
+  live = false
+  now = Date.parse('2026-11-07T07:10:00Z')
+  const body = await (await handler(request())).json()
+  assert.ok(body.events.some(event=>event.title==='Total Factor Productivity for Major Industries'))
+  assert.deepEqual(body.events.filter(event=>event.title==='Consumer Price Index').map(event=>event.date),['2026-11-12'])
+})
+
 test('annual parser rejects partial pages, unknown rows, changed timezone and malformed schedule data', () => {
   for (const html of [annual.replace('</html>',''), annual.replace('Eastern Time','Central Time'),
     annual.replace('<table class="release-list">','<table>'), annual.replace('10:00 AM','25:00 AM'),
