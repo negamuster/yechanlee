@@ -19,6 +19,7 @@ import { newsEvidence } from '../lib/evidenceSources'
 import PriceChart from '../components/StockPriceChart'
 import type { StockChartMode } from '../components/StockPriceChart'
 import { isWebUrl } from '../lib/watchlist'
+import { dataTime } from '../utils/dataTime'
 import ReturnToList from '../components/ReturnToList'
 import './Stock.css'
 
@@ -97,6 +98,7 @@ export default function Stock() {
   const hasHistory = snapshot?.historyAvailable ?? false
   const rangePosition = hasHistory && quote.latest && quote.high !== null && quote.low !== null && quote.high > quote.low ? (quote.latest.c - quote.low) / (quote.high - quote.low) * 100 : null
   const articles = (snapshot?.news ?? []).filter(validStory)
+  const newestArticleAt = articles.length ? Math.max(...articles.map(article => Date.parse(article.published_utc))) : null
   const related = snapshot?.related ?? []
   const partial = !!snapshot?.issues.length
   const financialMetrics = [
@@ -149,6 +151,7 @@ export default function Stock() {
             <FilingMonitor key={symbol} symbol={symbol} />
             <section id="stock-news" className="stock-card" aria-labelledby="stock-news-title"><div className="stock-section-heading"><h2 id="stock-news-title">관련 뉴스</h2><span className="stock-note">{articles.length ? `${articles.length}건 · 원문으로 이동` : '종목별 기사'}</span></div>
               <StockPartStatus label="뉴스" source={snapshot.resourceSources?.news} unavailable={snapshot.issues.includes('뉴스')} loading={loading} onRetry={refreshSnapshot} />
+              {newestArticleAt !== null && (snapshot?.fetchedAt ?? 0) - newestArticleAt > 72 * 3600000 && <p className="stock-note stock-news-coverage" role="status">최근 제공 기사 발행 {dataTime(newestArticleAt)} · 최근 조회 기준 72시간 이전 기사입니다. 제공처의 종목별 기사 수집 범위가 제한될 수 있습니다.</p>}
               {articles.length ? <ul className="stock-news-list">{articles.map(article => <li key={article.id ?? article.article_url} className={isRead(article.article_url) ? 'is-read' : undefined}>
                 <a className="stock-news-link" href={article.article_url} target="_blank" rel="noopener noreferrer" onClick={() => mark(article.article_url)} onAuxClick={event => {if(event.button === 1) mark(article.article_url)}}><NewsThumbnail key={article.image_url} url={article.image_url} /><div><p className="stock-note">{article.publisher.name} · <time dateTime={article.published_utc}>{new Date(article.published_utc).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})} KST</time>{isRead(article.article_url) && <span className="stock-read-badge">읽음</span>}</p><h3>{article.title}</h3><span className="stock-news-original">원문 읽기 ↗</span></div></a>
                 <div className="news-evidence-actions"><EvidenceAttachButton source={newsEvidence({...article,publisher:article.publisher.name},!!snapshot.resourceSources?.news?.stale)} stock={{ticker:symbol,name:details.name}} /><BookmarkButton article={{article_url:article.article_url,title:article.title,publisher:article.publisher.name,published_utc:article.published_utc}} /></div>

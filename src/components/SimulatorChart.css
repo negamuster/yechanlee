@@ -1,0 +1,33 @@
+.sim-chart-readout { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin: 2px 0 20px; }
+.sim-chart-age { margin: 0 0 6px; color: var(--ui-muted); font-size: var(--ui-font-meta); }
+.sim-chart-value { margin: 0; color: var(--ui-text); font-size: clamp(26px, 4vw, 36px); font-weight: 650; line-height: 1.25; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.sim-chart-value span { margin-left: 6px; font-size: var(--ui-font-control); font-weight: 400; color: var(--ui-muted); }
+.sim-chart-assumption { padding: 5px 9px; border-radius: 8px; background: var(--ui-accent-soft); color: var(--ui-selected); font-size: var(--ui-font-caption); white-space: nowrap; }
+.sim-chart-breakdown { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0 0 20px; padding-bottom: 20px; border-bottom: 1px solid var(--ui-border); }
+.sim-chart-breakdown dt { color: var(--ui-muted); font-size: var(--ui-font-meta); margin-bottom: 5px; }
+.sim-chart-breakdown dd { margin: 0; font-size: var(--ui-font-control); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.sim-chart-canvas { width: 100%; min-width: 0; }
+.simulator-chart .sim-chart { display: block; width: 100%; min-width: 0; height: auto; touch-action: pan-y; }
+.sim-chart text { fill: var(--ui-muted); font: 11px var(--font-ui); }
+.sim-gridline { stroke: var(--ui-border); stroke-width: 1; stroke-dasharray: 2 5; opacity: .65; }
+.sim-zero-line { stroke: var(--ui-muted); stroke-width: 1; opacity: .7; }
+.sim-trend { stroke: var(--ui-selected); }
+.sim-negative-area { fill: var(--ui-negative, #d04545); opacity: .1; }
+.sim-retirement-marker line { stroke: var(--ui-muted); stroke-width: 1; stroke-dasharray: 4 5; }
+.sim-crosshair { stroke: var(--ui-selected); stroke-width: 1; stroke-dasharray: 3 4; opacity: .45; }
+.sim-active-dot { fill: var(--ui-selected); stroke: var(--ui-surface, white); stroke-width: 3; }
+.sim-chart-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 14px 0 20px; color: var(--ui-muted); font-size: var(--ui-font-caption); }
+.sim-chart-legend span { display: inline-flex; gap: 6px; align-items: center; }
+.sim-chart-legend i { display: inline-block; width: 16px; height: 3px; border-radius: 2px; background: var(--ui-selected); }
+.sim-chart-legend .is-dashed { height: 0; border-top: 1px dashed var(--ui-muted); background: none; }
+.sim-chart-selector { display: grid; gap: 4px; padding: 12px 16px; border-radius: var(--ui-radius); background: var(--ui-hover); color: var(--ui-muted); font-size: var(--ui-font-meta); }
+.sim-chart-selector > span { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sim-chart-selector strong { color: var(--ui-text); font-variant-numeric: tabular-nums; }
+.sim-chart-selector input { width: 100%; min-width: 0; min-height: 36px; margin: 0; accent-color: var(--ui-selected); cursor: pointer; }
+.sim-chart-selector input:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+.sim-chart-help { margin: 12px 0 0; }
+@media (max-width: 480px) {
+  .sim-chart-readout { flex-direction: column; gap: 10px; }
+  .sim-chart-breakdown { gap: 12px; }
+  .sim-chart-breakdown dd { font-size: var(--ui-font-meta); }
+}

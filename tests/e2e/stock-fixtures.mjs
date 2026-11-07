@@ -41,6 +41,7 @@ export async function installStockFixtures(page) {
     const period = url.searchParams.get('period') || '1M'
     if (kind === 'chart' && state.delay?.symbol === symbol && state.delay.period === period) { state.delayed++; await new Promise(resolve => { state.release = resolve }) }
     const body = fixturePayload(kind, symbol, period)
+    if (kind === 'news' && state.newsPublishedAt) body.results[0].published_utc = state.newsPublishedAt
     if (kind === 'chart') {
       if (state.failChart || symbol === 'VOO' && state.failBenchmark) return route.fulfill({ status: 503, json: { error: 'Simulated chart outage' } })
       if (state.denseChart) {

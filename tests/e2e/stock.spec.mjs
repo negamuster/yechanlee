@@ -15,6 +15,27 @@ async function search(page, query, symbol) {
 }
 const refresh = page => page.locator('.stock-hero').getByRole('button', { name: '새로고침', exact: true }).click()
 
+test('old article publication is distinguished from collection failure and clears on fresh coverage', async ({ page }) => {
+  state.newsPublishedAt = '2026-10-17T12:00:00Z'
+  await page.goto('/stock/SATL')
+  await expect(page.locator('.stock-state')).toHaveText('조회 완료')
+  await expect(page.locator('.stock-news-coverage')).toContainText('72시간 이전 기사')
+  await expect(page.locator('#stock-news')).toContainText('SATL fixture earnings report')
+  await expect(page.locator('#stock-news')).not.toContainText('이전에 확인한 자료')
+  state.failOptional = true
+  await refresh(page)
+  await expect(page.locator('#stock-news')).toContainText('이전에 확인한 자료')
+  await expect(page.locator('.stock-news-coverage')).toBeVisible()
+  state.failOptional = false; state.newsPublishedAt = '2026-10-21T11:00:00Z'
+  await refresh(page)
+  await expect(page.locator('.stock-state')).toHaveText('조회 완료')
+  await expect(page.locator('.stock-news-coverage')).toHaveCount(0)
+  state.emptyLists = true
+  await refresh(page)
+  await expect(page.locator('#stock-news')).not.toContainText('SATL fixture earnings report')
+  await expect(page.locator('.stock-news-coverage')).toHaveCount(0)
+})
+
 test('company search opens the verified stock and all eight chart periods work with English dates', async ({ page }) => {
   await page.goto('/stock/AAPL')
   await expect(page.locator('.stock-current-price')).toHaveText('$102.00')

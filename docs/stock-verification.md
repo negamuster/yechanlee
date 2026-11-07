@@ -9,6 +9,7 @@
 - Retain confirmed values and their original receipt timestamps during partial refresh failure; clear old lists after a successful empty response.
 - Reject a conflicting company ticker, then recover on retry.
 - Navigate to another company while an earlier chart request is pending; reject the late series.
+- Distinguish an article published more than 72 hours ago from a failed collection. Keep the original article and receipt time, retain the notice on refresh failure, and remove it after a fresh or confirmed empty response.
 
 These browser tests use synthetic AAPL/NVDA/SATL responses and a fixed clock. External requests are blocked; no provider keys or production API quota are used. Pixel 7 is a Chromium viewport/device emulation, not a physical device or Safari check. Failed tests publish screenshots, traces and an HTML report for seven days.
 
@@ -39,3 +40,11 @@ npm run check:data # includes existing global feeds
 These commands call the deployed production site, not the local development or preview server. They are deliberately excluded from `verify` and `verify:all`, because they can consume upstream quota and depend on live source availability. Unlike the deployment workflow, these direct commands do not first wait for a specific deployed SHA; check `/build-info.json` separately when verifying a deployment.
 
 Reports appear in the Actions step summary and `production-data-health` JSON artifact (seven-day retention), including per-resource OK/WARN/FAIL/SKIP details without raw upstream bodies. Workflow failures remain visible in GitHub Actions; this change does not configure a separate notification channel. The new post-deployment trigger becomes active after merging to main.
+
+## External coverage check — 2026-11-07 UTC
+
+[Production health run 42347943549](https://github.com/negamuster/yechanlee/actions/runs/42347943549) completed successfully with source warnings. BLS and Hankyung still returned HTTP 403 in the server/runner environment. The BLS warning referred to the original official snapshot collected at `2026-11-07T06:04:50.765Z`; FRED continued to cover its nine explicitly supported BLS families. This does not certify the completeness of all BLS publications or repair direct upstream access. Existing backoff, 48-hour stale and seven-day snapshot expiry rules remain unchanged. No proxy, guessed replacement URL or additional scheduled task was introduced.
+
+Focused production stock requests returned HTTP 200: SATL news supplied eight articles, latest `2026-10-29T12:00:00Z`, and related companies returned a successful empty array. [Satellogic's official release list](https://investors.satellogic.com/news-events/news-releases) also listed the October 29 HEO agreement as its newest release at inspection. This corroborates that item, not complete news coverage across all publishers. Keep the successful zero-result related-company response separate from request failure, without inventing peers. An article older than 72 hours at the latest snapshot receipt now gets an explicit publication-age/coverage notice alongside the separate collection status; a successful recent fetch does not make its articles newly published.
+
+Actual iPhone Safari was reported satisfactory by the user. This is separate from automated Chromium emulation and is not an independently repeated physical-device check.

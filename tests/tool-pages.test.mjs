@@ -126,7 +126,7 @@ test('simulator chart and table share validated ages, including zero and 100; in
     const rows = container.querySelectorAll('.sim-table tbody tr')
     assert.equal(rows.length, 101 - Number(age))
     assert.equal(rows[0].querySelector('th').textContent, `${age}세`)
-    const labels = [...container.querySelectorAll('.sim-chart text')].map(el => el.textContent).filter(text => text.endsWith('세'))
+    const labels = [...container.querySelectorAll('.sim-chart text')].map(el => el.textContent).filter(text => /^\d+세$/.test(text))
     assert.equal(labels[0], `${age}세`); assert.equal(labels.at(-1), '100세')
     assert.doesNotMatch(container.querySelector('.sim-chart').outerHTML, /NaN|Infinity/)
   }
