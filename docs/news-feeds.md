@@ -3,9 +3,15 @@
 `/api/news` is a Vercel Node.js Web Standard handler. It collects publisher
 RSS feeds and returns headline metadata, original links, publication times,
 and optional feed-provided images. It never scrapes article pages or returns
-article bodies. The current response version is `rss-node-v5`.
+article bodies. The current response version is `rss-node-v6`.
 
 ## Publishers
+
+On November 7, 2026, the public production response contained 154 eligible articles. BBC, both WSJ feeds, CNBC, Bloomberg, FT, Yahoo, both 매일경제 feeds, 연합뉴스 and 연합인포맥스 reported `ok`. 조선비즈 returned a valid `empty` result. 한국경제 returned `http_403` in production while its officially documented URL returned HTTP 200 and 21 eligible articles in this development environment. Its address remains correct and its production failure remains visible. Local CNBC access returned 403 and FT timed out, demonstrating why local access alone cannot certify Vercel collection.
+
+Reuters is an explicitly optional connection. Its `not_configured` state and `optional: true` remain visible in source diagnostics, with no request made until a provider-issued URL is configured. The health checker excludes this expected absence from outage warnings. Invalid configuration, access errors and failed refreshes still warn. Legacy source metadata without `optional` retains its previous warning behavior.
+
+The table below records earlier observations unless dated otherwise.
 
 | Publisher | Coverage / connection | Latest verification in this development environment |
 | --- | --- | --- |

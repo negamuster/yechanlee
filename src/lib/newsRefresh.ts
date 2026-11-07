@@ -8,7 +8,7 @@ import { readUrl } from './readArticles.ts'
 export interface NewsFeedData {
   items: NewsItem[]
   fetchedAt: number
-  sources: { id: string; publisher: string; region: string; status: string; error?: string; checkedAt?: number | null; lastSuccessAt?: number; nextRetryAt?: number; eligibleItems?: number; latestPublishedAt?: string | null }[]
+  sources: { id: string; publisher: string; region: string; status: string; optional?: boolean; error?: string; checkedAt?: number | null; lastSuccessAt?: number; nextRetryAt?: number; eligibleItems?: number; latestPublishedAt?: string | null }[]
 }
 export interface NewsSnapshot {
   current: NewsFeedData | null

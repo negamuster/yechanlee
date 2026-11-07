@@ -38,3 +38,13 @@ test('retained news and fallback calendars still warn when a live refresh fails'
  assert.ok(calendar.warnings.some(w=>w.includes(`(http_403), checked ${checkedAt}, data updated ${updatedAt}`)))
  assert.ok(calendar.warnings.includes('Some calendar data older than 48 hours'))
 })
+
+test('optional unconfigured feeds stay visible but configured failures still warn', () => {
+ const data = {items:[{published_utc:new Date(now).toISOString()}],fetchedAt:now,sources:[{id:'reuters',optional:true,status:'not_configured'}]}
+ assert.deepEqual(inspectHealth('news',data,now),{errors:[],warnings:[]})
+ for (const source of [{id:'reuters',optional:true,status:'unavailable',error:'invalid_configuration'},{id:'hankyung-economy',status:'unavailable',error:'http_403'}]) {
+   const result = inspectHealth('news',{...data,sources:[source]},now)
+   assert.equal(result.warnings.length,1)
+   assert.ok(result.warnings[0].includes(source.error))
+ }
+})

@@ -167,6 +167,7 @@ test('licensed Reuters feed is explicit and does not expose configuration secret
     let requests = 0
     const missing = await collectNews(async () => { requests++; return new Response('') }, [reuters], now)
     assert.equal(missing.sources[0].status, 'not_configured')
+    assert.equal(missing.sources[0].optional, true)
     assert.equal(requests, 0)
     process.env[key] = 'https://unrelated.example/rss?token=private'
     const invalid = await collectNews(async () => { requests++; return new Response('') }, [reuters], now)
