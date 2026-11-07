@@ -116,12 +116,6 @@
 .sim-cashflow-result { border-color: var(--ui-accent-border); }
 .sim-result-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin: 4px 0 12px; color: var(--ui-selected); font-size: 32px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .sim-result-value > span { color: var(--ui-muted); font-size: var(--ui-font-control); font-weight: 400; }
-.sim-chart { display: block; width: 100%; min-width: 400px; height: auto; }
-.sim-chart text { fill: var(--ui-muted); font: 10px var(--font-ui); }
-.sim-gridline { stroke: var(--ui-hover); stroke-width: 1; }
-.sim-axis { stroke: var(--ui-border); stroke-width: 1; }
-.sim-trend { stroke: var(--ui-selected); }
-.sim-dot { fill: var(--ui-selected); }
 .sim-table-scroll { max-height: 480px; border: 1px solid var(--ui-border); }
 .sim-table { min-width: 640px; }
 .sim-table :is(th, td):first-child { position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0 var(--ui-border); }

@@ -70,6 +70,14 @@ If resources are insufficient, set invested assets to zero and disclose an accum
 
 The model ignores taxes, fees, market volatility, sale constraints and actual mortgage schedules; annual principal is a user-specified simplifying assumption.
 
+### Chart presentation (2026-11-07)
+
+The responsive SVG uses the unchanged yearly projection, with straight segments and no smoothing or interpolated financial values. It follows the restrained area-chart presentation in [shadcn/ui](https://ui.shadcn.com/charts/area) and [Tremor](https://www.tremor.so/docs/visualizations/area-chart): prominent value, subtle fill, compact axes and a selected-point readout. No library or third-party source code was added.
+
+Pointer/touch selection and a native keyboard-accessible age slider show the same rounded KRW values as the table: beginning-of-year gross assets, debt, accumulated funding gap and net worth. The axis includes zero and preserves negative net worth; retirement is marked only within the visible age range. Age 100 is a valid single-point chart with a disabled slider. Selection is retained by age after input changes, or falls back to the final age if that selection no longer exists. No inputs or results are saved or transmitted.
+
+`tests/e2e/simulator.spec.mjs` covers zero assets, ages 0/100, invalid ages, retirement, positive/negative net worth, exact table/readout agreement, keyboard/pointer selection and overflow at desktop/Pixel 7 sizes. The existing CI screenshot artifact includes the chart examples. Pixel 7 emulation does not verify Safari.
+
 ## Verification commands
 
 `node --test tests/financial-math.test.mjs tests/filing-dates.test.mjs`

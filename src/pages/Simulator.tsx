@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import type { WheelEvent } from 'react'
 import ToolPage from '../components/ToolPage'
+import SimulatorChart from '../components/SimulatorChart'
 import { projectAssets } from '../lib/financialMath'
 
 function formatInput(value: string): string {
@@ -9,12 +10,6 @@ function formatInput(value: string): string {
 }
 function parseInput(value: string): number {
   return Number(value.replace(/,/g, '')) || 0
-}
-function formatKorean(value: number): string {
-  const abs = Math.abs(value)
-  if (abs >= 1_0000_0000) return (value / 1_0000_0000).toFixed(1).replace(/\.0$/, '') + '억'
-  if (abs >= 10000) return Math.round(value / 10000) + '만'
-  return value.toLocaleString('ko-KR')
 }
 const handleWheel = (event: WheelEvent<HTMLInputElement>) => event.currentTarget.blur()
 
@@ -70,25 +65,6 @@ export default function Simulator() {
   }) : [], [currentAge, retireAge, savings, savingsRate, stocks, stocksRate, other, otherRate, expense, expenseGrowth, income, incomeGrowth, mortgage, otherDebt, mortgageRate, otherDebtRate, mortgagePrincipal, otherPrincipal, hasInput])
   const netIncrease = data[0]?.cashFlow ?? 0
   const firstGap = data.find(row => row.fundingGap > 0)
-
-  const W = 620, H = 280, PL = 64, PR = 20, PT = 20, PB = 44
-  const gW = W - PL - PR
-  const gH = H - PT - PB
-  // The projection has already validated ages and contains at most 101 rows.
-  // Never iterate over raw input: even an incomplete invalid age must stay bounded.
-  const startAge = data[0]?.age ?? 0
-  const totalYears = 100 - startAge || 1
-  const maxAsset = data.length ? Math.max(...data.map(d => d.asset), 0) : 0
-  const minAsset = data.length ? Math.min(...data.map(d => d.asset), 0) : 0
-  const range = maxAsset - minAsset || 1
-  const xOf = (a: number) => PL + ((a - startAge) / totalYears) * gW
-  const yOf = (v: number) => PT + gH - ((v - minAsset) / range) * gH
-  const xTicks = data.filter(row => (row.age - startAge) % 10 === 0 || row.age === 100).map(row => row.age)
-  const xGrids = data.filter(row => (row.age - startAge) % 5 === 0).map(row => row.age)
-  const yTicks = [0, 1, 2, 3, 4].map(i => minAsset + (range * i) / 4)
-  const polyline = data.map(d => `${xOf(d.age)},${yOf(d.asset)}`).join(' ')
-  const dots = data.filter((_, i) => i % 5 === 0)
-
 
   return <ToolPage className="simulator-page" title="자산 시뮬레이터"
     description="자산·소득·지출과 수익률 가정을 입력해 100세까지의 순자산 변화를 계산합니다. 실제 미래 수익을 예측하는 모델은 아닙니다.">
@@ -171,22 +147,7 @@ export default function Simulator() {
         </section>
         <section className="tool-card" aria-labelledby="sim-chart-heading">
           <div className="tool-card-heading"><h2 id="sim-chart-heading">가정에 따른 순자산 추이</h2></div>
-          <p className="tool-scroll-hint">좌우로 밀어 차트 전체 보기</p>
-          <div className="tool-chart-scroll" tabIndex={0} role="region" aria-label="연령별 순자산 차트, 좌우로 스크롤">
-            <svg viewBox={`0 0 ${W} ${H}`} className="sim-chart" role="img" aria-label="입력한 가정에 따른 100세까지의 연초 순자산 추이">
-              {yTicks.map((value, index) => <g key={index}>
-                <line className="sim-gridline" x1={PL} y1={yOf(value)} x2={W - PR} y2={yOf(value)} />
-                <text x={PL - 6} y={yOf(value) + 4} textAnchor="end">{formatKorean(value)}</text>
-              </g>)}
-              {xGrids.map(age => <line key={age} className="sim-gridline" x1={xOf(age)} y1={PT} x2={xOf(age)} y2={PT + gH} />)}
-              {minAsset < 0 && <line className="sim-axis" x1={PL} y1={yOf(0)} x2={W - PR} y2={yOf(0)} strokeDasharray="4 2" />}
-              <polyline className="sim-trend" points={polyline} fill="none" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-              {dots.map(row => <circle key={row.age} className="sim-dot" cx={xOf(row.age)} cy={yOf(row.asset)} r="2.5" />)}
-              {xTicks.map(age => <text key={age} x={xOf(age)} y={PT + gH + 18} textAnchor="middle">{age}세</text>)}
-              <line className="sim-axis" x1={PL} y1={PT} x2={PL} y2={PT + gH} />
-              <line className="sim-axis" x1={PL} y1={PT + gH} x2={W - PR} y2={PT + gH} />
-            </svg>
-          </div>
+          <SimulatorChart data={data} retireAge={retireAge ? Number(retireAge) : 100} />
         </section>
         <section className="tool-card" aria-labelledby="sim-table-heading">
           <div className="tool-card-heading"><h2 id="sim-table-heading">나이별 연초 자산·부채</h2><span className="tool-meta">단위: 원</span></div>
