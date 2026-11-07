@@ -82,7 +82,7 @@ export default function SimulatorChart({ data, retireAge }: { data: ProjectionYe
         <polygon points={area} className="sim-negative-area" clipPath={`url(#${id}-negative)`} />
         {showRetirement && <g className="sim-retirement-marker">
           <line x1={x(retireAge)} x2={x(retireAge)} y1={top} y2={height - bottom} />
-          <text x={x(retireAge)} y={14} textAnchor={retireAge === first.age ? 'start' : retireAge === last.age ? 'end' : 'middle'}>은퇴 {retireAge}세</text>
+          <text x={x(retireAge)} y={14} textAnchor={x(retireAge) < left + 48 ? 'start' : x(retireAge) > width - right - 48 ? 'end' : 'middle'}>은퇴 {retireAge}세</text>
         </g>}
         <polyline className="sim-trend" points={points} fill="none" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         <line className="sim-crosshair" x1={x(selected.age)} x2={x(selected.age)} y1={top} y2={height - bottom} />
