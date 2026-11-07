@@ -149,7 +149,7 @@ export default function MarketCalendar({ full = false }: { full?: boolean }) {
     </div>
     <div className="calendar-compact-status"><span>{full ? `미국 날짜 기준 · 시간 ${zoneLabel} · ★ 주요 일정` : `미국 날짜 · ${zoneLabel}`}</span>{full && <button type="button" disabled={loading} onClick={() => setReload(n => n + 1)}>새로고침</button>}</div>
     <p className="calendar-time-note">거래소 일정은 NYSE 현물 주식 정규장 기준 · 휴장일은 미국 날짜의 종일 일정입니다.</p>
-    {full && schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 나머지 BLS 일정은 별도 저장본의 확인 시각을 따르며, 저장본 만료 시 표시되지 않습니다.</p>}
+    {full && schedule.data?.sources.some(source => source.name === 'FRED (BLS)' && ['snapshot', 'ok', 'stale'].includes(source.state)) && <p className="calendar-time-note">BLS 보완 범위: CPI·PPI·고용보고서 등 9개 지표군은 FRED 확인 일정입니다. 실질임금·산업재해·산업별 총요소생산성 등은 FRED 보완에 포함되지 않으며, BLS 저장본 만료 시 누락될 수 있습니다. <a href="https://www.bls.gov/schedule/" target="_blank" rel="noopener noreferrer">BLS 공식 발표 목록 ↗</a></p>}
     {agenda}
     {exportMessage && <p className="calendar-time-note" role="status">{exportMessage}<button type="button" onClick={() => setExportMessage('')}>닫기</button></p>}
     {full && <details className="calendar-help"><summary aria-label="캘린더 출처와 조회 범위" title="출처·조회 범위">정보 ⓘ · 출처·조회 범위</summary>{help}</details>}

@@ -273,6 +273,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
           <div><strong>{source.publisher}</strong><small>{source.id}</small></div>
           <span>{source.status === 'stale' ? '갱신 실패 · 이전 수집 기사 표시' : source.status === 'ok' ? '기사 확인' : source.status === 'empty' ? '72시간·주제 조건에 맞는 기사 없음' : source.status === 'not_configured' ? '피드 미설정 · 수집 대상에서 제외' : source.error === 'http_403' ? '출처 서버에서 접근 거부 (403)' : source.error === 'http_404' ? '출처 피드 주소를 찾을 수 없음 (404)' : source.error === 'http_429' ? '출처 요청 한도 초과 (429)' : source.error === 'timeout' ? '출처 응답 시간 초과' : '수집 실패 · 대기 후 재시도'}</span>
           <small>조회 시각: {source.checkedAt ? dataTime(source.checkedAt) : source.status === 'not_configured' ? '조회하지 않음' : '시각 미제공'}{source.latestPublishedAt ? ` · 최근 기사: ${dataTime(source.latestPublishedAt)}` : ''}</small>
+          {source.optional && source.status === 'not_configured' && <small>선택 연결 · 제공받은 피드 설정 후 수집을 시작합니다.</small>}
           {source.lastSuccessAt && source.status === 'stale' && <small>마지막 정상 수집: {dataTime(source.lastSuccessAt)} · 최대 6시간 유지</small>}
           {source.nextRetryAt && <small>재시도 가능 시각: {dataTime(source.nextRetryAt)}</small>}
         </li>)}</ul>

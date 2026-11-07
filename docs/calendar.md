@@ -19,7 +19,22 @@ The desktop Live/Movers sidebar is sticky across the dashboard and news column. 
 
 ## BLS collection
 
-`node scripts/refresh-bls-calendar.mjs` fetches the official ICS and atomically replaces `data/bls-calendar.json` only after validating its format and future releases. The GitHub Actions workflow runs every six hours (at minute 23), on collector changes, or manually. A failed fetch leaves the previous snapshot untouched and fails the workflow. GitHub scheduling may be delayed. No API secret is required; repository contents write permission is scoped to the collection workflow. The API reads the raw main-branch snapshot on direct BLS failure so updates do not depend on a new Vercel build. It caches results for 15 minutes and displays the actual collection time for snapshot/stale data.
+`node scripts/refresh-bls-calendar.mjs` reads the official ICS and the current year's official selected-release list at `https://www.bls.gov/schedule/YYYY/`. The annual list must contain all 12 monthly tables, Eastern Time labels, and valid dated release rows. BLS office holidays are excluded from economic releases. Known titles with preliminary/revised markers match the ICS family, and annual-list dates replace that family's ICS dates within the collected year.
+
+The snapshot preserves the actual ICS and records the selected list separately with its source URL. If ICS access fails, a valid annual list can supply the snapshot on its own. If the annual list fails, valid ICS can still be saved with an explicit collector warning about incomplete coverage. The existing nine-family FRED fallback is used when neither official path provides a valid future-release snapshot. Failed replacements preserve the previous file. The snapshot's checkedAt records completion of the official collection, and its existing 48-hour stale/seven-day expiry limits apply. A successful live ICS retains its dates for families it includes. Missing families may use a valid selected-list supplement, exposed separately as `BLS selected releases` with the supplement's original collection time.
+
+The GitHub Actions workflow runs every six hours (at minute 23), on collector changes, or manually. GitHub scheduling may be delayed. No API secret is required. The API reads the main-branch snapshot so refreshes can be used between Vercel builds. The annual supplement covers its recorded year; it does not certify later years, cancelled families absent from both lists, or every BLS publication.
+
+### Coverage checked on November 7, 2026
+
+The current [official annual list](https://www.bls.gov/schedule/2026/) contains 167 timed releases. The actual downloaded ICS contains 313 events across its available years. The merged snapshot contains 315 releases. Two annual-list releases were absent from the ICS, including November 20 Total Factor Productivity for Major Industries. This count describes the downloaded sources, not guaranteed completeness of every BLS publication.
+
+| Month | Timed releases in selected list | Represented by the nine FRED families | Outside FRED coverage |
+| --- | --- | --- | --- |
+| November 2026 | 10 | 7 | November 10 Real Earnings, November 18 Employer-Reported Workplace Injuries and Illnesses, November 20 Total Factor Productivity for Major Industries |
+| December 2026 | 14 | 9 | December 2 County Employment and Wages, December 10 Real Earnings, December 16 Census of Fatal Occupational Injuries and Employer Costs for Employee Compensation, December 18 Work Experience of the Population |
+
+All dates in this comparison are New York dates. These events are included in the refreshed official snapshot. If official collection remains blocked beyond seven days, only FRED's supported families remain. Exact dates and times must continue to come from a valid source; a CPI date is never used to invent a Real Earnings event.
 
 ## FRED fallback for BLS access restrictions
 

@@ -10,6 +10,7 @@ on:
       - 'scripts/refresh-bls-calendar.mjs'
       - 'lib/calendar.js'
       - 'lib/fred-calendar.js'
+      - 'lib/bls-schedule.js'
 permissions:
   contents: write
 concurrency:
@@ -25,7 +26,8 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - run: node --test tests/calendar.test.mjs tests/fred-calendar.test.mjs
+      - run: npm ci --no-audit --no-fund
+      - run: node --test tests/calendar.test.mjs tests/fred-calendar.test.mjs tests/bls-schedule.test.mjs
       - run: node scripts/refresh-bls-calendar.mjs
       - name: Save verified schedule
         run: |
