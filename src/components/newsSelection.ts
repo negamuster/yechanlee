@@ -18,6 +18,7 @@ export interface NewsItem {
   feedStale?: boolean
   feedCollectedAt?: number
   topics?: Topic[]
+  articleKind?: '보도·일반' | '해설·의견' | '전망·예고'
   selectionReason?: string
   related?: NewsItem[]
 }

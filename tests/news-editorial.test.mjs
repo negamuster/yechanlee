@@ -17,7 +17,7 @@ test('major prioritizes an economic release over fresh generic articles; latest 
   const data = [item('fresh', 'Technology market discussion', .1), item('cpi', 'US CPI inflation report released', 2)]
   assert.equal(editorialBatches(data, 'all', now, 'major')[0][0].id, 'cpi')
   assert.equal(editorialBatches(data, 'all', now, 'latest')[0][0].id, 'fresh')
-  assert.equal(editorialBatches(data, 'all', now, 'major')[0][0].selectionReason, '통화정책·경제지표')
+  assert.equal(editorialBatches(data, 'all', now, 'major')[0][0].selectionReason, '물가·경제지표')
 })
 test('group only close lexical reports and preserve original metadata; latest exposes all original reports', () => {
   const a = item('a', 'Apple announces quarterly earnings revenue growth 10%', 1)
@@ -41,4 +41,38 @@ test('all eligible links remain reachable across batches, grouping is filter-sco
   assert.deepEqual(result, editorialBatches([...data].reverse(), 'all', now, 'major').flat())
   assert.equal(editorialBatches(data, 'kr', now, 'major').length, 0)
   assert.equal(editorialBatches([item('old', 'Fed rate decision', 73), item('future', 'Fed rate decision', -1)], 'all', now, 'major').length, 0)
+})
+
+test('topic diversity reduces macro repetition without losing originals, reports outrank same-age previews', async () => {
+  const { articleKind, newsPriority } = await import('../src/components/newsEditorial.ts')
+  assert.equal(articleKind('Why interest rates matter'), '해설·의견')
+  assert.equal(articleKind('[뉴욕채권-주간] CPI 발표 주목'), '전망·예고')
+  assert.equal(articleKind('Nvidia earnings beat estimates'), '보도·일반')
+  for (const title of ['UPS 연간 실적 전망 상향', 'Company raises earnings outlook', 'Boeing withdraws annual guidance']) assert.equal(articleKind(title), '보도·일반')
+  assert.equal(articleKind('Analysts expect Company could raise earnings outlook'), '전망·예고')
+  const data = [...Array.from({ length: 12 }, (_, i) => item(`macro${i}`, `CPI inflation outlook issue ${i}`, 1, `Macro${i}`)), ...Array.from({ length: 6 }, (_, i) => item(`corp${i}`, `Company${i} earnings beat estimates`, 1, `Corp${i}`))]
+  const first = editorialBatches(data, 'all', now, 'major')[0]
+  assert.ok(first.filter(x => x.id.startsWith('corp')).length >= 3)
+  assert.equal(editorialBatches(data, 'all', now, 'major').flat().length, 18)
+  assert.ok(newsPriority(item('new', 'Fed holds interest rates at 5%', 1), now).score > newsPriority(item('old', 'Fed holds interest rates at 5%', 60), now).score)
+})
+test('explicit same-day bank decisions can group across languages; forecasts, reactions and changed facts cannot', () => {
+  const decision = item('en', 'Fed holds interest rates at 5.25%')
+  const equivalent = item('ko', '연준 기준금리 5.25% 동결', 2)
+  assert.equal(sameNewsEvent(decision, equivalent), true)
+  for (const title of ['ECB holds interest rates at 5.25%', 'Fed cuts interest rates to 5.25%', '연준 기준금리 5.5% 동결', 'Fed may hold interest rates at 5.25%', 'Fed official calls for holding interest rates at 5.25%', 'Fed refuses to hold interest rates at 5.25%', 'Stocks rise after Fed holds interest rates at 5.25%', '연준 기준금리 5.25% 동결 전망', 'Fed holds interest rates at 5.25%, changes QT policy']) assert.equal(sameNewsEvent(decision, item('other', title)), false, title)
+  assert.equal(sameNewsEvent(item('cut-en', 'Fed cuts rates to 5%'), item('cut-ko', '연준 금리 5% 인하')), false)
+  assert.equal(sameNewsEvent(item('cut-en', 'Fed cuts rates to 5%'), item('cut-at', 'Fed cuts rates at 5%')), false)
+  assert.equal(sameNewsEvent(item('cut-en', 'Fed cuts rates to 5%'), item('cut-target', '연준 금리 5%로 인하')), true)
+  assert.equal(sameNewsEvent(decision, { ...equivalent, published_utc: '2026-11-07T23:00:00Z' }), false)
+})
+
+test('Hankyung finance is separately diagnosed when the economy feed is blocked', async () => {
+  const { SOURCES, collectNews } = await import('../lib/news.js')
+  const sources = SOURCES.filter(s => s.id.startsWith('hankyung-'))
+  assert.equal(sources.length, 2)
+  const payload = await collectNews(async url => url.endsWith('/economy') ? new Response(null, { status: 403 }) : new Response(`<rss><channel><item><title>한국 기업 실적 개선</title><link>https://www.hankyung.com/article/test</link><pubDate>${new Date(now).toUTCString()}</pubDate></item></channel></rss>`), sources, now)
+  assert.equal(payload.sources.find(s => s.id === 'hankyung-economy').error, 'http_403')
+  assert.equal(payload.sources.find(s => s.id === 'hankyung-finance').status, 'ok')
+  assert.equal(payload.items[0].publisher, '한국경제')
 })
