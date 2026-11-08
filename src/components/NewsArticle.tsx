@@ -7,14 +7,15 @@ import { TOPICS } from './newsSelection'
 import type { NewsItem } from './newsSelection'
 import './NewsArticle.css'
 
-export default function NewsArticle({ item, read, timeLabel, onRead, image, mobile = false }: {
-  item: NewsItem; read: boolean; timeLabel: string; onRead: () => void; image?: ReactNode; mobile?: boolean
+export default function NewsArticle({ item, read, timeLabel, onRead, onRelatedRead, image, mobile = false }: {
+  item: NewsItem; read: boolean; timeLabel: string; onRead: () => void; onRelatedRead?: (url: string) => void; image?: ReactNode; mobile?: boolean
 }) {
   const metadataId = useId()
   const topics = <div className={mobile ? 'mobile-news-topics' : 'news-topic-tags'} aria-label="기사 주제">
     {TOPICS.filter(topic => item.topics?.includes(topic.value)).map(topic => <span key={topic.value}>{topic.label}</span>)}
   </div>
   return <article className={`news-article ${mobile ? 'mobile-news-article' : 'news-card'}${read ? ' is-read' : ''}`} data-reading-key={`news:${item.article_url}`}>
+    {item.selectionReason && <p className="news-selection-reason">{item.selectionReason}</p>}
     {mobile && topics}
     <a className={mobile ? `mobile-news-link${image ? ' has-image' : ''}` : 'news-row'} href={item.article_url}
       data-focus-key={`news:${item.article_url}`} target="_blank" rel="noopener noreferrer"
@@ -24,6 +25,10 @@ export default function NewsArticle({ item, read, timeLabel, onRead, image, mobi
       <h3 className={mobile ? undefined : 'news-title'}>{item.title}</h3>
       {mobile && image && <div className="mobile-news-thumbnail">{image}</div>}
     </a>
+    {!!item.related?.length && <details className="news-related">
+      <summary>관련 보도 {item.related.length}건 · 제목 유사도 기준</summary>
+      <ul>{item.related.map(other => <li key={other.article_url}><a onClick={() => onRelatedRead?.(other.article_url)} onAuxClick={event => { if (event.button === 1) onRelatedRead?.(other.article_url) }} href={other.article_url} target="_blank" rel="noopener noreferrer">{other.title}</a><span>{other.publisher} · <time dateTime={other.published_utc}>{new Date(other.published_utc).toLocaleString('ko-KR')}</time></span></li>)}</ul>
+    </details>}
     <div className={`news-article-footer${mobile ? ' mobile-news-footer' : ''}`}>
       <div className="news-article-metadata" id={metadataId}>
         <p className="news-article-publisher">{item.publisher}</p>

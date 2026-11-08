@@ -1,3 +1,4 @@
+import { isRoutineNews } from '../../lib/news-relevance.js'
 export type Region = 'all' | 'global' | 'kr'
 export const TOPICS = [
   { value: 'economy', label: '경제' }, { value: 'tech', label: '테크' },
@@ -17,11 +18,13 @@ export interface NewsItem {
   feedStale?: boolean
   feedCollectedAt?: number
   topics?: Topic[]
+  selectionReason?: string
+  related?: NewsItem[]
 }
 
 export function filterNews(items: NewsItem[], region: Region, topic: TopicFilter, query = '', now = Date.now()): NewsItem[] {
   const terms = query.normalize('NFKC').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean)
-  return items.filter(item => (!item.feedStale || (Number.isFinite(item.feedCollectedAt) && now >= item.feedCollectedAt! && now - item.feedCollectedAt! <= 6 * 3600000))
+  return items.filter(item => !isRoutineNews(item.title) && (!item.feedStale || (Number.isFinite(item.feedCollectedAt) && now >= item.feedCollectedAt! && now - item.feedCollectedAt! <= 6 * 3600000))
     && Number.isFinite(Date.parse(item.published_utc))
     && now - Date.parse(item.published_utc) <= 72 * 60 * 60 * 1000
     && Date.parse(item.published_utc) <= now + 300000

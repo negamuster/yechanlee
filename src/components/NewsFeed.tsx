@@ -21,8 +21,11 @@ import type { NewsSnapshot } from '../lib/newsRefresh'
 import { captureNewsAnchor, restoreNewsAnchor } from '../lib/newsReadingAnchor'
 import type { NewsReadingAnchor } from '../lib/newsReadingAnchor'
 
-import { newsBatches, filterNews, TOPICS } from './newsSelection'
+import { filterNews, TOPICS } from './newsSelection'
 import type { NewsItem, Region, TopicFilter } from './newsSelection'
+
+import { editorialBatches } from './newsEditorial'
+import type { NewsOrder } from './newsEditorial'
 
 const FILTERS: { value: Region; label: string }[] = [
   { value: 'all', label: '전체' }, { value: 'global', label: '해외' }, { value: 'kr', label: '국내' },
@@ -69,6 +72,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
   const latest = snapshot.latest
   const [region, setRegion] = useSessionState<Region>('news.region', 'all', v => ['all', 'global', 'kr'].includes(String(v)))
   const [topic, setTopic] = useSessionState<TopicFilter>('news.topic', 'all', v => v === 'all' || TOPICS.some(t => t.value === v))
+  const [order, setOrder] = useSessionState<NewsOrder>('news.order', 'major', v => v === 'major' || v === 'latest')
   const [query, setQuery] = useSessionState('news.query', '', v => typeof v === 'string' && v.length <= 120)
   const [view, setView] = useSessionState<'cards' | 'list'>('news.view', mobile ? 'list' : 'cards', v => v === 'cards' || v === 'list')
   const [loading, setLoading] = useState(!feed)
@@ -160,7 +164,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
     setRegion('all'); setTopic('all'); setQuery(''); setSectorFilter(previewSector); setVisibleBatches(1)
     requestAnimationFrame(() => { const heading = document.getElementById('home-news-title'); heading?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); heading?.focus({ preventScroll: true }) })
   }
-  const batches = newsBatches(matching, region, snapshot.selectedAt)
+  const batches = editorialBatches(matching, region, snapshot.selectedAt, order)
   const news = batches.slice(0, visibleBatches).flat()
   const relevantSources = latest?.sources.filter(source => region === 'all' || source.region === region) || []
   const partial = relevantSources.some(source => ['unavailable', 'stale'].includes(source.status))
@@ -183,7 +187,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
   }
   function article(item: NewsItem) {
     return <NewsArticle key={newsIdentity(item)} item={item} mobile={mobile} read={isRead(item.article_url)}
-      timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)}
+      timeLabel={relativeTime(Date.parse(item.published_utc))} onRead={() => mark(item.article_url)} onRelatedRead={mark}
       image={view === 'cards' ? <NewsImage key={item.image_url || item.id} item={item} /> : undefined} />
   }
 
@@ -217,6 +221,11 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
             </button>
           </div>
         </div>
+        <div className="news-order-toggle" role="group" aria-label="뉴스 정렬">
+          <button type="button" aria-pressed={order === 'major'} onClick={() => { setOrder('major'); setVisibleBatches(1) }}>주요 뉴스</button>
+          <button type="button" aria-pressed={order === 'latest'} onClick={() => { setOrder('latest'); setVisibleBatches(1) }}>최신순</button>
+        </div>
+        <p className="news-scope">{order === 'major' ? '제목 기준 시장 관련성·최신성·매체 다양성을 반영합니다. 비슷한 보도는 관련 기사로 묶습니다.' : '최근 72시간 기사를 발행 시각순으로 표시합니다.'} 국내·해외는 매체 기준입니다.</p>
         <div className="news-search-tools">
           <div className="news-search">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
@@ -242,7 +251,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
               <button key={t.value} type="button" aria-pressed={topic === t.value} onClick={() => { setTopic(t.value); setVisibleBatches(1) }}>{t.label}</button>)}
           </div>
           <label className="news-read-toggle"><input type="checkbox" checked={hideRead} onChange={e => { setHideRead(e.target.checked); setVisibleBatches(1) }} /> 읽은 기사 숨기기 <small>이 브라우저에서 연 기사 기준</small></label>
-          <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류{compact && <> · 최근 72시간 기사 · 묶음별 최신순 · 묶음당 매체별 최대 3개</>}</p>
+          <p className="news-scope">경제·테크·투자·기업 중심 · 제목과 매체 분류를 기준으로 자동 분류</p>
         </div>}
         {filterCount > 0 && <div className="news-active-filters" role="group" aria-label="적용한 뉴스 필터">
           {region !== 'all' && <button type="button" aria-label={`${region === 'kr' ? '국내' : '해외'} 지역 필터 해제`} onClick={() => { setRegion('all'); setVisibleBatches(1) }}>{region === 'kr' ? '국내' : '해외'} <span aria-hidden="true">×</span></button>}
@@ -283,7 +292,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
       </div>
       <div id={newsListId} className="news-results" tabIndex={-1} aria-busy={loading && !feed}>
         {loading && !feed ? null : news.length ? <>
-          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 표시{!compact && ' · 묶음별 최신순 · 묶음당 매체별 최대 3개'}</p>
+          <p className="news-result-count" role="status">조건에 맞는 {matching.length}개 중 {news.length}개 대표 기사 표시 · {order === 'major' ? '주요 뉴스' : '최신순'}</p>
           <div className={mobile ? 'mobile-news-articles' : view === 'cards' ? 'news-grid' : 'news-list'}>{news.map(article)}</div>
           {visibleBatches < batches.length && <button type="button" className="news-more" onClick={() => setVisibleBatches(value => value + 1)}>기사 더보기 (+{batches[visibleBatches].length})</button>}
           <p className="news-sources">표시 매체: {publishers.join(' · ')}</p>

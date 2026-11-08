@@ -26,3 +26,17 @@
 .mobile-news-thumbnail .news-publisher-logo img { width: 22px; height: 22px; }
 .mobile-news-thumbnail .news-publisher-logo > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mobile-news-thumbnail .news-image-credit { font-size: var(--ui-font-caption); }
+
+.news-selection-reason { margin: 0; color: var(--ui-selected); font-size: 12px; line-height: 1.5; }
+.news-related { font-size: 12px; color: var(--ui-muted); overflow-wrap: anywhere; }
+.news-related summary { cursor: pointer; min-height: 32px; padding: 6px 0; }
+.news-related ul { padding-left: 18px; margin: 6px 0; }
+.news-related li { margin-bottom: 10px; }
+.news-related a { color: var(--ui-text); line-height: 1.6; }
+.news-related span { display: block; margin-top: 4px; }
+.news-order-toggle { align-self: flex-start; }
+
+.news-order-toggle { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--ui-border); border-radius: 10px; }
+.news-order-toggle button { min-height: 40px; padding: 8px 14px; border: 0; border-radius: 8px; background: transparent; color: var(--ui-muted); font: inherit; font-size: 13px; cursor: pointer; }
+.news-order-toggle button[aria-pressed="true"] { background: var(--ui-selected); color: white; }
+.news-order-toggle button:focus-visible, .news-related summary:focus-visible { outline: 2px solid var(--ui-selected); outline-offset: 3px; }

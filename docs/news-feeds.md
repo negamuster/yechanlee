@@ -74,12 +74,9 @@ prevent other feeds from loading.
   Missing, broken, or very small images use a neutral same-size frame labelled
   "이미지 없음". Reserve one line for image credit even when none is supplied.
   Not all publishers include images in RSS when the article page has a photograph.
-- Show up to 12 stories, with at most 3 per publisher. Give each available
-  publisher one slot before taking its next story. Interleave regions while
-  choosing the combined view, then sort the selected stories by publication time.
+- Display 12 representative articles per batch. See the November 2026 editorial policy below for the default major-news order and chronological alternative.
 - Region labels describe the publisher/feed group, not the country discussed.
-  Headline language is preserved. There is no importance ranking or semantic
-  clustering of related stories from different publishers.
+  Headline language is preserved. The default uses explainable headline ranking and conservative lexical grouping; it does not claim semantic or full-article verification.
 - Filter promotional titles/categories, duplicate normalized exact titles,
   duplicate canonical URLs, missing/invalid dates, implausible future dates,
   and articles older than 72 hours. No fallback restores rejected articles.
@@ -162,3 +159,48 @@ References:
 The existing per-feed backoff now respects Retry-After on 429/503, bounded to 24 hours, and doubles repeated transient failures from one minute to at most 15 minutes. Existing 403/404 floors remain; 410 uses the six-hour address-error floor. A successful collection, including a validated empty feed, resets the failure count. Briefing collection remains live-only; it does not reuse failed-feed cache entries.
 
 API cache hits also prune articles past 72 hours and failed-source articles past six hours from the original successful receipt. CDN freshness plus stale-while-revalidate never exceeds the earliest article deadline; responses within one second of expiry and retained stale responses use no-store. Expired retained sources become unavailable with zero eligible items; a healthy feed whose articles have all aged out is empty. Source errors/last-attempt/last-success/retry timestamps remain distinct. The operational checker now warns on retained stale feeds as well as unavailable ones. No feed endpoint or host allowlist changed; Yahoo 404 and environment-specific Hankyung 403 remain visible.
+
+## Homepage editorial policy (November 8, 2026)
+
+Goal: remove routine/personal-finance entertainment and solicitation noise,
+prioritize market-relevant headlines, and expose closely matching reports without
+hiding original links. Completion criteria are covered by `news-editorial` Node
+and desktop/mobile Chromium cases. Changes affect RSS relevance and home display;
+no article bodies, translations, trading recommendations or new dependencies.
+
+- Shared `lib/news-relevance.js` applies at collection and browser filtering, so
+  previously cached routine headlines are also removed. Exclude entertainment
+  anecdotes, routine hiring/appointments, event solicitations, photo/table notices;
+  preserve explicit corporate results, labor-market effects and business events.
+  The wider existing topic/promotional rules still apply.
+- Default **주요 뉴스**: score the title's policy/economic-release signals (8),
+  earnings/corporate-event signals (7), or policy/market signals (6). Add up to 4
+  freshness points, decaying to zero at 24h. Retained failed-source articles lose
+  2 points. Subtract 3 points per same-publisher article already in each batch.
+  Select greedily with publication time and stable ID tie breakers. Scores are
+  heuristics, not verified importance or expected price impact; generic headlines
+  remain accessible. Publisher prestige and clicks do not increase the score.
+- **최신순**: strict publication-time order across the matching pool, no grouping
+  or publisher quota. Both choices use original publication times and the existing
+  72h eligibility / 6h failed-source retention limits.
+- Group only in major-news mode, after region/topic/query/read filters. Require
+  reports within 12h, matching numeric strings, at least four common tokens,
+  Jaccard overlap >= .72, and identical ordered core tokens (only grammatical and
+  reporting words may be ignored). Update/correction markers prevent grouping.
+  Every member must match every other member; no transitive event chains.
+  Newest report represents the group. Related links retain publisher/time and
+  opening one records that URL's read state. Latest order exposes all originals.
+- Deliberately limited grouping: translations, Korean paraphrases and semantically
+  related developments often remain separate. Different companies, directions,
+  numbers and before/after phases must not be merged. No AI event-equivalence
+  claim. The representative count excludes links in expanded related reports.
+- Region remains publisher/feed origin, now explained beside ordering controls.
+  Source diagnostics, failed/empty states, reading snapshots and financial data
+  meaning remain unchanged. Filtered items never return to fill empty slots.
+
+A production-response replay (150 collected articles, fetched November 8 19:46 KST)
+confirmed exclusion of the observed celebrity stock-loss, routine recruitment,
+lecture solicitation, appointment, charity-marathon and standalone photo/table
+examples. No groups formed in that sample under the conservative rule; synthetic
+close-report pairs exercise expansion, original links/time and latest-order escape.
+This replay is not a fresh production deployment check.
