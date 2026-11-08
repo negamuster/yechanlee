@@ -15,6 +15,7 @@ export default function NewsArticle({ item, read, timeLabel, onRead, onRelatedRe
     {TOPICS.filter(topic => item.topics?.includes(topic.value)).map(topic => <span key={topic.value}>{topic.label}</span>)}
   </div>
   return <article className={`news-article ${mobile ? 'mobile-news-article' : 'news-card'}${read ? ' is-read' : ''}`} data-reading-key={`news:${item.article_url}`}>
+    {item.articleKind && <p className="news-article-kind" title="제목 기준 자동 분류이며 본문 검증을 뜻하지 않습니다.">{item.articleKind}</p>}
     {item.selectionReason && <p className="news-selection-reason">{item.selectionReason}</p>}
     {mobile && topics}
     <a className={mobile ? `mobile-news-link${image ? ' has-image' : ''}` : 'news-row'} href={item.article_url}
@@ -26,7 +27,7 @@ export default function NewsArticle({ item, read, timeLabel, onRead, onRelatedRe
       {mobile && image && <div className="mobile-news-thumbnail">{image}</div>}
     </a>
     {!!item.related?.length && <details className="news-related">
-      <summary>관련 보도 {item.related.length}건 · 제목 유사도 기준</summary>
+      <summary>관련 보도 {item.related.length}건 · 제목·사건 단서 기준</summary>
       <ul>{item.related.map(other => <li key={other.article_url}><a onClick={() => onRelatedRead?.(other.article_url)} onAuxClick={event => { if (event.button === 1) onRelatedRead?.(other.article_url) }} href={other.article_url} target="_blank" rel="noopener noreferrer">{other.title}</a><span>{other.publisher} · <time dateTime={other.published_utc}>{new Date(other.published_utc).toLocaleString('ko-KR')}</time></span></li>)}</ul>
     </details>}
     <div className={`news-article-footer${mobile ? ' mobile-news-footer' : ''}`}>

@@ -40,3 +40,5 @@
 .news-order-toggle button { min-height: 40px; padding: 8px 14px; border: 0; border-radius: 8px; background: transparent; color: var(--ui-muted); font: inherit; font-size: 13px; cursor: pointer; }
 .news-order-toggle button[aria-pressed="true"] { background: var(--ui-selected); color: white; }
 .news-order-toggle button:focus-visible, .news-related summary:focus-visible { outline: 2px solid var(--ui-selected); outline-offset: 3px; }
+
+.news-article-kind { margin: 0; font-size: 11px; color: var(--ui-muted); line-height: 1.5; }

@@ -225,7 +225,7 @@ export default function NewsFeed({ compact = false, mobile = false, previewTarge
           <button type="button" aria-pressed={order === 'major'} onClick={() => { setOrder('major'); setVisibleBatches(1) }}>주요 뉴스</button>
           <button type="button" aria-pressed={order === 'latest'} onClick={() => { setOrder('latest'); setVisibleBatches(1) }}>최신순</button>
         </div>
-        <p className="news-scope">{order === 'major' ? '제목 기준 시장 관련성·최신성·매체 다양성을 반영합니다. 비슷한 보도는 관련 기사로 묶습니다.' : '최근 72시간 기사를 발행 시각순으로 표시합니다.'} 국내·해외는 매체 기준입니다.</p>
+        <p className="news-scope">{order === 'major' ? '제목 기준 관련성·최신성·주제·매체 다양성을 반영합니다. 기사 유형은 자동 분류이며, 일치하는 사건 단서가 있는 보도는 묶습니다.' : '최근 72시간 기사를 발행 시각순으로 표시합니다.'} 국내·해외는 매체 기준입니다.</p>
         <div className="news-search-tools">
           <div className="news-search">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>

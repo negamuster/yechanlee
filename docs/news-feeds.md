@@ -24,7 +24,7 @@ The table below records earlier observations unless dated otherwise.
 | Reuters | Optional provider-issued authenticated RSS URL | Not active without `REUTERS_RSS_URL`; not advertised as a working free feed |
 | 매일경제 | Economy and stocks RSS | Existing integration; this environment previously blocked/timed out |
 | 조선비즈 | General RSS filtered for business topics | Existing integration; live collection succeeded in the first version |
-| 한국경제 | Economy RSS | Added; HTTP 403 here, needs preview confirmation |
+| 한국경제 | Economy and finance RSS | Added; HTTP 403 here, needs preview confirmation |
 | 연합뉴스 | Economy RSS | HTTP 200; 120 eligible articles, 109 with accepted image metadata |
 | 연합인포맥스 | All articles RSS | HTTP 200; 50 eligible articles; feed dates without a timezone use Korea (+09:00) |
 
@@ -204,3 +204,11 @@ lecture solicitation, appointment, charity-marathon and standalone photo/table
 examples. No groups formed in that sample under the conservative rule; synthetic
 close-report pairs exercise expansion, original links/time and latest-order escape.
 This replay is not a fresh production deployment check.
+
+## Follow-up quality rules
+
+The [November8 quality follow-up](news-quality-20261108.md) supersedes the initial
+ranking/grouping weights above with soft topic/macro penalties, article-type
+labels, explicit bilingual policy-decision matching and a separately diagnosed
+official Hankyung finance feed. It records a same-payload comparison and local
+source checks; these do not certify production collection.
