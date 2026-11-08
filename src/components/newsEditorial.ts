@@ -30,7 +30,7 @@ export function sameNewsEvent(a: NewsItem, b: NewsItem) {
   const common = [...x].filter(t => y.has(t)).length
   const reporting = new Set(['announces', 'announced', 'announce', 'reports', 'reported', 'report', '발표', '밝혔다', '밝혀'])
   const unmatched = [...x].filter(t => !y.has(t)).concat([...y].filter(t => !x.has(t)))
-  const core = (title: string) => [...tokens(title)].filter(t => !reporting.has(t)).join('|')
+  const core = (title: string) => (title.normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}]+/gu) || []).filter(t => !stop.has(t) && !reporting.has(t)).join('|')
   return core(a.title) === core(b.title) && common >= 4 && common / (x.size + y.size - common) >= 0.72 && unmatched.every(t => reporting.has(t))
 }
 export function editorialBatches(items: NewsItem[], region: Region, now: number, order: NewsOrder): NewsItem[][] {

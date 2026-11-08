@@ -34,6 +34,7 @@ test('group only close lexical reports and preserve original metadata; latest ex
 test('all eligible links remain reachable across batches, grouping is filter-scoped and deterministic', () => {
   assert.equal(sameNewsEvent(item('before', 'Apple shares rise before quarterly earnings report'), item('after', 'Apple shares rise after quarterly earnings report')), false)
   assert.equal(sameNewsEvent(item('buyer', 'Apple acquires Microsoft in major technology deal'), item('seller', 'Microsoft acquires Apple in major technology deal')), false)
+  assert.equal(sameNewsEvent(item('repeat-a', 'Apple sells Microsoft shares to Apple investors'), item('repeat-b', 'Apple sells Microsoft shares to Microsoft investors')), false)
   const data = Array.from({ length: 30 }, (_, i) => item(String(i), `Company${i} quarterly earnings report ${i}`, i / 2, i % 2 ? 'A' : 'B'))
   const result = editorialBatches(data, 'all', now, 'major').flat()
   assert.equal(result.length, 30)
