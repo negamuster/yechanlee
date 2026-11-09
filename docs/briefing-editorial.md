@@ -11,3 +11,43 @@ Owner-approved on 2026-10-15. Apply this format to future researched ChatGPT edi
 - **Homepage and evidence:** keep three short highlights, the concise headline, at most four stocks/assets and three events. Keep them consistent with the narrative. Cite all new material claims and calendar details, extend `sourceChecks` after actually reading them, recompute `contentHash`, and run existing publication/homepage checks and the build. Schema and validation are unchanged.
 
 Normal scheduled runs preserve an existing same-date edition. An explicitly owner-requested editorial revision must retain its original information cutoff, use only information belonging before that cutoff, record its actual review/revision time and add a correction entry. Retain necessary quote bases and do not relabel an old session as a new one.
+
+## Major company and leadership issues (owner approved 2026-11-09)
+
+Before drafting, run a focused material-event discovery pass covering leadership,
+board actions, security/information incidents, succession/resignations, regulatory
+investigations/litigation, and major products/customer/contracts as well as earnings.
+Check the relevant company newsroom/IR or regulator original for discovered
+material candidates; do not rely solely on closing recaps or the homepage RSS pool.
+Issuer statements may be evidence for that issuer's position even when promotional
+RSS filters would exclude ordinary press-release marketing from the home feed.
+This is one bounded pass within the existing source budget, not an exhaustive scan
+of every company or a claim of complete coverage.
+
+Use an existing heading `주요 기업·경영진 이슈` when warranted. Prioritize events
+with supported governance, security, regulatory, financial or operational relevance.
+For each, distinguish confirmed event, company/board response, conditional investor
+relevance, observed price reaction if available, and the next fact to verify. Omit
+unavailable details and price rows; do not fabricate a return to fit homepage.stocks.
+Material official announcements may qualify without an observed price move.
+Personal allegations/details alone are not a market catalyst; retain attribution,
+denials, investigation status and uncertainty. Do not infer guilt, secret leakage,
+resignation, regulatory action, customer disruption or price causality.
+
+An important event may enter the three summary highlights and homepage headline.
+The detailed section and homepage must use the same checked source evidence.
+`Anthracite 관점` is explicitly AI-authored conditional analysis; never present it
+as the owner's own view unless the owner provided the actual view. Do not imitate
+another commentator's wording or add investment advice.
+
+Preserve the morning information cutoff. Later prices or developments must not
+be inserted into its original facts or sourceChecks; the existing cutoff gate
+still applies. A separately authorized later update must state its own information
+basis and retain revision history; this instruction does not add intraday polling,
+a second schedule or an automatic same-date overwrite. An owner-requested morning
+omission correction uses pre-cutoff sources, the actual revision time, correction
+history and recomputed contentHash. Ordinary scheduled runs keep same-date content.
+
+November9 case: the NVIDIA board statement was distributed November8 15:00EST
+(November9 05:00KST), before the original07:03:30KST cutoff. The correction adds
+that official event and the company's stated position, not later market moves.
