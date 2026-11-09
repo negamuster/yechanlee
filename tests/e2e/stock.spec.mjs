@@ -189,3 +189,23 @@ test('an initial financial outage is a retryable failure rather than an unsuppor
   await expect(history.getByRole('table').locator('thead th')).toHaveCount(6)
   await expect(page.locator('.stock-state')).toHaveText('조회 완료')
 })
+
+
+test('a cold server snapshot shows old SEC receipt and warnings while keeping annual/quarterly/TTM data usable', async ({ page }) => {
+  state.storedFinancials = true
+  await page.goto('/stock/NVDA')
+  await expect(page.locator('.stock-state')).toHaveText('일부 자료 미확인')
+  const history = page.locator('.financial-history')
+  await expect(page.locator('#stock-financials')).toContainText('SEC 재조회에 실패해 이전에 확인한 연간 공시 자료')
+  await expect(history).toContainText('이전에 확인한 추이')
+  const stamp = new Date(FIXED_AT - 86400000).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })
+  await expect(page.locator('#stock-financials > .stock-note').filter({ hasText: 'SEC 공시 조회' })).toContainText(stamp)
+  await history.getByRole('button', { name: '분기', exact: true }).click()
+  await expect(history.getByRole('table').locator('thead th')).toHaveCount(9)
+  await history.getByRole('button', { name: 'TTM', exact: true }).click()
+  await expect(history.getByRole('table')).toContainText('$180.00')
+  state.storedFinancials = false
+  await refresh(page)
+  await expect(page.locator('.stock-state')).toHaveText('조회 완료')
+  await expect(history).not.toContainText('이전에 확인한 추이')
+})

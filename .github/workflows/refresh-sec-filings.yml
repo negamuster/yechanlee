@@ -10,6 +10,11 @@ on:
       - 'scripts/refresh-sec-filings.py'
       - 'requirements-edgar.txt'
       - 'config/sec-monitor.json'
+      - 'config/sec-financials.json'
+      - 'scripts/refresh-sec-financials.mjs'
+      - 'lib/stock-financials.js'
+      - 'lib/sec-financial-snapshot.js'
+      - 'lib/financial-history.js'
 permissions:
   contents: write
 concurrency:
@@ -34,22 +39,27 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: pip install -r requirements-edgar.txt
       - run: python -m unittest discover -s tests -p 'test_sec_monitor.py'
+      - run: node --test tests/stock-financials.test.mjs tests/sec-financial-snapshot.test.mjs
       - name: Collect bounded SEC metadata
         id: collect
         continue-on-error: true
         run: python scripts/refresh-sec-filings.py
+      - name: Collect reference SEC financials
+        id: financials
+        continue-on-error: true
+        run: node scripts/refresh-sec-financials.mjs
       - run: node scripts/validate-sec-filings.mjs
       - name: Save confirmed metadata and explicit source failures
         run: |
-          git add public/data/sec-filings.json
+          git add public/data/sec-filings.json data/sec-financials.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Refresh SEC filing monitor snapshot'
+          git commit -m 'Refresh verified SEC filing and financial snapshots'
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Report incomplete collection
-        if: steps.collect.outcome == 'failure'
+        if: steps.collect.outcome == 'failure' || steps.financials.outcome == 'failure'
         run: |
           echo '::error::Some SEC sources failed. Prior verified snapshots were retained with original receipts.'
           exit 1

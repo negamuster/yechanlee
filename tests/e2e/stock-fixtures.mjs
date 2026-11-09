@@ -55,6 +55,7 @@ export async function installStockFixtures(page) {
       if (state.partialChart) { const p = body.points.at(-1); delete p.o; delete p.h; delete p.l; p.v = 0 }
     }
     if (kind === 'financials') {
+      if (state.storedFinancials) { body.stale = true; body.fetchedAt = FIXED_AT - 86400000; body.sourceFailure = { stage: 'ticker_map', code: 'http_403', checkedAt: FIXED_AT, nextRetryAt: FIXED_AT + 1800000 } }
       const data = financialHistory(financialFacts(), '1', FIXED_AT)
       body.results = data.annual; body.quarterly = state.annualOnly ? [] : data.quarterly; body.ttm = state.annualOnly ? [] : data.ttm
       if (state.mixedCurrency) body.results[1].financials.income_statement.revenues = { value: 90, unit: 'EUR' }
