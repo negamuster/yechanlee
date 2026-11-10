@@ -1,5 +1,262 @@
 [
   {
+    "id": "2026-11-11",
+    "reviewMode": "automated",
+    "title": "미국 증시 요약 | 2026년 11월 10일",
+    "sessionDate": "2026-11-10",
+    "cutoffAt": "2026-11-10T22:03:26Z",
+    "publishedAt": "2026-11-10T22:08:11.379Z",
+    "summary": [
+      "미국 증시는 이틀 반등 뒤 하락했습니다. 10월 전체 CPI가 전월 대비 0.4%, 근원이 0.3% 올라 각각 예상을 웃돌자 금리가 뛰었고, 12월 금리 인상 폭에 대한 우려가 다시 부각됐습니다. 기술주의 낙폭이 상대적으로 컸습니다.[1][2][7]",
+      "엔비디아 독립 이사들은 외부 조사 담당자를 선임했다고 발표했고, 주가는 정규장에서 5.4% 하락했습니다. 장 마감 뒤에는 CoreWeave 매출이 예상을 웃돌았지만, 인프라 투자와 이자 부담은 따로 살펴볼 쟁점입니다.[1][4][5]",
+      "유가가 더 내려도 국채 수익률은 상승했습니다. 재무부 10년물 파 수익률은 4.98%로 전날보다 10bp 올랐고, 달러는 강세·금 현물은 약세였습니다. 다음 확인 일정은 한국시간 12일 밤 신규 실업수당 청구와 13일 밤 PPI입니다.[6][7][8]"
+    ],
+    "blocks": [
+      {
+        "kind": "metadata",
+        "text": "작성 기준 2026-11-11 07:03:26 KST · 최근 24시간 2026-11-10 07:03:26~2026-11-11 07:03:26 KST · 직전 미국 정규장 2026-11-10, 16:00 EST / 한국시간 11월 11일 06:00 마감 · NYSE 공식 휴장표상 정상 거래일. CoreWeave 실적은 정규장 이후 소식으로 구분했습니다.[8]"
+      },
+      {
+        "kind": "heading",
+        "text": "마감과 시장 폭"
+      },
+      {
+        "kind": "paragraph",
+        "text": "화요일 미국 증시는 이틀간의 반등을 멈췄습니다. S&P500은 0.38%, 다우는 0.30%, 나스닥 종합은 0.74% 내렸습니다. 기술 업종이 1.4% 하락해 S&P500 업종 중 가장 부진했습니다.[1]"
+      },
+      {
+        "kind": "heading",
+        "text": "장을 움직인 사건"
+      },
+      {
+        "kind": "paragraph",
+        "text": "먼저 CPI 발표 전, 월러 연준 이사는 런던 연설에서 물가가 개선돼도 12월에 25bp 인상을 지지하는 쪽으로 기울어 있다고 밝혔습니다. 근원 CPI가 최근 두 달처럼 0.3% 안팎이거나 더 높다면 50bp 인상도 검토해야 한다는 조건을 제시했습니다. 이는 개인 의견이며 FOMC의 인상 결정은 아닙니다.[3]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "이어 08:30 EST(11월 10일 22:30 KST) 발표된 10월 CPI는 계절조정 전월 대비 0.4% 상승해 Reuters 조사 예상 0.3%를 웃돌았습니다. 9월의 0.6%보다는 낮았지만 예상만큼 둔화하지 않았습니다. 식품·에너지 제외 근원은 0.3%로 예상 0.2%보다 높고 이전 달과 같았습니다. 주거비는 0.3% 올라 전체 월간 상승분의 30% 이상을 차지했습니다.[2]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "이번 전체·근원 CPI의 전년 대비 수치는 BLS가 공표하지 못했습니다. 지난해 10월 정부 예산 공백으로 비교 기준 자료를 수집하지 못한 영향이므로, 시장의 연간 추정치와 공식 결과를 구분해야 합니다. Reuters는 발표 뒤 국채 금리가 뛰고 더 큰 폭의 인상 가능성이 재평가됐다고 보도했습니다. 최근 유가 하락만으로 이날 금리 흐름을 설명하기는 어렵습니다.[2][7]"
+      },
+      {
+        "kind": "heading",
+        "text": "주요 기업·경영진 이슈"
+      },
+      {
+        "kind": "paragraph",
+        "text": "엔비디아 독립 이사들은 14:07 EST(11월 11일 04:07 KST) 배포한 성명에서 전 뉴욕 남부지검 검사장 대행 준 김과 Wachtell, Lipton, Rosen & Katz를 조사 담당자로 선임했다고 밝혔습니다. 외국 정보활동 관련 보도를 둘러싼 조사 절차의 새 진전입니다. 8일 성명의 기밀 침해를 믿을 근거가 없다는 당시 입장과, 아직 나오지 않은 조사 결론을 구분해야 합니다. 정규장 주가는 5.4% 하락했습니다.[1][4]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "장 마감 후 공개된 CoreWeave의 3분기 매출은 36억6,100만 달러로 LSEG 예상 약 35억5,000만 달러를 웃돌았습니다. 회사는 연간 매출 전망을 130억~133억 달러로 올렸습니다. 다만 올해 설비투자 전망의 하단도 350억에서 370억 달러로 높였고 상단은 390억 달러를 유지했습니다. 분기 이자비용(순액)은 8억4,600만 달러였습니다. 수요 증가와 투자·조달 부담을 함께 보여주는 발표이며, 이를 발표 전 정규장 하락의 원인으로 연결할 수는 없습니다.[5]"
+      },
+      {
+        "kind": "heading",
+        "text": "다른 자산과 다음 일정"
+      },
+      {
+        "kind": "paragraph",
+        "text": "미국 국채 파 수익률은 단기물의 상승 폭이 더 컸습니다. 달러는 강세, 금 현물은 약세였고 WTI는 결제 기준 0.9% 더 내렸습니다. 국채 행은 재무부의 정해진 시각 호가 기반 자료이며, 기사 속 장중 체결 금리와 같은 계열로 비교하지 않습니다.[6][7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-11-12 22:30 KST · 미국 주간 신규 실업수당 청구(11월 12일 08:30 EST). 확인할 항목: 계절조정 신규 청구 건수와 4주 이동평균.[8]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-11-13 22:30 KST · 미국 10월 생산자물가지수(PPI, 11월 13일 08:30 EST). 확인할 항목: 최종수요 전체와 상품·서비스 가격의 전월 변화.[8]"
+      },
+      {
+        "kind": "heading",
+        "text": "Anthracite 관점"
+      },
+      {
+        "kind": "paragraph",
+        "text": "AI가 작성한 조건부 해석: 이날은 유가보다 예상 대비 물가의 끈질김과 정책 대응 강도가 할인율에 더 크게 반영된 장면으로 볼 수 있습니다. 이 해석이 다음 거래일에도 맞는지 보려면 원유 하락 여부와 별개로 단기 국채 금리 및 기술주의 상대 등락이 어떻게 이어지는지 확인해야 합니다. 하루의 반응만으로 이후 경로를 단정하지는 않습니다.[1][2][3][6][7]"
+      },
+      {
+        "kind": "heading",
+        "text": "시장 수치"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026-11-10 미국 정규장 종가, 11월 9일 대비(포인트): S&P500 7,520.93 (−0.38%) · 다우 52,231.89 (−0.30%) · 나스닥 종합 25,065.87 (−0.74%) · 러셀2000 2,821.38 (−0.7%, AP 반올림).[1]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "국채 2년물 4.73% (+17bp), 10년물 4.98% (+10bp) · 2026-11-10 약 15:30 EST / 11월 11일 05:30 KST · 11월 9일 대비 · 미 재무부 지표성 매수호가 기반 파 수익률.[6]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "WTI 선물 결제 변동 −0.81 미국달러/배럴 (−0.9%) · 2026-11-10 결제 · 11월 9일 대비. 계약월을 읽은 본문에서 확인하지 못해 가격 수준은 제외했습니다.[7]"
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "Reuters · 미국 정규장 마감",
+        "url": "https://www.reuters.com/business/sp-500-dow-futures-climb-oil-slide-lifts-sentiment-2026-11-10/",
+        "accessNote": "최종 종가가 반영된 본문을 읽고 AP 지수 마감 본문과 3대 지수 종가를 대조했습니다. Reuters 글로벌 시황의 잠정 종가는 사용하지 않았습니다. 러셀2000의 종가·반올림 등락률은 AP 기준입니다.",
+        "links": [
+          {
+            "label": "AP · 네 지수 마감 대조",
+            "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-a97eb31c415811065561f2c2ac552cd7"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "label": "BLS · 10월 CPI 공식 발표",
+        "url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+        "accessNote": "11월 10일 발표와 대상 월 10월을 구분했습니다. 표 A의 계절조정 월간 실제·이전 수치 및 연간 결측 설명을 읽었습니다. 예상은 Reuters 본문에서 확인했으며, 기사 내 추정 연간 수치는 공식 실적으로 사용하지 않았습니다.",
+        "links": [
+          {
+            "label": "Reuters · CPI 예상과 발표 당시 보도",
+            "url": "https://www.reuters.com/world/us/us-consumer-prices-rise-above-expectations-october-2026-11-10/"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "label": "연준 · 월러 이사 연설 원문",
+        "url": "https://www.federalreserve.gov/newsevents/speech/waller20261110a.htm",
+        "accessNote": "CPI 발표 전 준비된 연설에서 25bp 지지 및 근원 CPI 0.3% 안팎 이상일 때 50bp 검토라는 조건을 확인했습니다. 개인 의견을 FOMC 결정으로 쓰지 않았습니다.",
+        "links": [
+          {
+            "label": "연준 · 연설 PDF와 공표 시각",
+            "url": "https://www.federalreserve.gov/newsevents/speech/files/waller20261110a.pdf"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "label": "NVIDIA · 독립 이사들의 조사 인선 발표",
+        "url": "https://nvidianews.nvidia.com/news/statement-from-the-independent-members-of-the-nvidia-board",
+        "accessNote": "회사 자체 게재본과 11월 10일 14:07 ET 배포본은 동일한 성명입니다. 새 발표는 조사 담당자 선임이며, 침해 관련 입장은 11월 8일 성명의 당시 입장으로 구분했습니다. 조사 결론·위법·유출·사임을 추정하지 않았습니다.",
+        "links": [
+          {
+            "label": "NVIDIA / GlobeNewswire · 동일 발표와 시각",
+            "url": "https://www.globenewswire.com/news-release/2026/11/10/3400124/0/en/statement-from-the-independent-members-of-the-nvidia-board.html"
+          },
+          {
+            "label": "NVIDIA · 11월 8일 성명(배경)",
+            "url": "https://nvidianews.nvidia.com/news/statement-from-nvidia-board-of-directors"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "label": "CoreWeave · 3분기 실적 공시",
+        "url": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000461/coreweave3q26earningspress.htm",
+        "accessNote": "SEC 8-K 첨부 원문에서 3Q26 매출 3,661 million USD, 이자비용 846 million USD와 연간 가이던스를 확인했습니다. Reuters의 21:09 UTC 실적 보도로 기준 시각 이전 발표를 대조했고 LSEG 매출 예상 3.55 billion USD를 확인했습니다. 시간외 등락률은 기사별 관측 시각이 불분명해 제외했습니다.",
+        "links": [
+          {
+            "label": "SEC · 8-K 본문",
+            "url": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000461/crwv-20261110.htm"
+          },
+          {
+            "label": "Reuters · 실적과 매출 예상 비교",
+            "url": "https://www.reuters.com/business/coreweave-beats-quarterly-revenue-estimates-ai-demand-defies-growing-doubts-2026-11-10/"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "label": "미 재무부 · 국채 파 수익률",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "accessNote": "표의 만기 열과 11월 9·10일 행을 읽었습니다. 2년 4.56→4.73%, 10년 4.88→4.98%로 +17bp·+10bp입니다. 약 15:30 EST의 지표성 매수호가 기반 파 수익률이며 Reuters의 다른 시각 시장금리와 섞어 비교하지 않았습니다."
+      },
+      {
+        "id": 7,
+        "label": "Reuters · 금리·달러·원유 시황",
+        "url": "https://www.reuters.com/world/china/global-markets-wrapup-1-2026-11-10/",
+        "accessNote": "CPI 후 금리 상승·달러 강세·금 현물 약세와 WTI 결제 변동 −0.81 USD/배럴(−0.9%)을 본문에서 확인했습니다. 잠정 주가지수 종가는 제외했습니다. 개별 호가 관측 시각이 불명확한 금·달러 가격 행과 계약월이 확인되지 않은 WTI 가격 수준은 제외했습니다."
+      },
+      {
+        "id": 8,
+        "label": "뉴욕 연은·BLS·NYSE · 공식 일정",
+        "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+        "accessNote": "11월 12일 신규 청구와 13일 10월 PPI의 08:30 EST 시각을 확인했습니다. DOL의 기존 주간 공표 자료는 다음 발표에서 볼 계절조정 신규 청구·4주 평균 항목의 근거로만 사용했습니다. BLS PPI 홈페이지의 최종수요 상품·서비스 항목, NYSE 휴장표와 16시 정규장 마감을 읽었습니다.",
+        "links": [
+          {
+            "label": "BLS · 공식 11월 발표 달력",
+            "url": "https://www.bls.gov/schedule/2026/11_sched.htm"
+          },
+          {
+            "label": "미 노동부 · 주간 청구 공표 항목(11월 5일 자료)",
+            "url": "https://www.dol.gov/ui/data.pdf"
+          },
+          {
+            "label": "BLS · PPI 정의·공표 항목",
+            "url": "https://www.bls.gov/ppi/"
+          },
+          {
+            "label": "NYSE · 휴장일과 정규장 시간",
+            "url": "https://www.nyse.com/trade/hours-calendars"
+          }
+        ]
+      }
+    ],
+    "dataNote": "동일 모델의 원문 자체 대조이며 독립 검증이나 사람 승인이 아닙니다. 정규장 종가와 장 마감 후 발표를 구분했으며, 관측 시각이나 계약월이 불명확한 가격 수준은 제외했습니다.",
+    "corrections": [],
+    "homepage": {
+      "headline": "예상 웃돈 CPI에 금리 급등…기술주 반등 중단[1][2][7]",
+      "stocks": [
+        {
+          "name": "엔비디아",
+          "ticker": "NVDA",
+          "change": "−5.4%",
+          "reason": "독립 이사들이 준 김과 Wachtell, Lipton을 외부 조사 담당자로 선임했습니다. Reuters는 CEO 관련 불확실성이 주가에 부담이 됐다고 보도했으며 조사 결론은 아직 아닙니다.",
+          "basis": "2026-11-10 미국 정규장 종가 · 11월 9일 대비 · Reuters 반올림",
+          "sourceIds": [
+            1,
+            4
+          ]
+        }
+      ],
+      "assets": [
+        {
+          "label": "미국 10년물",
+          "value": "4.98%",
+          "change": "+10bp",
+          "basis": "2026-11-10 약 15:30 EST / 11월 11일 05:30 KST · 11월 9일 대비 · 재무부 호가 기반 파 수익률",
+          "sourceIds": [
+            6
+          ]
+        },
+        {
+          "label": "WTI 선물",
+          "value": "계약월 본문 미확인으로 가격 수준 제외",
+          "change": "−0.81 USD/배럴 (−0.9%)",
+          "basis": "2026-11-10 결제 · 11월 9일 대비 · 읽은 본문에 계약월 없음",
+          "sourceIds": [
+            7
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-11-12T22:30:00+09:00",
+          "label": "미국 주간 신규 실업수당 청구",
+          "detail": "확인할 항목: 계절조정 신규 청구 건수와 4주 이동평균",
+          "sourceIds": [
+            8
+          ]
+        },
+        {
+          "at": "2026-11-13T22:30:00+09:00",
+          "label": "미국 10월 생산자물가지수",
+          "detail": "확인할 항목: 최종수요 전체와 상품·서비스 가격의 전월 변화",
+          "sourceIds": [
+            8
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "2026-11-10",
     "reviewMode": "automated",
     "title": "미국 증시 요약 | 2026년 11월 9일",
