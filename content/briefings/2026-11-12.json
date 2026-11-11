@@ -1,0 +1,360 @@
+{
+  "id": "2026-11-12",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026-11-11",
+  "sessionDate": "2026-11-11",
+  "cutoffAt": "2026-11-12T07:05:19+09:00",
+  "summary": [
+    "11월 11일 뉴욕증시에서 나스닥 종합이 1.60%, S&P500이 1.31% 올랐습니다. 필라델피아 반도체지수 구성 종목이 모두 올랐고, 기술주 상승폭이 두드러진 가운데 소형주 러셀2000도 0.9% 상승했습니다.[1]",
+    "코어위브는 3분기 매출이 시장 예상을 웃돈 뒤 정규장에서 24.7% 올랐습니다. 시장은 매출뿐 아니라 고객 계약과 선급금으로 대규모 설비투자 비용을 감당할 수 있는지에 주목했습니다.[1][2]",
+    "재향군인의 날로 미국 국채시장은 쉬었습니다. 달러는 전날 물가 발표 이후의 연준 인상 기대 속에 강세를 보였고, 이란의 핵물질 반출 거부 발언이 전해진 날 WTI 선물은 전 거래일보다 배럴당 0.49달러 높게 결제됐습니다.[5][6][8]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-11-12 07:05:19 KST · 최근 24시간 2026-11-11 07:05:19~2026-11-12 07:05:19 KST · 직전 미국 정규장 2026-11-11, 16:00 EST / 한국시간 11월 12일 06:00 마감. NYSE 공식 휴장표상 정상 거래일이었으며, 미국 국채시장은 재향군인의 날로 휴장했습니다.[1][6][7]"
+    },
+    {
+      "kind": "heading",
+      "text": "마감과 시장 폭"
+    },
+    {
+      "kind": "paragraph",
+      "text": "11일 뉴욕증시는 기술주가 앞서고 소형주도 오른 장이었습니다. S&P500 11개 업종 중 기술 업종이 2.7% 올라 가장 강했고, 필라델피아 반도체지수는 전 종목이 오르며 5.7% 상승했습니다. 상승 종목은 NYSE에서 하락 종목의 1.48배, 나스닥에서 1.77배였습니다. 기술주의 상승폭이 가장 컸지만 상승 종목이 하락 종목보다 많았습니다.[1]"
+    },
+    {
+      "kind": "subheading",
+      "text": "11월 11일 미국 정규장 종가 · 11월 10일 종가 대비"
+    },
+    {
+      "kind": "paragraph",
+      "text": "S&P500 7,619.38 (+1.31%) · 다우 52,486.49 (+0.49%) · 나스닥 종합 25,466.19 (+1.60%) · 러셀2000 2,846.26 (+0.9%).[1]"
+    },
+    {
+      "kind": "heading",
+      "text": "장을 움직인 사건"
+    },
+    {
+      "kind": "paragraph",
+      "text": "배경은 10일 개장 전 나온 10월 소비자물가였습니다. 계절조정 전월비로 전체는 0.4%(예상 0.3%, 9월 0.6%), 근원은 0.3%(예상 0.2%, 9월 0.3%) 올랐습니다. Reuters는 예상을 웃돈 물가가 12월 금리 인상 기대를 강화했다고 전했습니다. 11일 주가가 반등하는 동안에도 달러가 강세를 보여, 주식과 외환시장은 서로 다른 재료에 반응했습니다.[1][5][8]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "10일 정규장 뒤 코어위브가 3분기 실적을 발표했습니다. 9월 말까지 석 달 매출은 36억6,100만 달러로 LSEG 집계 예상치 35억5,000만 달러를 웃돌았습니다. 11일 정규장에서 코어위브가 24.7% 올랐고, Reuters는 실적이 AI 인프라 수요에 대한 우려를 덜어줬다고 보도했습니다. 엔비디아도 두 거래일 연속 하락한 뒤 반등했습니다.[1][2]"
+    },
+    {
+      "kind": "heading",
+      "text": "주요 기업·경영진 이슈"
+    },
+    {
+      "kind": "paragraph",
+      "text": "코어위브는 향후 석 달간 고객 선급금과 예치금 약 90억 달러를 예상한다고 밝혔습니다. 아직 받은 금액은 아닙니다. 투자자가 볼 대목은 실제 현금 유입이 설비투자 집행에 맞춰 들어오는지입니다. 선급금이 계획보다 늦어지면 투자비를 다른 재원으로 충당해야 할 수 있습니다.[1][2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "앤트로픽은 10일 제출한 정정 증권신고서에서 공모 희망가를 주당 70~78달러로 제시했습니다. 보통주 8억2,500만 주에는 기존 주주 매각분도 들어 있어 전체 공모액이 회사로 들어오지는 않습니다. Reuters는 11일 장에서 이 조건에 관심이 쏠렸다고 전했습니다. 상장 전이므로 확인할 것은 주가 등락이 아니라 최종 공모가와 발행 조건입니다.[1][3]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "11일 정규장 이후인 16:30 EST(한국시간 12일 06:30), 화이자와 블랙스톤은 비만 치료 후보물질 개발비 분담 계약을 발표했습니다. 블랙스톤 운용 펀드가 2028년까지 최대 15억 달러를 부담하고, 미국 허가와 판매 목표를 충족하면 단계별 지급을 받을 수 있습니다. 화이자가 개발 의사결정권을 유지하는 만큼 후속 확인 항목은 임상 결과와 허가 진행입니다. 이 발표를 11일 정규장 주가에 연결할 수는 없습니다.[4]"
+    },
+    {
+      "kind": "heading",
+      "text": "다른 자산과 다음 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "달러가 강세를 보인 가운데 금 현물은 장 초반 상승분을 반납했습니다. 유가는 반대로 올랐습니다. Reuters는 이란 당국자가 농축 핵물질을 국외로 반출하지 않겠다고 밝힌 뒤 원유 공급 차질 우려가 다시 부각됐다고 전했습니다.[5]"
+    },
+    {
+      "kind": "subheading",
+      "text": "시장 수치 · 관측 기준"
+    },
+    {
+      "kind": "paragraph",
+      "text": "미 재무부 호가 기반 파 수익률: 2년 4.73%(+17bp), 10년 4.98%(+10bp). 11월 10일 약 15:30 EST(한국시간 11일 05:30), 11월 9일 같은 기준 대비. 11월 11일은 채권 휴장으로 새 관측치 없음.[6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "금 현물 4,014.26달러/트로이온스(−0.41%), 11월 11일 09:47 EST(한국시간 23:47) 장중, 전일 대비. WTI 선물 11월 11일 결제가는 11월 10일 대비 +0.49달러/배럴(+0.57%). 계약월 미확인으로 가격 수준은 제외.[5]"
+    },
+    {
+      "kind": "subheading",
+      "text": "다음 일정 · 한국시간"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026년 11월 12일 22:30 KST · 미국 신규 실업수당 청구: 계절조정 신규 청구 건수와 주간 변동을 완화한 4주 이동평균.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026년 11월 13일 22:30 KST(익일) · 미국 10월 생산자물가지수(PPI): 최종수요 물가의 전월비와 상품·서비스의 움직임.[7]"
+    },
+    {
+      "kind": "heading",
+      "text": "Anthracite 관점"
+    },
+    {
+      "kind": "paragraph",
+      "text": "AI의 조건부 해석: 기술주 반등과 달러 강세가 함께 나타난 만큼, 이날 주식은 금리 부담이 사라졌다는 기대보다 AI 인프라 수요를 둘러싼 우려 완화를 더 크게 반영했을 수 있습니다. 다음 정규장에서 재개된 국채시장의 2년물 금리가 오르는데도 반도체 상승이 이어진다면 이 해석에 힘이 실립니다. 반도체가 금리 상승과 함께 반등분을 내준다면 금리 부담을 더 크게 봐야 합니다.[1][5][6]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters·AP | 11월 11일 미국 증시 마감",
+      "url": "https://www.reuters.com/business/sp-500-nasdaq-futures-rise-after-coreweave-soothes-ai-spending-fears-2026-11-11/",
+      "accessNote": "Reuters 마감판과 AP 본문에서 주요 지수 종가를 대조했습니다. 러셀2000 등락률은 AP 반올림 수치이며, 장중 지수는 포함하지 않았습니다.",
+      "links": [
+        {
+          "label": "AP 지수 마감",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-027cd5f4583d1a11c1795150bf065afb"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "label": "CoreWeave | SEC 첨부 3분기 실적 발표",
+      "url": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000461/coreweave3q26earningspress.htm",
+      "accessNote": "공시의 매출 단위는 백만 달러입니다. Reuters 보도의 LSEG 매출 예상과 비교했습니다. 10일 장 마감 이후 발표는 11일 주가 반응의 배경입니다.",
+      "links": [
+        {
+          "label": "Reuters 실적 및 시장 예상",
+          "url": "https://www.reuters.com/business/coreweave-beats-quarterly-revenue-estimates-ai-demand-defies-growing-doubts-2026-11-10/"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Anthropic | SEC 정정 증권신고서",
+      "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm",
+      "accessNote": "11월 10일 접수된 상장 전 정정 서류입니다. 희망가와 주식 수는 공모 확정 조건이 아닙니다.",
+      "links": [
+        {
+          "label": "SEC 접수 시각",
+          "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/0001628280-26-072484-index.htm"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Pfizer·Blackstone | 공동 자금 계약 공식 발표",
+      "url": "https://www.businesswire.com/news/home/20261111068291/en/Pfizer-and-Blackstone-Life-Sciences-Announce-Strategic-Funding-Agreement-for-Obesity-Program",
+      "accessNote": "회사가 배포한 공동 성명입니다. 배포 사본은 시각 확인에만 사용했으며 독립 확인으로 세지 않았습니다.",
+      "links": [
+        {
+          "label": "동일 성명 배포 시각",
+          "url": "https://www.stocktitan.net/news/PFE/pfizer-and-blackstone-life-sciences-announce-strategic-funding-dt4q98npnboh.html"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Reuters | 원유 결제·외환·금 현물",
+      "url": "https://www.reuters.com/business/energy/oil-rises-two-month-low-hormuz-shipping-attacks-offset-iran-truce-hopes-2026-11-11/",
+      "accessNote": "원유 전문 마감 기사의 결제 변동을 사용했습니다. 종합 기사의 원유 장중값과 구분했습니다. 금은 시각이 있는 현물 관측이며, 달러는 방향만 사용했습니다.",
+      "links": [
+        {
+          "label": "글로벌 시장·달러",
+          "url": "https://www.reuters.com/business/media-telecom/global-markets-global-markets-2026-11-11/"
+        },
+        {
+          "label": "금 현물 Reuters 기사",
+          "url": "https://www.marketscreener.com/news/gold-rebounds-after-sharp-selloff-though-fed-hike-bets-weigh-ce785edbd88af62c"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "label": "미 재무부 | 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+      "accessNote": "11월 9일과 10일의 동일 만기 열을 비교했습니다. 관측은 뉴욕 오후 약 3시 30분 호가 기반이며 11일은 국채 휴장입니다."
+    },
+    {
+      "id": 7,
+      "label": "뉴욕 연은·BLS | 발표 일정",
+      "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "accessNote": "뉴욕 연은과 BLS 달력의 미 동부 시각을 한국시간으로 변환했습니다. NYSE 주식시장 휴장과 국채 휴장을 구분했습니다.",
+      "links": [
+        {
+          "label": "미 노동부 청구 공표 항목",
+          "url": "https://www.dol.gov/ui/data.pdf"
+        },
+        {
+          "label": "BLS 11월 발표 달력",
+          "url": "https://www.bls.gov/schedule/2026/11_sched.htm"
+        },
+        {
+          "label": "BLS PPI 공표 항목",
+          "url": "https://www.bls.gov/ppi/"
+        },
+        {
+          "label": "NYSE 공식 휴장일·거래시간",
+          "url": "https://www.nyse.com/trade/hours-calendars"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "label": "미 노동통계국 | 10월 CPI",
+      "url": "https://www.bls.gov/news.release/archives/cpi_11102026.htm",
+      "accessNote": "11월 10일 발표된 10월 지표입니다. 계절조정 전월비를 Reuters 예상치와 비교했습니다.",
+      "links": [
+        {
+          "label": "Reuters 예상치·시장 반응",
+          "url": "https://www.reuters.com/world/us/us-consumer-prices-rise-above-expectations-october-2026-11-10/"
+        }
+      ]
+    }
+  ],
+  "dataNote": "AI가 작성하고 같은 모델이 공개 원문과 자체 대조했습니다. 사람의 승인이나 독립 검증은 아니며 정규장·장중·장 마감 이후 관측을 구분했습니다.",
+  "corrections": [],
+  "homepage": {
+    "headline": "코어위브 실적에 반도체 반등, 나스닥 1.60% 상승[1][2]",
+    "stocks": [
+      {
+        "name": "코어위브",
+        "ticker": "CRWV",
+        "change": "+24.7%",
+        "reason": "3분기 매출이 예상을 웃돌았습니다. Reuters는 고객 수요가 차입을 동반한 설비 확장을 뒷받침할 수 있는지에 대한 우려가 완화됐다고 전했습니다.",
+        "basis": "11월 11일 미국 정규장 종가, 11월 10일 종가 대비",
+        "sourceIds": [
+          1,
+          2
+        ]
+      }
+    ],
+    "assets": [
+      {
+        "label": "미국 10년물",
+        "value": "4.98%",
+        "change": "+10bp",
+        "basis": "11월 10일 약 15:30 EST 호가 기반 미 재무부 파 수익률, 11월 9일 대비. 11월 11일 국채 휴장.",
+        "sourceIds": [
+          6
+        ]
+      },
+      {
+        "label": "금 현물",
+        "value": "4,014.26달러/트로이온스",
+        "change": "−0.41%",
+        "basis": "11월 11일 09:47 EST 장중, 전일 대비. 금 선물과 구분.",
+        "sourceIds": [
+          5
+        ]
+      },
+      {
+        "label": "WTI 선물",
+        "value": "가격 수준 생략",
+        "change": "+0.49달러/배럴 (+0.57%)",
+        "basis": "11월 11일 결제가, 11월 10일 결제 대비. 계약월 미확인으로 가격 수준 제외.",
+        "sourceIds": [
+          5
+        ]
+      }
+    ],
+    "events": [
+      {
+        "at": "2026-11-12T22:30:00+09:00",
+        "label": "미국 신규 실업수당 청구",
+        "detail": "계절조정 신규 청구 건수와 주간 변동을 완화한 4주 이동평균",
+        "sourceIds": [
+          7
+        ]
+      },
+      {
+        "at": "2026-11-13T22:30:00+09:00",
+        "label": "미국 10월 생산자물가지수(PPI) · 익일",
+        "detail": "최종수요 물가의 전월비와 상품·서비스의 움직임",
+        "sourceIds": [
+          7
+        ]
+      }
+    ]
+  },
+  "publishedAt": "2026-11-11T22:11:22.086Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-11-11T22:11:22.084Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/sp-500-nasdaq-futures-rise-after-coreweave-soothes-ai-spending-fears-2026-11-11/",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": "2026-11-11T10:43:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 최종 수치와 AP 지수 종가 일치. 러셀 2,846.26·+0.9%는 AP. 기술 +2.7%, SOX +5.7%·전 종목 상승, NYSE/나스닥 상승 대 하락 1.48/1.77, CRWV 정규장 +24.7%, NVDA 반등과 보도된 설명 확인."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.sec.gov/Archives/edgar/data/1769628/000176962826000461/coreweave3q26earningspress.htm",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "3Q26 9월30일 종료 매출 3,661 million USD, LSEG 3.55 billion USD를 각각 36억6,100만·35억5,000만으로 환산. 향후 석 달 고객 선급금·예치금 약 $9 billion은 회사 예상으로 기록. 10일 장 마감 후 Reuters 보도로 cutoff 이전 공개 확인."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": "2026-11-10T11:29:24Z",
+        "basis": "primary",
+        "claimSummary": "SEC 접수 06:29:24 EST=11:29:24 UTC. 희망가 70~78달러, 825,000,000주에 구주 23,648,646주 포함, 구주 매각대금 회사 미수취. 11일 마감 기사는 조건에 대한 관심을 보도."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.businesswire.com/news/home/20261111068291/en/Pfizer-and-Blackstone-Life-Sciences-Announce-Strategic-Funding-Agreement-for-Obesity-Program",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": "2026-11-11T21:30:00Z",
+        "basis": "primary",
+        "claimSummary": "공동 성명 및 동일 배포 기록의 16:30 EST=익일06:30 KST. $1.5 billion=15억 달러, 2028년까지 비용 부담, 허가 및 매출 조건부 지급, 화이자 의사결정권 유지. 정규장 반응으로 기재하지 않음."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://www.reuters.com/business/energy/oil-rises-two-month-low-hormuz-shipping-attacks-offset-iran-truce-hopes-2026-11-11/",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": "2026-11-11T02:10:08Z",
+        "basis": "reported",
+        "claimSummary": "WTI 전문 마감 결제 86.53−86.04=+0.49 USD/배럴, +0.57%. 장중 종합 기사 값은 제외. 계약월 미확인으로 절대가 제외. Reuters 금 현물 14:47 UTC=09:47 EST 4014.26 USD/트로이온스·−0.41%. 달러는 방향만."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "재무부 11월9일/10일 동일 만기: 2년 4.56→4.73%, 10년 4.88→4.98%, 차이 17/10bp. 약15:30 EST 호가 기반. 11일 채권 휴장으로 새 일별 관측 없음."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "뉴욕 연은의 11월12일 청구와 BLS의 11월13일 PPI 각각 08:30 EST=22:30 KST, cutoff 뒤 72시간 이내. 노동부 청구 건수·4주 이동평균과 BLS 최종수요 상품·서비스를 확인 항목으로 동일 반영. NYSE 공식 표 11일 정상·16시 마감."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://www.bls.gov/news.release/archives/cpi_11102026.htm",
+        "checkedAt": "2026-11-11T22:11:22.084Z",
+        "publishedAt": "2026-11-10T13:30:00Z",
+        "basis": "primary",
+        "claimSummary": "BLS 10월 전체 CPI +0.4%, 근원 +0.3%, 각각 계절조정 전월비. 9월 전체 +0.6%·근원 +0.3%, Reuters 예상 +0.3%·+0.2%와 기준 일치. 11월10일 공표이며 11일 발표로 표기하지 않음. 금리 인상 기대는 Reuters 보도에 귀속."
+      }
+    ],
+    "contentHash": "b4cf29dca89c8aa72704e10266bb1626db2e3e7c4facbe1921f081383930d865"
+  }
+}
