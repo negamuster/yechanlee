@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "attemptedAt": "2026-11-10T20:52:49.452Z",
+  "attemptedAt": "2026-11-11T01:18:58.386Z",
   "companies": {
     "AAPL": {
       "symbol": "AAPL",
@@ -3359,7 +3359,7 @@
       "source": "SEC EDGAR",
       "cik": "0000320193",
       "company": "Apple Inc.",
-      "fetchedAt": 1794343968805,
+      "fetchedAt": 1794359938069,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
@@ -6770,7 +6770,7 @@
       "source": "SEC EDGAR",
       "cik": "0001045810",
       "company": "NVIDIA CORP",
-      "fetchedAt": 1794343968975,
+      "fetchedAt": 1794359938160,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
@@ -7716,6 +7716,258 @@
         }
       ],
       "quarterly": [
+        {
+          "start_date": "2026-07-01",
+          "end_date": "2026-09-30",
+          "filing_date": "2026-11-10",
+          "fiscal_period": "Q",
+          "accounting_standard": "us-gaap",
+          "form": "10-Q",
+          "amended": false,
+          "calculated": false,
+          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+          "financials": {
+            "income_statement": {
+              "revenues": {
+                "value": 16041000,
+                "unit": "USD",
+                "label": "RevenueFromContractWithCustomerExcludingAssessedTax",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+                    "value": 16041000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "operating_income_loss": {
+                "value": -2284000,
+                "unit": "USD",
+                "label": "OperatingIncomeLoss",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "OperatingIncomeLoss",
+                    "value": -2284000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "net_income_loss": {
+                "value": 28304000,
+                "unit": "USD",
+                "label": "NetIncomeLoss",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetIncomeLoss",
+                    "value": 28304000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "diluted_earnings_per_share": {
+                "value": 0.14,
+                "unit": "USD/shares",
+                "label": "EarningsPerShareDiluted",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "EarningsPerShareDiluted",
+                    "value": 0.14,
+                    "unit": "USD/shares",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              }
+            },
+            "balance_sheet": {
+              "equity": {
+                "value": 63352000,
+                "unit": "USD",
+                "label": "StockholdersEquity",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "end_date": "2026-09-30",
+                    "tag": "StockholdersEquity",
+                    "value": 63352000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "liabilities": {
+                "value": 124176000,
+                "unit": "USD",
+                "label": "Liabilities",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "end_date": "2026-09-30",
+                    "tag": "Liabilities",
+                    "value": 124176000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  }
+                ]
+              }
+            },
+            "cash_flow_statement": {
+              "operating_cash_flow": {
+                "value": -10359000,
+                "unit": "USD",
+                "label": "NetCashProvidedByUsedInOperatingActivities",
+                "calculation": "difference",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -18831000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
+                  {
+                    "accession": "0001874315-26-000032",
+                    "form": "10-Q",
+                    "filing_date": "2026-08-06",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-06-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -8472000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "capital_expenditures": {
+                "value": 6214000,
+                "unit": "USD",
+                "label": "PaymentsToAcquirePropertyPlantAndEquipment",
+                "basis": "ppe",
+                "calculation": "difference",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 17399000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
+                  {
+                    "accession": "0001874315-26-000032",
+                    "form": "10-Q",
+                    "filing_date": "2026-08-06",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-06-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 11185000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "revised": false
+                  }
+                ]
+              },
+              "free_cash_flow": {
+                "value": -16573000,
+                "unit": "USD",
+                "basis": "ppe",
+                "calculation": "ocf_minus_capex",
+                "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -18831000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
+                  {
+                    "accession": "0001874315-26-000032",
+                    "form": "10-Q",
+                    "filing_date": "2026-08-06",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-06-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -8472000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "revised": false
+                  },
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 17399000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
+                  {
+                    "accession": "0001874315-26-000032",
+                    "form": "10-Q",
+                    "filing_date": "2026-08-06",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-06-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 11185000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "revised": false
+                  }
+                ]
+              }
+            }
+          }
+        },
         {
           "start_date": "2026-04-01",
           "end_date": "2026-06-30",
@@ -8949,13 +9201,13 @@
         {
           "start_date": "2025-01-01",
           "end_date": "2025-03-31",
-          "filing_date": "2026-08-06",
+          "filing_date": "2026-11-10",
           "fiscal_period": "Q",
           "accounting_standard": "us-gaap",
           "form": "10-Q",
           "amended": false,
           "calculated": false,
-          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
           "financials": {
             "income_statement": {
               "net_income_loss": {
@@ -8964,15 +9216,15 @@
                 "label": "NetIncomeLoss",
                 "sources": [
                   {
-                    "accession": "0001874315-26-000032",
+                    "accession": "0001874315-26-000058",
                     "form": "10-Q",
-                    "filing_date": "2026-08-06",
+                    "filing_date": "2026-11-10",
                     "start_date": "2025-01-01",
                     "end_date": "2025-03-31",
                     "tag": "NetIncomeLoss",
                     "value": -32581000,
                     "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
                     "revised": false
                   }
                 ]
@@ -8985,14 +9237,14 @@
                 "label": "StockholdersEquity",
                 "sources": [
                   {
-                    "accession": "0001874315-26-000032",
+                    "accession": "0001874315-26-000058",
                     "form": "10-Q",
-                    "filing_date": "2026-08-06",
+                    "filing_date": "2026-11-10",
                     "end_date": "2025-03-31",
                     "tag": "StockholdersEquity",
                     "value": -83092000,
                     "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
                     "revised": false
                   }
                 ]
@@ -9272,260 +9524,38 @@
               }
             }
           }
-        },
-        {
-          "start_date": "2024-07-01",
-          "end_date": "2024-09-30",
-          "filing_date": "2025-11-10",
-          "fiscal_period": "Q",
-          "accounting_standard": "us-gaap",
-          "form": "10-Q",
-          "amended": false,
-          "calculated": false,
-          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-          "financials": {
-            "income_statement": {
-              "revenues": {
-                "value": 2817000,
-                "unit": "USD",
-                "label": "RevenueFromContractWithCustomerExcludingAssessedTax",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-07-01",
-                    "end_date": "2024-09-30",
-                    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
-                    "value": 2817000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  }
-                ]
-              },
-              "operating_income_loss": {
-                "value": -11496000,
-                "unit": "USD",
-                "label": "OperatingIncomeLoss",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-07-01",
-                    "end_date": "2024-09-30",
-                    "tag": "OperatingIncomeLoss",
-                    "value": -11496000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  }
-                ]
-              },
-              "net_income_loss": {
-                "value": -12090000,
-                "unit": "USD",
-                "label": "NetIncomeLoss",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-07-01",
-                    "end_date": "2024-09-30",
-                    "tag": "NetIncomeLoss",
-                    "value": -12090000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  }
-                ]
-              },
-              "diluted_earnings_per_share": {
-                "value": -0.13,
-                "unit": "USD/shares",
-                "label": "EarningsPerShareDiluted",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-07-01",
-                    "end_date": "2024-09-30",
-                    "tag": "EarningsPerShareDiluted",
-                    "value": -0.13,
-                    "unit": "USD/shares",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  }
-                ]
-              }
-            },
-            "balance_sheet": {
-              "equity": {
-                "value": 7769000,
-                "unit": "USD",
-                "label": "StockholdersEquity",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "end_date": "2024-09-30",
-                    "tag": "StockholdersEquity",
-                    "value": 7769000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  }
-                ]
-              }
-            },
-            "cash_flow_statement": {
-              "operating_cash_flow": {
-                "value": -8364000,
-                "unit": "USD",
-                "label": "NetCashProvidedByUsedInOperatingActivities",
-                "calculation": "difference",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-09-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -32255000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-06-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -23891000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
-                    "revised": false
-                  }
-                ]
-              },
-              "capital_expenditures": {
-                "value": 1001000,
-                "unit": "USD",
-                "label": "PaymentsToAcquirePropertyPlantAndEquipment",
-                "basis": "ppe",
-                "calculation": "difference",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-09-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 4335000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-06-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 3334000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
-                    "revised": false
-                  }
-                ]
-              },
-              "free_cash_flow": {
-                "value": -9365000,
-                "unit": "USD",
-                "basis": "ppe",
-                "calculation": "ocf_minus_capex",
-                "sources": [
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-09-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -32255000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-06-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -23891000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-09-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 4335000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2024-01-01",
-                    "end_date": "2024-06-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 3334000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
-                    "revised": false
-                  }
-                ]
-              }
-            }
-          }
         }
       ],
       "ttm": [
         {
-          "start_date": "2025-07-01",
-          "end_date": "2026-06-30",
-          "filing_date": "2026-08-06",
+          "start_date": "2025-10-01",
+          "end_date": "2026-09-30",
+          "filing_date": "2026-11-10",
           "fiscal_period": "TTM",
           "accounting_standard": "us-gaap",
           "form": "10-Q",
           "amended": false,
           "calculated": true,
-          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000032/0001874315-26-000032-index.html",
+          "source_filing_url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
           "financials": {
             "income_statement": {
               "revenues": {
-                "value": 31906000,
+                "value": 44314000,
                 "unit": "USD",
                 "calculation": "sum",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+                    "value": 16041000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9573,26 +9603,26 @@
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
                     "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2025-07-01",
-                    "end_date": "2025-09-30",
-                    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
-                    "value": 3633000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
                   }
                 ]
               },
               "operating_income_loss": {
-                "value": -21314000,
+                "value": -15516000,
                 "unit": "USD",
                 "calculation": "sum",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "OperatingIncomeLoss",
+                    "value": -2284000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9640,26 +9670,26 @@
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
                     "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2025-07-01",
-                    "end_date": "2025-09-30",
-                    "tag": "OperatingIncomeLoss",
-                    "value": -8082000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
                   }
                 ]
               },
               "net_income_loss": {
-                "value": -103901000,
+                "value": -79564000,
                 "unit": "USD",
                 "calculation": "sum",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-07-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetIncomeLoss",
+                    "value": 28304000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9707,18 +9737,6 @@
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
                     "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000019",
-                    "form": "10-Q",
-                    "filing_date": "2025-11-10",
-                    "start_date": "2025-07-01",
-                    "end_date": "2025-09-30",
-                    "tag": "NetIncomeLoss",
-                    "value": 3967000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
                   }
                 ]
               }
@@ -9726,10 +9744,22 @@
             "balance_sheet": {},
             "cash_flow_statement": {
               "operating_cash_flow": {
-                "value": -26294000,
+                "value": -28282000,
                 "unit": "USD",
                 "calculation": "sum",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -18831000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9776,28 +9806,28 @@
                     "value": -17435000,
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2025-01-01",
-                    "end_date": "2025-06-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -9064000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
                     "revised": false
                   }
                 ]
               },
               "capital_expenditures": {
-                "value": 15872000,
+                "value": 20748000,
                 "unit": "USD",
                 "basis": "ppe",
                 "calculation": "sum",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 17399000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9845,27 +9875,27 @@
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
                     "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2025-01-01",
-                    "end_date": "2025-06-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 2689000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
-                    "revised": false
                   }
                 ]
               },
               "free_cash_flow": {
-                "value": -42166000,
+                "value": -49030000,
                 "unit": "USD",
                 "basis": "ppe",
                 "calculation": "ocf_minus_capex",
                 "sources": [
+                  {
+                    "accession": "0001874315-26-000058",
+                    "form": "10-Q",
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "NetCashProvidedByUsedInOperatingActivities",
+                    "value": -18831000,
+                    "unit": "USD",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
+                    "revised": false
+                  },
                   {
                     "accession": "0001874315-26-000032",
                     "form": "10-Q",
@@ -9915,15 +9945,15 @@
                     "revised": false
                   },
                   {
-                    "accession": "0001874315-25-000014",
+                    "accession": "0001874315-26-000058",
                     "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2025-01-01",
-                    "end_date": "2025-06-30",
-                    "tag": "NetCashProvidedByUsedInOperatingActivities",
-                    "value": -9064000,
+                    "filing_date": "2026-11-10",
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-09-30",
+                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                    "value": 17399000,
                     "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
+                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431526000058/0001874315-26-000058-index.html",
                     "revised": false
                   },
                   {
@@ -9972,18 +10002,6 @@
                     "value": 4027000,
                     "unit": "USD",
                     "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000019/0001874315-25-000019-index.html",
-                    "revised": false
-                  },
-                  {
-                    "accession": "0001874315-25-000014",
-                    "form": "10-Q",
-                    "filing_date": "2025-08-12",
-                    "start_date": "2025-01-01",
-                    "end_date": "2025-06-30",
-                    "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
-                    "value": 2689000,
-                    "unit": "USD",
-                    "url": "https://www.sec.gov/Archives/edgar/data/1874315/000187431525000014/0001874315-25-000014-index.html",
                     "revised": false
                   }
                 ]
@@ -9995,7 +10013,7 @@
       "source": "SEC EDGAR",
       "cik": "0001874315",
       "company": "Satellogic Inc.",
-      "fetchedAt": 1794343969448,
+      "fetchedAt": 1794359938384,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
