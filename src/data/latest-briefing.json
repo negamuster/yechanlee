@@ -1,19 +1,19 @@
 {
-  "id": "2026-11-13",
+  "id": "2026-11-14",
   "reviewMode": "automated",
-  "title": "미국 증시 요약 | 2026-11-12",
-  "sessionDate": "2026-11-12",
-  "cutoffAt": "2026-11-13T07:03:06+09:00",
-  "publishedAt": "2026-11-12T22:07:38.342Z",
+  "title": "미국 증시 요약 | 2026-11-13",
+  "sessionDate": "2026-11-13",
+  "cutoffAt": "2026-11-14T06:59:14+09:00",
+  "publishedAt": "2026-11-13T22:03:34.591Z",
   "summary": [
-    "미국 증시 3대 지수가 0.4% 안팎 내렸고 소형주 러셀2000은 1.7% 떨어졌습니다. 유가 상승에 에너지 업종이 1.5% 올랐지만, 뉴욕증권거래소에서는 하락 종목이 상승 종목의 3배를 넘었습니다.[1][7]",
-    "젠슨 황이 엔비디아 CEO와 이사직에서 물러났습니다. 이사회가 재무책임자 콜레트 크레스를 임시 CEO로 지명한 날 주가는 장중 낙폭을 줄여 정규장 4.3% 하락으로 마감했습니다.[1][2]",
-    "휴일을 마치고 거래를 재개한 미국 국채시장에서 재무부 10년물 파 수익률이 직전 관측일보다 12bp 오른 5.10%를 기록했습니다. 중동 공급 차질 우려가 커지며 WTI 선물 결제가는 전날보다 배럴당 2.21달러 올랐습니다.[6][7]"
+    "나스닥 종합은 0.91%, S&P500은 0.40% 하락했고 다우는 0.10% 올랐습니다. 엔비디아의 후임 CEO를 둘러싼 불확실성이 남은 가운데 반도체지수는 3.4% 내렸고, 나스닥에서는 하락 종목이 상승 종목보다 많았습니다.[1][3]",
+    "미국의 10월 생산자물가는 전월보다 0.3% 올라 예상치 0.4%를 밑돌았습니다. 주가지수는 초반 상승을 반납했고, 미 재무부의 10년물 파 수익률은 전일보다 5bp 오른 5.15%였습니다.[1][2][6]",
+    "마이크로소프트는 아웃룩과 팀즈 장애 복구를 진행했고 주가는 장중 하락을 만회해 0.2% 올랐습니다. 12월 인도분 WTI는 전일보다 배럴당 0.18달러 내린 88.56달러에 결제됐습니다.[1][5][7]"
   ],
   "blocks": [
     {
       "kind": "metadata",
-      "text": "작성 기준 2026-11-13 07:03:06 KST · 최근 24시간 2026-11-12 07:03:06~2026-11-13 07:03:06 KST · 직전 미국 정규장 2026-11-12, 16:00 EST(한국시간 13일 06:00) 마감. NYSE 공식 휴장표상 정상 거래일입니다.[1][8]"
+      "text": "작성 기준 2026-11-14 06:59:14 KST · 최근 24시간 2026-11-13 06:59:14~2026-11-14 06:59:14 KST · 직전 미국 정규장 2026-11-13, 16:00 EST(한국시간 14일 06:00) 마감. 금요일은 NYSE 정상 거래일이었습니다.[1][8]"
     },
     {
       "kind": "heading",
@@ -21,15 +21,15 @@
     },
     {
       "kind": "paragraph",
-      "text": "11월 12일 미국 증시는 장 초반 밀렸다가 낙폭을 줄였지만 주요 지수는 모두 하락 마감했습니다. 소형주 낙폭은 대형주 지수보다 컸고, 하락 종목은 NYSE에서 상승 종목의 3.4배, 나스닥에서 3.18배였습니다. 유가가 오르면서 에너지는 S&P500 11개 업종 중 가장 강했습니다(+1.5%). 반도체지수는 0.5% 내렸지만 AMD와 브로드컴은 올랐습니다.[1][7]"
+      "text": "금요일 뉴욕증시는 다우가 소폭 올랐지만 나스닥 종합과 S&P500은 하락했습니다. S&P500 기술 업종이 1.7% 내려 11개 업종 중 가장 부진했고, 필라델피아 반도체지수는 3.4% 내렸습니다. 하락 종목은 상승 종목의 NYSE 1.28배, 나스닥 1.61배였습니다. 하루 하락에도 S&P500과 나스닥 종합은 주간으로 각각 2.51%, 2.27% 올라 4주 연속 하락을 끝냈습니다.[1]"
     },
     {
       "kind": "subheading",
-      "text": "11월 12일 미국 정규장 종가 · 11월 11일 종가 대비"
+      "text": "11월 13일 미국 정규장 종가 · 11월 12일 종가 대비"
     },
     {
       "kind": "paragraph",
-      "text": "S&P500 7,592.40(−0.35%) · 다우 52,297.09(−0.36%) · 나스닥 종합 25,366.09(−0.39%) · 러셀2000 2,799.06(−1.7%).[1]"
+      "text": "S&P500 7,561.67(−0.40%) · 다우 52,347.55(+0.10%) · 나스닥 종합 25,136.27(−0.91%) · 러셀2000 2,790.49(−0.3%).[1]"
     },
     {
       "kind": "heading",
@@ -37,11 +37,11 @@
     },
     {
       "kind": "paragraph",
-      "text": "개장 전인 08:30 EST에 나온 11월 7일 종료 주의 신규 실업수당 청구는 계절조정 20만 건이었습니다. Reuters 조사 예상 19만5,000건과 직전 주 수정치 19만1,000건을 웃돌았지만, 4주 이동평균은 19만5,250건으로 직전 주 수정치와 같았습니다. Reuters는 주간 증가에도 청구 수준이 안정적 노동시장과 양립한다고 평가했습니다.[5][6]"
+      "text": "개장 전 08:30 EST에 발표된 미국 10월 최종수요 생산자물가지수(PPI)는 계절조정 전월비 0.3% 상승했습니다. Reuters 설문 예상 0.4%와 9월 수정치 1.4%(종전 1.3%)를 밑돌았습니다. 전년비는 6.5%로 2022년 11월 이후 가장 높았고, 전월비 상품은 0.5%, 서비스는 0.2% 올랐습니다. 주요 지수는 초반 상승을 반납했고, Reuters는 예상보다 낮은 월간 수치에도 12월 금리 인상 기대가 유지됐다고 보도했습니다.[1][2]"
     },
     {
       "kind": "paragraph",
-      "text": "이후 엔비디아의 장전 승계 발표와 중동발 공급 우려가 겹쳤습니다. S&P500은 장 초반 약 1% 밀렸다가 하락분을 한때 모두 만회했으나 종가는 전일보다 낮았습니다. 원유는 장 초반 약세에서 상승으로 돌아섰습니다. Reuters는 사우디 석유 시설 공격을 주장한 후티 측 발표와 호르무즈 해협의 운송 차질 우려를 전했습니다.[1][2][7]"
+      "text": "마감 직전에는 미 연방항공청(FAA)이 관제 통신 문제로 전국 출발편에 이륙 중단을 지시했다고 Reuters가 보도했습니다. 비행 중인 항공기의 착륙은 허용됐습니다. 항공주가 장 막판 밀리며 NYSE 아르카 항공업종 지수는 1.4% 내렸습니다. 원인 조사와 운항 재개 여부는 당국의 후속 발표를 확인할 사안입니다.[1]"
     },
     {
       "kind": "heading",
@@ -49,15 +49,15 @@
     },
     {
       "kind": "paragraph",
-      "text": "엔비디아는 젠슨 황이 사장·CEO·이사직에서 물러났다고 밝혔습니다. 콜레트 크레스는 임시 CEO와 CFO를 겸임하고, 신임 이사회 의장 하비 존스와 이사회는 정식 후임을 물색합니다. 이사회는 고객 약속과 제품 계획이 이어질 것으로 본다고 밝혔습니다. 이는 회사의 전망이며 앞서 발표한 독립 조사에 대한 결론은 아닙니다. 주가는 장중 낙폭을 줄여 정규장 4.3% 하락했고, 후임 인선과 회사가 밝힐 제품 일정이 다음 확인 사항입니다.[1][2]"
+      "text": "엔비디아는 12일 젠슨 황 사임 이후 콜레트 크레스가 CFO를 겸해 임시 CEO를 맡고, 이사회가 정식 후임을 찾는다고 밝혔습니다. Reuters는 승계 불확실성이 주변 AI 종목에도 부담이 됐다고 전했습니다. 13일 정규장에서 엔비디아는 2.0% 내렸습니다. 확인할 것은 후임 인선의 공식 발표와 기존 고객·제품 일정에 대한 회사 설명입니다.[1][3]"
     },
     {
       "kind": "paragraph",
-      "text": "네비우스는 외부 업체를 통해 확보하려던 일부 데이터센터 용량의 가동이 2027년 상반기로 밀렸다고 밝혔습니다. 관련 계약은 유지되지만 올해 매출은 기존 전망 범위의 하단으로 예상했고, 설비투자 전망은 약 270억 달러로 높였습니다. 가동 지연과 투자비 확대가 동시에 나온 날 주가는 정규장에서 16.8% 내렸습니다.[1][3]"
+      "text": "마이크로소프트의 아웃룩과 팀즈 등에서 발생한 서비스 장애는 금요일까지 이어졌습니다. 회사는 복구가 진행 중이며 당시 악성 활동을 뒷받침하는 증거가 없다고 밝혔습니다. Reuters는 장애가 완화되면서 주가가 장중 하락을 만회해 0.2% 상승 마감했다고 전했습니다. 장애 원인과 재발 방지 조치는 회사의 사후 보고가 나와야 확인할 수 있습니다.[1][5]"
     },
     {
       "kind": "paragraph",
-      "text": "정규장 마감 뒤 시스코는 10월 24일 종료된 회계연도 2027년 1분기 매출 185억 달러를 발표했습니다. LSEG 예상 181억4,000만 달러를 웃돌았고, 연간 매출 전망은 748억~758억 달러로 높였습니다. Reuters는 대형 클라우드 업체의 AI 네트워크 장비 수요를 배경으로 전했으며, 보도 시점 시간외 주가는 보합권이었습니다.[4]"
+      "text": "세레브라스는 12일 정규장 뒤 실적과 함께 2026년 비GAAP 핵심 매출 전망을 8억8,000만~8억9,000만 달러에서 9억4,000만~9억6,000만 달러로 높였습니다. Reuters가 확인한 13일 장 초반 주가는 전일 종가보다 14% 넘게 올랐습니다.[4]"
     },
     {
       "kind": "heading",
@@ -65,23 +65,15 @@
     },
     {
       "kind": "paragraph",
-      "text": "재향군인의 날 휴장 뒤 미 재무부 파 수익률은 2년물과 10년물이 모두 올랐습니다. Reuters는 연준의 인상 기대 속에 달러지수가 장중 강세를 보였다고 전했습니다. 금 현물은 내렸고 원유는 올랐습니다.[6][7]"
-    },
-    {
-      "kind": "subheading",
-      "text": "시장 수치 · 관측 기준"
+      "text": "미 재무부의 호가 기반 파 수익률은 2년 4.88%(+2bp), 10년 5.15%(+5bp)였습니다. 관측은 11월 13일 15:30 EST 무렵(한국시간 14일 05:30), 비교는 11월 12일 같은 기준입니다.[6]"
     },
     {
       "kind": "paragraph",
-      "text": "미 재무부 호가 기반 파 수익률: 2년 4.86%(+13bp), 10년 5.10%(+12bp). 11월 12일 약 15:30 EST(한국시간 13일 05:30), 채권 휴장 전 11월 10일 같은 기준 대비.[6]"
+      "text": "금 현물은 PPI 발표 때 장중 상승폭을 키웠다가 일부를 반납해 11월 13일 14:05 EST에 3,879.71달러/트로이온스(전일 대비 +0.1%)였습니다. NYMEX WTI 2026년 12월물은 11월 13일 배럴당 88.56달러에 결제돼 전일 결제보다 0.18달러(0.20%) 내렸습니다. Reuters는 국제에너지기구가 공급 초과 확대를 지적했다고 전했습니다.[7]"
     },
     {
       "kind": "paragraph",
-      "text": "금 현물 3,880.93달러/트로이온스(−2.7%), 11월 12일 18:55 UTC 장중, 전일 대비. WTI 선물은 11월 12일 결제 기준 전일 대비 +2.21달러/배럴(+2.6%). 계약월이 명시된 당일 결제 원문을 확인하지 못해 절대 가격은 제외했습니다.[7]"
-    },
-    {
-      "kind": "paragraph",
-      "text": "2026년 11월 13일 22:30 KST · 미국 10월 생산자물가지수(PPI): 최종수요 물가의 전월비와 상품·서비스별 움직임.[8]"
+      "text": "2026년 11월 16일 22:30 KST · 뉴욕 연은 엠파이어스테이트 제조업 조사: 종합 경기판단지수와 신규 주문·출하 지수.[8]"
     },
     {
       "kind": "heading",
@@ -89,71 +81,69 @@
     },
     {
       "kind": "paragraph",
-      "text": "AI의 조건부 해석: 엔비디아가 하락한 날 다른 칩 설계주가 오른 점은 시장이 AI 수요 자체보다 공급 업체별 위험을 다르게 반영했을 가능성을 보여줍니다. 다음 정규장에서 엔비디아와 경쟁사의 등락 차이가 이어지는지, 아니면 PPI 발표 뒤 금리 움직임과 함께 반도체주 전반이 같은 방향으로 움직이는지 비교할 수 있습니다.[1][2][6][8]"
+      "text": "AI의 조건부 해석: 월간 물가가 예상을 밑돌았는데도 금리가 오르고 반도체가 약했던 점은, 시장이 물가 발표와 별도로 기술주 위험을 다시 반영했을 가능성을 보여줍니다. 다음 장에서 10년물 금리가 내려가도 반도체가 시장보다 약한지, 반대로 금리 하락과 함께 상대 손실을 되돌리는지 비교할 수 있습니다.[1][2][6]"
     }
   ],
   "sources": [
     {
       "id": 1,
-      "label": "Reuters·AP | 11월 12일 미국 증시 마감",
-      "url": "https://www.reuters.com/business/nasdaq-futures-fall-nvidia-turmoil-rattles-ai-stocks-2026-11-12/",
-      "accessNote": "Reuters 정규장 마감판과 AP 종가를 대조했습니다. 러셀2000은 AP 반올림 등락률을 썼습니다. 엔비디아 장중 저점의 등락률은 기사마다 달라 방향만 실었습니다.",
+      "label": "Reuters·AP | 11월 13일 미국 증시 마감",
+      "url": "https://www.reuters.com/business/nasdaq-futures-dip-nvidia-tumult-keeps-investors-edge-2026-11-13/",
+      "accessNote": "정규장 마감판과 AP 지수 종가를 대조했습니다. 러셀2000은 AP 반올림 수치입니다. 장 초반 시황은 마감 수치와 구분했습니다.",
       "links": [
         {
-          "label": "AP 주요 지수 마감",
-          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-3f3668a937a11535103e3a5c8d82c9fc"
+          "label": "AP 지수 마감",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-12c1e8155fb85c3c7b09e058ed6d3c74"
+        },
+        {
+          "label": "Reuters 장 초반 시황",
+          "url": "https://www.streetinsider.com/Reuters/Wall%2BSt%2Bgives%2Bup%2Bearly%2Bgains%2Bas%2Btech%2Bstocks%2Bslide%2Bon%2BNvidia%2Bturmoil/27340933.html"
+        },
+        {
+          "label": "Reuters FAA 보도 및 교통장관 설명",
+          "url": "https://www.reuters.com/world/us/faa-issues-national-ground-stop-due-extraordinary-circumstance-reasons-safety-2026-11-13/"
         }
       ]
     },
     {
       "id": 2,
-      "label": "NVIDIA | CEO 교체 공식 발표",
-      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-ceo-transition",
-      "accessNote": "이사회 성명과 SEC 접수 기록을 구분했습니다. 독립 조사에 관한 11월 8일 성명은 배경입니다. 새 성명은 인사 조치와 회사 전망의 근거입니다.",
+      "label": "미 노동통계국 | 10월 PPI 발표",
+      "url": "https://www.bls.gov/news.release/ppi.nr0.htm",
+      "accessNote": "9월은 이번 공표의 수정치를 썼고, Reuters 설문의 전월비 예상과 비교했습니다.",
       "links": [
         {
-          "label": "SEC 8-K 접수 기록",
-          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/0001045810-26-000082-index.htm"
-        },
-        {
-          "label": "11월 8일 이사회 조사 발표",
-          "url": "https://nvidianews.nvidia.com/news/statement-from-nvidia-board-of-directors"
+          "label": "Reuters PPI 조사와 시장 반응",
+          "url": "https://www.reuters.com/business/us-producer-prices-rise-further-october-2026-11-13/"
         }
       ]
     },
     {
       "id": 3,
-      "label": "Nebius | 3분기 주주 서한",
-      "url": "https://assets.nebius.com/assets/5bc733ff-bed7-415c-af10-74ce7881a764/Nebius-SHL-2026-Q3.pdf",
-      "accessNote": "회사는 기존 매출 범위 하단을 제시했습니다. 가동 연기와 설비투자 전망은 서한을, 최종 주가 반응은 마감 기사를 사용했습니다.",
-      "links": [
-        {
-          "label": "Reuters 실적과 가동 연기 보도",
-          "url": "https://www.reuters.com/technology/nebius-beats-quarterly-revenue-estimates-strong-ai-demand-2026-11-12/"
-        }
-      ]
+      "label": "NVIDIA | CEO 교체 공식 발표",
+      "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+      "accessNote": "11월 12일 장전 발표는 배경입니다. 회사가 밝힌 임시 체제와 후임 물색을 근거로 사용했습니다. 후보 이름은 확인되지 않아 제외했습니다."
     },
     {
       "id": 4,
-      "label": "Cisco | 회계연도 2027년 1분기 실적",
-      "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
-      "accessNote": "회사가 요약한 반올림 매출과 Reuters LSEG 예상치를 사용했습니다. 시간외 보합권은 Reuters 보도 시점의 관측입니다.",
+      "label": "Cerebras | 3분기 실적과 연간 전망",
+      "url": "https://investors.cerebras.ai/news-releases/news-release-details/cerebras-systems-delivers-record-revenue-third-quarter-2026",
+      "accessNote": "발표는 12일 정규장 이후입니다. 회사의 비GAAP 핵심 매출 전망과 Reuters에 나온 직전 전망을 비교했습니다. 13일 주가는 장 초반 보도 수치입니다.",
       "links": [
         {
-          "label": "Reuters 실적·시간외 주가",
-          "url": "https://www.reuters.com/business/media-telecom/cisco-raises-annual-revenue-forecast-strong-ai-networking-demand-2026-11-12/"
+          "label": "Reuters 실적 반응",
+          "url": "https://www.reuters.com/technology/cerebras-shares-surge-profit-surprise-forecast-raise-ease-ai-spending-worries-2026-11-13/"
         }
       ]
     },
     {
       "id": 5,
-      "label": "미 노동부 | 11월 12일 주간 실업수당 청구",
-      "url": "https://www.dol.gov/sites/dolgov/files/OPA/newsreleases/ui-claims/20261694.pdf",
-      "accessNote": "전주 값은 이번 보도자료에서 수정된 수치를 사용했습니다. 비교 예상치는 Reuters 설문입니다.",
+      "label": "University of Bath·Reuters | Microsoft 365 장애",
+      "url": "https://status.bath.ac.uk/incident/1124080?mp=true",
+      "accessNote": "영향을 받은 대학의 운영 공지와 거기에 게재된 Microsoft 서비스 공지를 읽었습니다. 대학의 복구 완료를 전 세계 복구 완료로 해석하지 않았습니다.",
       "links": [
         {
-          "label": "Reuters 경제지표·예상치",
-          "url": "https://www.reuters.com/world/us/us-weekly-jobless-claims-increase-labor-market-firming-2026-11-12/"
+          "label": "Reuters 장애 보도",
+          "url": "https://live.euronext.com/en/financial-news/hours-long-microsoft-outage-disrupts-businesses-governments-globally"
         }
       ]
     },
@@ -161,93 +151,103 @@
       "id": 6,
       "label": "미 재무부 | 일별 파 수익률",
       "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
-      "accessNote": "뉴욕 15:30 무렵 매수 호가에 기초한 파 수익률입니다. 11월 11일 휴장으로 11월 10일과 같은 만기 열을 비교했습니다."
+      "accessNote": "뉴욕 오후 약 3시 30분 매수 호가 기반. 11월 12일과 13일의 같은 만기 열을 비교했습니다."
     },
     {
       "id": 7,
-      "label": "Reuters | 원유 결제·달러·금 현물",
-      "url": "https://www.reuters.com/business/energy/oil-prices-drop-more-than-1-hopes-iran-ukraine-peace-talks-pressure-markets-2026-11-12/",
-      "accessNote": "원유는 결제 변동을 썼습니다. 금 기사에서 현지 시각과 괄호 속 GMT 시각이 2분 달라 GMT 표기를 사용했습니다. 달러는 장중 방향만 기록했습니다.",
+      "label": "Reuters·WSJ | 원유 결제와 금 현물",
+      "url": "https://www.reuters.com/business/energy/oil-prices-set-second-weekly-decline-trump-stay-with-iran-blockade-2026-11-13/",
+      "accessNote": "WTI 결제가와 일간 변동을 Reuters 본문에서, 같은 결제 가격의 계약월을 WSJ 본문에서 확인했습니다. 금은 현물 장중 수치입니다.",
       "links": [
         {
-          "label": "금 현물",
-          "url": "https://www.reuters.com/world/india/gold-falls-over-one-week-low-firm-dollar-fed-rate-hike-bets-2026-11-12/"
+          "label": "WSJ WTI 12월물 결제",
+          "url": "https://www.wsj.com/business/energy-oil/oil-prices-rise-as-middle-east-supply-risks-persist-2066e758"
         },
         {
-          "label": "달러지수 장중 보도",
-          "url": "https://www.reuters.com/world/asia-pacific/dollar-near-one-month-high-yen-edges-toward-160-2026-11-12/"
+          "label": "Reuters 금 현물",
+          "url": "https://www.reuters.com/world/india/gold-rises-bargain-hunting-heads-weekly-decline-2026-11-13/"
         }
       ]
     },
     {
       "id": 8,
-      "label": "미 노동통계국 | 11월 발표 일정",
-      "url": "https://www.bls.gov/schedule/2026/11_sched.htm",
-      "accessNote": "발표 달력의 미 동부 시각을 한국시간으로 변환했습니다. 정규장 여부와 시간은 NYSE 공식 표를 사용했습니다.",
+      "label": "뉴욕 연은·NYSE | 발표 일정과 거래 시간",
+      "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "accessNote": "뉴욕 연은 달력을 한국시간으로 변환했습니다. 조사 항목과 NYSE 휴장일은 공식 페이지를 참고했습니다.",
       "links": [
         {
-          "label": "BLS 생산자물가지수 공표 항목",
-          "url": "https://www.bls.gov/ppi/"
+          "label": "뉴욕 연은 조사 공표 항목",
+          "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview.html"
         },
         {
-          "label": "NYSE 공식 휴장일·정규장",
+          "label": "NYSE 휴장일·정규장",
           "url": "https://www.nyse.com/trade/hours-calendars"
         }
       ]
     }
   ],
-  "dataNote": "AI가 작성하고 동일 모델이 공개 원문과 대조했습니다. 독립 검증이나 사람의 승인은 아니며 정규장, 장중과 시간외 관측을 구분했습니다.",
+  "dataNote": "AI가 작성하고 동일 모델이 공개 원문과 대조했습니다. 사람의 승인이나 독립 검증은 아니며 정규장 종가와 장중 관측은 구분했습니다.",
   "corrections": [],
   "homepage": {
-    "headline": "엔비디아 CEO 교체 발표 뒤 주가 4.3% 하락, 에너지는 강세[1][2][7]",
+    "headline": "엔비디아 승계 불확실성 속 나스닥 0.91% 하락[1][3]",
     "stocks": [
       {
         "name": "엔비디아",
         "ticker": "NVDA",
-        "change": "−4.3%",
-        "reason": "젠슨 황이 CEO와 이사직에서 물러났고 CFO 콜레트 크레스가 임시 CEO를 맡았습니다. 승계 발표 뒤 주가는 장중 급락에서 일부 회복했습니다.",
-        "basis": "11월 12일 미국 정규장 종가, 11월 11일 종가 대비",
-        "sourceIds": [
-          1,
-          2
-        ]
-      },
-      {
-        "name": "네비우스",
-        "ticker": "NBIS",
-        "change": "−16.8%",
-        "reason": "외부 데이터센터 용량 가동이 2027년 상반기로 밀리며 올해 매출은 기존 전망 하단으로 예상했습니다. 반면 올해 설비투자 전망은 약 270억 달러로 높였습니다.",
-        "basis": "11월 12일 미국 정규장 종가, 11월 11일 종가 대비",
+        "change": "−2.0%",
+        "reason": "젠슨 황 사임 뒤 크레스 CFO가 임시 CEO를 맡았습니다. Reuters는 정식 후임 인선이 남아 있다는 점을 AI 주식에 부담을 준 요인으로 전했습니다.",
+        "basis": "11월 13일 미국 정규장 종가, 11월 12일 종가 대비",
         "sourceIds": [
           1,
           3
+        ]
+      },
+      {
+        "name": "마이크로소프트",
+        "ticker": "MSFT",
+        "change": "+0.2%",
+        "reason": "아웃룩·팀즈 등 서비스 장애가 완화되면서 장중 하락을 만회했다고 Reuters가 전했습니다. 근본 원인과 재발 방지책은 사후 보고로 확인할 사안입니다.",
+        "basis": "11월 13일 미국 정규장 종가, 11월 12일 종가 대비",
+        "sourceIds": [
+          1,
+          5
+        ]
+      },
+      {
+        "name": "세레브라스",
+        "ticker": "CBRS",
+        "change": "+14% 초과",
+        "reason": "정규장 뒤 실적과 함께 2026년 비GAAP 핵심 매출 전망을 높였습니다. Reuters는 다음 날 장 초반 주가가 14% 넘게 올랐다고 보도했습니다.",
+        "basis": "11월 13일 장 초반 Reuters 관측, 11월 12일 정규장 종가 대비",
+        "sourceIds": [
+          4
         ]
       }
     ],
     "assets": [
       {
         "label": "미국 10년물",
-        "value": "5.10%",
-        "change": "+12bp",
-        "basis": "11월 12일 약 15:30 EST 미 재무부 호가 기반 파 수익률, 채권 휴장 전 11월 10일 같은 기준 대비.",
+        "value": "5.15%",
+        "change": "+5bp",
+        "basis": "11월 13일 약 15:30 EST 미 재무부 매수 호가 기반 파 수익률, 11월 12일 같은 기준 대비.",
         "sourceIds": [
           6
         ]
       },
       {
         "label": "금 현물",
-        "value": "3,880.93달러/트로이온스",
-        "change": "−2.7%",
-        "basis": "11월 12일 18:55 UTC 장중, 전일 대비.",
+        "value": "3,879.71달러/트로이온스",
+        "change": "+0.1%",
+        "basis": "11월 13일 14:05 EST 장중, 전일 대비.",
         "sourceIds": [
           7
         ]
       },
       {
-        "label": "WTI 선물",
-        "value": "가격 수준 생략",
-        "change": "+2.21달러/배럴 (+2.6%)",
-        "basis": "11월 12일 결제가, 11월 11일 결제 대비. 계약월 미확인으로 가격 수준 제외.",
+        "label": "WTI 2026년 12월물",
+        "value": "88.56달러/배럴",
+        "change": "−0.18달러/배럴 (−0.20%)",
+        "basis": "NYMEX WTI 선물 11월 13일 결제, 11월 12일 결제 대비.",
         "sourceIds": [
           7
         ]
@@ -255,9 +255,9 @@
     ],
     "events": [
       {
-        "at": "2026-11-13T22:30:00+09:00",
-        "label": "미국 10월 생산자물가지수(PPI)",
-        "detail": "최종수요 물가의 전월비와 상품·서비스별 움직임",
+        "at": "2026-11-16T22:30:00+09:00",
+        "label": "뉴욕 연은 엠파이어스테이트 제조업 조사",
+        "detail": "종합 경기판단지수와 신규 주문·출하 지수",
         "sourceIds": [
           8
         ]
