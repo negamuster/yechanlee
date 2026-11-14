@@ -1,5 +1,182 @@
 [
   {
+    "id": "2026-11-15",
+    "reviewMode": "automated",
+    "title": "미국 증시 요약 | 2026-11-13",
+    "sessionDate": "2026-11-13",
+    "cutoffAt": "2026-11-15T07:05:17+09:00",
+    "publishedAt": "2026-11-14T22:07:50.527Z",
+    "summary": [
+      "마지막 거래일인 11월 13일 나스닥 종합은 0.91%, S&P500은 0.40% 내렸고 다우는 0.10% 올랐습니다. 금요일 미 재무부 10년물 파 수익률은 전일보다 5bp 오른 5.15%, WTI 12월물은 배럴당 0.18달러 내린 88.56달러였습니다.[1][5][6]",
+      "마이크로소프트는 장 마감 이후 갱신된 공지에서 앞선 네트워크 용량 증설 중 생긴 문제가 최근 변경 뒤 드러났다고 설명했습니다. 회사는 근본 문제를 조치했으며 사후 보고서를 내겠다고 밝혔습니다.[2]",
+      "미 교통부는 전국 이륙 중단 해제 뒤 금요일 밤에만 8,000편 넘게 운항을 재개했다고 밝혔습니다. 토요일에도 지연과 결항이 이어져 운항 재개와 일정 정상화 사이에 시차가 있었습니다.[3][4]"
+    ],
+    "blocks": [
+      {
+        "kind": "metadata",
+        "text": "작성 기준 2026-11-15 07:05:17 KST · 최근 24시간 2026-11-14 07:05:17~2026-11-15 07:05:17 KST · 마지막 미국 정규장 2026-11-13 16:00 EST(한국시간 14일 06:00) 마감. 아래 시장 수치는 금요일 관측치입니다.[1][7]"
+      },
+      {
+        "kind": "heading",
+        "text": "마지막 거래일"
+      },
+      {
+        "kind": "paragraph",
+        "text": "금요일 기술 업종이 1.7% 내려 S&P500 업종 중 가장 약했습니다. 나스닥 종합 25,136.27(−0.91%), S&P500 7,561.67(−0.40%), 다우 52,347.55(+0.10%), 러셀2000 2,790.49(−0.3%)로 마쳤습니다. 모두 11월 12일 종가 대비입니다.[1]"
+      },
+      {
+        "kind": "heading",
+        "text": "장 마감 이후 새 소식"
+      },
+      {
+        "kind": "paragraph",
+        "text": "미 교통부는 토요일, 전국 이륙 중단이 해제된 뒤 금요일 밤 8,000편 넘게 운항을 재개했다고 밝혔습니다. 다만 토요일에도 지연·결항이 이어졌고, 브라이언 베드퍼드 연방항공청장은 미국 현지 일요일 늦게야 일정이 대체로 정상화될 것으로 봤습니다. 항공사별 결항이 얼마나 오래 이어지는지가 후속 확인 항목입니다.[3][4]"
+      },
+      {
+        "kind": "heading",
+        "text": "주요 기업·경영진 이슈"
+      },
+      {
+        "kind": "paragraph",
+        "text": "마이크로소프트는 미국 동부시간 13일 밤 갱신한 서비스 공지에서 이전 네트워크 용량 증설 때 생긴 문제가 최근 네트워크 변경 후 드러났다고 설명했습니다. 회사는 사이버 공격이나 AI가 원인이 아니라고 밝혔고, 문제를 조치한 뒤 남은 고객과 지역의 서비스 복구를 진행했다고 설명했습니다. 사후 보고서에서 재발 방지책을 확인할 수 있습니다. 이 설명은 금요일 정규장 마감 뒤 공개됐습니다.[2]"
+      },
+      {
+        "kind": "heading",
+        "text": "금요일 자산 수치와 다음 일정"
+      },
+      {
+        "kind": "paragraph",
+        "text": "미 재무부 11월 13일 약 15:30 EST 매수 호가 기반 파 수익률은 2년 4.88%(+2bp), 10년 5.15%(+5bp)였습니다. 비교는 12일 같은 기준입니다. NYMEX WTI 2026년 12월물은 13일 배럴당 88.56달러에 결제돼 전일 결제보다 0.18달러(0.20%) 내렸습니다.[5][6]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026년 11월 16일 22:30 KST · 뉴욕 연은 엠파이어스테이트 제조업 조사: 종합 경기판단지수와 신규 주문·출하 지수.[7]"
+      },
+      {
+        "kind": "paragraph",
+        "text": "2026년 11월 18일 07:00 KST(미국 동부 17일 오후) · 엔비디아 실적 설명회: 10월 25일 종료된 회계연도 2027년 3분기 실적과 실적에 대한 경영진 설명.[7]"
+      }
+    ],
+    "sources": [
+      {
+        "id": 1,
+        "label": "Reuters·AP | 11월 13일 미국장 마감",
+        "url": "https://www.reuters.com/business/nasdaq-futures-dip-nvidia-tumult-keeps-investors-edge-2026-11-13/",
+        "accessNote": "금요일 정규장 종가와 등락률입니다. 러셀2000은 AP 반올림 수치입니다.",
+        "links": [
+          {
+            "label": "AP 지수 마감",
+            "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-12c1e8155fb85c3c7b09e058ed6d3c74"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "label": "Microsoft 365 | 펜실베이니아대 공개 장애 공지",
+        "url": "https://mailservices.isc.upenn.edu/computing/email/penno365/alerts/ms-incidents.html?q=MO1465074",
+        "accessNote": "대학이 공개한 Microsoft 서비스 공지의 사건 번호 MO1550821과 미국 동부시간 13일 밤 갱신 본문을 읽었습니다. 장애 설명은 회사 입장입니다."
+      },
+      {
+        "id": 3,
+        "label": "미 교통부 | 11월 14일 운항 복구 발표",
+        "url": "https://www.transportation.gov/briefing-room/icymi-us-transportation-secretary-sean-p-duffy-provides-update-restoration-airspace",
+        "accessNote": "금요일 밤 운항 재개 건수와 토요일 당시 상황을 구분했습니다."
+      },
+      {
+        "id": 4,
+        "label": "Reuters | 토요일 미국 항공편 상황",
+        "url": "https://www.reuters.com/business/aerospace-defense/thousands-us-flights-canceled-delayed-air-travel-system-recovers-shutdown-2026-11-14/",
+        "accessNote": "토요일 지연·결항과 FAA 청장의 정상화 전망만 사용했습니다. 실시간 집계의 건수는 기사 갱신 가능성이 있어 제외했습니다."
+      },
+      {
+        "id": 5,
+        "label": "미 재무부 | 일별 파 수익률",
+        "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "accessNote": "11월 12일과 13일의 같은 만기·매수 호가 기준을 비교했습니다."
+      },
+      {
+        "id": 6,
+        "label": "WSJ·Reuters | 금요일 WTI 결제",
+        "url": "https://www.wsj.com/business/energy-oil/oil-prices-rise-as-middle-east-supply-risks-persist-2066e758",
+        "accessNote": "WSJ 본문의 12월 인도분과 Reuters 결제 수치·변동폭을 대조했습니다.",
+        "links": [
+          {
+            "label": "Reuters 원유 결제",
+            "url": "https://www.reuters.com/business/energy/oil-prices-set-second-weekly-decline-trump-stay-with-iran-blockade-2026-11-13/"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "label": "뉴욕 연은·NVIDIA | 다음 일정",
+        "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+        "accessNote": "미 동부 시각을 한국시간으로 환산했습니다. 엔비디아 일정은 결과 공표가 아닌 설명회 시작 시각입니다.",
+        "links": [
+          {
+            "label": "제조업 조사 항목",
+            "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview.html"
+          },
+          {
+            "label": "NVIDIA 설명회 공지",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Sets-Conference-Call-for-Third-Quarter-Financial-Results/"
+          },
+          {
+            "label": "NVIDIA 임시 경영 체제 발표",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx"
+          },
+          {
+            "label": "NYSE 거래시간·휴장일",
+            "url": "https://www.nyse.com/trade/hours-calendars"
+          }
+        ]
+      }
+    ],
+    "dataNote": "같은 AI 모델이 작성과 원문 대조를 수행했습니다. 독립 검증이나 사람의 승인은 아니며 주말 소식과 금요일 가격을 구분했습니다.",
+    "corrections": [],
+    "homepage": {
+      "headline": "주말 업데이트: 미국 항공 운항 재개, MS 장애 원인 공개[2][3][4]",
+      "stocks": [],
+      "assets": [
+        {
+          "label": "미국 10년물",
+          "value": "5.15%",
+          "change": "+5bp",
+          "basis": "11월 13일 약 15:30 EST 미 재무부 매수 호가 기반 파 수익률, 11월 12일 같은 기준 대비.",
+          "sourceIds": [
+            5
+          ]
+        },
+        {
+          "label": "WTI 2026년 12월물",
+          "value": "88.56달러/배럴",
+          "change": "−0.18달러/배럴 (−0.20%)",
+          "basis": "NYMEX 선물 11월 13일 결제, 11월 12일 결제 대비.",
+          "sourceIds": [
+            6
+          ]
+        }
+      ],
+      "events": [
+        {
+          "at": "2026-11-16T22:30:00+09:00",
+          "label": "뉴욕 연은 엠파이어스테이트 제조업 조사",
+          "detail": "종합 경기판단지수와 신규 주문·출하 지수",
+          "sourceIds": [
+            7
+          ]
+        },
+        {
+          "at": "2026-11-18T07:00:00+09:00",
+          "label": "엔비디아 실적 설명회",
+          "detail": "10월 25일 종료된 회계연도 2027년 3분기 실적과 실적에 대한 경영진 설명",
+          "sourceIds": [
+            7
+          ]
+        }
+      ]
+    }
+  },
+  {
     "id": "2026-11-14",
     "reviewMode": "automated",
     "title": "미국 증시 요약 | 2026-11-13",
