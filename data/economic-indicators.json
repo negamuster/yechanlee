@@ -3,8 +3,8 @@
   "series": [
     {
       "id": "cpi",
-      "collectedAt": "2026-11-14T20:52:10.779Z",
-      "attemptedAt": "2026-11-14T20:52:10.779Z",
+      "collectedAt": "2026-11-15T21:09:29.174Z",
+      "attemptedAt": "2026-11-15T21:09:29.174Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "bls",
@@ -344,8 +344,8 @@
     },
     {
       "id": "unemployment",
-      "collectedAt": "2026-11-14T20:52:10.779Z",
-      "attemptedAt": "2026-11-14T20:52:10.779Z",
+      "collectedAt": "2026-11-15T21:09:29.174Z",
+      "attemptedAt": "2026-11-15T21:09:29.174Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "bls",
@@ -686,8 +686,8 @@
     },
     {
       "id": "effr",
-      "collectedAt": "2026-11-14T20:52:10.779Z",
-      "attemptedAt": "2026-11-14T20:52:10.779Z",
+      "collectedAt": "2026-11-15T21:09:29.174Z",
+      "attemptedAt": "2026-11-15T21:09:29.174Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "nyfed",
