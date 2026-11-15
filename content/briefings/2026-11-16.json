@@ -1,0 +1,285 @@
+{
+  "id": "2026-11-16",
+  "status": "published",
+  "title": "미국 증시 요약 | 2026-11-13",
+  "sessionDate": "2026-11-13",
+  "cutoffAt": "2026-11-16T07:00:29+09:00",
+  "summary": [
+    "미국 일요일에는 정규장이 열리지 않았습니다. 마지막 거래일인 11월 13일에는 반도체 약세 속에 나스닥 종합이 0.91% 내렸고 다우는 0.10% 올랐으며, 미국 10년물 파 수익률은 전일보다 5bp 오른 5.15%였습니다.[1][5][7]",
+    "스콧 베선트 미 재무장관은 엔비디아가 외부에서 새 CEO를 찾아야 한다는 의견을 내고 수출 제한 준수에 대한 설명을 요구했습니다. 회사가 공식 발표한 체제는 콜레트 크레스 CFO가 임시 CEO를 겸임하는 것입니다.[2][3]",
+    "미국의 전국 이륙 중단은 풀렸지만 일요일에도 결항과 지연이 이어졌습니다. 미 교통부는 관제 통신 장애에 관련된 장비를 점검 중이라고 밝혔고, 션 더피 장관은 월요일 완전 정상화를 예상했습니다.[4]"
+  ],
+  "blocks": [
+    {
+      "kind": "metadata",
+      "text": "작성 기준 2026-11-16 07:00:29 KST · 최근 24시간 2026-11-15 07:00:29~2026-11-16 07:00:29 KST · 마지막 미국 정규장 2026-11-13 16:00 EST(한국시간 14일 06:00) 마감. 다음 NYSE 정규장은 11월 16일 23:30 KST 개장입니다.[1][7]"
+    },
+    {
+      "kind": "heading",
+      "text": "주요 기업·경영진 이슈"
+    },
+    {
+      "kind": "paragraph",
+      "text": "현지 일요일 베선트 재무장관은 방송 인터뷰에서 엔비디아의 차기 CEO를 외부에서 찾아야 한다는 의견을 밝혔습니다. 이사회와 외부 법률 자문단이 열흘 안에 수출 제한 준수 관행에 관한 질문에 답해야 한다고도 말했습니다. 이는 장관 발언이며 새 수출 규정이나 이사회 인선 결정이 아닙니다.[2]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "엔비디아의 12일 공식 발표에 따르면 크레스 CFO가 임시 CEO를 맡았고, 이사회는 내부와 외부 후보를 모두 검토할 예정입니다. 후속 확인 항목은 이사회의 공식 인선 발표와 수출 제한 준수에 관한 회사 설명입니다. 일요일 발언 뒤 미국 정규장 주가 반응은 아직 관측되지 않았습니다.[2][3][7]"
+    },
+    {
+      "kind": "heading",
+      "text": "주말 산업 소식"
+    },
+    {
+      "kind": "paragraph",
+      "text": "미 교통부는 금요일 저녁 이륙 중단 해제와 별도로, 문제가 발생한 관제 통신 장비를 일요일에도 진단 중이라고 밝혔습니다. Reuters가 인용한 FlightAware 집계에 따르면 일요일 보도 당시 미국에서 1,600편 넘게 취소됐고 약 3,600편이 지연됐습니다. 더피 장관의 월요일 완전 정상화는 당시 전망이며, 항공사별 결항과 지연이 실제로 줄어드는지가 확인할 대목입니다.[4]"
+    },
+    {
+      "kind": "heading",
+      "text": "마지막 거래일 수치와 다음 일정"
+    },
+    {
+      "kind": "paragraph",
+      "text": "11월 13일 정규장 종가(12일 대비): S&P500 7,561.67(−0.40%), 다우 52,347.55(+0.10%), 나스닥 종합 25,136.27(−0.91%), 러셀2000 2,790.49(−0.3%). 필라델피아 반도체지수는 3.4% 내렸습니다.[1]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "미 재무부 11월 13일 약 15:30 EST 매수 호가 기반 파 수익률은 2년 4.88%(+2bp), 10년 5.15%(+5bp)로 12일 같은 기준보다 올랐습니다. NYMEX WTI 2026년 12월물은 13일 배럴당 88.56달러에 결제돼 전일 결제 대비 0.18달러(0.20%) 내렸습니다.[5][6]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026년 11월 16일 22:30 KST · 뉴욕 연은 엠파이어스테이트 제조업 조사: 종합 경기판단지수와 신규 주문·출하 지수.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026년 11월 17일 22:30 KST(익일) · 미국 10월 소매·외식 매출 잠정치: 가격 변동을 별도로 제거하지 않은 소매·외식 매출의 전월비.[7]"
+    },
+    {
+      "kind": "paragraph",
+      "text": "2026년 11월 18일 07:00 KST(미국 동부 17일 오후) · 엔비디아 실적 설명회: 10월 25일 종료된 회계연도 2027년 3분기 실적과 경영진 설명.[8]"
+    }
+  ],
+  "sources": [
+    {
+      "id": 1,
+      "label": "Reuters·AP | 11월 13일 미국장 마감",
+      "url": "https://www.reuters.com/business/nasdaq-futures-dip-nvidia-tumult-keeps-investors-edge-2026-11-13/",
+      "accessNote": "금요일 정규장 종가입니다. 러셀2000의 등락률은 AP 반올림입니다.",
+      "links": [
+        {
+          "label": "AP 지수 마감",
+          "url": "https://apnews.com/article/wall-street-stocks-dow-nasdaq-12c1e8155fb85c3c7b09e058ed6d3c74"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Reuters | 베선트 재무장관 인터뷰",
+      "url": "https://www.reuters.com/world/bessent-says-nvidia-must-go-outside-company-find-new-ceo-2026-11-15/",
+      "accessNote": "장관의 방송 발언과 회사 결정은 구분했습니다. 발언은 새 규제의 공표가 아닙니다."
+    },
+    {
+      "id": 3,
+      "label": "NVIDIA | CEO 교체 공식 발표",
+      "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+      "accessNote": "11월 12일 배경 자료로, 임시 체제와 후보 검토 범위를 확인했습니다."
+    },
+    {
+      "id": 4,
+      "label": "미 교통부·Reuters | 일요일 운항 차질",
+      "url": "https://www.transportation.gov/briefing-room/icymi-trumps-transportation-secretary-sean-p-duffy-provides-update-across-sunday",
+      "accessNote": "교통부 설명과 Reuters가 인용한 당일 FlightAware 집계를 구분했습니다. 건수는 보도 당시 집계입니다.",
+      "links": [
+        {
+          "label": "Reuters 당일 항공편과 장관 발언",
+          "url": "https://www.reuters.com/world/us/us-air-travel-disruptions-continue-into-third-day-2026-11-15/"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "label": "미 재무부 | 일별 파 수익률",
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+      "accessNote": "11월 12일과 13일 동일 만기와 매수 호가 기준을 비교했습니다."
+    },
+    {
+      "id": 6,
+      "label": "WSJ·Reuters | 금요일 WTI 결제",
+      "url": "https://www.wsj.com/business/energy-oil/oil-prices-rise-as-middle-east-supply-risks-persist-2066e758",
+      "accessNote": "WSJ의 계약월과 Reuters의 결제 등락폭을 대조했습니다.",
+      "links": [
+        {
+          "label": "Reuters 원유 결제",
+          "url": "https://www.reuters.com/business/energy/oil-prices-set-second-weekly-decline-trump-stay-with-iran-blockade-2026-11-13/"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "label": "뉴욕 연은·미 인구조사국·NYSE | 일정",
+      "url": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "accessNote": "공식 동부 시각을 한국시간으로 변환했습니다.",
+      "links": [
+        {
+          "label": "엠파이어스테이트 조사 항목",
+          "url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview.html"
+        },
+        {
+          "label": "인구조사국 소매 일정",
+          "url": "https://www.census.gov/retail/release_schedule.html"
+        },
+        {
+          "label": "소매 통계 공표 항목",
+          "url": "https://www.census.gov/retail/sales.html?os=vb_73KQVPgiFno_journeysDtrue"
+        },
+        {
+          "label": "NYSE 거래시간·휴장일",
+          "url": "https://www.nyse.com/trade/hours-calendars"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "label": "NVIDIA | 3분기 실적 설명회",
+      "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Sets-Conference-Call-for-Third-Quarter-Financial-Results/",
+      "accessNote": "회사 공지의 설명회 시작 시각이며 실적 배포 시각과 구별됩니다."
+    }
+  ],
+  "dataNote": "같은 AI 모델이 원문을 자체 대조했습니다. 독립 검증이나 사람의 승인은 아니며, 일요일 소식과 금요일 가격을 구분했습니다.",
+  "corrections": [],
+  "homepage": {
+    "headline": "엔비디아 후임 인선에 미 재무장관 발언, 항공편 차질 지속[2][3][4]",
+    "stocks": [],
+    "assets": [
+      {
+        "label": "미국 10년물",
+        "value": "5.15%",
+        "change": "+5bp",
+        "basis": "11월 13일 약 15:30 EST 미 재무부 매수 호가 기반 파 수익률, 12일 같은 기준 대비.",
+        "sourceIds": [
+          5
+        ]
+      },
+      {
+        "label": "WTI 2026년 12월물",
+        "value": "88.56달러/배럴",
+        "change": "−0.18달러/배럴 (−0.20%)",
+        "basis": "NYMEX 선물 11월 13일 결제, 12일 결제 대비.",
+        "sourceIds": [
+          6
+        ]
+      }
+    ],
+    "events": [
+      {
+        "at": "2026-11-16T22:30:00+09:00",
+        "label": "뉴욕 연은 엠파이어스테이트 제조업 조사",
+        "detail": "종합 경기판단지수와 신규 주문·출하 지수",
+        "sourceIds": [
+          7
+        ]
+      },
+      {
+        "at": "2026-11-17T22:30:00+09:00",
+        "label": "미국 10월 소매·외식 매출 잠정치",
+        "detail": "가격 변동을 별도로 제거하지 않은 소매·외식 매출의 전월비",
+        "sourceIds": [
+          7
+        ]
+      },
+      {
+        "at": "2026-11-18T07:00:00+09:00",
+        "label": "엔비디아 실적 설명회",
+        "detail": "10월 25일 종료된 회계연도 2027년 3분기 실적과 경영진 설명",
+        "sourceIds": [
+          8
+        ]
+      }
+    ]
+  },
+  "publishedAt": "2026-11-15T22:03:27.141Z",
+  "review": {
+    "mode": "automated",
+    "approvedBy": "Anthracite automated editorial review",
+    "approvedAt": "2026-11-15T22:03:27.139Z",
+    "checkedSources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "factualReviewPassed": true,
+    "unresolvedIssues": [],
+    "sourceChecks": [
+      {
+        "sourceId": 1,
+        "verifiedUrl": "https://www.reuters.com/business/nasdaq-futures-dip-nvidia-tumult-keeps-investors-edge-2026-11-13/",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": "2026-11-13T10:35:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 마감·AP 본문에서 4개 지수의 13일 종가와 방향 대조. SOX −3.4%, 러셀 −0.3%는 AP 반올림."
+      },
+      {
+        "sourceId": 2,
+        "verifiedUrl": "https://www.reuters.com/world/bessent-says-nvidia-must-go-outside-company-find-new-ceo-2026-11-15/",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": "2026-11-15T15:50:00Z",
+        "basis": "reported",
+        "claimSummary": "Reuters 인터뷰 본문의 외부 후보 의견과 열흘 내 수출 제한 준수 관련 질문 답변 요청 확인. 인선·법적 의무로 해석하지 않음."
+      },
+      {
+        "sourceId": 3,
+        "verifiedUrl": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "11월12일 공식 발표: 크레스 CFO 겸 임시 CEO, 정식 후임은 내부·외부 후보 검토. 주말 결정으로 표기하지 않음."
+      },
+      {
+        "sourceId": 4,
+        "verifiedUrl": "https://www.transportation.gov/briefing-room/icymi-trumps-transportation-secretary-sean-p-duffy-provides-update-across-sunday",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "11월15일 DOT의 장비 진단 설명과 Reuters 본문의 일요일 취소 1,600편 초과·지연 약 3,600편 및 장관 월요일 전망 대조. Reuters 기사 최초 16:49 UTC 확인."
+      },
+      {
+        "sourceId": 5,
+        "verifiedUrl": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value=2026&type=daily_treasury_yield_curve",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "공식 파 수익률 11월12일→13일 2년 4.86→4.88, 10년 5.10→5.15, +2/+5bp. 약15:30 EST 호가 기준."
+      },
+      {
+        "sourceId": 6,
+        "verifiedUrl": "https://www.wsj.com/business/energy-oil/oil-prices-rise-as-middle-east-supply-risks-persist-2066e758",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": "2026-11-13T21:11:00Z",
+        "basis": "reported",
+        "claimSummary": "WSJ 본문 WTI 12월물 $88.56/배럴과 Reuters 동일 결제, −$0.18/배럴 및 −0.20% 검산."
+      },
+      {
+        "sourceId": 7,
+        "verifiedUrl": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "11월16일 제조업 조사 08:30 EST와 17일 10월 소매 잠정치 08:30 EST는 22:30 KST. 항목과 가격 미조정 정의 확인. NYSE 09:30~16:00 EST, 13일과 16일 정상장."
+      },
+      {
+        "sourceId": 8,
+        "verifiedUrl": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Sets-Conference-Call-for-Third-Quarter-Financial-Results/",
+        "checkedAt": "2026-11-15T22:03:27.139Z",
+        "publishedAt": null,
+        "basis": "primary",
+        "claimSummary": "10월28일 회사 공지: 11월17일 17:00 EST = 18일 07:00 KST 설명회, 대상 10월25일 종료 FY27 Q3."
+      }
+    ],
+    "contentHash": "ddd0e8eb782c48098db9ecd69eaa76cc26a628fd9f804d17c34e1951a349a343"
+  }
+}
