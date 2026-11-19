@@ -1,9 +1,9 @@
 {
   "version": 1,
   "sourceUrl": "https://fred.stlouisfed.org/releases/calendar",
-  "checkedAt": "2026-11-18T20:39:09.757Z",
-  "from": "2026-09-09",
-  "to": "2027-03-28",
+  "checkedAt": "2026-11-19T07:35:22.116Z",
+  "from": "2026-09-10",
+  "to": "2027-03-29",
   "releaseIds": [
     10,
     11,
