@@ -3,8 +3,8 @@
   "series": [
     {
       "id": "cpi",
-      "collectedAt": "2026-11-19T23:09:43.242Z",
-      "attemptedAt": "2026-11-19T23:09:43.242Z",
+      "collectedAt": "2026-11-20T22:45:24.858Z",
+      "attemptedAt": "2026-11-20T22:45:24.858Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "bls",
@@ -344,8 +344,8 @@
     },
     {
       "id": "unemployment",
-      "collectedAt": "2026-11-19T23:09:43.242Z",
-      "attemptedAt": "2026-11-19T23:09:43.242Z",
+      "collectedAt": "2026-11-20T22:45:24.858Z",
+      "attemptedAt": "2026-11-20T22:45:24.858Z",
       "error": null,
       "failureReason": null,
       "retrievedVia": "bls",
@@ -686,10 +686,10 @@
     },
     {
       "id": "effr",
-      "collectedAt": "2026-11-18T23:00:21.167Z",
-      "attemptedAt": "2026-11-19T23:09:43.242Z",
-      "error": "unavailable",
-      "failureReason": "invalid_json",
+      "collectedAt": "2026-11-20T22:45:24.858Z",
+      "attemptedAt": "2026-11-20T22:45:24.858Z",
+      "error": null,
+      "failureReason": null,
       "retrievedVia": "nyfed",
       "primaryFailureReason": null,
       "fallbackFailureReason": null,
@@ -6588,6 +6588,14 @@
         },
         {
           "date": "2026-11-17",
+          "value": 3.88
+        },
+        {
+          "date": "2026-11-18",
+          "value": 3.88
+        },
+        {
+          "date": "2026-11-19",
           "value": 3.88
         }
       ]
