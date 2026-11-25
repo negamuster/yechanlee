@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "attemptedAt": "2026-11-25T09:54:23.518Z",
+  "attemptedAt": "2026-11-25T20:00:12.334Z",
   "companies": {
     "AAPL": {
       "symbol": "AAPL",
@@ -3359,7 +3359,7 @@
       "source": "SEC EDGAR",
       "cik": "0000320193",
       "company": "Apple Inc.",
-      "fetchedAt": 1795600463045,
+      "fetchedAt": 1795636811718,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
@@ -6770,7 +6770,7 @@
       "source": "SEC EDGAR",
       "cik": "0001045810",
       "company": "NVIDIA CORP",
-      "fetchedAt": 1795600463172,
+      "fetchedAt": 1795636811899,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
@@ -10013,7 +10013,7 @@
       "source": "SEC EDGAR",
       "cik": "0001874315",
       "company": "Satellogic Inc.",
-      "fetchedAt": 1795600463515,
+      "fetchedAt": 1795636812331,
       "stale": false,
       "status": "ok",
       "tickerSource": "https://www.sec.gov/files/company_tickers.json",
